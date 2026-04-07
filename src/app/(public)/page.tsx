@@ -87,19 +87,25 @@ export default async function HomePage() {
         <div className="absolute -top-40 -right-40 size-[600px] rounded-full bg-[#6B4F7A]/10 blur-3xl" />
         <div className="absolute -bottom-20 -left-20 size-[400px] rounded-full bg-[#9B59B6]/5 blur-3xl" />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 lg:py-40">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 lg:py-24">
           <div className="max-w-3xl">
-            <p className="inline-flex items-center gap-2 text-[#8B6F9A] font-semibold text-sm uppercase tracking-widest mb-5 font-body">
-              <span className="size-1.5 rounded-full bg-[#8B6F9A] inline-block" />
-              Concesionaria multimarca · {BUSINESS.city}
-            </p>
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-[1.1] font-heading">
+            {/* Logo en hero */}
+            <div className="mb-8">
+              <Image
+                src="/images/logo-horizontal-blanco.svg"
+                alt={BUSINESS.name}
+                width={220}
+                height={52}
+                className="h-12 w-auto opacity-90"
+                priority
+              />
+            </div>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] font-heading">
               Tu próxima aventura
               <span className="block text-[#9B59B6] mt-1">empieza aquí</span>
             </h1>
-            <p className="mt-6 text-lg text-gray-400 max-w-xl font-body leading-relaxed">
-              Más de {BUSINESS.yearsInBusiness} años ayudando a elegir el vehículo perfecto.
-              Visitanos en {BUSINESS.city} y conocé todas las marcas.
+            <p className="mt-5 text-base text-gray-400 max-w-2xl font-body leading-relaxed">
+              Más de {BUSINESS.yearsInBusiness} años ayudando a elegir el vehículo perfecto. Visitanos en {BUSINESS.city} y conocé todas las marcas.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
               <Link
@@ -119,7 +125,7 @@ export default async function HomePage() {
             </div>
 
             {/* Stats row */}
-            <div className="mt-16 flex flex-wrap gap-10">
+            <div className="mt-10 flex flex-wrap gap-10">
               <div>
                 <p className="text-4xl font-extrabold text-white font-heading">+{BUSINESS.yearsInBusiness}</p>
                 <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Años</p>
@@ -492,15 +498,14 @@ export default async function HomePage() {
             ¿Listo para dar el siguiente paso?
           </h2>
           <p className="mt-4 text-gray-400 max-w-lg mx-auto font-body">
-            Visitános en {BUSINESS.address} o contactános por WhatsApp.
-            Estamos para ayudarte.
+            Visitanos en {BUSINESS.address} o contactanos por WhatsApp. Estamos para ayudarte.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href="/contacto"
               className="inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-7 py-3.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors shadow-lg shadow-[#6B4F7A]/30"
             >
-              Contactános
+              Contactanos
             </Link>
             <Link
               href="/servicio-tecnico"

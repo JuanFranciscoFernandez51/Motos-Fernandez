@@ -9,10 +9,10 @@ import { Chatbot } from "@/components/public/chatbot"
 import { CartProvider, useCart } from "@/lib/cart-context"
 
 const NAV_LINKS = [
-  { href: "/modelos", label: "Catálogo" },
+  { href: "/modelos", label: "Catálogo", highlight: true },
   { href: "/tienda", label: "Tienda" },
-  { href: "/financiacion", label: "Financiacion" },
-  { href: "/servicio-tecnico", label: "Servicio Tecnico" },
+  { href: "/financiacion", label: "Financiación" },
+  { href: "/servicio-tecnico", label: "Servicio Técnico" },
   { href: "/noticias", label: "Noticias" },
   { href: "/nosotros", label: "Nosotros" },
   { href: "/contacto", label: "Contacto" },
@@ -42,42 +42,50 @@ function Navbar() {
   return (
     <nav className="sticky top-0 z-50 bg-[#1A1A1A] border-b border-white/5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex-shrink-0">
+        <div className="flex h-16 items-center">
+          {/* Logo - monograma */}
+          <Link href="/" className="flex-shrink-0 mr-4">
             <Image
-              src="/images/logo-horizontal-blanco.svg"
+              src="/images/monograma-blanco-violeta.svg"
               alt={BUSINESS.name}
-              width={200}
-              height={48}
-              className="h-10 w-auto"
+              width={40}
+              height={40}
+              className="h-10 w-10"
               priority
             />
           </Link>
 
-          {/* Desktop nav */}
-          <div className="hidden lg:flex lg:items-center lg:gap-1">
+          {/* Desktop nav - centrado */}
+          <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-center lg:gap-0.5">
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="px-3 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors rounded-md hover:bg-white/5"
+                className={`whitespace-nowrap px-3 py-2 text-sm font-medium transition-colors rounded-md ${
+                  (link as { highlight?: boolean }).highlight
+                    ? "text-[#9B59B6] hover:text-[#B07FCC] hover:bg-white/5 font-semibold"
+                    : "text-gray-300 hover:text-white hover:bg-white/5"
+                }`}
               >
                 {link.label}
               </Link>
             ))}
-            <CartIcon />
           </div>
 
-          {/* Mobile hamburger */}
-          <button
-            type="button"
-            className="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label={mobileOpen ? "Cerrar menu" : "Abrir menu"}
-          >
-            {mobileOpen ? <X className="size-6" /> : <Menu className="size-6" />}
-          </button>
+          {/* Right: cart + mobile hamburger */}
+          <div className="flex items-center gap-2 ml-auto lg:ml-4">
+            <div className="hidden lg:block">
+              <CartIcon />
+            </div>
+            <button
+              type="button"
+              className="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label={mobileOpen ? "Cerrar menu" : "Abrir menu"}
+            >
+              {mobileOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -89,12 +97,19 @@ function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="block rounded-md px-3 py-2.5 text-base font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+                className={`block rounded-md px-3 py-2.5 text-base font-medium transition-colors ${
+                  (link as { highlight?: boolean }).highlight
+                    ? "text-[#9B59B6] font-semibold"
+                    : "text-gray-300 hover:text-white hover:bg-white/5"
+                }`}
                 onClick={() => setMobileOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
+            <div className="pt-2 border-t border-white/10">
+              <CartIcon />
+            </div>
           </div>
         </div>
       )}
@@ -117,15 +132,14 @@ function Footer() {
               className="h-10 w-auto mb-4"
             />
             <p className="text-sm text-gray-400 leading-relaxed">
-              {BUSINESS.slogan}. Concesionaria multimarca en {BUSINESS.city} con
-              mas de {BUSINESS.yearsInBusiness} anos de trayectoria.
+              {BUSINESS.slogan}. Concesionaria multimarca en {BUSINESS.city} con más de {BUSINESS.yearsInBusiness} años de trayectoria.
             </p>
           </div>
 
           {/* Links */}
           <div>
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
-              Navegacion
+              Navegación
             </h3>
             <ul className="space-y-2.5">
               {NAV_LINKS.map((link) => (
@@ -190,7 +204,7 @@ function Footer() {
               <li className="flex items-start gap-2.5">
                 <Clock className="size-4 mt-0.5 text-[#8B6F9A] shrink-0" />
                 <div className="text-sm text-gray-400">
-                  <p className="font-medium text-gray-300">Sabados</p>
+                  <p className="font-medium text-gray-300">Sábados</p>
                   <p>{HORARIOS.sabados}</p>
                 </div>
               </li>
