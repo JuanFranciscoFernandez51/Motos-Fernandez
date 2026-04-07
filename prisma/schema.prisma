@@ -1,0 +1,392 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== AUTH ====================
+
+model User {
+  id             String   @id @default(cuid())
+  name           String
+  email          String   @unique
+  hashedPassword String
+  role           String   @default("admin")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ==================== MODELOS DE VEHICULOS ====================
+
+model Modelo {
+  id                String            @id @default(cuid())
+  nombre            String
+  slug              String            @unique
+  marca             String            // Campo libre: "Honda", "Yamaha", "Suzuki", etc.
+  categoriaVehiculo CategoriaVehiculo @default(MOTOCICLETA)
+  cilindrada        String?           // "150cc", "250cc", "450cc", etc.
+  precio            Int?              // en pesos, null = "consultar"
+  descripcion       String?           @db.Text
+  specs             Json?             // { "Motor": "150cc", "Potencia": "14 HP", ... }
+  financiacion      Json?             // [{ "plan": "12 cuotas", "cuota": 150000, "entrega": 500000 }, ...]
+  colores           ModeloColor[]
+  fotos             String[]          // URLs de fotos generales
+  activo            Boolean           @default(true)
+  destacado         Boolean           @default(false)
+  orden             Int               @default(0)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  leads  Lead[]
+  turnos Turno[]
+}
+
+enum CategoriaVehiculo {
+  MOTOCICLETA
+  CUATRICICLO
+  UTV
+  MOTO_DE_AGUA
+}
+
+model ModeloColor {
+  id       String  @id @default(cuid())
+  nombre   String  // "Rojo Racing", "Negro Mate"
+  hex      String  // "#C2002F"
+  foto     String? // URL de la foto en ese color
+  modeloId String
+  modelo   Modelo  @relation(fields: [modeloId], references: [id], onDelete: Cascade)
+}
+
+// ==================== NOTICIAS ====================
+
+model Noticia {
+  id               String   @id @default(cuid())
+  titulo           String
+  slug             String   @unique
+  contenido        String   @db.Text
+  resumen          String?  @db.Text
+  imagen           String?
+  categoria        String?
+  publicado        Boolean  @default(false)
+  destacado        Boolean  @default(false)
+  fechaPublicacion DateTime @default(now())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+// ==================== TIENDA ====================
+
+model Categoria {
+  id        String     @id @default(cuid())
+  nombre    String
+  slug      String     @unique
+  orden     Int        @default(0)
+  productos Producto[]
+}
+
+model Producto {
+  id             String       @id @default(cuid())
+  codigo         String?
+  nombre         String
+  slug           String       @unique
+  precio         Int
+  precioOferta   Int?
+  descripcion    String?      @db.Text
+  fotos          String[]
+  stock          Int          @default(0)
+  talles         String[]
+  stockPorTalle  Json?
+  motoCompatible String?
+  activo         Boolean      @default(true)
+  destacado      Boolean      @default(false)
+  categoriaId    String
+  categoria      Categoria    @relation(fields: [categoriaId], references: [id])
+  pedidoItems    PedidoItem[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+// ==================== PEDIDOS ====================
+
+model Pedido {
+  id              String       @id @default(cuid())
+  numero          Int          @unique @default(autoincrement())
+  nombre          String
+  apellido        String
+  email           String
+  telefono        String
+  tipoEntrega     TipoEntrega  @default(ENVIO)
+  direccion       String?
+  ciudad          String?
+  provincia       String?
+  codigoPostal    String?
+  subtotal        Int
+  costoEnvio      Int          @default(0)
+  descuento       Int          @default(0)
+  total           Int
+  estado          EstadoPedido @default(NUEVO)
+  estadoPago      EstadoPago   @default(PENDIENTE)
+  mpPaymentId     String?
+  mpPreferenceId  String?
+  mpStatus        String?
+  cuponCodigo     String?
+  trackingNumber  String?
+  trackingCompany String?
+  notas           String?      @db.Text
+  items           PedidoItem[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+}
+
+model PedidoItem {
+  id         String   @id @default(cuid())
+  cantidad   Int
+  precio     Int
+  talle      String?
+  productoId String
+  producto   Producto @relation(fields: [productoId], references: [id])
+  pedidoId   String
+  pedido     Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+}
+
+enum TipoEntrega {
+  ENVIO
+  RETIRO_LOCAL
+}
+
+enum EstadoPedido {
+  NUEVO
+  PAGO_CONFIRMADO
+  PREPARANDO
+  ENVIADO
+  ENTREGADO
+  CANCELADO
+}
+
+enum EstadoPago {
+  PENDIENTE
+  APROBADO
+  RECHAZADO
+  REEMBOLSADO
+}
+
+// ==================== CRM ====================
+
+model Lead {
+  id            String            @id @default(cuid())
+  nombre        String
+  apellido      String?
+  telefono      String?
+  email         String?
+  ciudad        String?
+  modeloInteres String?
+  modeloId      String?
+  modelo        Modelo?           @relation(fields: [modeloId], references: [id])
+  origen        OrigenLead        @default(WEB)
+  temperatura   TemperaturaLead   @default(NUEVO)
+  etapa         EtapaLead         @default(NUEVO)
+  notas         String?           @db.Text
+  interacciones LeadInteraction[]
+  recordatorios LeadReminder[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+}
+
+model LeadInteraction {
+  id        String   @id @default(cuid())
+  tipo      String
+  contenido String   @db.Text
+  leadId    String
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model LeadReminder {
+  id          String   @id @default(cuid())
+  titulo      String
+  descripcion String?
+  fecha       DateTime
+  completado  Boolean  @default(false)
+  leadId      String
+  lead        Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+enum OrigenLead {
+  WEB
+  WHATSAPP
+  INSTAGRAM
+  MARKETPLACE
+  MERCADOLIBRE
+  TELEFONO
+  PRESENCIAL
+}
+
+enum TemperaturaLead {
+  NUEVO
+  CALIENTE
+  TIBIO
+  FRIO
+  CLIENTE
+  PERDIDO
+}
+
+enum EtapaLead {
+  NUEVO
+  CONTACTADO
+  PRESUPUESTADO
+  NEGOCIANDO
+  VENDIDO
+  PERDIDO
+}
+
+// ==================== TURNOS ====================
+
+model Turno {
+  id              String      @id @default(cuid())
+  nombre          String
+  telefono        String
+  email           String?
+  modeloMoto      String?
+  modeloId        String?
+  modelo          Modelo?     @relation(fields: [modeloId], references: [id])
+  tipoServicio    String
+  fechaPreferida  DateTime?
+  fechaConfirmada DateTime?
+  comentarios     String?     @db.Text
+  estado          EstadoTurno @default(PENDIENTE)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+enum EstadoTurno {
+  PENDIENTE
+  CONFIRMADO
+  COMPLETADO
+  CANCELADO
+}
+
+model DiaBloqueado {
+  id        String   @id @default(cuid())
+  fecha     DateTime @unique
+  motivo    String?
+  createdAt DateTime @default(now())
+}
+
+// ==================== PROMOCIONES ====================
+
+model Promocion {
+  id          String   @id @default(cuid())
+  titulo      String
+  descripcion String?
+  imagen      String?
+  link        String?
+  fechaInicio DateTime
+  fechaFin    DateTime
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ==================== CUPONES ====================
+
+model Cupon {
+  id           String    @id @default(cuid())
+  codigo       String    @unique
+  descripcion  String?
+  porcentaje   Float
+  montoMaximo  Float?
+  montoMinimo  Float?
+  usosMaximos  Int?
+  usosActuales Int       @default(0)
+  fechaInicio  DateTime  @default(now())
+  fechaFin     DateTime?
+  activo       Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+// ==================== CONFIGURACION ====================
+
+model SiteConfig {
+  id                   String   @id @default("singleton")
+  nombre               String   @default("Motos Fernandez")
+  descripcion          String?
+  whatsapp             String   @default("5492915788671")
+  email                String   @default("info@motosfernandez.com.ar")
+  direccion            String   @default("Brown 1052, Bahia Blanca")
+  horarioLV            String   @default("8:30 - 12:30 / 15:30 - 19:30")
+  horarioSab           String   @default("9:00 - 13:00")
+  mercadopagoHabilitado Boolean @default(true)
+  enviosHabilitados    Boolean  @default(true)
+  retiroHabilitado     Boolean  @default(true)
+  updatedAt            DateTime @updatedAt
+}
+
+// ==================== CONTACTO ====================
+
+model ContactForm {
+  id        String   @id @default(cuid())
+  nombre    String
+  email     String
+  telefono  String?
+  mensaje   String   @db.Text
+  leido     Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ==================== FINANCIACION ====================
+
+model PlanFinanciacion {
+  id             String   @id @default(cuid())
+  nombre         String   // Ej: "12 cuotas", "24 cuotas con tarjeta"
+  tipo           String   @default("PROPIA")  // "PROPIA" | "TARJETA"
+  cuotas         Int
+  coeficiente    Float    // Multiplicador mensual: cuota = monto_financiado × coeficiente
+  anticipoMinimo Float    @default(0)  // % mínimo de anticipo para este plan
+  descripcion    String?
+  activo         Boolean  @default(true)
+  orden          Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ==================== CONFIGURACION ====================
+
+model Configuracion {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String @db.Text
+}
+
+// ==================== ANALYTICS ====================
+
+model Visita {
+  id        String   @id @default(cuid())
+  pagina    String
+  referrer  String?
+  device    String?
+  browser   String?
+  ip        String?
+  ciudad    String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([pagina])
+}
+
+model Conversion {
+  id        String   @id @default(cuid())
+  evento    String
+  valor     Float?
+  detalle   String?
+  fuente    String?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([evento])
+}

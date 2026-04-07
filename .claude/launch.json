@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "motos-fernandez-dev",
+      "runtimeExecutable": "/usr/local/bin/node",
+      "runtimeArgs": ["/Users/juanfri/start-motos-dev.js"],
+      "port": 3000
+    }
+  ]
+}
+

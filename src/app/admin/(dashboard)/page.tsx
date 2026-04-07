@@ -1,0 +1,440 @@
+import Link from "next/link"
+import { prisma } from "@/lib/prisma"
+import { formatPrice, ESTADO_PEDIDO_LABELS, TEMPERATURA_LABELS, ORIGEN_LABELS } from "@/lib/constants"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Package, CalendarClock, Users, DollarSign } from "lucide-react"
+
+export const dynamic = "force-dynamic"
+
+// Argentina timezone offset: UTC-3
+const AR_OFFSET_MS = -3 * 60 * 60 * 1000
+
+function toArgentinaDate(date: Date): Date {
+  return new Date(date.getTime() + AR_OFFSET_MS)
+}
+
+// Colors per origen for the pills
+const ORIGEN_COLORS: Record<string, string> = {
+  WEB:          "bg-blue-100 text-blue-800",
+  WHATSAPP:     "bg-green-100 text-green-800",
+  INSTAGRAM:    "bg-pink-100 text-pink-800",
+  MARKETPLACE:  "bg-orange-100 text-orange-800",
+  MERCADOLIBRE: "bg-yellow-100 text-yellow-800",
+  TELEFONO:     "bg-purple-100 text-purple-800",
+  PRESENCIAL:   "bg-gray-100 text-gray-800",
+}
+
+// Bar-only bg color (must be a full standalone class for Tailwind JIT)
+const ORIGEN_BAR_COLOR: Record<string, string> = {
+  WEB:          "bg-blue-400",
+  WHATSAPP:     "bg-green-400",
+  INSTAGRAM:    "bg-pink-400",
+  MARKETPLACE:  "bg-orange-400",
+  MERCADOLIBRE: "bg-yellow-400",
+  TELEFONO:     "bg-purple-400",
+  PRESENCIAL:   "bg-gray-400",
+}
+
+type VentaMes = {
+  mes: string      // "YYYY-MM"
+  total: bigint
+  cantidad: bigint
+}
+
+type LeadOrigen = {
+  origen: string
+  cantidad: bigint
+}
+
+export default async function AdminDashboardPage() {
+  // Use Argentina local time for "today" and "this month"
+  const nowUTC = new Date()
+  const nowAR = toArgentinaDate(nowUTC)
+
+  // Start of today in AR, converted back to UTC for DB queries
+  const todayAR = new Date(nowAR)
+  todayAR.setHours(0, 0, 0, 0)
+  const todayUTC = new Date(todayAR.getTime() - AR_OFFSET_MS)
+
+  // Start of this month in AR, converted back to UTC
+  const monthStartAR = new Date(nowAR.getFullYear(), nowAR.getMonth(), 1, 0, 0, 0, 0)
+  const monthStartUTC = new Date(monthStartAR.getTime() - AR_OFFSET_MS)
+
+  // 7 days ago UTC
+  const weekAgoUTC = new Date(nowUTC)
+  weekAgoUTC.setDate(weekAgoUTC.getDate() - 7)
+  weekAgoUTC.setHours(0, 0, 0, 0)
+
+  // 6 months ago (first day, AR → UTC)
+  const sixMonthsAgoAR = new Date(nowAR.getFullYear(), nowAR.getMonth() - 5, 1, 0, 0, 0, 0)
+  const sixMonthsAgoUTC = new Date(sixMonthsAgoAR.getTime() - AR_OFFSET_MS)
+
+  const [
+    pedidosHoy,
+    turnosPendientes,
+    leadsNuevos,
+    ventasMes,
+    recentOrders,
+    leadsSinContactar,
+    ventasPorMesRaw,
+    leadsPorOrigenRaw,
+  ] = await Promise.all([
+    prisma.pedido.count({
+      where: { createdAt: { gte: todayUTC } },
+    }),
+    prisma.turno.count({
+      where: { estado: "PENDIENTE" },
+    }),
+    prisma.lead.count({
+      where: { createdAt: { gte: weekAgoUTC }, temperatura: "NUEVO" },
+    }),
+    prisma.pedido.aggregate({
+      _sum: { total: true },
+      where: {
+        estado: { in: ["PAGO_CONFIRMADO", "PREPARANDO", "ENVIADO", "ENTREGADO"] },
+        createdAt: { gte: monthStartUTC },
+      },
+    }),
+    prisma.pedido.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+      include: { items: { include: { producto: true } } },
+    }),
+    prisma.lead.findMany({
+      take: 5,
+      where: { temperatura: "NUEVO" },
+      orderBy: { createdAt: "desc" },
+      include: { modelo: true },
+    }),
+    // Monthly sales: group by month in AR timezone (UTC-3)
+    prisma.$queryRaw<VentaMes[]>`
+      SELECT
+        TO_CHAR("createdAt" AT TIME ZONE 'America/Argentina/Buenos_Aires', 'YYYY-MM') AS mes,
+        SUM(total)::bigint AS total,
+        COUNT(*)::bigint AS cantidad
+      FROM "Pedido"
+      WHERE
+        "createdAt" >= ${sixMonthsAgoUTC}
+        AND estado IN ('PAGO_CONFIRMADO', 'PREPARANDO', 'ENVIADO', 'ENTREGADO')
+      GROUP BY mes
+      ORDER BY mes ASC
+    `,
+    // Leads by origen
+    prisma.$queryRaw<LeadOrigen[]>`
+      SELECT
+        origen,
+        COUNT(*)::bigint AS cantidad
+      FROM "Lead"
+      GROUP BY origen
+      ORDER BY cantidad DESC
+    `,
+  ])
+
+  // Build all 6 months array (including months with 0 sales)
+  const mesesEspanol = [
+    "Ene", "Feb", "Mar", "Abr", "May", "Jun",
+    "Jul", "Ago", "Sep", "Oct", "Nov", "Dic",
+  ]
+
+  const ventasMap = new Map(ventasPorMesRaw.map((v) => [v.mes, Number(v.total)]))
+
+  const ventasPorMes = Array.from({ length: 6 }, (_, i) => {
+    const d = new Date(nowAR.getFullYear(), nowAR.getMonth() - 5 + i, 1)
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
+    return {
+      mes: mesesEspanol[d.getMonth()],
+      key,
+      total: ventasMap.get(key) ?? 0,
+    }
+  })
+
+  const maxVentas = Math.max(...ventasPorMes.map((v) => v.total), 1)
+
+  // Leads por origen (convert bigint to number)
+  const leadsPorOrigen = leadsPorOrigenRaw.map((l) => ({
+    origen: l.origen,
+    cantidad: Number(l.cantidad),
+  }))
+  const totalLeads = leadsPorOrigen.reduce((acc, l) => acc + l.cantidad, 0)
+
+  const stats = [
+    {
+      label: "Pedidos hoy",
+      value: pedidosHoy,
+      icon: Package,
+      color: "text-blue-600 bg-blue-50",
+    },
+    {
+      label: "Turnos pendientes",
+      value: turnosPendientes,
+      icon: CalendarClock,
+      color: "text-orange-600 bg-orange-50",
+    },
+    {
+      label: "Leads nuevos (semana)",
+      value: leadsNuevos,
+      icon: Users,
+      color: "text-green-600 bg-green-50",
+    },
+    {
+      label: "Ventas del mes",
+      value: formatPrice(ventasMes._sum.total ?? 0),
+      icon: DollarSign,
+      color: "text-[#6B4F7A] bg-purple-50",
+    },
+  ]
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Resumen general de Motos Fernandez
+        </p>
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat) => (
+          <Card key={stat.label}>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-lg ${stat.color}`}
+                >
+                  <stat.icon className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{stat.value}</p>
+                  <p className="text-xs text-gray-500">{stat.label}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Recent Orders */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Pedidos recientes</CardTitle>
+              <Link
+                href="/admin/pedidos"
+                className="text-sm text-[#6B4F7A] hover:underline"
+              >
+                Ver todos
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {recentOrders.length === 0 ? (
+              <p className="text-sm text-gray-500 py-4 text-center">
+                No hay pedidos aun
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {recentOrders.map((pedido) => {
+                  const estadoInfo = ESTADO_PEDIDO_LABELS[pedido.estado]
+                  return (
+                    <Link
+                      key={pedido.id}
+                      href={`/admin/pedidos/${pedido.id}`}
+                      className="flex items-center justify-between rounded-lg border p-3 hover:bg-gray-50 transition-colors"
+                    >
+                      <div>
+                        <p className="text-sm font-medium">
+                          #{pedido.numero} - {pedido.nombre} {pedido.apellido}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {pedido.items.length} item(s) -{" "}
+                          {pedido.createdAt.toLocaleDateString("es-AR")}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-semibold">
+                          {formatPrice(pedido.total)}
+                        </p>
+                        <Badge
+                          variant="secondary"
+                          className={`text-xs ${estadoInfo?.color || ""}`}
+                        >
+                          {estadoInfo?.label || pedido.estado}
+                        </Badge>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Leads sin contactar */}
+        <Card>
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">Leads sin contactar</CardTitle>
+              <Link
+                href="/admin/crm"
+                className="text-sm text-[#6B4F7A] hover:underline"
+              >
+                Ver todos
+              </Link>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {leadsSinContactar.length === 0 ? (
+              <p className="text-sm text-gray-500 py-4 text-center">
+                No hay leads nuevos
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {leadsSinContactar.map((lead) => {
+                  const tempInfo = TEMPERATURA_LABELS[lead.temperatura]
+                  return (
+                    <Link
+                      key={lead.id}
+                      href={`/admin/crm/${lead.id}`}
+                      className="flex items-center justify-between rounded-lg border p-3 hover:bg-gray-50 transition-colors"
+                    >
+                      <div>
+                        <p className="text-sm font-medium">
+                          {lead.nombre} {lead.apellido || ""}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          {lead.telefono || lead.email || "Sin contacto"} -{" "}
+                          {lead.modelo?.nombre || lead.modeloInteres || "Sin modelo"}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <Badge
+                          variant="secondary"
+                          className={`text-xs ${tempInfo?.color || ""}`}
+                        >
+                          {tempInfo?.label}
+                        </Badge>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {lead.createdAt.toLocaleDateString("es-AR")}
+                        </p>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Analytics row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {/* Ventas por mes - CSS bar chart */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Ventas por mes</CardTitle>
+            <p className="text-xs text-gray-500">Ultimos 6 meses (pedidos confirmados)</p>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {ventasPorMes.map((v) => {
+                const pct = maxVentas > 0 ? Math.round((v.total / maxVentas) * 100) : 0
+                return (
+                  <div key={v.key} className="flex items-center gap-3">
+                    {/* Month label */}
+                    <span className="w-8 text-xs font-medium text-gray-600 shrink-0">
+                      {v.mes}
+                    </span>
+                    {/* Bar container */}
+                    <div className="flex-1 h-7 bg-gray-100 rounded-md overflow-hidden">
+                      <div
+                        className="h-full rounded-md transition-all duration-500 flex items-center px-2"
+                        style={{
+                          width: pct > 0 ? `${Math.max(pct, 4)}%` : "0%",
+                          backgroundColor: "#6B4F7A",
+                        }}
+                      >
+                        {pct >= 25 && (
+                          <span className="text-[10px] text-white font-medium truncate">
+                            {formatPrice(v.total)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    {/* Amount outside bar when bar is short */}
+                    <span className="w-24 text-right text-xs font-semibold text-gray-700 shrink-0">
+                      {v.total > 0 ? formatPrice(v.total) : <span className="text-gray-400">—</span>}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Leads por origen */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg">Leads por origen</CardTitle>
+            <p className="text-xs text-gray-500">
+              Total: {totalLeads} lead{totalLeads !== 1 ? "s" : ""}
+            </p>
+          </CardHeader>
+          <CardContent>
+            {leadsPorOrigen.length === 0 ? (
+              <p className="text-sm text-gray-500 py-4 text-center">
+                No hay leads registrados
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {/* Pills row */}
+                <div className="flex flex-wrap gap-2">
+                  {leadsPorOrigen.map((l) => {
+                    const color = ORIGEN_COLORS[l.origen] ?? "bg-gray-100 text-gray-800"
+                    const label = ORIGEN_LABELS[l.origen]?.label ?? l.origen
+                    return (
+                      <span
+                        key={l.origen}
+                        className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${color}`}
+                      >
+                        {label}
+                        <span className="rounded-full bg-white/60 px-1.5 py-0.5 text-xs font-bold">
+                          {l.cantidad}
+                        </span>
+                      </span>
+                    )
+                  })}
+                </div>
+
+                {/* Horizontal bar breakdown */}
+                <div className="space-y-2 pt-1">
+                  {leadsPorOrigen.map((l) => {
+                    const pct = totalLeads > 0 ? Math.round((l.cantidad / totalLeads) * 100) : 0
+                    const barColor = ORIGEN_BAR_COLOR[l.origen] ?? "bg-gray-400"
+                    const label = ORIGEN_LABELS[l.origen]?.label ?? l.origen
+                    return (
+                      <div key={l.origen} className="flex items-center gap-2 text-xs">
+                        <span className="w-24 text-gray-600 truncate shrink-0">{label}</span>
+                        <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full rounded-full ${barColor}`}
+                            style={{ width: `${Math.max(pct, 2)}%` }}
+                          />
+                        </div>
+                        <span className="w-8 text-right text-gray-500 shrink-0">{pct}%</span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+      </div>
+    </div>
+  )
+}
