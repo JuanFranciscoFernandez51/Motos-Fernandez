@@ -91,22 +91,22 @@ export default async function HomePage() {
           <div className="max-w-3xl">
             <p className="inline-flex items-center gap-2 text-[#8B6F9A] font-semibold text-sm uppercase tracking-widest mb-5 font-body">
               <span className="size-1.5 rounded-full bg-[#8B6F9A] inline-block" />
-              Concesionaria multimarca &middot; {BUSINESS.city}
+              Concesionaria multimarca · {BUSINESS.city}
             </p>
             <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold text-white leading-[1.1] font-heading">
-              Tu pr&oacute;xima aventura
-              <span className="block text-[#9B59B6] mt-1">empieza aqu&iacute;</span>
+              Tu próxima aventura
+              <span className="block text-[#9B59B6] mt-1">empieza aquí</span>
             </h1>
             <p className="mt-6 text-lg text-gray-400 max-w-xl font-body leading-relaxed">
-              M&aacute;s de {BUSINESS.yearsInBusiness} a&ntilde;os ayudando a elegir el veh&iacute;culo
-              perfecto. Visit&aacute;nos en {BUSINESS.city} y conoc&eacute; todas las marcas.
+              Más de {BUSINESS.yearsInBusiness} años ayudando a elegir el vehículo perfecto.
+              Visitanos en {BUSINESS.city} y conocé todas las marcas.
             </p>
             <div className="mt-10 flex flex-wrap gap-4">
               <Link
                 href="/modelos"
                 className="inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-8 py-4 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors shadow-lg shadow-[#6B4F7A]/30"
               >
-                Ver cat&aacute;logo
+                Ver catálogo
                 <ArrowRight className="size-4" />
               </Link>
               <Link
@@ -122,7 +122,7 @@ export default async function HomePage() {
             <div className="mt-16 flex flex-wrap gap-10">
               <div>
                 <p className="text-4xl font-extrabold text-white font-heading">+{BUSINESS.yearsInBusiness}</p>
-                <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">A&ntilde;os</p>
+                <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Años</p>
               </div>
               <div className="w-px bg-white/10 self-stretch" />
               <div>
@@ -144,10 +144,10 @@ export default async function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading">
-              &iquest;Qu&eacute; est&aacute;s buscando?
+              ¿Qué estás buscando?
             </h2>
             <p className="mt-3 text-gray-500 font-body">
-              Exploramos todo tipo de veh&iacute;culos para tu estilo de vida
+              Exploramos todo tipo de vehículos para tu estilo de vida
             </p>
           </div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
@@ -181,7 +181,7 @@ export default async function HomePage() {
                 Modelos destacados
               </h2>
               <p className="mt-3 text-gray-500 font-body">
-                Los m&aacute;s elegidos por nuestros clientes
+                Los más elegidos por nuestros clientes
               </p>
             </div>
             <Link
@@ -238,7 +238,7 @@ export default async function HomePage() {
                           {model.precio ? formatPrice(model.precio) : "Consultar"}
                         </p>
                         <span className="text-xs font-semibold text-[#6B4F7A] group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-                          Ver m&aacute;s <ArrowRight className="size-3" />
+                          Ver más <ArrowRight className="size-3" />
                         </span>
                       </div>
                     </div>
@@ -259,13 +259,13 @@ export default async function HomePage() {
             <div className="text-center py-16 rounded-2xl bg-white border border-gray-100">
               <Bike className="size-12 mx-auto text-gray-200 mb-4" />
               <p className="text-gray-400 font-body">
-                Pr&oacute;ximamente cargamos nuestro cat&aacute;logo de modelos.
+                Próximamente cargamos nuestro catálogo de modelos.
               </p>
               <Link
                 href="/contacto"
                 className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#6B4F7A] hover:text-[#9B59B6] transition-colors"
               >
-                Consult&aacute;nos directamente
+                Consultános directamente
                 <ArrowRight className="size-4" />
               </Link>
             </div>
@@ -287,8 +287,8 @@ export default async function HomePage() {
                 Financiamos tu moto
               </h2>
               <p className="mt-4 text-lg text-white/80 font-body leading-relaxed">
-                Planes de financiaci&oacute;n a medida. Financiaci&oacute;n propia, con banco o
-                tarjeta. Entreg&aacute; lo m&iacute;nimo y llev&aacute;te tu veh&iacute;culo hoy.
+                Planes de financiación a medida. Financiación propia, con banco o
+                tarjeta. Entregá lo mínimo y lleváte tu vehículo hoy.
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 shrink-0">
@@ -296,7 +296,7 @@ export default async function HomePage() {
                 href="/financiacion"
                 className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-gray-50 transition-colors shadow-lg"
               >
-                Ver planes de financiaci&oacute;n
+                Ver planes de financiación
                 <ArrowRight className="size-4" />
               </Link>
               <Link
@@ -318,11 +318,11 @@ export default async function HomePage() {
               Desde {BUSINESS.yearFounded}
             </p>
             <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading">
-              &iquest;Por qu&eacute; elegirnos?
+              ¿Por qué elegirnos?
             </h2>
             <p className="mt-3 text-gray-500 font-body max-w-lg mx-auto">
-              M&aacute;s de {BUSINESS.yearsInBusiness} a&ntilde;os de experiencia nos respaldan. Somos
-              una empresa familiar con ra&iacute;ces en {BUSINESS.city}.
+              Más de {BUSINESS.yearsInBusiness} años de experiencia nos respaldan. Somos
+              una empresa familiar con raíces en {BUSINESS.city}.
             </p>
           </div>
 
@@ -333,11 +333,11 @@ export default async function HomePage() {
                 <ShieldCheck className="size-7" />
               </div>
               <h3 className="text-base font-bold text-[#1A1A1A] font-heading mb-2">
-                {BUSINESS.yearsInBusiness} a&ntilde;os de experiencia
+                {BUSINESS.yearsInBusiness} años de experiencia
               </h3>
               <p className="text-sm text-gray-400 font-body leading-relaxed">
                 Desde {BUSINESS.yearFounded} ayudamos a miles de clientes a encontrar su
-                veh&iacute;culo ideal con asesoramiento personalizado.
+                vehículo ideal con asesoramiento personalizado.
               </p>
             </div>
 
@@ -347,10 +347,10 @@ export default async function HomePage() {
                 <CreditCard className="size-7" />
               </div>
               <h3 className="text-base font-bold text-[#1A1A1A] font-heading mb-2">
-                Financiaci&oacute;n propia
+                Financiación propia
               </h3>
               <p className="text-sm text-gray-400 font-body leading-relaxed">
-                Planes flexibles sin necesidad de banco. Financiaci&oacute;n propia, tarjeta o
+                Planes flexibles sin necesidad de banco. Financiación propia, tarjeta o
                 acuerdo con entidades financieras.
               </p>
             </div>
@@ -361,10 +361,10 @@ export default async function HomePage() {
                 <Wrench className="size-7" />
               </div>
               <h3 className="text-base font-bold text-[#1A1A1A] font-heading mb-2">
-                Servicio t&eacute;cnico
+                Servicio técnico
               </h3>
               <p className="text-sm text-gray-400 font-body leading-relaxed">
-                Taller oficial con t&eacute;cnicos especializados. Service, reparaciones y
+                Taller oficial con técnicos especializados. Service, reparaciones y
                 repuestos originales para todas las marcas.
               </p>
             </div>
@@ -378,7 +378,7 @@ export default async function HomePage() {
                 Stock permanente
               </h3>
               <p className="text-sm text-gray-400 font-body leading-relaxed">
-                M&aacute;s de 50 marcas disponibles. Amplio stock de motos, cuatriciclos, UTVs
+                Más de 50 marcas disponibles. Amplio stock de motos, cuatriciclos, UTVs
                 y motos de agua para entrega inmediata.
               </p>
             </div>
@@ -453,7 +453,7 @@ export default async function HomePage() {
                         </p>
                       )}
                       <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-[#6B4F7A] group-hover:gap-2 transition-all">
-                        Leer m&aacute;s <ArrowRight className="size-3" />
+                        Leer más <ArrowRight className="size-3" />
                       </span>
                     </div>
                   </Link>
@@ -472,7 +472,7 @@ export default async function HomePage() {
           ) : (
             <div className="text-center py-16 rounded-2xl bg-white border border-gray-100">
               <p className="text-gray-400 font-body">
-                Pr&oacute;ximamente publicamos nuestras primeras noticias.
+                Próximamente publicamos nuestras primeras noticias.
               </p>
               <Link
                 href="/noticias"
@@ -489,10 +489,10 @@ export default async function HomePage() {
       <section className="py-20 bg-[#1A1A1A]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white font-heading">
-            &iquest;Listo para dar el siguiente paso?
+            ¿Listo para dar el siguiente paso?
           </h2>
           <p className="mt-4 text-gray-400 max-w-lg mx-auto font-body">
-            Visit&aacute;nos en {BUSINESS.address} o contact&aacute;nos por WhatsApp.
+            Visitános en {BUSINESS.address} o contactános por WhatsApp.
             Estamos para ayudarte.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
@@ -500,7 +500,7 @@ export default async function HomePage() {
               href="/contacto"
               className="inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-7 py-3.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors shadow-lg shadow-[#6B4F7A]/30"
             >
-              Contact&aacute;nos
+              Contactános
             </Link>
             <Link
               href="/servicio-tecnico"

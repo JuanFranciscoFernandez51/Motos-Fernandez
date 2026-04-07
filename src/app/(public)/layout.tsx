@@ -48,9 +48,9 @@ function Navbar() {
             <Image
               src="/images/logo-horizontal-blanco.svg"
               alt={BUSINESS.name}
-              width={180}
-              height={40}
-              className="h-8 w-auto"
+              width={200}
+              height={48}
+              className="h-10 w-auto"
               priority
             />
           </Link>
@@ -66,12 +66,6 @@ function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/modelos"
-              className="ml-4 inline-flex items-center justify-center rounded-lg bg-[#6B4F7A] px-5 py-2 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
-            >
-              Ver Catalogo
-            </Link>
             <CartIcon />
           </div>
 
@@ -101,13 +95,6 @@ function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <Link
-              href="/modelos"
-              className="mt-2 block rounded-lg bg-[#6B4F7A] px-3 py-2.5 text-center text-base font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
-              onClick={() => setMobileOpen(false)}
-            >
-              Ver Catalogo
-            </Link>
           </div>
         </div>
       )}
@@ -125,9 +112,9 @@ function Footer() {
             <Image
               src="/images/logo-horizontal-blanco.svg"
               alt={BUSINESS.name}
-              width={180}
-              height={40}
-              className="h-8 w-auto mb-4"
+              width={200}
+              height={48}
+              className="h-10 w-auto mb-4"
             />
             <p className="text-sm text-gray-400 leading-relaxed">
               {BUSINESS.slogan}. Concesionaria multimarca en {BUSINESS.city} con

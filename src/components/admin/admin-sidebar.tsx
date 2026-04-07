@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
 import { useState } from "react"
@@ -86,16 +87,22 @@ export function AdminSidebar({ userName }: { userName: string }) {
   const sidebarContent = (mobile = false) => (
     <div className="flex h-full flex-col bg-neutral-950">
       <div className="flex items-center gap-3 border-b border-neutral-800 px-4 py-4">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#6B4F7A] text-white font-bold text-sm shrink-0">
-          MF
-        </div>
-        {(!collapsed || mobile) && (
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm text-neutral-100 truncate">
-              Motos Fernandez
-            </p>
-            <p className="text-xs text-neutral-500 truncate">Admin Panel</p>
-          </div>
+        {collapsed && !mobile ? (
+          <Image
+            src="/images/monograma-blanco-violeta.svg"
+            alt="MF"
+            width={36}
+            height={36}
+            className="h-9 w-9 shrink-0"
+          />
+        ) : (
+          <Image
+            src="/images/logo-horizontal-blanco.svg"
+            alt="Motos Fernandez"
+            width={160}
+            height={36}
+            className="h-9 w-auto flex-1 min-w-0"
+          />
         )}
         {!mobile && (
           <Button
@@ -175,10 +182,13 @@ export function AdminSidebar({ userName }: { userName: string }) {
             {sidebarContent(true)}
           </SheetContent>
         </Sheet>
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#6B4F7A] text-white font-bold text-xs">
-          MF
-        </div>
-        <span className="font-semibold text-sm text-neutral-100">Motos Fernandez</span>
+        <Image
+          src="/images/logo-horizontal-blanco.svg"
+          alt="Motos Fernandez"
+          width={160}
+          height={32}
+          className="h-8 w-auto"
+        />
       </div>
 
       {/* Desktop sidebar */}
