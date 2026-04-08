@@ -2,6 +2,7 @@ export const dynamic = "force-dynamic"
 
 import Link from "next/link"
 import { BUSINESS, getWhatsAppUrl, WHATSAPP_MESSAGES } from "@/lib/constants"
+import { TrackVisita } from "@/components/public/track-visita"
 import {
   CreditCard,
   MessageCircle,
@@ -54,6 +55,7 @@ const FAQ = [
 export default function FinanciacionPage() {
   return (
     <>
+      <TrackVisita pagina="financiacion" />
       {/* Hero */}
       <section className="relative bg-gradient-to-br from-[#6B4F7A] to-[#9B59B6] py-20 overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-10" />

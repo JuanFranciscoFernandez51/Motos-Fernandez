@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { BUSINESS, HORARIOS, getWhatsAppUrl, WHATSAPP_MESSAGES } from "@/lib/constants"
+import { TrackVisita } from "@/components/public/track-visita"
 import {
   Send,
   MapPin,
@@ -47,6 +48,7 @@ export default function ContactoPage() {
 
   return (
     <>
+      <TrackVisita pagina="contacto" />
       {/* Hero */}
       <section className="bg-[#1A1A1A] py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

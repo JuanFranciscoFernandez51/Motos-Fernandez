@@ -7,6 +7,7 @@ import {
   getWhatsAppUrl,
   WHATSAPP_MESSAGES,
 } from "@/lib/constants"
+import { TrackVisita } from "@/components/public/track-visita"
 import {
   Wrench,
   MessageCircle,
@@ -67,6 +68,7 @@ export default function ServicioTecnicoPage() {
 
   return (
     <>
+      <TrackVisita pagina="servicio-tecnico" />
       {/* Hero */}
       <section className="bg-[#1A1A1A] py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

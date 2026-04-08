@@ -7,6 +7,7 @@ import { ShoppingBag, Trash2, Plus, Minus, ArrowRight } from "lucide-react"
 import { useCart } from "@/lib/cart-context"
 import { formatPrice } from "@/lib/constants"
 import { trackViewContent, trackInitiateCheckout } from "@/lib/pixel-events"
+import { TrackVisita } from "@/components/public/track-visita"
 
 export default function CarritoPage() {
   const { items, removeItem, updateQuantity, totalItems, totalPrice } = useCart()
@@ -20,6 +21,7 @@ export default function CarritoPage() {
 
   return (
     <div className="bg-[#F0F0F0] min-h-screen">
+      <TrackVisita pagina="carrito" />
       {/* Hero */}
       <div className="bg-[#1A1A1A] py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

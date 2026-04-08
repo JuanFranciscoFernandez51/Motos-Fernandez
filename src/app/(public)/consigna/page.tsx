@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Link from "next/link"
 import { BUSINESS, getWhatsAppUrl } from "@/lib/constants"
+import { TrackVisita } from "@/components/public/track-visita"
 import {
   CheckCircle,
   Eye,
@@ -112,6 +113,7 @@ export default function ConsignaPage() {
 
   return (
     <>
+      <TrackVisita pagina="consigna" />
       {/* ===== HERO ===== */}
       <section className="relative bg-[#1A1A1A] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#6B4F7A]/25 via-[#6B4F7A]/8 to-transparent" />

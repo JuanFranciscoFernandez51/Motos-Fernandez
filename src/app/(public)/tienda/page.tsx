@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import { TiendaClient } from "./tienda-client"
+import { TrackVisita } from "@/components/public/track-visita"
 
 export const dynamic = "force-dynamic"
 
@@ -23,6 +24,7 @@ export default async function TiendaPage() {
 
   return (
     <div className="bg-[#F0F0F0] min-h-screen">
+      <TrackVisita pagina="tienda" />
       {/* Hero */}
       <section className="bg-[#1A1A1A] py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">

@@ -1,6 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { BUSINESS } from "@/lib/constants"
+import { TrackVisita } from "@/components/public/track-visita"
 import {
   Shield,
   Users,
@@ -81,6 +82,7 @@ const TIMELINE = [
 export default function NosotrosPage() {
   return (
     <>
+      <TrackVisita pagina="nosotros" />
       {/* Hero */}
       <section className="bg-[#1A1A1A] py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

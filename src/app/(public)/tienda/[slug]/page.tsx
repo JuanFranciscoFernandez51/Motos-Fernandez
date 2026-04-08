@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma"
 import { formatPrice, getWhatsAppUrl, BUSINESS } from "@/lib/constants"
 import { ShoppingBag, ArrowLeft, MessageCircle } from "lucide-react"
 import { AddToCartButton } from "./add-to-cart-button"
+import { TrackVisita } from "@/components/public/track-visita"
 
 export const dynamic = "force-dynamic"
 
@@ -39,6 +40,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
 
   return (
     <div className="bg-[#F0F0F0] min-h-screen">
+      <TrackVisita pagina="producto-detalle" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <Link href="/tienda" className="inline-flex items-center gap-2 text-sm text-[#6B4F7A] hover:text-[#9B59B6] mb-6">

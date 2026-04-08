@@ -3,6 +3,7 @@ import Image from "next/image"
 import { prisma } from "@/lib/prisma"
 import { BUSINESS } from "@/lib/constants"
 import { Newspaper } from "lucide-react"
+import { TrackVisita } from "@/components/public/track-visita"
 import type { Metadata } from "next"
 
 export const metadata: Metadata = {
@@ -22,6 +23,7 @@ export default async function NoticiasPage() {
 
   return (
     <>
+      <TrackVisita pagina="noticias" />
       {/* Hero */}
       <div className="bg-[#1A1A1A] py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">

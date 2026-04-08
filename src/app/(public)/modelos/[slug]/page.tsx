@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
+import { TrackVisita } from "@/components/public/track-visita"
 import {
   BUSINESS,
   formatPrice,
@@ -96,6 +97,7 @@ export default async function ModeloDetailPage({ params }: Props) {
 
   return (
     <>
+      <TrackVisita pagina="modelo-detalle" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

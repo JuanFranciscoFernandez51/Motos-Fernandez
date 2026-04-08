@@ -2,6 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { prisma } from "@/lib/prisma"
 import { formatPrice, CATEGORIAS_VEHICULO, CATEGORIA_VEHICULO_LABELS } from "@/lib/constants"
+import { TrackVisita } from "@/components/public/track-visita"
 import { Bike, Search } from "lucide-react"
 import type { Metadata } from "next"
 import { CatalogoClient } from "./catalogo-client"
@@ -43,6 +44,7 @@ export default async function ModelosPage() {
 
   return (
     <>
+      <TrackVisita pagina="catalogo" />
       {/* Hero */}
       <section className="bg-[#1A1A1A] py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
