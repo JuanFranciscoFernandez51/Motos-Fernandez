@@ -47,7 +47,7 @@ function Navbar() {
           {/* Logo - monograma */}
           <Link href="/" className="flex-shrink-0 mr-4">
             <Image
-              src="/images/monograma-negro-blanco.svg"
+              src="/images/monograma-blanco-transparente.svg"
               alt={BUSINESS.name}
               width={40}
               height={40}
