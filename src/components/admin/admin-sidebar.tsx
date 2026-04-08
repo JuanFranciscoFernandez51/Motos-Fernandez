@@ -89,19 +89,19 @@ export function AdminSidebar({ userName }: { userName: string }) {
       <div className="flex items-center gap-3 border-b border-neutral-800 px-4 py-4">
         {collapsed && !mobile ? (
           <Image
-            src="/images/monograma-blanco-violeta.svg"
+            src="/images/logo-clasico-transparente.png"
             alt="MF"
-            width={36}
-            height={36}
-            className="h-9 w-9 shrink-0"
+            width={160}
+            height={113}
+            className="h-9 w-auto shrink-0 brightness-0 invert"
           />
         ) : (
           <Image
-            src="/images/logo-horizontal-blanco.svg"
+            src="/images/logo-clasico-transparente.png"
             alt="Motos Fernandez"
             width={160}
-            height={36}
-            className="h-9 w-auto flex-1 min-w-0"
+            height={113}
+            className="h-9 w-auto flex-1 min-w-0 brightness-0 invert"
           />
         )}
         {!mobile && (
@@ -183,11 +183,11 @@ export function AdminSidebar({ userName }: { userName: string }) {
           </SheetContent>
         </Sheet>
         <Image
-          src="/images/logo-horizontal-blanco.svg"
+          src="/images/logo-clasico-transparente.png"
           alt="Motos Fernandez"
           width={160}
-          height={32}
-          className="h-8 w-auto"
+          height={113}
+          className="h-8 w-auto brightness-0 invert"
         />
       </div>
 

@@ -94,11 +94,11 @@ export default async function HomePage() {
             {/* Logo en hero */}
             <div className="mb-8">
               <Image
-                src="/images/logo-horizontal-blanco.svg"
+                src="/images/logo-clasico-transparente.png"
                 alt={BUSINESS.name}
-                width={220}
-                height={52}
-                className="h-12 w-auto opacity-90"
+                width={320}
+                height={226}
+                className="h-16 w-auto brightness-0 invert opacity-90"
                 priority
               />
             </div>
