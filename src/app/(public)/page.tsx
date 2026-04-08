@@ -316,7 +316,65 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ===== 5. POR QUE ELEGIRNOS ===== */}
+      {/* ===== 5. CONSIGNA DE MOTOS ===== */}
+      <section className="py-20 bg-[#F8F5FA]">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+            {/* Texto */}
+            <div className="flex-1 text-center lg:text-left">
+              <p className="text-[#8B6F9A] font-semibold text-sm uppercase tracking-widest mb-3">
+                Servicio exclusivo
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] font-heading mb-5">
+                ¿Querés vender tu moto?
+              </h2>
+              <p className="text-gray-500 font-body leading-relaxed max-w-lg mx-auto lg:mx-0">
+                Dejala en nuestro local y nosotros nos encargamos de todo. La exhibimos, la
+                publicamos en todos nuestros canales y te avisamos cuando se vende. Vos fijás el
+                precio, nosotros ponemos la vidriera y cobramos solo una comisión al cerrar.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-4 justify-center lg:justify-start">
+                <Link
+                  href="/consigna"
+                  className="inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-7 py-3.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors shadow-lg shadow-[#6B4F7A]/20"
+                >
+                  Conocer más
+                  <ArrowRight className="size-4" />
+                </Link>
+                <a
+                  href={`https://wa.me/5492915788671?text=${encodeURIComponent("Hola! Quiero consultar sobre el servicio de consigna de motos.")}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 hover:border-[#6B4F7A]/60 transition-colors"
+                >
+                  Consultar por WhatsApp
+                </a>
+              </div>
+            </div>
+
+            {/* Cards de beneficios mini -->*/}
+            <div className="flex-1 grid grid-cols-2 gap-4 w-full max-w-md">
+              {[
+                { icon: "🏍️", titulo: "Tasación gratis", desc: "Sin compromiso" },
+                { icon: "📱", titulo: "Máxima exposición", desc: "Web + redes + local" },
+                { icon: "💰", titulo: "Precio justo", desc: "Vos lo fijás" },
+                { icon: "✅", titulo: "Sin costos fijos", desc: "Comisión solo al vender" },
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="rounded-2xl border border-[#6B4F7A]/15 bg-white p-5 hover:border-[#6B4F7A]/35 hover:shadow-md transition-all duration-200"
+                >
+                  <div className="text-2xl mb-2">{item.icon}</div>
+                  <h3 className="text-sm font-bold text-[#1A1A1A] font-heading">{item.titulo}</h3>
+                  <p className="text-xs text-gray-400 mt-0.5">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== 6. POR QUE ELEGIRNOS ===== */}
       <section className="py-20 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
@@ -392,7 +450,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ===== 6. NOTICIAS RECIENTES ===== */}
+      {/* ===== 7. NOTICIAS RECIENTES ===== */}
       <section className="py-20 bg-[#F0F0F0]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-12">

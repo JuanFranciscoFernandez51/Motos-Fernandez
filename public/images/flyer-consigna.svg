@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <defs>
+    <!-- Fondo degradado principal -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A1A1A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3D2B4A;stop-opacity:1" />
+    </linearGradient>
+    <!-- Degradado círculo decorativo -->
+    <radialGradient id="circleGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#6B4F7A;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#6B4F7A;stop-opacity:0" />
+    </radialGradient>
+    <!-- Degradado línea separadora -->
+    <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#9B59B6;stop-opacity:0" />
+      <stop offset="30%" style="stop-color:#9B59B6;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#9B59B6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9B59B6;stop-opacity:0" />
+    </linearGradient>
+  </defs>
+
+  <!-- Fondo -->
+  <rect width="1080" height="1080" fill="url(#bgGrad)" />
+
+  <!-- Círculos decorativos de fondo -->
+  <circle cx="950" cy="180" r="350" fill="url(#circleGrad)" />
+  <circle cx="130" cy="900" r="280" fill="url(#circleGrad)" />
+
+  <!-- Grid pattern sutil (líneas) -->
+  <g opacity="0.04" stroke="#FFFFFF" stroke-width="1">
+    <line x1="0" y1="120" x2="1080" y2="120" />
+    <line x1="0" y1="240" x2="1080" y2="240" />
+    <line x1="0" y1="360" x2="1080" y2="360" />
+    <line x1="0" y1="480" x2="1080" y2="480" />
+    <line x1="0" y1="600" x2="1080" y2="600" />
+    <line x1="0" y1="720" x2="1080" y2="720" />
+    <line x1="0" y1="840" x2="1080" y2="840" />
+    <line x1="0" y1="960" x2="1080" y2="960" />
+    <line x1="120" y1="0" x2="120" y2="1080" />
+    <line x1="240" y1="0" x2="240" y2="1080" />
+    <line x1="360" y1="0" x2="360" y2="1080" />
+    <line x1="480" y1="0" x2="480" y2="1080" />
+    <line x1="600" y1="0" x2="600" y2="1080" />
+    <line x1="720" y1="0" x2="720" y2="1080" />
+    <line x1="840" y1="0" x2="840" y2="1080" />
+    <line x1="960" y1="0" x2="960" y2="1080" />
+  </g>
+
+  <!-- ===== HEADER: MONOGRAMA + NOMBRE ===== -->
+  <!-- Monograma MF (fondo violeta, letras blancas) -->
+  <rect x="72" y="70" width="76" height="76" rx="16" fill="#6B4F7A" />
+  <text x="110" y="128" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="38" fill="#FFFFFF" text-anchor="middle" letter-spacing="-1">MF</text>
+
+  <!-- Nombre empresa -->
+  <text x="165" y="104" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="22" fill="#FFFFFF" letter-spacing="3">MOTOS</text>
+  <text x="165" y="134" font-family="system-ui, -apple-system, sans-serif" font-weight="300" font-size="22" fill="#AAA9A9" letter-spacing="6">FERNANDEZ</text>
+
+  <!-- Línea separadora header -->
+  <rect x="72" y="170" width="936" height="1" fill="url(#lineGrad)" opacity="0.4" />
+
+  <!-- ===== CUERPO PRINCIPAL ===== -->
+
+  <!-- Etiqueta pill -->
+  <rect x="72" y="218" width="248" height="40" rx="20" fill="#6B4F7A" opacity="0.4" />
+  <rect x="72" y="218" width="248" height="40" rx="20" fill="none" stroke="#9B59B6" stroke-width="1.5" />
+  <!-- Ícono moto simplificado -->
+  <path d="M96 238 C96 238 100 232 106 232 L120 232 L126 238 L132 238 C136 238 140 242 140 246 C140 250 136 254 132 254 C128 254 124 250 124 246 L112 246 L108 250 C104 250 100 246 100 242 Z" fill="#9B59B6" />
+  <circle cx="96" cy="246" r="6" fill="none" stroke="#9B59B6" stroke-width="2" />
+  <circle cx="132" cy="246" r="6" fill="none" stroke="#9B59B6" stroke-width="2" />
+  <text x="152" y="244" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="15" fill="#9B59B6" letter-spacing="2">CONSIGNA DE MOTOS</text>
+
+  <!-- Título principal -->
+  <text x="72" y="360" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="112" fill="#FFFFFF" letter-spacing="-4">VENDÉ</text>
+  <text x="72" y="475" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="112" fill="#FFFFFF" letter-spacing="-4">TU MOTO</text>
+
+  <!-- Subtítulo -->
+  <text x="72" y="542" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="52" fill="#9B59B6" letter-spacing="-1">con nosotros</text>
+
+  <!-- Línea separadora central -->
+  <rect x="72" y="590" width="936" height="2" fill="url(#lineGrad)" opacity="0.6" />
+
+  <!-- ===== 3 BULLETS ===== -->
+
+  <!-- Bullet 1 -->
+  <!-- Check icon -->
+  <circle cx="100" cy="650" r="18" fill="#6B4F7A" opacity="0.3" />
+  <circle cx="100" cy="650" r="18" fill="none" stroke="#9B59B6" stroke-width="1.5" />
+  <path d="M91 650 L97 656 L110 643" stroke="#9B59B6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  <text x="132" y="643" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="22" fill="#FFFFFF">Tasación gratuita</text>
+  <text x="132" y="668" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="16" fill="#AAA9A9">Te asesoramos gratis para fijar el precio ideal</text>
+
+  <!-- Bullet 2 -->
+  <circle cx="100" cy="730" r="18" fill="#6B4F7A" opacity="0.3" />
+  <circle cx="100" cy="730" r="18" fill="none" stroke="#9B59B6" stroke-width="1.5" />
+  <path d="M91 730 L97 736 L110 723" stroke="#9B59B6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  <text x="132" y="723" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="22" fill="#FFFFFF">Máxima exposición</text>
+  <text x="132" y="748" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="16" fill="#AAA9A9">Local + web + redes + Marketplace</text>
+
+  <!-- Bullet 3 -->
+  <circle cx="100" cy="810" r="18" fill="#6B4F7A" opacity="0.3" />
+  <circle cx="100" cy="810" r="18" fill="none" stroke="#9B59B6" stroke-width="1.5" />
+  <path d="M91 810 L97 816 L110 803" stroke="#9B59B6" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+  <text x="132" y="803" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="22" fill="#FFFFFF">Cobrás al instante</text>
+  <text x="132" y="828" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="16" fill="#AAA9A9">Recibís el dinero cuando se vende, sin vueltas</text>
+
+  <!-- ===== CONTACTO - lado derecho ===== -->
+  <!-- Fondo card contacto -->
+  <rect x="660" y="610" width="348" height="250" rx="20" fill="#6B4F7A" opacity="0.15" />
+  <rect x="660" y="610" width="348" height="250" rx="20" fill="none" stroke="#6B4F7A" stroke-width="1.5" />
+
+  <!-- WhatsApp icon SVG path -->
+  <circle cx="700" cy="660" r="22" fill="#25D366" opacity="0.9" />
+  <path d="M700 643 C690.6 643 683 650.6 683 660 C683 663 683.8 665.8 685.2 668.2 L683 677 L692 674.8 C694.4 676.2 697.2 677 700 677 C709.4 677 717 669.4 717 660 C717 650.6 709.4 643 700 643 Z M700 674 C697.5 674 695.1 673.4 693 672.2 L692.3 671.8 L686.8 673.2 L688.2 667.8 L687.7 667 C686.5 664.9 685.8 662.5 685.8 660 C685.8 652.2 692.2 645.8 700 645.8 C707.8 645.8 714.2 652.2 714.2 660 C714.2 667.8 707.8 674 700 674 Z M707.5 663.5 C707.1 663.3 705 662.3 704.6 662.1 C704.2 661.9 703.9 661.8 703.6 662.2 C703.3 662.6 702.5 663.5 702.2 663.8 C702 664.1 701.7 664.1 701.3 663.9 C699.2 662.9 697.8 662.1 696.3 659.7 C695.9 659.1 696.6 659.1 697.3 657.8 C697.4 657.5 697.4 657.3 697.3 657 C697.2 656.8 696.5 654.7 696.2 653.9 C695.9 653.1 695.6 653.2 695.3 653.2 C695.1 653.2 694.8 653.2 694.5 653.2 C694.2 653.2 693.7 653.3 693.3 653.7 C692.9 654.1 691.8 655.2 691.8 657.3 C691.8 659.4 693.3 661.4 693.5 661.7 C693.7 662 696.5 666.3 700.8 668.1 C703.8 669.3 705 669.4 706.5 669.2 C707.4 669.1 709.3 668.1 709.7 667 C710.1 665.9 710.1 665 710 664.8 C709.8 664.5 709.5 664.4 707.5 663.5 Z" fill="#FFFFFF" />
+
+  <text x="732" y="655" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="18" fill="#FFFFFF">WhatsApp</text>
+  <text x="732" y="677" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="26" fill="#9B59B6">291 578-8671</text>
+
+  <!-- Separador -->
+  <rect x="680" y="710" width="308" height="1" fill="#6B4F7A" opacity="0.5" />
+
+  <!-- Instagram icon -->
+  <rect x="678" y="724" width="36" height="36" rx="10" fill="none" stroke="#AAA9A9" stroke-width="1.5" />
+  <circle cx="696" cy="742" r="7" fill="none" stroke="#AAA9A9" stroke-width="1.5" />
+  <circle cx="706" cy="731" r="2.5" fill="#AAA9A9" />
+
+  <text x="726" y="739" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="16" fill="#AAA9A9">Instagram</text>
+  <text x="726" y="759" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="18" fill="#FFFFFF">@motos.fernandez</text>
+
+  <!-- Separador -->
+  <rect x="680" y="790" width="308" height="1" fill="#6B4F7A" opacity="0.5" />
+
+  <!-- Dirección -->
+  <!-- Pin icon -->
+  <path d="M680 820 C680 812 687.2 806 696 806 C704.8 806 712 812 712 820 C712 826 696 842 696 842 C696 842 680 826 680 820 Z" fill="none" stroke="#AAA9A9" stroke-width="1.5" />
+  <circle cx="696" cy="820" r="4" fill="#AAA9A9" />
+
+  <text x="720" y="818" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="14" fill="#AAA9A9">Brown 1052</text>
+  <text x="720" y="836" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="14" fill="#FFFFFF">Bahía Blanca, Buenos Aires</text>
+
+  <!-- ===== FOOTER ===== -->
+  <rect x="0" y="900" width="1080" height="180" fill="#111111" />
+  <rect x="0" y="900" width="1080" height="2" fill="url(#lineGrad)" opacity="0.5" />
+
+  <!-- Footer izquierda: tagline -->
+  <text x="72" y="952" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="20" fill="#FFFFFF" letter-spacing="1">MOTOS FERNANDEZ</text>
+  <text x="72" y="978" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="15" fill="#AAA9A9">+40 años de confianza sobre dos ruedas</text>
+  <text x="72" y="1030" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="13" fill="#4E4B48">www.motosfernandez.com.ar</text>
+
+  <!-- Footer derecha: CTA pill -->
+  <rect x="760" y="920" width="248" height="60" rx="30" fill="#6B4F7A" />
+  <text x="884" y="945" font-family="system-ui, -apple-system, sans-serif" font-weight="400" font-size="13" fill="#FFFFFF" text-anchor="middle" opacity="0.8">¡CONSULTANOS SIN CARGO!</text>
+  <text x="884" y="968" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="16" fill="#FFFFFF" text-anchor="middle">TASACIÓN GRATIS</text>
+</svg>

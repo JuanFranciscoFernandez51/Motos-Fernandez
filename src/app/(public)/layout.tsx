@@ -11,6 +11,7 @@ import { CartProvider, useCart } from "@/lib/cart-context"
 const NAV_LINKS = [
   { href: "/modelos", label: "Catálogo", highlight: true },
   { href: "/tienda", label: "Tienda" },
+  { href: "/consigna", label: "Consigna" },
   { href: "/financiacion", label: "Financiación" },
   { href: "/servicio-tecnico", label: "Servicio Técnico" },
   { href: "/noticias", label: "Noticias" },
