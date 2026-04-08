@@ -54,27 +54,18 @@ export function Chatbot() {
         }),
       })
 
-      if (!response.ok || !response.body) {
+      if (!response.ok) {
         throw new Error("Error en la respuesta")
       }
 
-      const reader = response.body.getReader()
-      const decoder = new TextDecoder()
+      const data = await response.json()
+      const reply = data.reply ?? "Lo siento, no pude procesar tu consulta."
 
-      while (true) {
-        const { done, value } = await reader.read()
-        if (done) break
-
-        const chunk = decoder.decode(value, { stream: true })
-        setMessages((prev) => {
-          const updated = [...prev]
-          const last = updated[updated.length - 1]
-          if (last.role === "assistant") {
-            updated[updated.length - 1] = { ...last, content: last.content + chunk }
-          }
-          return updated
-        })
-      }
+      setMessages((prev) => {
+        const updated = [...prev]
+        updated[updated.length - 1] = { role: "assistant", content: reply }
+        return updated
+      })
     } catch {
       setMessages((prev) => {
         const updated = [...prev]
