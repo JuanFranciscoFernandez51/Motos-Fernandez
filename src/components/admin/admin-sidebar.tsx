@@ -93,7 +93,7 @@ export function AdminSidebar({ userName }: { userName: string }) {
             alt="MF"
             width={160}
             height={113}
-            className="h-9 w-auto shrink-0 brightness-0 invert"
+            className="h-9 w-auto shrink-0 "
           />
         ) : (
           <Image
@@ -101,7 +101,7 @@ export function AdminSidebar({ userName }: { userName: string }) {
             alt="Motos Fernandez"
             width={160}
             height={113}
-            className="h-9 w-auto flex-1 min-w-0 brightness-0 invert"
+            className="h-9 w-auto flex-1 min-w-0 "
           />
         )}
         {!mobile && (
@@ -187,7 +187,7 @@ export function AdminSidebar({ userName }: { userName: string }) {
           alt="Motos Fernandez"
           width={160}
           height={113}
-          className="h-8 w-auto brightness-0 invert"
+          className="h-8 w-auto "
         />
       </div>
 

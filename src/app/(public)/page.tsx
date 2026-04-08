@@ -98,7 +98,7 @@ export default async function HomePage() {
                 alt={BUSINESS.name}
                 width={320}
                 height={226}
-                className="h-16 w-auto brightness-0 invert opacity-90"
+                className="h-16 w-auto opacity-95"
                 priority
               />
             </div>
