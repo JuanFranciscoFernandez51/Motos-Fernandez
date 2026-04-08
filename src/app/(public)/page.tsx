@@ -96,9 +96,9 @@ export default async function HomePage() {
               <Image
                 src="/images/logo-clasico-transparente.png"
                 alt={BUSINESS.name}
-                width={320}
-                height={226}
-                className="h-28 w-auto opacity-95"
+                width={707}
+                height={253}
+                className="h-24 w-auto opacity-95"
                 priority
               />
             </div>
