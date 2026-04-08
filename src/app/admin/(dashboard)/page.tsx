@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { formatPrice, ESTADO_PEDIDO_LABELS, TEMPERATURA_LABELS, ORIGEN_LABELS } from "@/lib/constants"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Package, CalendarClock, Users, DollarSign } from "lucide-react"
+import { Package, CalendarClock, Users, DollarSign, Eye, MapPin } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -79,6 +79,10 @@ export default async function AdminDashboardPage() {
     leadsSinContactar,
     ventasPorMesRaw,
     leadsPorOrigenRaw,
+    visitasHoy,
+    visitasSemana,
+    visitasPorPagina,
+    ciudades,
   ] = await Promise.all([
     prisma.pedido.count({
       where: { createdAt: { gte: todayUTC } },
@@ -129,6 +133,30 @@ export default async function AdminDashboardPage() {
       GROUP BY origen
       ORDER BY cantidad DESC
     `,
+    // Visitas de hoy
+    prisma.visita.count({
+      where: { createdAt: { gte: todayUTC } },
+    }),
+    // Visitas de los últimos 7 días
+    prisma.visita.count({
+      where: { createdAt: { gte: weekAgoUTC } },
+    }),
+    // Visitas por página (top 5, últimos 7 días)
+    prisma.visita.groupBy({
+      by: ["pagina"],
+      _count: { pagina: true },
+      orderBy: { _count: { pagina: "desc" } },
+      take: 5,
+      where: { createdAt: { gte: weekAgoUTC } },
+    }),
+    // Ciudades top (últimos 7 días)
+    prisma.visita.groupBy({
+      by: ["ciudad"],
+      _count: { ciudad: true },
+      orderBy: { _count: { ciudad: "desc" } },
+      take: 5,
+      where: { createdAt: { gte: weekAgoUTC }, ciudad: { not: null } },
+    }),
   ])
 
   // Build all 6 months array (including months with 0 sales)
@@ -434,6 +462,118 @@ export default async function AdminDashboardPage() {
           </CardContent>
         </Card>
 
+      </div>
+
+      {/* Visitas */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <Eye className="h-5 w-5 text-[#6B4F7A]" />
+          Visitas al sitio
+        </h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50">
+                  <Eye className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{visitasHoy}</p>
+                  <p className="text-xs text-gray-500">Visitas hoy</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50">
+                  <Eye className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{visitasSemana}</p>
+                  <p className="text-xs text-gray-500">Visitas esta semana</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Páginas más visitadas */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">Páginas más visitadas</CardTitle>
+              <p className="text-xs text-gray-500">Últimos 7 días</p>
+            </CardHeader>
+            <CardContent>
+              {visitasPorPagina.length === 0 ? (
+                <p className="text-sm text-gray-500 py-4 text-center">
+                  Sin datos aún
+                </p>
+              ) : (
+                <div className="space-y-2">
+                  {visitasPorPagina.map((v) => {
+                    const maxCount = visitasPorPagina[0]._count.pagina
+                    const pct = maxCount > 0 ? Math.round((v._count.pagina / maxCount) * 100) : 0
+                    return (
+                      <div key={v.pagina} className="flex items-center gap-3">
+                        <span className="w-28 text-xs text-gray-600 truncate shrink-0">{v.pagina}</span>
+                        <div className="flex-1 h-6 bg-gray-100 rounded-md overflow-hidden">
+                          <div
+                            className="h-full rounded-md flex items-center px-2"
+                            style={{
+                              width: `${Math.max(pct, 4)}%`,
+                              backgroundColor: "#6B4F7A",
+                            }}
+                          >
+                            {pct >= 30 && (
+                              <span className="text-[10px] text-white font-medium">
+                                {v._count.pagina}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <span className="w-8 text-right text-xs font-semibold text-gray-700 shrink-0">
+                          {v._count.pagina}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Ciudades top */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-[#6B4F7A]" />
+                Ciudades de origen
+              </CardTitle>
+              <p className="text-xs text-gray-500">Últimos 7 días</p>
+            </CardHeader>
+            <CardContent>
+              {ciudades.length === 0 ? (
+                <p className="text-sm text-gray-500 py-4 text-center">
+                  Sin datos de ubicación aún (requiere Vercel)
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {ciudades.map((c) => (
+                    <div key={c.ciudad} className="flex items-center justify-between">
+                      <span className="text-sm text-gray-700">{c.ciudad}</span>
+                      <Badge variant="secondary" className="text-xs bg-purple-50 text-[#6B4F7A]">
+                        {c._count.ciudad} visita{c._count.ciudad !== 1 ? "s" : ""}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )

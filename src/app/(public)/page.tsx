@@ -2,6 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { prisma } from "@/lib/prisma"
 import { BUSINESS, formatPrice, CATEGORIAS_VEHICULO } from "@/lib/constants"
+import { TrackVisita } from "@/components/public/track-visita"
 import {
   Bike,
   Car,
@@ -79,6 +80,7 @@ export default async function HomePage() {
 
   return (
     <>
+      <TrackVisita pagina="home" />
       {/* ===== 1. HERO ===== */}
       <section className="relative bg-[#1A1A1A] overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#6B4F7A]/20 via-[#6B4F7A]/5 to-transparent" />
