@@ -89,7 +89,7 @@ export function AdminSidebar({ userName }: { userName: string }) {
       <div className="flex items-center gap-3 border-b border-neutral-800 px-4 py-4">
         {collapsed && !mobile ? (
           <Image
-            src="/images/logo-clasico-transparente.png"
+            src="/images/monograma-blanco-transparente.svg"
             alt="MF"
             width={160}
             height={113}
@@ -97,7 +97,7 @@ export function AdminSidebar({ userName }: { userName: string }) {
           />
         ) : (
           <Image
-            src="/images/logo-clasico-transparente.png"
+            src="/images/monograma-blanco-transparente.svg"
             alt="Motos Fernandez"
             width={160}
             height={113}
@@ -183,7 +183,7 @@ export function AdminSidebar({ userName }: { userName: string }) {
           </SheetContent>
         </Sheet>
         <Image
-          src="/images/logo-clasico-transparente.png"
+          src="/images/monograma-blanco-transparente.svg"
           alt="Motos Fernandez"
           width={160}
           height={113}
