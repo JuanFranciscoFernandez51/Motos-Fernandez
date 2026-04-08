@@ -61,7 +61,7 @@ export async function POST(request: Request) {
     async start(controller) {
       try {
         const response = await client.messages.stream({
-          model: "claude-haiku-4-5",
+          model: "claude-3-5-haiku-20241022",
           max_tokens: 500,
           system: SYSTEM_PROMPT,
           messages: messages as Array<{ role: "user" | "assistant"; content: string }>,
