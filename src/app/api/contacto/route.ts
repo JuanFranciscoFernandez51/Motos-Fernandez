@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { createOrUpdateLead } from "@/lib/create-lead"
+import { notifyNewContact } from "@/lib/email"
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,6 +25,18 @@ export async function POST(request: NextRequest) {
       temperatura: "TIBIO",
       notas: `Formulario de contacto: ${body.mensaje}`,
     })
+
+    // Notificacion por email al admin (fire-and-forget, no rompe el flujo)
+    try {
+      await notifyNewContact({
+        nombre: body.nombre,
+        email: body.email,
+        telefono: body.telefono,
+        mensaje: body.mensaje,
+      })
+    } catch (emailError) {
+      console.error("Error enviando notificacion de contacto:", emailError)
+    }
 
     return NextResponse.json(contactForm, { status: 201 })
   } catch (error) {

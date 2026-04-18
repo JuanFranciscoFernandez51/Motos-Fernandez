@@ -11,17 +11,24 @@ export async function uploadImage(
   options?: {
     folder?: string
     transformation?: Record<string, unknown>[]
+    cropMode?: "auto" | "none"
   }
 ) {
   const folder = options?.folder || "motos-fernandez"
+
+  // Si cropMode === "auto", aplicamos recorte cuadrado 1:1 detectando el sujeto
+  let transformation = options?.transformation
+  if (!transformation && options?.cropMode === "auto") {
+    transformation = [
+      { width: 1000, height: 1000, crop: "fill", gravity: "auto" },
+    ]
+  }
 
   return new Promise<{ url: string; publicId: string }>((resolve, reject) => {
     const uploadOptions = {
       folder,
       resource_type: "image" as const,
-      quality: "auto",
-      format: "auto",
-      transformation: options?.transformation,
+      transformation,
     }
 
     if (typeof file === "string") {

@@ -57,6 +57,7 @@ export default async function ModelosPage() {
               <TableHead className="w-20">Foto</TableHead>
               <TableHead>Nombre</TableHead>
               <TableHead>Marca</TableHead>
+              <TableHead>Condicion</TableHead>
               <TableHead>Categoria</TableHead>
               <TableHead>Precio</TableHead>
               <TableHead>Estado</TableHead>
@@ -66,7 +67,7 @@ export default async function ModelosPage() {
           <TableBody>
             {modelos.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={9} className="text-center py-8 text-gray-500">
                   No hay modelos cargados
                 </TableCell>
               </TableRow>
@@ -97,6 +98,21 @@ export default async function ModelosPage() {
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline">{modelo.marca}</Badge>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant="secondary"
+                      className={
+                        modelo.condicion === "0KM"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : "bg-orange-100 text-orange-800"
+                      }
+                    >
+                      {modelo.condicion === "0KM" ? "0KM" : "Usada"}
+                    </Badge>
+                    {modelo.anio && (
+                      <span className="ml-1 text-xs text-gray-400">{modelo.anio}</span>
+                    )}
                   </TableCell>
                   <TableCell>
                     <span className="text-sm text-gray-600">

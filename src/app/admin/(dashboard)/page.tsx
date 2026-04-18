@@ -3,7 +3,22 @@ import { prisma } from "@/lib/prisma"
 import { formatPrice, ESTADO_PEDIDO_LABELS, TEMPERATURA_LABELS, ORIGEN_LABELS } from "@/lib/constants"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Package, CalendarClock, Users, DollarSign, Eye, MapPin } from "lucide-react"
+import {
+  Package,
+  CalendarClock,
+  Users,
+  DollarSign,
+  Eye,
+  MapPin,
+  MessageSquare,
+  ShoppingBag,
+  Bike,
+  Mail,
+  TrendingUp,
+  ArrowUpRight,
+  ArrowDownRight,
+  Minus,
+} from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -70,6 +85,16 @@ export default async function AdminDashboardPage() {
   const sixMonthsAgoAR = new Date(nowAR.getFullYear(), nowAR.getMonth() - 5, 1, 0, 0, 0, 0)
   const sixMonthsAgoUTC = new Date(sixMonthsAgoAR.getTime() - AR_OFFSET_MS)
 
+  // 30 days ago UTC (para métricas mensuales deslizantes)
+  const thirtyDaysAgoUTC = new Date(nowUTC)
+  thirtyDaysAgoUTC.setDate(thirtyDaysAgoUTC.getDate() - 30)
+  thirtyDaysAgoUTC.setHours(0, 0, 0, 0)
+
+  // Comparación de ingresos: últimos 7 días vs 7 días previos
+  const fourteenDaysAgoUTC = new Date(nowUTC)
+  fourteenDaysAgoUTC.setDate(fourteenDaysAgoUTC.getDate() - 14)
+  fourteenDaysAgoUTC.setHours(0, 0, 0, 0)
+
   const [
     pedidosHoy,
     turnosPendientes,
@@ -83,6 +108,16 @@ export default async function AdminDashboardPage() {
     visitasSemana,
     visitasPorPagina,
     ciudades,
+    // Nuevas métricas
+    conversionesChat,
+    productosMasVistosRaw,
+    modelosMasVistosRaw,
+    contactosNoLeidos,
+    contactosLeidos,
+    pedidosAprobados30d,
+    visitasTienda30d,
+    ingresosUltimos7d,
+    ingresosPrevios7d,
   ] = await Promise.all([
     prisma.pedido.count({
       where: { createdAt: { gte: todayUTC } },
@@ -157,6 +192,79 @@ export default async function AdminDashboardPage() {
       take: 5,
       where: { createdAt: { gte: weekAgoUTC }, ciudad: { not: null } },
     }),
+    // Conversiones del chatbot (últimos 30 días)
+    prisma.conversion.count({
+      where: {
+        createdAt: { gte: thirtyDaysAgoUTC },
+        evento: { contains: "chat", mode: "insensitive" },
+      },
+    }),
+    // Productos más vistos (top 5, últimos 30 días)
+    prisma.visita.groupBy({
+      by: ["pagina"],
+      _count: { pagina: true },
+      orderBy: { _count: { pagina: "desc" } },
+      take: 5,
+      where: {
+        createdAt: { gte: thirtyDaysAgoUTC },
+        pagina: { startsWith: "/tienda/" },
+      },
+    }),
+    // Modelos más consultados (top 5, últimos 30 días)
+    prisma.visita.groupBy({
+      by: ["pagina"],
+      _count: { pagina: true },
+      orderBy: { _count: { pagina: "desc" } },
+      take: 5,
+      where: {
+        createdAt: { gte: thirtyDaysAgoUTC },
+        pagina: { startsWith: "/modelos/" },
+      },
+    }),
+    // Consultas por formulario (últimos 30 días) - no leídas
+    prisma.contactForm.count({
+      where: {
+        createdAt: { gte: thirtyDaysAgoUTC },
+        leido: false,
+      },
+    }),
+    // Consultas por formulario (últimos 30 días) - leídas
+    prisma.contactForm.count({
+      where: {
+        createdAt: { gte: thirtyDaysAgoUTC },
+        leido: true,
+      },
+    }),
+    // Pedidos aprobados últimos 30 días (para tasa de conversión)
+    prisma.pedido.count({
+      where: {
+        createdAt: { gte: thirtyDaysAgoUTC },
+        estadoPago: "APROBADO",
+      },
+    }),
+    // Visitas a /tienda últimos 30 días (para tasa de conversión)
+    prisma.visita.count({
+      where: {
+        createdAt: { gte: thirtyDaysAgoUTC },
+        pagina: { startsWith: "/tienda" },
+      },
+    }),
+    // Ingresos últimos 7 días
+    prisma.pedido.aggregate({
+      _sum: { total: true },
+      where: {
+        createdAt: { gte: weekAgoUTC },
+        estadoPago: "APROBADO",
+      },
+    }),
+    // Ingresos 7 días previos (entre 14 y 7 días atrás)
+    prisma.pedido.aggregate({
+      _sum: { total: true },
+      where: {
+        createdAt: { gte: fourteenDaysAgoUTC, lt: weekAgoUTC },
+        estadoPago: "APROBADO",
+      },
+    }),
   ])
 
   // Build all 6 months array (including months with 0 sales)
@@ -185,6 +293,37 @@ export default async function AdminDashboardPage() {
     cantidad: Number(l.cantidad),
   }))
   const totalLeads = leadsPorOrigen.reduce((acc, l) => acc + l.cantidad, 0)
+
+  // Procesar productos y modelos más vistos (limpiar slug de la URL)
+  const productosMasVistos = productosMasVistosRaw.map((v) => ({
+    slug: v.pagina.replace(/^\/tienda\//, "").replace(/\/$/, "") || v.pagina,
+    pagina: v.pagina,
+    cantidad: v._count.pagina,
+  }))
+
+  const modelosMasVistos = modelosMasVistosRaw.map((v) => ({
+    slug: v.pagina.replace(/^\/modelos\//, "").replace(/\/$/, "") || v.pagina,
+    pagina: v.pagina,
+    cantidad: v._count.pagina,
+  }))
+
+  // Tasa de conversión (pedidos aprobados / visitas a /tienda)
+  const tasaConversion =
+    visitasTienda30d > 0
+      ? (pedidosAprobados30d / visitasTienda30d) * 100
+      : 0
+
+  // Comparación ingresos 7d vs 7d previos
+  const ingresos7d = Number(ingresosUltimos7d._sum.total ?? 0)
+  const ingresosPrev7d = Number(ingresosPrevios7d._sum.total ?? 0)
+  const variacionIngresos =
+    ingresosPrev7d > 0
+      ? ((ingresos7d - ingresosPrev7d) / ingresosPrev7d) * 100
+      : ingresos7d > 0
+        ? 100
+        : 0
+
+  const totalContactos30d = contactosNoLeidos + contactosLeidos
 
   const stats = [
     {
@@ -569,6 +708,215 @@ export default async function AdminDashboardPage() {
                       </Badge>
                     </div>
                   ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Métricas de conversión y engagement */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <TrendingUp className="h-5 w-5 text-[#6B4F7A]" />
+          Conversión y engagement
+        </h2>
+
+        {/* Tarjetas de métricas */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+          {/* Conversiones del chatbot */}
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-indigo-600 bg-indigo-50">
+                  <MessageSquare className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{conversionesChat}</p>
+                  <p className="text-xs text-gray-500">Conversiones chatbot (30d)</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Consultas por formulario */}
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-amber-600 bg-amber-50">
+                  <Mail className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">
+                    {totalContactos30d}
+                    {contactosNoLeidos > 0 && (
+                      <span className="ml-2 text-xs font-semibold text-amber-600">
+                        {contactosNoLeidos} sin leer
+                      </span>
+                    )}
+                  </p>
+                  <p className="text-xs text-gray-500">Consultas formulario (30d)</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Tasa de conversión */}
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-emerald-600 bg-emerald-50">
+                  <TrendingUp className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">
+                    {visitasTienda30d > 0 ? `${tasaConversion.toFixed(2)}%` : "—"}
+                  </p>
+                  <p className="text-xs text-gray-500">
+                    Tasa conversión tienda (30d)
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Ingresos 7d vs previos */}
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50">
+                  <DollarSign className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xl font-bold truncate">
+                    {ingresos7d > 0 ? formatPrice(ingresos7d) : "—"}
+                  </p>
+                  <p className="text-xs text-gray-500 flex items-center gap-1">
+                    Ingresos 7d
+                    {ingresosPrev7d > 0 || ingresos7d > 0 ? (
+                      <span
+                        className={`inline-flex items-center gap-0.5 font-semibold ${
+                          variacionIngresos > 0
+                            ? "text-green-600"
+                            : variacionIngresos < 0
+                              ? "text-red-600"
+                              : "text-gray-500"
+                        }`}
+                      >
+                        {variacionIngresos > 0 ? (
+                          <ArrowUpRight className="h-3 w-3" />
+                        ) : variacionIngresos < 0 ? (
+                          <ArrowDownRight className="h-3 w-3" />
+                        ) : (
+                          <Minus className="h-3 w-3" />
+                        )}
+                        {Math.abs(variacionIngresos).toFixed(0)}%
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">sin datos</span>
+                    )}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Rankings de productos y modelos */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Productos más vistos */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <ShoppingBag className="h-4 w-4 text-[#6B4F7A]" />
+                Productos más vistos
+              </CardTitle>
+              <p className="text-xs text-gray-500">Top 5 - últimos 30 días</p>
+            </CardHeader>
+            <CardContent>
+              {productosMasVistos.length === 0 ? (
+                <p className="text-sm text-gray-500 py-4 text-center">Sin datos</p>
+              ) : (
+                <div className="space-y-2">
+                  {productosMasVistos.map((p, idx) => {
+                    const maxCount = productosMasVistos[0].cantidad
+                    const pct = maxCount > 0 ? Math.round((p.cantidad / maxCount) * 100) : 0
+                    return (
+                      <div key={p.pagina} className="flex items-center gap-3">
+                        <span className="w-5 text-xs font-semibold text-gray-400 shrink-0">
+                          {idx + 1}.
+                        </span>
+                        <Link
+                          href={p.pagina}
+                          className="w-32 text-xs text-gray-700 truncate shrink-0 hover:text-[#6B4F7A] hover:underline"
+                          title={p.slug}
+                        >
+                          {p.slug}
+                        </Link>
+                        <div className="flex-1 h-5 bg-gray-100 rounded-md overflow-hidden">
+                          <div
+                            className="h-full rounded-md"
+                            style={{
+                              width: `${Math.max(pct, 4)}%`,
+                              backgroundColor: "#6B4F7A",
+                            }}
+                          />
+                        </div>
+                        <span className="w-10 text-right text-xs font-semibold text-gray-700 shrink-0">
+                          {p.cantidad}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Modelos más consultados */}
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <Bike className="h-4 w-4 text-[#6B4F7A]" />
+                Modelos más consultados
+              </CardTitle>
+              <p className="text-xs text-gray-500">Top 5 - últimos 30 días</p>
+            </CardHeader>
+            <CardContent>
+              {modelosMasVistos.length === 0 ? (
+                <p className="text-sm text-gray-500 py-4 text-center">Sin datos</p>
+              ) : (
+                <div className="space-y-2">
+                  {modelosMasVistos.map((m, idx) => {
+                    const maxCount = modelosMasVistos[0].cantidad
+                    const pct = maxCount > 0 ? Math.round((m.cantidad / maxCount) * 100) : 0
+                    return (
+                      <div key={m.pagina} className="flex items-center gap-3">
+                        <span className="w-5 text-xs font-semibold text-gray-400 shrink-0">
+                          {idx + 1}.
+                        </span>
+                        <Link
+                          href={m.pagina}
+                          className="w-32 text-xs text-gray-700 truncate shrink-0 hover:text-[#6B4F7A] hover:underline"
+                          title={m.slug}
+                        >
+                          {m.slug}
+                        </Link>
+                        <div className="flex-1 h-5 bg-gray-100 rounded-md overflow-hidden">
+                          <div
+                            className="h-full rounded-md"
+                            style={{
+                              width: `${Math.max(pct, 4)}%`,
+                              backgroundColor: "#6B4F7A",
+                            }}
+                          />
+                        </div>
+                        <span className="w-10 text-right text-xs font-semibold text-gray-700 shrink-0">
+                          {m.cantidad}
+                        </span>
+                      </div>
+                    )
+                  })}
                 </div>
               )}
             </CardContent>

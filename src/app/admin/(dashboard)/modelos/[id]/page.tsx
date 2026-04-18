@@ -14,8 +14,13 @@ async function updateModelo(formData: FormData) {
     const slug = formData.get("slug") as string
     const marca = formData.get("marca") as string
     const categoriaVehiculo = formData.get("categoriaVehiculo") as string
+    const condicion = formData.get("condicion") as string || "0KM"
+    const anioStr = formData.get("anio") as string
+    const kilometrosStr = formData.get("kilometros") as string
+    const observaciones = formData.get("observaciones") as string
     const cilindrada = formData.get("cilindrada") as string
     const precioStr = formData.get("precio") as string
+    const moneda = formData.get("moneda") as string || "ARS"
     const descripcion = formData.get("descripcion") as string
     const specsRaw = JSON.parse(formData.get("specs") as string) as { key: string; value: string }[]
     const coloresRaw = JSON.parse(formData.get("colores") as string) as { nombre: string; hex: string; foto: string }[]
@@ -23,6 +28,8 @@ async function updateModelo(formData: FormData) {
     const financiacionRaw = JSON.parse((formData.get("financiacion") as string) || "[]") as { plan: string; cuota: number | null; entrega: number | null; detalle: string | null }[]
     const activo = formData.get("activo") === "true"
     const destacado = formData.get("destacado") === "true"
+    const etiquetaRaw = formData.get("etiqueta") as string
+    const etiqueta = etiquetaRaw && etiquetaRaw.trim() ? etiquetaRaw : null
     const orden = parseInt(formData.get("orden") as string) || 0
 
     const specs: Record<string, string> = {}
@@ -39,14 +46,20 @@ async function updateModelo(formData: FormData) {
         slug,
         marca,
         categoriaVehiculo: categoriaVehiculo as "MOTOCICLETA" | "CUATRICICLO" | "UTV" | "MOTO_DE_AGUA",
+        condicion,
+        anio: anioStr ? parseInt(anioStr) : null,
+        kilometros: kilometrosStr ? parseInt(kilometrosStr) : null,
+        observaciones: observaciones || null,
         cilindrada: cilindrada || null,
         precio: precioStr ? parseInt(precioStr) : null,
+        moneda,
         descripcion: descripcion || null,
         specs: Object.keys(specs).length > 0 ? specs : undefined,
         financiacion: financiacionRaw.length > 0 ? financiacionRaw : undefined,
         fotos,
         activo,
         destacado,
+        etiqueta,
         orden,
         colores: {
           create: coloresRaw
@@ -95,8 +108,13 @@ export default async function EditModeloPage({
     slug: modelo.slug,
     marca: modelo.marca,
     categoriaVehiculo: modelo.categoriaVehiculo,
+    condicion: modelo.condicion || "0KM",
+    anio: modelo.anio,
+    kilometros: modelo.kilometros,
+    observaciones: modelo.observaciones || "",
     cilindrada: modelo.cilindrada || "",
     precio: modelo.precio,
+    moneda: modelo.moneda || "ARS",
     descripcion: modelo.descripcion || "",
     specs: specsArray,
     financiacion: financiacionArray,
@@ -109,6 +127,7 @@ export default async function EditModeloPage({
     fotos: modelo.fotos,
     activo: modelo.activo,
     destacado: modelo.destacado,
+    etiqueta: modelo.etiqueta,
     orden: modelo.orden,
   }
 

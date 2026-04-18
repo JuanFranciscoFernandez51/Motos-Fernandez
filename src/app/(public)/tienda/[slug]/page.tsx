@@ -2,10 +2,11 @@ import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
-import { formatPrice, getWhatsAppUrl, BUSINESS } from "@/lib/constants"
+import { formatPrice, getWhatsAppUrl, BUSINESS, WHATSAPP_MESSAGES } from "@/lib/constants"
 import { ShoppingBag, ArrowLeft, MessageCircle } from "lucide-react"
 import { AddToCartButton } from "./add-to-cart-button"
 import { TrackVisita } from "@/components/public/track-visita"
+import { ShareButton } from "@/components/public/share-button"
 
 export const dynamic = "force-dynamic"
 
@@ -85,9 +86,17 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
 
           {/* Info */}
           <div>
-            <p className="text-sm font-medium text-[#8B6F9A] uppercase tracking-wider">
-              {producto.categoria.nombre}
-            </p>
+            <div className="flex items-start justify-between gap-4">
+              <p className="text-sm font-medium text-[#8B6F9A] uppercase tracking-wider">
+                {producto.categoria.nombre}
+              </p>
+              <ShareButton
+                variant="icon"
+                title={producto.nombre}
+                text={`Mirá este producto en Motos Fernandez: ${producto.nombre}`}
+                path={`/tienda/${producto.slug}`}
+              />
+            </div>
             <h1
               className="mt-2 text-2xl sm:text-3xl font-bold text-[#1A1A1A]"
               style={{ fontFamily: "var(--font-heading)" }}
@@ -187,7 +196,11 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
             {/* WhatsApp CTA */}
             <div className="mt-4 space-y-3">
               <a
-                href={getWhatsAppUrl(`Hola! Quiero consultar por: ${producto.nombre} (${formatPrice(precio)})`)}
+                href={getWhatsAppUrl(WHATSAPP_MESSAGES.producto({
+                  nombre: producto.nombre,
+                  precio: formatPrice(precio),
+                  slug: producto.slug,
+                }))}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full rounded-lg bg-[#25D366] px-6 py-3.5 text-base font-semibold text-white hover:bg-[#20BD5A] transition-colors"

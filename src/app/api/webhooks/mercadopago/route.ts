@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { getPaymentApi } from "@/lib/mercadopago"
-import { sendOrderConfirmation, sendAdminNotification } from "@/lib/email"
+import { sendOrderConfirmation, notifyNewOrder } from "@/lib/email"
 
 // MercadoPago validation endpoint
 export async function GET() {
@@ -81,10 +81,10 @@ export async function POST(request: NextRequest) {
           }
 
           try {
-            await sendAdminNotification({
+            await notifyNewOrder({
+              numero: pedidoCompleto.numero,
               nombre: pedidoCompleto.nombre,
               apellido: pedidoCompleto.apellido,
-              pedidoId: pedidoCompleto.id,
               total: pedidoCompleto.total,
               items: emailItems,
             })

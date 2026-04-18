@@ -2,6 +2,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // unoptimized: Cloudinary ya optimiza y sirve por CDN.
+    // Evita el error 402 de Vercel cuando se agota la cuota gratis de /_next/image.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

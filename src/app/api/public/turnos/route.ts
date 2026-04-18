@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { createOrUpdateLead } from "@/lib/create-lead"
+import { notifyNewTurno } from "@/lib/email"
 
 export async function POST(request: NextRequest) {
   try {
@@ -31,6 +32,19 @@ export async function POST(request: NextRequest) {
       temperatura: "TIBIO",
       notas: `Turno solicitado: ${body.tipoServicio}${body.comentarios ? ` - ${body.comentarios}` : ""}`,
     })
+
+    // Notificacion por email al admin (fire-and-forget)
+    try {
+      await notifyNewTurno({
+        nombre: body.nombre,
+        telefono: body.telefono,
+        modeloMoto: body.modeloMoto,
+        tipoServicio: body.tipoServicio,
+        fechaPreferida: body.fechaPreferida ?? null,
+      })
+    } catch (emailError) {
+      console.error("Error enviando notificacion de turno:", emailError)
+    }
 
     return NextResponse.json(turno, { status: 201 })
   } catch (error) {

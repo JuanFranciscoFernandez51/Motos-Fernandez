@@ -15,6 +15,7 @@ import {
   Star,
   Calendar,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react"
 
 export const dynamic = "force-dynamic"
@@ -31,9 +32,21 @@ async function getDestacados() {
   try {
     return await prisma.modelo.findMany({
       where: { activo: true },
-      orderBy: { createdAt: "desc" },
-      take: 6,
+      orderBy: [{ destacado: "desc" }, { createdAt: "desc" }],
+      take: 10,
       include: { colores: true },
+    })
+  } catch {
+    return []
+  }
+}
+
+async function getTestimonios() {
+  try {
+    return await prisma.testimonio.findMany({
+      where: { publicado: true },
+      orderBy: [{ destacado: "desc" }, { orden: "asc" }, { createdAt: "desc" }],
+      take: 6,
     })
   } catch {
     return []
@@ -73,9 +86,10 @@ const CATEGORY_ICONS: Record<string, React.ReactNode> = {
 // ==================== PAGE ====================
 
 export default async function HomePage() {
-  const [modelos, noticias] = await Promise.all([
+  const [modelos, noticias, testimonios] = await Promise.all([
     getDestacados(),
     getNoticiasRecientes(),
+    getTestimonios(),
   ])
 
   return (
@@ -89,27 +103,26 @@ export default async function HomePage() {
         <div className="absolute -top-40 -right-40 size-[600px] rounded-full bg-[#6B4F7A]/10 blur-3xl" />
         <div className="absolute -bottom-20 -left-20 size-[400px] rounded-full bg-[#9B59B6]/5 blur-3xl" />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14 lg:py-24">
-          <div className="max-w-3xl">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-14">
+          <div className="max-w-4xl">
             {/* Logo en hero */}
-            <div className="mb-8">
+            <div className="mb-5">
               <Image
                 src="/images/logo-clasico-transparente.png"
                 alt={BUSINESS.name}
                 width={711}
                 height={257}
-                className="h-24 w-auto opacity-95"
+                className="h-20 w-auto opacity-95"
                 priority
               />
             </div>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-[1.1] font-heading">
-              Tu próxima aventura
-              <span className="block text-[#9B59B6] mt-1">empieza aquí</span>
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-[1.1] font-heading">
+              Tu próxima aventura <span className="text-[#9B59B6]">empieza aquí</span>
             </h1>
-            <p className="mt-5 text-base text-gray-400 max-w-2xl font-body leading-relaxed">
+            <p className="mt-4 text-base text-gray-400 max-w-2xl font-body leading-relaxed">
               Más de {BUSINESS.yearsInBusiness} años ayudando a elegir el vehículo perfecto. Visitanos en {BUSINESS.city} y conocé todas las marcas.
             </p>
-            <div className="mt-10 flex flex-wrap gap-4">
+            <div className="mt-7 flex flex-wrap gap-4">
               <Link
                 href="/modelos"
                 className="inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-8 py-4 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors shadow-lg shadow-[#6B4F7A]/30"
@@ -127,7 +140,7 @@ export default async function HomePage() {
             </div>
 
             {/* Stats row */}
-            <div className="mt-10 flex flex-wrap gap-10">
+            <div className="mt-7 flex flex-wrap gap-10">
               <div>
                 <p className="text-4xl font-extrabold text-white font-heading">+{BUSINESS.yearsInBusiness}</p>
                 <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Años</p>
@@ -181,14 +194,14 @@ export default async function HomePage() {
       </section>
 
       {/* ===== 3. MODELOS DESTACADOS ===== */}
-      <section className="py-20 bg-[#F0F0F0]">
+      <section className="py-14 bg-[#F0F0F0]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-12">
+          <div className="flex items-end justify-between mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] font-heading">
                 Modelos destacados
               </h2>
-              <p className="mt-3 text-gray-500 font-body">
+              <p className="mt-2 text-sm text-gray-500 font-body">
                 Los más elegidos por nuestros clientes
               </p>
             </div>
@@ -203,52 +216,70 @@ export default async function HomePage() {
 
           {modelos.length > 0 ? (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {modelos.map((model) => (
                   <Link
                     key={model.id}
                     href={`/modelos/${model.slug}`}
-                    className="group rounded-2xl bg-white overflow-hidden hover:shadow-xl hover:shadow-black/8 transition-all duration-200"
+                    className="group rounded-xl bg-white overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all duration-200"
                   >
-                    <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
+                    <div className="relative aspect-square bg-gray-100 overflow-hidden">
                       {model.fotos[0] ? (
                         <Image
                           src={model.fotos[0]}
                           alt={model.nombre}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full text-gray-200">
-                          <Bike className="size-16" />
+                          <Bike className="size-10" />
                         </div>
                       )}
                       {model.destacado && (
-                        <div className="absolute top-3 left-3 flex items-center gap-1 rounded-full bg-[#6B4F7A] px-2.5 py-1 text-[11px] font-bold text-white">
-                          <Star className="size-3 fill-current" />
+                        <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-[#6B4F7A] px-2 py-0.5 text-[10px] font-bold text-white shadow">
+                          <Star className="size-2.5 fill-current" />
                           Destacado
                         </div>
                       )}
+                      <span className={`absolute top-2 right-2 rounded-md px-2 py-0.5 text-[10px] font-bold shadow ${
+                        (model.condicion || "0KM") === "0KM"
+                          ? "bg-emerald-500 text-white"
+                          : "bg-orange-500 text-white"
+                      }`}>
+                        {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
+                      </span>
                     </div>
-                    <div className="p-5">
-                      <p className="text-xs font-semibold text-[#8B6F9A] uppercase tracking-wider">
+                    <div className="p-3">
+                      <p className="text-[10px] font-semibold text-[#8B6F9A] uppercase tracking-wider truncate">
                         {model.marca}
                       </p>
-                      <h3 className="mt-1 text-lg font-bold text-[#1A1A1A] font-heading">
+                      <h3 className="mt-0.5 text-sm font-bold text-[#1A1A1A] font-heading truncate">
                         {model.nombre}
                       </h3>
-                      {model.cilindrada && (
-                        <p className="text-xs text-gray-400 mt-0.5">{model.cilindrada}</p>
-                      )}
-                      <div className="mt-3 flex items-center justify-between">
-                        <p className="text-lg font-bold text-[#6B4F7A]">
-                          {model.precio ? formatPrice(model.precio) : "Consultar"}
-                        </p>
-                        <span className="text-xs font-semibold text-[#6B4F7A] group-hover:translate-x-1 transition-transform inline-flex items-center gap-1">
-                          Ver más <ArrowRight className="size-3" />
-                        </span>
-                      </div>
+                      <p className="text-[10px] text-gray-400 truncate">
+                        {(model.condicion || "0KM") === "USADA" ? (
+                          <>
+                            {model.anio && <span>{model.anio}</span>}
+                            {model.kilometros != null && (
+                              <span>{model.anio ? " · " : ""}{model.kilometros.toLocaleString("es-AR")} km</span>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <span>{model.anio || new Date().getFullYear()}</span>
+                            <span> · 0 km</span>
+                          </>
+                        )}
+                      </p>
+                      <p className="mt-2 text-sm font-bold text-[#6B4F7A]">
+                        {model.precio
+                          ? (model.moneda || "ARS") === "USD"
+                            ? `USD ${model.precio.toLocaleString("es-AR")}`
+                            : formatPrice(model.precio)
+                          : "Consultar"}
+                      </p>
                     </div>
                   </Link>
                 ))}
@@ -280,6 +311,136 @@ export default async function HomePage() {
           )}
         </div>
       </section>
+
+      {/* ===== QUIZ RECOMENDADOR CTA ===== */}
+      <section className="relative py-16 bg-white overflow-hidden">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#6B4F7A] via-[#7B5A8A] to-[#9B59B6] p-8 sm:p-12 shadow-xl">
+            <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-10" />
+            <div className="absolute -top-16 -right-16 size-64 rounded-full bg-white/10 blur-3xl" />
+            <div className="absolute -bottom-20 -left-20 size-72 rounded-full bg-white/5 blur-3xl" />
+
+            <div className="relative flex flex-col lg:flex-row items-center justify-between gap-8">
+              <div className="flex-1 text-center lg:text-left max-w-2xl">
+                <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-white/15 backdrop-blur-sm mb-5">
+                  <Sparkles className="size-7 text-white" />
+                </div>
+                <p className="text-white/70 font-semibold text-xs uppercase tracking-widest mb-2">
+                  Quiz interactivo con IA
+                </p>
+                <h2 className="text-3xl sm:text-4xl font-bold text-white font-heading leading-tight">
+                  ¿No sabés qué moto te conviene?
+                </h2>
+                <p className="mt-4 text-base sm:text-lg text-white/85 font-body leading-relaxed">
+                  Hacé el quiz interactivo y te recomendamos{" "}
+                  <span className="font-semibold text-white">3 motos ideales</span>{" "}
+                  para vos, según tu uso, experiencia y presupuesto.
+                </p>
+              </div>
+
+              <div className="shrink-0">
+                <Link
+                  href="/recomendador"
+                  className="group inline-flex items-center gap-3 rounded-2xl bg-white px-8 py-4 text-base font-bold text-[#6B4F7A] hover:bg-gray-50 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                >
+                  Hacer quiz
+                  <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== TESTIMONIOS ===== */}
+      {testimonios.length > 0 && (
+        <section className="py-20 bg-white">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <p className="text-[#8B6F9A] font-semibold text-sm uppercase tracking-widest mb-3">
+                Testimonios
+              </p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] font-heading">
+                Lo que dicen nuestros clientes
+              </h2>
+              <p className="mt-3 text-gray-500 font-body max-w-lg mx-auto">
+                Historias reales de quienes ya eligieron {BUSINESS.name}.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {testimonios.map((t) => {
+                const contenido =
+                  t.contenido.length > 150
+                    ? t.contenido.slice(0, 150).trimEnd() + "..."
+                    : t.contenido
+                return (
+                  <div
+                    key={t.id}
+                    className="group flex flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-lg hover:shadow-[#6B4F7A]/5 hover:border-[#6B4F7A]/20 transition-all duration-200"
+                  >
+                    {/* Estrellas */}
+                    <div className="flex items-center gap-0.5 mb-3">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star
+                          key={i}
+                          className={
+                            i < t.rating
+                              ? "size-4 fill-yellow-400 text-yellow-400"
+                              : "size-4 text-gray-200"
+                          }
+                        />
+                      ))}
+                    </div>
+
+                    {/* Contenido */}
+                    <p className="text-sm text-gray-600 font-body leading-relaxed flex-1">
+                      &ldquo;{contenido}&rdquo;
+                    </p>
+
+                    {/* Cliente */}
+                    <div className="mt-5 flex items-center gap-3 pt-4 border-t border-gray-100">
+                      {t.foto ? (
+                        <Image
+                          src={t.foto}
+                          alt={t.nombre}
+                          width={44}
+                          height={44}
+                          className="size-11 rounded-full object-cover shrink-0"
+                        />
+                      ) : (
+                        <div className="size-11 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center text-[#6B4F7A] font-bold text-sm shrink-0">
+                          {t.nombre
+                            .split(" ")
+                            .map((n) => n[0])
+                            .join("")
+                            .toUpperCase()
+                            .slice(0, 2)}
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-[#1A1A1A] font-heading truncate">
+                          {t.nombre}
+                        </p>
+                        {t.ubicacion && (
+                          <p className="text-xs text-gray-400 truncate">
+                            {t.ubicacion}
+                          </p>
+                        )}
+                      </div>
+                      {t.modelo && (
+                        <span className="shrink-0 inline-flex items-center rounded-full bg-[#6B4F7A]/10 px-2.5 py-1 text-[10px] font-semibold text-[#6B4F7A] uppercase tracking-wide">
+                          {t.modelo}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ===== 4. FINANCIACION PREVIEW ===== */}
       <section className="relative py-20 bg-gradient-to-r from-[#6B4F7A] to-[#9B59B6] overflow-hidden">

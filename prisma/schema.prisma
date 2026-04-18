@@ -27,8 +27,13 @@ model Modelo {
   slug              String            @unique
   marca             String            // Campo libre: "Honda", "Yamaha", "Suzuki", etc.
   categoriaVehiculo CategoriaVehiculo @default(MOTOCICLETA)
+  condicion         String            @default("0KM")  // "0KM" o "USADA"
+  anio              Int?              // año del modelo/unidad (ej: 2026)
+  kilometros        Int?              // km recorridos (null o 0 para 0km)
+  observaciones     String?           @db.Text  // observaciones breves para usadas
   cilindrada        String?           // "150cc", "250cc", "450cc", etc.
-  precio            Int?              // en pesos, null = "consultar"
+  precio            Int?              // valor numérico, null = "consultar"
+  moneda            String            @default("ARS")  // "ARS" o "USD"
   descripcion       String?           @db.Text
   specs             Json?             // { "Motor": "150cc", "Potencia": "14 HP", ... }
   financiacion      Json?             // [{ "plan": "12 cuotas", "cuota": 150000, "entrega": 500000 }, ...]
@@ -36,6 +41,7 @@ model Modelo {
   fotos             String[]          // URLs de fotos generales
   activo            Boolean           @default(true)
   destacado         Boolean           @default(false)
+  etiqueta          String?           // "DISPONIBLE", "ULTIMA_UNIDAD", "RECIEN_INGRESADA", "CONSULTAR_STOCK", "RESERVADA"
   orden             Int               @default(0)
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
@@ -75,6 +81,23 @@ model Noticia {
   fechaPublicacion DateTime @default(now())
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
+}
+
+// ==================== TESTIMONIOS ====================
+
+model Testimonio {
+  id          String   @id @default(cuid())
+  nombre      String
+  ubicacion   String?  // ej: "Bahía Blanca"
+  modelo      String?  // moto/producto al que se refiere (texto libre)
+  rating      Int      @default(5)  // 1 a 5
+  contenido   String   @db.Text
+  foto        String?  // URL de Cloudinary, opcional
+  destacado   Boolean  @default(false)
+  publicado   Boolean  @default(true)
+  orden       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // ==================== TIENDA ====================
@@ -360,6 +383,21 @@ model Configuracion {
   id    String @id @default(cuid())
   key   String @unique
   value String @db.Text
+}
+
+// ==================== NEWSLETTER ====================
+
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  nombre    String?
+  origen    String?  // "footer", "popup", "checkout", "landing", etc.
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([activo])
 }
 
 // ==================== ANALYTICS ====================

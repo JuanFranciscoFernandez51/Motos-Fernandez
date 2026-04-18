@@ -21,6 +21,8 @@ import {
   Ticket,
   CreditCard,
   Bot,
+  MessageCircleHeart,
+  Mail,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -35,6 +37,8 @@ const navItems = [
   { href: "/admin/crm", label: "CRM", icon: Users },
   { href: "/admin/turnos", label: "Turnos", icon: CalendarClock },
   { href: "/admin/noticias", label: "Noticias", icon: Newspaper },
+  { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
+  { href: "/admin/testimonios", label: "Testimonios", icon: MessageCircleHeart },
   { href: "/admin/cupones", label: "Cupones", icon: Ticket },
   { href: "/admin/financiacion", label: "Financiacion", icon: CreditCard },
   { href: "/admin/promociones", label: "Promociones", icon: Megaphone },

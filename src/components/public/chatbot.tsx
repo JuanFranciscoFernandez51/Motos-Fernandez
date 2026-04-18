@@ -13,6 +13,147 @@ const INITIAL_MESSAGE: Message = {
   content: "Hola! Soy el asistente de Motos Fernandez. ¿En qué te puedo ayudar?",
 }
 
+type ParserMatch = {
+  type: "image" | "link" | "bold" | "strike"
+  index: number
+  length: number
+  group1: string
+  group2?: string
+}
+
+function findNextMatch(text: string): ParserMatch | null {
+  // Buscamos todos los tipos de marca y elegimos el que aparece primero.
+  // Orden de chequeo: imagen antes que link (la imagen empieza con "!" + link pattern).
+  const imageRe = /!\[([^\]]*)\]\(([^\s)]+)\)/
+  const linkRe = /\[([^\]]+)\]\(([^\s)]+)\)/
+  const boldRe = /\*\*([^*\n]+)\*\*/
+  const strikeRe = /~~([^~\n]+)~~/
+
+  const imageM = imageRe.exec(text)
+  const linkM = linkRe.exec(text)
+  const boldM = boldRe.exec(text)
+  const strikeM = strikeRe.exec(text)
+
+  const candidates: ParserMatch[] = []
+
+  if (imageM) {
+    candidates.push({
+      type: "image",
+      index: imageM.index,
+      length: imageM[0].length,
+      group1: imageM[1],
+      group2: imageM[2],
+    })
+  }
+  if (linkM) {
+    // Descartar si este link cae justo dentro del syntax de una imagen: "![...](...)"
+    // en ese caso, el linkM.index === imageM.index + 1
+    const insideImage = imageM && linkM.index === imageM.index + 1
+    if (!insideImage) {
+      candidates.push({
+        type: "link",
+        index: linkM.index,
+        length: linkM[0].length,
+        group1: linkM[1],
+        group2: linkM[2],
+      })
+    }
+  }
+  if (boldM) {
+    candidates.push({
+      type: "bold",
+      index: boldM.index,
+      length: boldM[0].length,
+      group1: boldM[1],
+    })
+  }
+  if (strikeM) {
+    candidates.push({
+      type: "strike",
+      index: strikeM.index,
+      length: strikeM[0].length,
+      group1: strikeM[1],
+    })
+  }
+
+  if (candidates.length === 0) return null
+  candidates.sort((a, b) => a.index - b.index)
+  return candidates[0]
+}
+
+function formatMessage(text: string) {
+  // Parsear markdown básico a JSX
+  const lines = text.split("\n")
+  return lines.map((line, lineIdx) => {
+    const parts: (string | React.ReactElement)[] = []
+    let remaining = line
+    let keyIdx = 0
+
+    while (remaining.length > 0) {
+      const match = findNextMatch(remaining)
+
+      if (!match) {
+        parts.push(remaining)
+        break
+      }
+
+      // Texto antes del match
+      if (match.index > 0) {
+        parts.push(remaining.slice(0, match.index))
+      }
+
+      if (match.type === "image") {
+        const alt = match.group1 || "Imagen"
+        const src = match.group2 || ""
+        parts.push(
+          <span key={`i-${lineIdx}-${keyIdx++}`} className="block my-1.5">
+            <img
+              src={src}
+              alt={alt}
+              loading="lazy"
+              onError={(e) => {
+                e.currentTarget.style.display = "none"
+              }}
+              className="max-w-[200px] w-full h-auto rounded-lg shadow-sm border border-gray-200 object-cover"
+            />
+          </span>
+        )
+      } else if (match.type === "link") {
+        const href = match.group2 || "#"
+        const isInternal = href.startsWith("/")
+        parts.push(
+          <a
+            key={`l-${lineIdx}-${keyIdx++}`}
+            href={href}
+            target={isInternal ? "_self" : "_blank"}
+            rel={isInternal ? undefined : "noopener noreferrer"}
+            className="text-[#6B4F7A] font-medium underline underline-offset-2 hover:text-[#8B6F9A]"
+          >
+            {match.group1}
+          </a>
+        )
+      } else if (match.type === "bold") {
+        parts.push(<strong key={`b-${lineIdx}-${keyIdx++}`}>{match.group1}</strong>)
+      } else if (match.type === "strike") {
+        parts.push(
+          <s key={`s-${lineIdx}-${keyIdx++}`} className="text-gray-400">
+            {match.group1}
+          </s>
+        )
+      }
+
+      remaining = remaining.slice(match.index + match.length)
+    }
+
+    return (
+      <span key={`line-${lineIdx}`}>
+        {lineIdx > 0 && <br />}
+        {parts}
+      </span>
+    )
+  })
+}
+
 export function Chatbot() {
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([INITIAL_MESSAGE])
@@ -126,7 +267,7 @@ export function Chatbot() {
                       : "bg-white text-gray-800 rounded-bl-sm shadow-sm border border-gray-100"
                   }`}
                 >
-                  {msg.content || (
+                  {msg.content ? formatMessage(msg.content) : (
                     <span className="flex gap-1 items-center py-0.5">
                       <span className="size-1.5 rounded-full bg-gray-400 animate-bounce [animation-delay:0ms]" />
                       <span className="size-1.5 rounded-full bg-gray-400 animate-bounce [animation-delay:150ms]" />

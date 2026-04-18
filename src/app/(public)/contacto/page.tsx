@@ -302,21 +302,26 @@ export default function ContactoPage() {
                 </div>
               </a>
 
-              {/* Map placeholder */}
-              <div className="aspect-[4/3] rounded-xl bg-[#F0F0F0] overflow-hidden">
-                <div className="flex items-center justify-center h-full">
-                  <div className="text-center">
-                    <MapPin className="size-8 text-gray-300 mx-auto mb-2" />
-                    <p className="text-xs text-gray-400">{BUSINESS.address}</p>
-                    <a
-                      href={BUSINESS.googleMapsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-2 inline-block text-xs font-semibold text-[#6B4F7A] hover:underline"
-                    >
-                      Ver en Google Maps
-                    </a>
-                  </div>
+              {/* Map */}
+              <div className="rounded-xl overflow-hidden border border-gray-100">
+                <iframe
+                  src={`https://maps.google.com/maps?q=${BUSINESS.coordinates.lat},${BUSINESS.coordinates.lng}&hl=es&z=17&output=embed`}
+                  width="100%"
+                  height="240"
+                  style={{ border: 0 }}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title={`Ubicación de ${BUSINESS.name}`}
+                  className="w-full block"
+                />
+                <div className="flex items-center justify-between gap-2 px-3 py-2 bg-white border-t border-gray-100">
+                  <p className="text-xs text-gray-500 truncate">{BUSINESS.address}</p>
+                  <a
+                    href="/ubicacion"
+                    className="text-xs font-semibold text-[#6B4F7A] hover:underline shrink-0"
+                  >
+                    Ver más →
+                  </a>
                 </div>
               </div>
             </div>

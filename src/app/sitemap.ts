@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { MetadataRoute } from "next"
 import { prisma } from "@/lib/prisma"
 
@@ -12,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/financiacion",
     "/nosotros",
     "/contacto",
+    "/ubicacion",
     "/servicio-tecnico",
     "/noticias",
   ]

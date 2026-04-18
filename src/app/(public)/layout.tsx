@@ -4,9 +4,13 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { BUSINESS, HORARIOS, getWhatsAppUrl, WHATSAPP_MESSAGES } from "@/lib/constants"
-import { Menu, X, Phone, MapPin, Clock, MessageCircle, ShoppingBag } from "lucide-react"
+import { Menu, X, Phone, MapPin, Clock, MessageCircle, ShoppingBag, Heart } from "lucide-react"
 import { Chatbot } from "@/components/public/chatbot"
 import { CartProvider, useCart } from "@/lib/cart-context"
+import { ComparadorProvider } from "@/components/public/comparador-provider"
+import { WishlistProvider, useWishlist } from "@/components/public/wishlist-provider"
+import { CookieBanner } from "@/components/public/cookie-banner"
+import { NewsletterForm } from "@/components/public/newsletter-form"
 
 const NAV_LINKS = [
   { href: "/modelos", label: "Catálogo", highlight: true },
@@ -31,6 +35,24 @@ function CartIcon() {
       {totalItems > 0 && (
         <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center size-4 rounded-full bg-[#9B59B6] text-[10px] font-bold text-white">
           {totalItems > 9 ? "9+" : totalItems}
+        </span>
+      )}
+    </Link>
+  )
+}
+
+function WishlistIcon() {
+  const { count } = useWishlist()
+  return (
+    <Link
+      href="/favoritos"
+      className="relative inline-flex items-center justify-center size-9 rounded-md text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+      aria-label="Favoritos"
+    >
+      <Heart className="size-5" />
+      {count > 0 && (
+        <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center size-4 rounded-full bg-red-500 text-[10px] font-bold text-white">
+          {count > 9 ? "9+" : count}
         </span>
       )}
     </Link>
@@ -75,7 +97,8 @@ function Navbar() {
 
           {/* Right: cart + mobile hamburger */}
           <div className="flex items-center gap-2 ml-auto lg:ml-4">
-            <div className="hidden lg:block">
+            <div className="hidden lg:flex items-center gap-1">
+              <WishlistIcon />
               <CartIcon />
             </div>
             <button
@@ -108,7 +131,8 @@ function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <div className="pt-2 border-t border-white/10">
+            <div className="pt-2 border-t border-white/10 flex items-center gap-2">
+              <WishlistIcon />
               <CartIcon />
             </div>
           </div>
@@ -220,7 +244,20 @@ function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        {/* Newsletter */}
+        <div className="mt-12 border-t border-white/10 pt-8">
+          <div className="max-w-2xl">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-2">
+              Recibí las novedades de {BUSINESS.name}
+            </h3>
+            <p className="text-sm text-gray-400 mb-4">
+              Enterate primero de promos, nuevos modelos y eventos.
+            </p>
+            <NewsletterForm origen="footer" />
+          </div>
+        </div>
+
+        <div className="mt-10 border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-gray-500">
             &copy; {new Date().getFullYear()} {BUSINESS.name}. Todos los derechos reservados.
           </p>
@@ -256,11 +293,16 @@ export default function PublicLayout({
 }) {
   return (
     <CartProvider>
-      <Navbar />
-      <main className="flex-1">{children}</main>
-      <Footer />
-      <WhatsAppButton />
-      <Chatbot />
+      <ComparadorProvider>
+        <WishlistProvider>
+          <Navbar />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <WhatsAppButton />
+          <Chatbot />
+          <CookieBanner />
+        </WishlistProvider>
+      </ComparadorProvider>
     </CartProvider>
   )
 }

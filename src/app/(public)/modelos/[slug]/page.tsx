@@ -1,14 +1,20 @@
+export const dynamic = 'force-dynamic'
+
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { TrackVisita } from "@/components/public/track-visita"
+import { ShareButton } from "@/components/public/share-button"
+import { CalculadoraCuotas } from "@/components/public/calculadora-cuotas"
+import { WishlistButton } from "@/components/public/wishlist-button"
 import {
   BUSINESS,
   formatPrice,
   getWhatsAppUrl,
   WHATSAPP_MESSAGES,
   CATEGORIA_VEHICULO_LABELS,
+  ETIQUETAS_MAP,
 } from "@/lib/constants"
 import { MessageCircle, ArrowLeft, Bike, CreditCard, ChevronRight } from "lucide-react"
 import type { Metadata } from "next"
@@ -77,7 +83,21 @@ export default async function ModeloDetailPage({ params }: Props) {
     entrega?: number
   }>) || []
 
-  const whatsappUrl = getWhatsAppUrl(WHATSAPP_MESSAGES.modelo(model.nombre))
+  const precioFormateado = model.precio
+    ? (model.moneda || "ARS") === "USD"
+      ? `USD ${model.precio.toLocaleString("es-AR")}`
+      : formatPrice(model.precio)
+    : undefined
+
+  const whatsappUrl = getWhatsAppUrl(
+    WHATSAPP_MESSAGES.modelo({
+      nombre: model.nombre,
+      marca: model.marca,
+      precio: precioFormateado,
+      slug: model.slug,
+      condicion: model.condicion,
+    })
+  )
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -120,36 +140,133 @@ export default async function ModeloDetailPage({ params }: Props) {
       <section className="py-12 bg-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            {/* Gallery */}
-            <ModelGallery fotos={model.fotos} nombre={model.nombre} />
+            {/* Gallery + calculadora */}
+            <div className="space-y-6">
+              <ModelGallery fotos={model.fotos} nombre={model.nombre} />
+              {/* Calculadora de cuotas (desktop: debajo de fotos) */}
+              {model.precio && (
+                <div className="hidden lg:block">
+                  <CalculadoraCuotas
+                    precio={model.precio}
+                    moneda={model.moneda || "ARS"}
+                    financiacion={financiacion}
+                  />
+                </div>
+              )}
+            </div>
 
             {/* Info */}
             <div>
-              <span className="inline-block rounded-md bg-[#6B4F7A]/10 px-3 py-1 text-xs font-semibold text-[#6B4F7A] uppercase tracking-wider">
-                {model.marca}
-              </span>
+              <div className="flex items-start justify-between gap-4">
+                <span className="inline-block rounded-md bg-[#6B4F7A]/10 px-3 py-1 text-xs font-semibold text-[#6B4F7A] uppercase tracking-wider">
+                  {model.marca}
+                </span>
+                <div className="flex items-center gap-2">
+                  <WishlistButton
+                    variant="icon"
+                    item={{
+                      id: model.id,
+                      slug: model.slug,
+                      nombre: model.nombre,
+                      marca: model.marca,
+                      fotos: model.fotos,
+                      precio: model.precio,
+                      moneda: model.moneda || "ARS",
+                      cilindrada: model.cilindrada,
+                      condicion: model.condicion,
+                    }}
+                  />
+                  <ShareButton
+                    variant="icon"
+                    title={`${model.marca} ${model.nombre}`}
+                    text={`Mirá este ${model.marca} ${model.nombre} en Motos Fernandez`}
+                    path={`/modelos/${model.slug}`}
+                  />
+                </div>
+              </div>
               <h1
                 className="mt-3 text-3xl sm:text-4xl font-bold text-[#1A1A1A]"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 {model.nombre}
               </h1>
-              <div className="mt-2 flex flex-wrap items-center gap-3">
+              <div className="mt-2 flex flex-wrap items-center gap-2">
+                <span className={`inline-block rounded-md px-2.5 py-0.5 text-xs font-bold ${
+                  (model.condicion || "0KM") === "0KM"
+                    ? "bg-emerald-100 text-emerald-800"
+                    : "bg-orange-100 text-orange-800"
+                }`}>
+                  {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
+                </span>
+                {model.etiqueta && ETIQUETAS_MAP[model.etiqueta] && (
+                  <span className={`inline-block rounded-md px-2.5 py-0.5 text-xs font-bold text-white ${ETIQUETAS_MAP[model.etiqueta].color}`}>
+                    {ETIQUETAS_MAP[model.etiqueta].label}
+                  </span>
+                )}
+                <span className="text-sm text-gray-400">{model.anio || new Date().getFullYear()}</span>
+                {(model.condicion || "0KM") === "USADA" ? (
+                  model.kilometros != null && (
+                    <span className="text-sm text-gray-400">· {model.kilometros.toLocaleString("es-AR")} km</span>
+                  )
+                ) : (
+                  <span className="text-sm text-gray-400">· 0 km</span>
+                )}
                 {model.cilindrada && (
-                  <span className="text-sm text-gray-500">{model.cilindrada}</span>
+                  <span className="text-sm text-gray-500">· {model.cilindrada}</span>
                 )}
                 <span className="text-sm text-gray-400">
-                  {CATEGORIA_VEHICULO_LABELS[model.categoriaVehiculo]}
+                  · {CATEGORIA_VEHICULO_LABELS[model.categoriaVehiculo]}
                 </span>
               </div>
+              {/* Highlight de datos clave para usadas */}
+              {(model.condicion || "0KM") === "USADA" && (model.anio || model.kilometros != null) && (
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                  {model.anio && (
+                    <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
+                      <p className="text-[10px] uppercase tracking-wider text-orange-700 font-semibold">Año</p>
+                      <p className="mt-1 text-2xl font-extrabold text-orange-900">{model.anio}</p>
+                    </div>
+                  )}
+                  {model.kilometros != null && (
+                    <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
+                      <p className="text-[10px] uppercase tracking-wider text-orange-700 font-semibold">Kilómetros</p>
+                      <p className="mt-1 text-2xl font-extrabold text-orange-900">
+                        {model.kilometros.toLocaleString("es-AR")}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {model.observaciones && (
+                <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
+                  <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-1">Observaciones</p>
+                  <p className="text-sm text-gray-700 leading-relaxed">{model.observaciones}</p>
+                </div>
+              )}
 
               {/* Price */}
               <div className="mt-6 p-5 rounded-xl bg-[#F0F0F0]">
                 <p className="text-sm text-gray-500 mb-1">Precio de lista</p>
                 <p className="text-3xl font-bold text-[#6B4F7A]">
-                  {model.precio ? formatPrice(model.precio) : "Consultar"}
+                  {model.precio
+                    ? (model.moneda || "ARS") === "USD"
+                      ? `USD ${model.precio.toLocaleString("es-AR")}`
+                      : formatPrice(model.precio)
+                    : "Consultar"}
                 </p>
               </div>
+
+              {/* Calculadora de cuotas (mobile: debajo del precio) */}
+              {model.precio && (
+                <div className="mt-4 lg:hidden">
+                  <CalculadoraCuotas
+                    precio={model.precio}
+                    moneda={model.moneda || "ARS"}
+                    financiacion={financiacion}
+                  />
+                </div>
+              )}
 
               {/* Description */}
               {model.descripcion && (

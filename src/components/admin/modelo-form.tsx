@@ -17,8 +17,9 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Trash2, ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
-import { CATEGORIAS_VEHICULO } from "@/lib/constants"
+import { CATEGORIAS_VEHICULO, ETIQUETAS_MODELO } from "@/lib/constants"
 import { ImageUpload } from "@/components/admin/image-upload"
+import { MultiImageUpload } from "@/components/admin/multi-image-upload"
 
 type ModeloColor = {
   id?: string
@@ -45,8 +46,13 @@ type ModeloData = {
   slug: string
   marca: string
   categoriaVehiculo: string
+  condicion: string
+  anio: number | null
+  kilometros: number | null
+  observaciones: string
   cilindrada: string
   precio: number | null
+  moneda: string
   descripcion: string
   specs: SpecEntry[]
   financiacion: FinanciacionEntry[]
@@ -54,6 +60,7 @@ type ModeloData = {
   fotos: string[]
   activo: boolean
   destacado: boolean
+  etiqueta: string | null
   orden: number
 }
 
@@ -82,10 +89,19 @@ export function ModeloForm({
   const [categoriaVehiculo, setCategoriaVehiculo] = useState(
     initialData?.categoriaVehiculo || "MOTOCICLETA"
   )
+  const [condicion, setCondicion] = useState(initialData?.condicion || "0KM")
+  const [anio, setAnio] = useState(
+    initialData?.anio != null ? String(initialData.anio) : String(new Date().getFullYear())
+  )
+  const [kilometros, setKilometros] = useState(
+    initialData?.kilometros != null ? String(initialData.kilometros) : ""
+  )
+  const [observaciones, setObservaciones] = useState(initialData?.observaciones || "")
   const [cilindrada, setCilindrada] = useState(initialData?.cilindrada || "")
   const [precio, setPrecio] = useState(
     initialData?.precio != null ? String(initialData.precio) : ""
   )
+  const [moneda, setMoneda] = useState(initialData?.moneda || "ARS")
   const [descripcion, setDescripcion] = useState(initialData?.descripcion || "")
   const [specs, setSpecs] = useState<SpecEntry[]>(
     initialData?.specs?.length ? initialData.specs : [{ key: "", value: "" }]
@@ -98,11 +114,10 @@ export function ModeloForm({
       ? initialData.colores
       : [{ nombre: "", hex: "#000000", foto: "" }]
   )
-  const [fotos, setFotos] = useState<string[]>(
-    initialData?.fotos?.length ? initialData.fotos : [""]
-  )
+  const [fotos, setFotos] = useState<string[]>(initialData?.fotos || [])
   const [activo, setActivo] = useState(initialData?.activo ?? true)
   const [destacado, setDestacado] = useState(initialData?.destacado ?? false)
+  const [etiqueta, setEtiqueta] = useState<string>(initialData?.etiqueta || "NONE")
   const [orden, setOrden] = useState(initialData?.orden ?? 0)
   const [error, setError] = useState("")
 
@@ -123,7 +138,12 @@ export function ModeloForm({
     formData.append("slug", slug)
     formData.append("marca", marca)
     formData.append("categoriaVehiculo", categoriaVehiculo)
+    formData.append("condicion", condicion)
+    formData.append("anio", anio)
+    formData.append("kilometros", kilometros)
+    formData.append("observaciones", observaciones)
     formData.append("cilindrada", cilindrada)
+    formData.append("moneda", moneda)
     formData.append("precio", precio)
     formData.append("descripcion", descripcion)
     formData.append("specs", JSON.stringify(specs.filter((s) => s.key.trim())))
@@ -144,6 +164,7 @@ export function ModeloForm({
     formData.append("fotos", JSON.stringify(fotos.filter((f) => f.trim())))
     formData.append("activo", String(activo))
     formData.append("destacado", String(destacado))
+    formData.append("etiqueta", etiqueta === "NONE" ? "" : etiqueta)
     formData.append("orden", String(orden))
 
     startTransition(async () => {
@@ -247,15 +268,77 @@ export function ModeloForm({
                   />
                 </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="precio">Precio (ARS)</Label>
-                <Input
-                  id="precio"
-                  type="number"
-                  value={precio}
-                  onChange={(e) => setPrecio(e.target.value)}
-                  placeholder="Dejar vacio para 'Consultar'"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="condicion">Condicion</Label>
+                  <Select value={condicion} onValueChange={(v) => v && setCondicion(v)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0KM">0KM</SelectItem>
+                      <SelectItem value="USADA">Usada</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="anio">Año</Label>
+                  <Input
+                    id="anio"
+                    type="number"
+                    value={anio}
+                    onChange={(e) => setAnio(e.target.value)}
+                    placeholder="2026"
+                  />
+                </div>
+                {condicion === "USADA" && (
+                  <div className="space-y-2">
+                    <Label htmlFor="kilometros">Kilometros</Label>
+                    <Input
+                      id="kilometros"
+                      type="number"
+                      value={kilometros}
+                      onChange={(e) => setKilometros(e.target.value)}
+                      placeholder="15000"
+                    />
+                  </div>
+                )}
+              </div>
+              {condicion === "USADA" && (
+                <div className="space-y-2">
+                  <Label htmlFor="observaciones">Observaciones</Label>
+                  <Textarea
+                    id="observaciones"
+                    value={observaciones}
+                    onChange={(e) => setObservaciones(e.target.value)}
+                    rows={2}
+                    placeholder="Ej: Tiene protector de carter, sliders, escape Leovince..."
+                  />
+                </div>
+              )}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="space-y-2 md:col-span-3">
+                  <Label htmlFor="precio">Precio</Label>
+                  <Input
+                    id="precio"
+                    type="number"
+                    value={precio}
+                    onChange={(e) => setPrecio(e.target.value)}
+                    placeholder="Dejar vacio para 'Consultar'"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="moneda">Moneda</Label>
+                  <Select value={moneda} onValueChange={(v) => v && setMoneda(v)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="ARS">$ ARS</SelectItem>
+                      <SelectItem value="USD">USD</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="descripcion">Descripcion</Label>
@@ -488,44 +571,14 @@ export function ModeloForm({
           {/* Fotos */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Fotos</CardTitle>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setFotos([...fotos, ""])}
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  Agregar foto
-                </Button>
-              </div>
+              <CardTitle>Fotos</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              {fotos.map((foto, i) => (
-                <div key={i} className="flex gap-2 items-start">
-                  <div className="flex-1">
-                    <ImageUpload
-                      value={foto}
-                      onChange={(url) => {
-                        const updated = [...fotos]
-                        updated[i] = url
-                        setFotos(updated)
-                      }}
-                      folder="modelos"
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="shrink-0 text-red-500 hover:text-red-700 mt-1"
-                    onClick={() => setFotos(fotos.filter((_, j) => j !== i))}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
+            <CardContent>
+              <MultiImageUpload
+                value={fotos}
+                onChange={setFotos}
+                folder="modelos"
+              />
             </CardContent>
           </Card>
         </div>
@@ -544,6 +597,20 @@ export function ModeloForm({
               <div className="flex items-center justify-between">
                 <Label htmlFor="destacado">Destacado</Label>
                 <Switch id="destacado" checked={destacado} onCheckedChange={setDestacado} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="etiqueta">Etiqueta</Label>
+                <Select value={etiqueta} onValueChange={(v) => v && setEtiqueta(v)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="NONE">Sin etiqueta</SelectItem>
+                    {ETIQUETAS_MODELO.map((e) => (
+                      <SelectItem key={e.value} value={e.value}>{e.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="orden">Orden</Label>
