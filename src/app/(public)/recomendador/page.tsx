@@ -327,7 +327,7 @@ export default function RecomendadorPage() {
             {resultado.modelos.map((modelo, idx) => (
               <Link
                 key={modelo.id}
-                href={`/modelos/${modelo.slug}`}
+                href={`/catalogo/${modelo.slug}`}
                 className="group relative flex flex-col rounded-2xl bg-white overflow-hidden border border-gray-100 hover:border-[#6B4F7A]/40 hover:shadow-xl hover:shadow-[#6B4F7A]/10 transition-all duration-300"
               >
                 {/* Badge numero de recomendación */}
@@ -409,7 +409,7 @@ export default function RecomendadorPage() {
           {/* Botones */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/modelos"
+              href="/catalogo"
               className="inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#5a4267] transition-colors shadow-md"
             >
               Ver todo el catálogo

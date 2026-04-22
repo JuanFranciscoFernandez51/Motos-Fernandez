@@ -376,7 +376,7 @@ export async function sendNewsletterWelcome(email: string, nombre?: string) {
           Mientras tanto, pasate por el catálogo y mirá lo que tenemos para vos.
         </p>
         <div style="text-align: center; margin: 24px 0;">
-          <a href="https://motosfernandez.com.ar/modelos"
+          <a href="https://motosfernandez.com.ar/catalogo"
              style="display: inline-block; background: #6B4F7A; color: #ffffff; text-decoration: none; padding: 12px 28px; border-radius: 8px; font-weight: bold; font-size: 15px;">
             Ver catálogo
           </a>

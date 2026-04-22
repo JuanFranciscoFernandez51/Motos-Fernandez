@@ -284,7 +284,7 @@ export default function UbicacionPage() {
               </p>
               <div className="space-y-2.5">
                 <Link
-                  href="/modelos"
+                  href="/catalogo"
                   className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-[#1A1A1A] hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
                 >
                   Ver catálogo

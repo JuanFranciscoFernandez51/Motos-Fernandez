@@ -464,7 +464,7 @@ export function CatalogoClient({
           {filtered.map((model) => (
             <Link
               key={model.id}
-              href={`/modelos/${model.slug}`}
+              href={`/catalogo/${model.slug}`}
               className="group rounded-xl bg-white overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all"
             >
               <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">

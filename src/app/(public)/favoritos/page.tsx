@@ -42,7 +42,7 @@ export default function FavoritosPage() {
                 Tu lista de favoritos está vacía.
               </p>
               <Link
-                href="/modelos"
+                href="/catalogo"
                 className="inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
               >
                 Explorar catálogo
@@ -66,7 +66,7 @@ export default function FavoritosPage() {
                     key={item.id}
                     className="group rounded-xl bg-white overflow-hidden hover:shadow-lg transition-all relative"
                   >
-                    <Link href={`/modelos/${item.slug}`}>
+                    <Link href={`/catalogo/${item.slug}`}>
                       <div className="relative aspect-square bg-gray-100 overflow-hidden">
                         {item.fotos[0] ? (
                           <Image

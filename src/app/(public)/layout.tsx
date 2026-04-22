@@ -13,7 +13,7 @@ import { CookieBanner } from "@/components/public/cookie-banner"
 import { NewsletterForm } from "@/components/public/newsletter-form"
 
 const NAV_LINKS = [
-  { href: "/modelos", label: "Catálogo", highlight: true },
+  { href: "/catalogo", label: "Catálogo", highlight: true },
   { href: "/tienda", label: "Tienda" },
   { href: "/consigna", label: "Consigna" },
   { href: "/financiacion", label: "Financiación" },

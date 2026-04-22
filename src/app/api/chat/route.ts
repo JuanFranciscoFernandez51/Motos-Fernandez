@@ -18,7 +18,7 @@ CONTACTO:
 
 INSTRUCCIONES IMPORTANTES:
 - Tenes herramientas para consultar el catalogo real de la concesionaria. USA LAS TOOLS siempre que te pregunten por modelos, productos, precios, stock o financiacion.
-- Cuando muestres modelos o productos, incluí el link a la pagina: para modelos usa /modelos/SLUG, para productos de tienda usa /tienda/SLUG.
+- Cuando muestres modelos o productos, incluí el link a la pagina: para modelos usa /catalogo/SLUG, para productos de tienda usa /tienda/SLUG.
 - Cuando la tool devuelva un campo "foto" (URL de imagen), mostrá la imagen usando la sintaxis markdown: ![nombre del producto](URL). Solo usá esta sintaxis si la tool devolvió el campo "foto"; nunca inventes URLs de imágenes. Mostrá una imagen por modelo/producto destacado que estés recomendando.
 - Mostrá precios reales. Si un modelo no tiene precio cargado, decí "consultanos por WhatsApp para el precio".
 - Si hay oferta en un producto, mostrá el precio de oferta tachando el original.
@@ -187,7 +187,7 @@ async function executeTool(name: string, input: Record<string, unknown>) {
             : "Consultar",
           destacado: m.destacado,
           foto: m.fotos && m.fotos.length > 0 ? m.fotos[0] : null,
-          link: `/modelos/${m.slug}`,
+          link: `/catalogo/${m.slug}`,
         })),
         total: modelos.length,
       }
@@ -233,7 +233,7 @@ async function executeTool(name: string, input: Record<string, unknown>) {
         colores: modelo.colores.map((c) => c.nombre),
         fotos: modelo.fotos.length,
         foto: modelo.fotos.length > 0 ? modelo.fotos[0] : null,
-        link: `/modelos/${modelo.slug}`,
+        link: `/catalogo/${modelo.slug}`,
       }
     }
 

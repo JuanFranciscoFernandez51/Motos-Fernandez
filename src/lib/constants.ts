@@ -58,7 +58,7 @@ export const WHATSAPP_MESSAGES = {
     const titulo = marca ? `${marca} ${nombre}` : nombre
     const cond = condicion && condicion !== "0KM" ? ` (${condicion})` : ""
     const precioTxt = precio ? `\nPrecio que figura: ${precio}` : ""
-    const link = slug ? `\nhttps://motos-fernandez.vercel.app/modelos/${slug}` : ""
+    const link = slug ? `\nhttps://motos-fernandez.vercel.app/catalogo/${slug}` : ""
     return `Hola! Estoy interesado en el ${titulo}${cond}.${precioTxt}${link}\n\nMe pasan info y disponibilidad?`
   },
   producto: (opts: { nombre: string; precio?: string; slug?: string }) => {

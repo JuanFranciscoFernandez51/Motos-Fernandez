@@ -218,7 +218,7 @@ export default async function AdminDashboardPage() {
       take: 5,
       where: {
         createdAt: { gte: thirtyDaysAgoUTC },
-        pagina: { startsWith: "/modelos/" },
+        pagina: { startsWith: "/catalogo/" },
       },
     }),
     // Consultas por formulario (últimos 30 días) - no leídas
@@ -302,7 +302,7 @@ export default async function AdminDashboardPage() {
   }))
 
   const modelosMasVistos = modelosMasVistosRaw.map((v) => ({
-    slug: v.pagina.replace(/^\/modelos\//, "").replace(/\/$/, "") || v.pagina,
+    slug: v.pagina.replace(/^\/catalogo\//, "").replace(/\/$/, "") || v.pagina,
     pagina: v.pagina,
     cantidad: v._count.pagina,
   }))

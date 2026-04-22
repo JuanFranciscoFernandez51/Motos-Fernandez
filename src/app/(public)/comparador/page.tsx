@@ -75,7 +75,7 @@ export default function ComparadorPage() {
               Agregá modelos al comparador desde el catálogo para verlos lado a lado.
             </p>
             <Link
-              href="/modelos"
+              href="/catalogo"
               className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
             >
               Ir al catálogo
@@ -280,7 +280,7 @@ export default function ComparadorPage() {
                     <td key={item.id} className="border-t border-gray-50 px-4 py-4 text-center">
                       <div className="flex flex-col items-center gap-2">
                         <Link
-                          href={`/modelos/${item.slug}`}
+                          href={`/catalogo/${item.slug}`}
                           className="inline-flex items-center justify-center rounded-lg bg-[#6B4F7A] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A] transition-colors w-full max-w-[160px]"
                         >
                           Ver detalle
@@ -394,7 +394,7 @@ export default function ComparadorPage() {
 
                 <div className="mt-4 flex flex-col gap-2">
                   <Link
-                    href={`/modelos/${item.slug}`}
+                    href={`/catalogo/${item.slug}`}
                     className="inline-flex items-center justify-center rounded-lg bg-[#6B4F7A] px-4 py-2 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
                   >
                     Ver detalle
@@ -424,7 +424,7 @@ export default function ComparadorPage() {
 
         <div className="mt-8 text-center">
           <Link
-            href="/modelos"
+            href="/catalogo"
             className="inline-flex items-center gap-2 text-sm font-semibold text-[#6B4F7A] hover:text-[#8B6F9A]"
           >
             &larr; Volver al catálogo

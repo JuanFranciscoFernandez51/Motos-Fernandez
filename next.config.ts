@@ -13,6 +13,12 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      { source: "/modelos", destination: "/catalogo", permanent: true },
+      { source: "/modelos/:slug*", destination: "/catalogo/:slug*", permanent: true },
+    ]
+  },
   async headers() {
     return [
       {

@@ -126,7 +126,7 @@ export default async function ModeloDetailPage({ params }: Props) {
       <div className="bg-[#1A1A1A] py-4">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <nav className="flex items-center gap-2 text-sm text-gray-400">
-            <Link href="/modelos" className="hover:text-white transition-colors">
+            <Link href="/catalogo" className="hover:text-white transition-colors">
               Modelos
             </Link>
             <ChevronRight className="size-3.5" />
@@ -180,7 +180,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                     variant="icon"
                     title={`${model.marca} ${model.nombre}`}
                     text={`Mirá este ${model.marca} ${model.nombre} en Motos Fernandez`}
-                    path={`/modelos/${model.slug}`}
+                    path={`/catalogo/${model.slug}`}
                   />
                 </div>
               </div>
@@ -395,7 +395,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                 {related.map((m) => (
                   <Link
                     key={m.id}
-                    href={`/modelos/${m.slug}`}
+                    href={`/catalogo/${m.slug}`}
                     className="group rounded-xl bg-[#F0F0F0] overflow-hidden hover:shadow-md transition-all"
                   >
                     <div className="relative aspect-[4/3] bg-gray-200 overflow-hidden">

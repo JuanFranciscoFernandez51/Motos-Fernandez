@@ -124,7 +124,7 @@ export default async function HomePage() {
             </p>
             <div className="mt-7 flex flex-wrap gap-4">
               <Link
-                href="/modelos"
+                href="/catalogo"
                 className="inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-8 py-4 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors shadow-lg shadow-[#6B4F7A]/30"
               >
                 Ver catálogo
@@ -175,7 +175,7 @@ export default async function HomePage() {
             {CATEGORIAS_VEHICULO.map((cat) => (
               <Link
                 key={cat.value}
-                href={`/modelos?categoria=${cat.value}`}
+                href={`/catalogo?categoria=${cat.value}`}
                 className="group flex flex-col items-center gap-4 rounded-2xl border border-gray-100 bg-white p-8 text-center hover:border-[#6B4F7A]/40 hover:shadow-xl hover:shadow-[#6B4F7A]/8 transition-all duration-200"
               >
                 <div className="flex items-center justify-center size-16 rounded-2xl bg-[#F0F0F0] text-[#4E4B48] group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
@@ -206,7 +206,7 @@ export default async function HomePage() {
               </p>
             </div>
             <Link
-              href="/modelos"
+              href="/catalogo"
               className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-[#6B4F7A] hover:text-[#9B59B6] transition-colors"
             >
               Ver todos
@@ -220,7 +220,7 @@ export default async function HomePage() {
                 {modelos.map((model) => (
                   <Link
                     key={model.id}
-                    href={`/modelos/${model.slug}`}
+                    href={`/catalogo/${model.slug}`}
                     className="group rounded-xl bg-white overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all duration-200"
                   >
                     <div className="relative aspect-square bg-gray-100 overflow-hidden">
@@ -286,7 +286,7 @@ export default async function HomePage() {
               </div>
               <div className="mt-10 text-center sm:hidden">
                 <Link
-                  href="/modelos"
+                  href="/catalogo"
                   className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#6B4F7A] hover:text-[#9B59B6] transition-colors"
                 >
                   Ver todos los modelos

@@ -207,7 +207,7 @@ export default function FinanciacionPage() {
               WhatsApp
             </a>
             <Link
-              href="/modelos"
+              href="/catalogo"
               className="inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-7 py-3.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
             >
               Ver catalogo

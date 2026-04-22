@@ -14,7 +14,7 @@ function FacebookIcon({ className }: { className?: string }) {
 interface ShareButtonProps {
   title: string
   text?: string
-  path: string // path relativo, ej: /modelos/honda-xr
+  path: string // path relativo, ej: /catalogo/honda-xr
   variant?: "icon" | "full"
   className?: string
 }

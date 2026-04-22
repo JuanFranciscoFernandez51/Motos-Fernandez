@@ -9,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Rutas estáticas
   const staticRoutes = [
     "/",
-    "/modelos",
+    "/catalogo",
     "/tienda",
     "/financiacion",
     "/nosotros",
@@ -45,7 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: route === "/" ? 1 : 0.8,
     })),
     ...modelos.map((m) => ({
-      url: `${baseUrl}/modelos/${m.slug}`,
+      url: `${baseUrl}/catalogo/${m.slug}`,
       lastModified: m.updatedAt,
       changeFrequency: "weekly" as const,
       priority: 0.9,
