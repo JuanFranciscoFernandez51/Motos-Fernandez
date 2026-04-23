@@ -106,29 +106,6 @@ export function CatalogoClient({
     setCilindradaMax(cilindradaMaxCatalogo)
   }, [cilindradaMaxCatalogo])
 
-  const handleToggleCompare = (e: React.MouseEvent, model: Modelo) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (isInCompare(model.id)) {
-      removeFromCompare(model.id)
-    } else {
-      addToCompare({
-        id: model.id,
-        slug: model.slug,
-        nombre: model.nombre,
-        marca: model.marca,
-        foto: model.fotos[0] || null,
-        precio: model.precio,
-        moneda: model.moneda,
-        cilindrada: model.cilindrada,
-        condicion: model.condicion || "0KM",
-        anio: model.anio,
-        kilometros: model.kilometros,
-        specs: (model.specs as Record<string, unknown> | null) ?? null,
-      })
-    }
-  }
-
   // Deteccion de filtros avanzados activos (para badge y boton limpiar)
   const precioFiltroActivo =
     precioMin > precioMinCatalogo || precioMax < precioMaxCatalogo
@@ -462,64 +439,130 @@ export function CatalogoClient({
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filtered.map((model) => (
-            <Link
+            <article
               key={model.id}
-              href={`/catalogo/${model.slug}`}
-              className="group rounded-xl bg-white overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all"
+              className="group relative rounded-xl bg-white overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all"
             >
-              <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
-                {model.fotos[0] ? (
-                  <Image
-                    src={model.fotos[0]}
-                    alt={model.nombre}
-                    fill
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full text-gray-300">
-                    <Bike className="size-12" />
-                  </div>
-                )}
-                <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5">
-                  <span className="rounded-md bg-[#1A1A1A]/80 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
-                    {CATEGORIA_VEHICULO_LABELS[model.categoriaVehiculo] || model.categoriaVehiculo}
-                  </span>
-                  {model.etiqueta && ETIQUETAS_MAP[model.etiqueta] && (
-                    <span className={`rounded-md px-2.5 py-1 text-[10px] font-bold text-white shadow ${ETIQUETAS_MAP[model.etiqueta].color}`}>
-                      {ETIQUETAS_MAP[model.etiqueta].label.toUpperCase()}
-                    </span>
+              {/* Link principal — envuelve imagen + info */}
+              <Link href={`/catalogo/${model.slug}`} className="block">
+                <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
+                  {model.fotos[0] ? (
+                    <Image
+                      src={model.fotos[0]}
+                      alt={model.nombre}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-gray-300">
+                      <Bike className="size-12" />
+                    </div>
                   )}
+                  {/* Chips arriba a la izquierda (no clickeables) */}
+                  <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5 pointer-events-none">
+                    <span className="rounded-md bg-[#1A1A1A]/80 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                      {CATEGORIA_VEHICULO_LABELS[model.categoriaVehiculo] || model.categoriaVehiculo}
+                    </span>
+                    {model.etiqueta && ETIQUETAS_MAP[model.etiqueta] && (
+                      <span className={`rounded-md px-2.5 py-1 text-[10px] font-bold text-white shadow ${ETIQUETAS_MAP[model.etiqueta].color}`}>
+                        {ETIQUETAS_MAP[model.etiqueta].label.toUpperCase()}
+                      </span>
+                    )}
+                  </div>
                 </div>
-                <div className="absolute top-3 right-3 flex items-center gap-1.5">
-                  <span className={`rounded-md px-2.5 py-1 text-xs font-bold backdrop-blur-sm ${
+                <div className="p-5">
+                  <p className="text-xs font-medium text-[#8B6F9A] uppercase tracking-wider">
+                    {model.marca}
+                  </p>
+                  <h3
+                    className="mt-1 text-lg font-bold text-[#1A1A1A]"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {model.nombre}
+                  </h3>
+                  <p className="text-xs text-gray-400 mt-0.5">
+                    {(model.condicion || "0KM") === "USADA" ? (
+                      <>
+                        {model.anio && <span>{model.anio}</span>}
+                        {model.kilometros != null && (
+                          <span>{model.anio ? " · " : ""}{model.kilometros.toLocaleString("es-AR")} km</span>
+                        )}
+                        {model.cilindrada && (
+                          <span>{(model.anio || model.kilometros != null) ? " · " : ""}{model.cilindrada}</span>
+                        )}
+                      </>
+                    ) : (
+                      <>
+                        <span>{model.anio || new Date().getFullYear()}</span>
+                        <span> · 0 km</span>
+                        {model.cilindrada && <span> · {model.cilindrada}</span>}
+                      </>
+                    )}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between">
+                    <p className="text-lg font-bold text-[#6B4F7A]">
+                      {model.precio
+                        ? (model.moneda || "ARS") === "USD"
+                          ? `USD ${model.precio.toLocaleString("es-AR")}`
+                          : formatPrice(model.precio)
+                        : "Consultar"}
+                    </p>
+                    <span className="text-xs font-medium text-[#6B4F7A] group-hover:text-[#9B59B6] transition-colors">
+                      Ver detalle &rarr;
+                    </span>
+                  </div>
+                </div>
+              </Link>
+
+              {/* Badge de condición + botones interactivos — FUERA del Link (HTML válido) */}
+              <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
+                <span
+                  className={`pointer-events-none rounded-md px-2.5 py-1 text-xs font-bold backdrop-blur-sm ${
                     (model.condicion || "0KM") === "0KM"
                       ? "bg-emerald-500/90 text-white"
                       : "bg-orange-500/90 text-white"
-                  }`}>
-                    {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
-                  </span>
-                  <WishlistButton
-                    variant="icon-floating"
-                    item={{
-                      id: model.id,
-                      slug: model.slug,
-                      nombre: model.nombre,
-                      marca: model.marca,
-                      fotos: model.fotos,
-                      precio: model.precio,
-                      moneda: model.moneda || "ARS",
-                      cilindrada: model.cilindrada,
-                      condicion: model.condicion,
-                    }}
-                  />
-                </div>
+                  }`}
+                >
+                  {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
+                </span>
+                <WishlistButton
+                  variant="icon-floating"
+                  item={{
+                    id: model.id,
+                    slug: model.slug,
+                    nombre: model.nombre,
+                    marca: model.marca,
+                    fotos: model.fotos,
+                    precio: model.precio,
+                    moneda: model.moneda || "ARS",
+                    cilindrada: model.cilindrada,
+                    condicion: model.condicion,
+                  }}
+                />
                 <button
                   type="button"
-                  onClick={(e) => handleToggleCompare(e, model)}
+                  onClick={() =>
+                    isInCompare(model.id)
+                      ? removeFromCompare(model.id)
+                      : addToCompare({
+                          id: model.id,
+                          slug: model.slug,
+                          nombre: model.nombre,
+                          marca: model.marca,
+                          foto: model.fotos[0] || null,
+                          precio: model.precio,
+                          moneda: model.moneda,
+                          cilindrada: model.cilindrada,
+                          condicion: model.condicion || "0KM",
+                          anio: model.anio,
+                          kilometros: model.kilometros,
+                          specs: (model.specs as Record<string, unknown> | null) ?? null,
+                        })
+                  }
                   aria-label={isInCompare(model.id) ? "Quitar del comparador" : "Agregar al comparador"}
                   title={isInCompare(model.id) ? "Quitar del comparador" : "Comparar modelo"}
-                  className={`absolute bottom-3 right-3 inline-flex items-center justify-center size-9 rounded-full backdrop-blur-sm shadow-sm transition-all ${
+                  className={`inline-flex items-center justify-center size-9 rounded-full backdrop-blur-sm shadow-sm transition-all ${
                     isInCompare(model.id)
                       ? "bg-[#6B4F7A] text-white hover:bg-[#8B6F9A]"
                       : "bg-white/90 text-[#6B4F7A] hover:bg-white"
@@ -528,49 +571,7 @@ export function CatalogoClient({
                   <Scale className="size-4" />
                 </button>
               </div>
-              <div className="p-5">
-                <p className="text-xs font-medium text-[#8B6F9A] uppercase tracking-wider">
-                  {model.marca}
-                </p>
-                <h3
-                  className="mt-1 text-lg font-bold text-[#1A1A1A]"
-                  style={{ fontFamily: "var(--font-display)" }}
-                >
-                  {model.nombre}
-                </h3>
-                <p className="text-xs text-gray-400 mt-0.5">
-                  {(model.condicion || "0KM") === "USADA" ? (
-                    <>
-                      {model.anio && <span>{model.anio}</span>}
-                      {model.kilometros != null && (
-                        <span>{model.anio ? " · " : ""}{model.kilometros.toLocaleString("es-AR")} km</span>
-                      )}
-                      {model.cilindrada && (
-                        <span>{(model.anio || model.kilometros != null) ? " · " : ""}{model.cilindrada}</span>
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <span>{model.anio || new Date().getFullYear()}</span>
-                      <span> · 0 km</span>
-                      {model.cilindrada && <span> · {model.cilindrada}</span>}
-                    </>
-                  )}
-                </p>
-                <div className="mt-3 flex items-center justify-between">
-                  <p className="text-lg font-bold text-[#6B4F7A]">
-                    {model.precio
-                      ? (model.moneda || "ARS") === "USD"
-                        ? `USD ${model.precio.toLocaleString("es-AR")}`
-                        : formatPrice(model.precio)
-                      : "Consultar"}
-                  </p>
-                  <span className="text-xs font-medium text-[#6B4F7A] group-hover:text-[#9B59B6] transition-colors">
-                    Ver detalle &rarr;
-                  </span>
-                </div>
-              </div>
-            </Link>
+            </article>
           ))}
         </div>
       )}
