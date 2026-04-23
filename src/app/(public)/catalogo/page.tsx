@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 async function getModels() {
   try {
     return await prisma.modelo.findMany({
-      where: { activo: true },
+      where: { activo: true, vendida: false },
       orderBy: [{ orden: "asc" }, { nombre: "asc" }],
       include: { colores: true },
     })
@@ -30,7 +30,7 @@ async function getModels() {
 async function getBrands() {
   try {
     const brands = await prisma.modelo.findMany({
-      where: { activo: true },
+      where: { activo: true, vendida: false },
       select: { marca: true },
       distinct: ["marca"],
       orderBy: { marca: "asc" },

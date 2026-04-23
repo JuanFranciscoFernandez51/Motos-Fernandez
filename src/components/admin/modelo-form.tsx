@@ -62,6 +62,13 @@ type ModeloData = {
   destacado: boolean
   etiqueta: string | null
   orden: number
+  // Datos internos (solo admin)
+  chasis?: string | null
+  motor?: string | null
+  patente?: string | null
+  clienteNombre?: string | null
+  clienteContacto?: string | null
+  notasInternas?: string | null
 }
 
 function slugify(text: string): string {
@@ -119,6 +126,13 @@ export function ModeloForm({
   const [destacado, setDestacado] = useState(initialData?.destacado ?? false)
   const [etiqueta, setEtiqueta] = useState<string>(initialData?.etiqueta || "NONE")
   const [orden, setOrden] = useState(initialData?.orden ?? 0)
+  // Datos internos (solo admin)
+  const [chasis, setChasis] = useState(initialData?.chasis || "")
+  const [motor, setMotor] = useState(initialData?.motor || "")
+  const [patente, setPatente] = useState(initialData?.patente || "")
+  const [clienteNombre, setClienteNombre] = useState(initialData?.clienteNombre || "")
+  const [clienteContacto, setClienteContacto] = useState(initialData?.clienteContacto || "")
+  const [notasInternas, setNotasInternas] = useState(initialData?.notasInternas || "")
   const [error, setError] = useState("")
 
   const handleNombreChange = (value: string) => {
@@ -166,6 +180,13 @@ export function ModeloForm({
     formData.append("destacado", String(destacado))
     formData.append("etiqueta", etiqueta === "NONE" ? "" : etiqueta)
     formData.append("orden", String(orden))
+    // Datos internos (solo admin)
+    formData.append("chasis", chasis)
+    formData.append("motor", motor)
+    formData.append("patente", patente)
+    formData.append("clienteNombre", clienteNombre)
+    formData.append("clienteContacto", clienteContacto)
+    formData.append("notasInternas", notasInternas)
 
     startTransition(async () => {
       const result = await saveAction(formData)
@@ -625,6 +646,85 @@ export function ModeloForm({
           </Card>
         </div>
       </div>
+
+      {/* ========== Información interna (solo admin) ========== */}
+      <Card className="border-yellow-200 bg-yellow-50/30">
+        <CardHeader>
+          <div className="flex items-start gap-3">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-yellow-100 text-yellow-700">
+              🔒
+            </div>
+            <div>
+              <CardTitle className="text-yellow-900">
+                Información interna — solo admin
+              </CardTitle>
+              <p className="mt-1 text-xs text-yellow-800/80">
+                Estos datos NO se muestran en la web pública. Son solo para tu
+                uso interno.
+              </p>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="chasis">Número de chasis</Label>
+              <Input
+                id="chasis"
+                value={chasis}
+                onChange={(e) => setChasis(e.target.value)}
+                placeholder="ej: 9BWHE21JX24060960"
+              />
+            </div>
+            <div>
+              <Label htmlFor="motor">Número de motor</Label>
+              <Input
+                id="motor"
+                value={motor}
+                onChange={(e) => setMotor(e.target.value)}
+                placeholder="ej: 162FMJ-E-12345"
+              />
+            </div>
+            <div>
+              <Label htmlFor="patente">Patente</Label>
+              <Input
+                id="patente"
+                value={patente}
+                onChange={(e) => setPatente(e.target.value.toUpperCase())}
+                placeholder="ej: AA123BB"
+              />
+            </div>
+            <div>
+              <Label htmlFor="clienteNombre">Cliente (nombre)</Label>
+              <Input
+                id="clienteNombre"
+                value={clienteNombre}
+                onChange={(e) => setClienteNombre(e.target.value)}
+                placeholder="ej: Juan Pérez"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label htmlFor="clienteContacto">Cliente (contacto)</Label>
+              <Input
+                id="clienteContacto"
+                value={clienteContacto}
+                onChange={(e) => setClienteContacto(e.target.value)}
+                placeholder="teléfono, email, DNI..."
+              />
+            </div>
+            <div className="md:col-span-2">
+              <Label htmlFor="notasInternas">Notas internas</Label>
+              <Textarea
+                id="notasInternas"
+                value={notasInternas}
+                onChange={(e) => setNotasInternas(e.target.value)}
+                placeholder="Cualquier dato interno que quieras recordar sobre esta moto..."
+                rows={4}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </form>
   )
 }

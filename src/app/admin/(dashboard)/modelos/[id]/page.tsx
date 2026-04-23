@@ -31,6 +31,13 @@ async function updateModelo(formData: FormData) {
     const etiquetaRaw = formData.get("etiqueta") as string
     const etiqueta = etiquetaRaw && etiquetaRaw.trim() ? etiquetaRaw : null
     const orden = parseInt(formData.get("orden") as string) || 0
+    // Datos internos (solo admin)
+    const chasis = (formData.get("chasis") as string) || ""
+    const motor = (formData.get("motor") as string) || ""
+    const patente = (formData.get("patente") as string) || ""
+    const clienteNombre = (formData.get("clienteNombre") as string) || ""
+    const clienteContacto = (formData.get("clienteContacto") as string) || ""
+    const notasInternas = (formData.get("notasInternas") as string) || ""
 
     const specs: Record<string, string> = {}
     for (const s of specsRaw) {
@@ -61,6 +68,12 @@ async function updateModelo(formData: FormData) {
         destacado,
         etiqueta,
         orden,
+        chasis: chasis || null,
+        motor: motor || null,
+        patente: patente || null,
+        clienteNombre: clienteNombre || null,
+        clienteContacto: clienteContacto || null,
+        notasInternas: notasInternas || null,
         colores: {
           create: coloresRaw
             .filter((c) => c.nombre.trim())
@@ -129,6 +142,12 @@ export default async function EditModeloPage({
     destacado: modelo.destacado,
     etiqueta: modelo.etiqueta,
     orden: modelo.orden,
+    chasis: modelo.chasis,
+    motor: modelo.motor,
+    patente: modelo.patente,
+    clienteNombre: modelo.clienteNombre,
+    clienteContacto: modelo.clienteContacto,
+    notasInternas: modelo.notasInternas,
   }
 
   return <ModeloForm initialData={initialData} saveAction={updateModelo} />

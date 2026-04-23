@@ -43,6 +43,19 @@ model Modelo {
   destacado         Boolean           @default(false)
   etiqueta          String?           // "DISPONIBLE", "ULTIMA_UNIDAD", "RECIEN_INGRESADA", "CONSULTAR_STOCK", "RESERVADA"
   orden             Int               @default(0)
+
+  // Venta (solo admin) — al marcar vendida desaparece del catálogo público
+  vendida           Boolean           @default(false)
+  fechaVenta        DateTime?
+
+  // Datos internos (solo admin, nunca se muestran en la web pública)
+  chasis            String?
+  motor             String?
+  patente           String?
+  clienteNombre     String?
+  clienteContacto   String?           // teléfono/email del comprador
+  notasInternas     String?           @db.Text
+
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 

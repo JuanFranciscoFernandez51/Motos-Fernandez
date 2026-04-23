@@ -69,7 +69,7 @@ export async function POST(request: Request) {
   let modelosDB
   try {
     modelosDB = await prisma.modelo.findMany({
-      where: { activo: true },
+      where: { activo: true, vendida: false },
       select: {
         id: true,
         nombre: true,

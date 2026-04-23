@@ -138,7 +138,7 @@ async function executeTool(name: string, input: Record<string, unknown>) {
       const marca = input.marca as string | undefined
       const condicion = input.condicion as string | undefined
 
-      const where: Record<string, unknown> = { activo: true }
+      const where: Record<string, unknown> = { activo: true, vendida: false }
       if (condicion) where.condicion = condicion
       if (categoria) where.categoriaVehiculo = categoria
       if (marca) where.marca = { contains: marca, mode: "insensitive" }
@@ -200,12 +200,12 @@ async function executeTool(name: string, input: Record<string, unknown>) {
       let modelo
       if (slug) {
         modelo = await prisma.modelo.findFirst({
-          where: { slug, activo: true },
+          where: { slug, activo: true, vendida: false },
           include: { colores: true },
         })
       } else if (nombre) {
         modelo = await prisma.modelo.findFirst({
-          where: { nombre: { contains: nombre, mode: "insensitive" }, activo: true },
+          where: { nombre: { contains: nombre, mode: "insensitive" }, activo: true, vendida: false },
           include: { colores: true },
         })
       }

@@ -31,7 +31,7 @@ async function getCategoriasDB() {
 async function getDestacados() {
   try {
     return await prisma.modelo.findMany({
-      where: { activo: true },
+      where: { activo: true, vendida: false },
       orderBy: [{ destacado: "desc" }, { createdAt: "desc" }],
       take: 10,
       include: { colores: true },

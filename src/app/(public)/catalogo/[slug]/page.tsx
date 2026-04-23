@@ -27,8 +27,8 @@ interface Props {
 
 async function getModel(slug: string) {
   try {
-    return await prisma.modelo.findUnique({
-      where: { slug, activo: true },
+    return await prisma.modelo.findFirst({
+      where: { slug, activo: true, vendida: false },
       include: { colores: true },
     })
   } catch {
@@ -44,6 +44,7 @@ async function getRelatedModels(
     return await prisma.modelo.findMany({
       where: {
         activo: true,
+        vendida: false,
         categoriaVehiculo: categoriaVehiculo as any,
         id: { not: excludeId },
       },

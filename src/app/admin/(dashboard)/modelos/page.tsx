@@ -29,6 +29,41 @@ async function updateFotos(id: string, fotos: string[]) {
   revalidatePath("/")
 }
 
+async function markVendida(id: string, vendida: boolean) {
+  "use server"
+  await prisma.modelo.update({
+    where: { id },
+    data: vendida
+      ? { vendida: true, fechaVenta: new Date(), activo: false }
+      : { vendida: false, fechaVenta: null },
+  })
+  revalidatePath("/admin/modelos")
+  revalidatePath("/catalogo")
+  revalidatePath("/")
+}
+
+async function deleteModelo(id: string, confirmText: string) {
+  "use server"
+  const modelo = await prisma.modelo.findUnique({
+    where: { id },
+    select: { nombre: true, slug: true },
+  })
+  if (!modelo) {
+    throw new Error("Modelo no encontrado")
+  }
+  const expected = `eliminar ${modelo.nombre}`.toLowerCase().trim()
+  const given = confirmText.toLowerCase().trim()
+  if (given !== expected) {
+    throw new Error(
+      `La confirmación no coincide. Esperado: "eliminar ${modelo.nombre}"`
+    )
+  }
+  await prisma.modelo.delete({ where: { id } })
+  revalidatePath("/admin/modelos")
+  revalidatePath("/catalogo")
+  revalidatePath("/")
+}
+
 export default async function ModelosPage() {
   const modelos = await prisma.modelo.findMany({
     orderBy: [{ slug: "asc" }],
@@ -45,6 +80,8 @@ export default async function ModelosPage() {
       activo: true,
       orden: true,
       cilindrada: true,
+      vendida: true,
+      fechaVenta: true,
     },
   })
 
@@ -70,6 +107,8 @@ export default async function ModelosPage() {
         modelos={modelos}
         toggleActivo={toggleActivo}
         updateFotos={updateFotos}
+        markVendida={markVendida}
+        deleteModelo={deleteModelo}
       />
     </div>
   )
