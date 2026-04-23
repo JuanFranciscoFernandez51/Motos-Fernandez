@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { renderToBuffer } from "@react-pdf/renderer"
 import { VentaPDF } from "@/lib/pdf/venta-pdf"
-import { NEGOCIO } from "@/lib/pdf/negocio-config"
+import { getNegocioConfig } from "@/lib/pdf/negocio-config"
 
 export const dynamic = "force-dynamic"
 
@@ -18,6 +18,8 @@ export async function GET(
   if (!venta) {
     return NextResponse.json({ error: "No encontrado" }, { status: 404 })
   }
+
+  const negocio = await getNegocioConfig()
 
   const pdfBuffer = await renderToBuffer(
     <VentaPDF
@@ -56,7 +58,7 @@ export async function GET(
           entrega: venta.entrega,
         },
         observaciones: venta.observaciones,
-        negocio: NEGOCIO,
+        negocio,
       }}
     />
   )

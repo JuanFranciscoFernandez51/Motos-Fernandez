@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { renderToBuffer } from "@react-pdf/renderer"
 import { MandatoPDF } from "@/lib/pdf/mandato-pdf"
-import { NEGOCIO } from "@/lib/pdf/negocio-config"
+import { getNegocioConfig } from "@/lib/pdf/negocio-config"
 
 export const dynamic = "force-dynamic"
 
@@ -20,6 +20,8 @@ export async function GET(
   if (!mandato) {
     return NextResponse.json({ error: "No encontrado" }, { status: 404 })
   }
+
+  const negocio = await getNegocioConfig()
 
   const pdfBuffer = await renderToBuffer(
     <MandatoPDF
@@ -64,7 +66,7 @@ export async function GET(
           moneda: mandato.moneda,
         },
         observaciones: mandato.observaciones,
-        negocio: NEGOCIO,
+        negocio,
       }}
     />
   )

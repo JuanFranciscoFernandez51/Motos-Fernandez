@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { renderToBuffer } from "@react-pdf/renderer"
 import { OrdenTrabajoPDF } from "@/lib/pdf/orden-trabajo-pdf"
-import { NEGOCIO } from "@/lib/pdf/negocio-config"
+import { getNegocioConfig } from "@/lib/pdf/negocio-config"
 
 export const dynamic = "force-dynamic"
 
@@ -30,6 +30,8 @@ export async function GET(
   if (!ot) {
     return NextResponse.json({ error: "No encontrado" }, { status: 404 })
   }
+
+  const negocio = await getNegocioConfig()
 
   const rawItems = (ot.items as OTItemRaw[] | null) ?? []
   const items = rawItems.map((it) => ({
@@ -76,7 +78,7 @@ export async function GET(
           saldo: ot.saldo,
         },
         observaciones: ot.observaciones,
-        negocio: NEGOCIO,
+        negocio,
       }}
     />
   )

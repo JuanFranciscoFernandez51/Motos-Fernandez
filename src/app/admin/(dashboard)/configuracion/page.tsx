@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Save, Globe, Phone, Clock, ShoppingCart, Truck, CheckCircle, XCircle, Loader2 } from "lucide-react"
+import { Save, Globe, Phone, Clock, ShoppingCart, Truck, CheckCircle, XCircle, Loader2, FileText } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
@@ -16,6 +16,13 @@ type Config = {
   mercadopagoHabilitado: boolean
   enviosHabilitados: boolean
   retiroHabilitado: boolean
+  // Datos legales (para PDFs de mandato, venta, OT)
+  razonSocial: string
+  cuit: string
+  iva: string
+  ingresosBrutos: string
+  telefonoLegal: string
+  ciudad: string
 }
 
 const DEFAULT: Config = {
@@ -29,6 +36,12 @@ const DEFAULT: Config = {
   mercadopagoHabilitado: true,
   enviosHabilitados: true,
   retiroHabilitado: true,
+  razonSocial: "Motos Fernandez",
+  cuit: "",
+  iva: "Responsable Inscripto",
+  ingresosBrutos: "",
+  telefonoLegal: "+54 291 578-8671",
+  ciudad: "Bahía Blanca, Buenos Aires",
 }
 
 function IntegrationStatus({ label, envKey }: { label: string; envKey?: string }) {
@@ -196,6 +209,69 @@ export default function ConfiguracionPage() {
             <p className="text-xs text-gray-500">Permite retiro en {config.direccion}</p>
           </div>
         </label>
+      </div>
+
+      {/* Datos legales para PDFs */}
+      <div className="bg-white rounded-xl border p-6 space-y-4">
+        <div>
+          <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+            <FileText className="h-4 w-4 text-[#6B4F7A]" />
+            Datos legales (para PDFs)
+          </h2>
+          <p className="text-xs text-gray-500 mt-1">
+            Estos datos aparecen en los mandatos de venta, boletos de compra-venta y órdenes de trabajo.
+          </p>
+        </div>
+        <div className="space-y-1">
+          <label className="text-xs text-gray-500">Razón social</label>
+          <Input
+            value={config.razonSocial}
+            onChange={(e) => set("razonSocial", e.target.value)}
+            placeholder="Fernandez Hermanos S.A."
+          />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <label className="text-xs text-gray-500">CUIT</label>
+            <Input
+              value={config.cuit}
+              onChange={(e) => set("cuit", e.target.value)}
+              placeholder="30-12345678-9"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs text-gray-500">Condición frente al IVA</label>
+            <Input
+              value={config.iva}
+              onChange={(e) => set("iva", e.target.value)}
+              placeholder="Responsable Inscripto"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs text-gray-500">N° Ingresos Brutos</label>
+            <Input
+              value={config.ingresosBrutos}
+              onChange={(e) => set("ingresosBrutos", e.target.value)}
+              placeholder="Convenio Multilateral 901-XXXX"
+            />
+          </div>
+          <div className="space-y-1">
+            <label className="text-xs text-gray-500">Teléfono (formato PDF)</label>
+            <Input
+              value={config.telefonoLegal}
+              onChange={(e) => set("telefonoLegal", e.target.value)}
+              placeholder="+54 291 578-8671"
+            />
+          </div>
+          <div className="space-y-1 col-span-2">
+            <label className="text-xs text-gray-500">Ciudad (formato PDF)</label>
+            <Input
+              value={config.ciudad}
+              onChange={(e) => set("ciudad", e.target.value)}
+              placeholder="Bahía Blanca, Buenos Aires"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Integraciones */}
