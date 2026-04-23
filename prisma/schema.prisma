@@ -61,6 +61,10 @@ model Modelo {
 
   leads  Lead[]
   turnos Turno[]
+  // Relaciones admin operativo
+  mandato        MandatoVenta?  @relation("MandatoModelo")
+  ventas         VentaMoto[]
+  ordenesTrabajo OrdenTrabajo[]
 }
 
 enum CategoriaVehiculo {
@@ -440,4 +444,248 @@ model Conversion {
 
   @@index([createdAt])
   @@index([evento])
+}
+
+// ==================== CLIENTES (CRM OPERATIVO) ====================
+
+model Cliente {
+  id              String   @id @default(cuid())
+  // Identificación
+  dni             String?  @unique  // null para empresas u otros casos
+  cuit            String?
+  nombre          String
+  apellido        String
+  // Contacto
+  email           String?
+  telefono        String?
+  telefonoAlt     String?
+  // Dirección
+  direccion       String?
+  ciudad          String?
+  provincia       String?
+  codigoPostal    String?
+  // Info adicional
+  fechaNacimiento DateTime?
+  ocupacion       String?
+  // Notas internas
+  notasInternas   String?  @db.Text
+  // Relaciones
+  mandatos        MandatoVenta[]
+  ventas          VentaMoto[]
+  ordenesTrabajo  OrdenTrabajo[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([dni])
+  @@index([apellido])
+  @@index([telefono])
+}
+
+// ==================== MANDATOS DE VENTA (CONSIGNACIÓN) ====================
+
+model MandatoVenta {
+  id              String    @id @default(cuid())
+  numero          Int       @unique @default(autoincrement())  // MV-0001, MV-0002...
+  fechaFirma      DateTime?
+  fechaVencimiento DateTime?
+  estado          EstadoMandato @default(PENDIENTE)
+
+  // Cliente (dueño de la moto)
+  clienteId       String
+  cliente         Cliente   @relation(fields: [clienteId], references: [id])
+
+  // Moto (datos completos — si después se publica se crea un Modelo linkeado)
+  marca           String
+  modelo          String    // nombre del modelo
+  anio            Int?
+  kilometros      Int?
+  cilindrada      String?
+  color           String?
+  chasis          String?
+  motor           String?
+  patente         String?
+
+  // Documentación
+  tieneTitulo              Boolean @default(false)
+  tituloANombreCliente     Boolean @default(false)
+  tienePrenda              Boolean @default(false)
+  detallePrenda            String?
+  verificacionTecnica      Boolean @default(false)
+
+  // Económico
+  precioVenta     Int       // precio acordado con el dueño
+  precioMinimo    Int?      // piso negociable
+  comisionPorc    Float?    // % de comisión
+  comisionMonto   Int?      // o monto fijo
+  moneda          String    @default("ARS")
+
+  // Publicación en catálogo (opcional)
+  modeloId        String?   @unique
+  modelo_         Modelo?   @relation("MandatoModelo", fields: [modeloId], references: [id])
+
+  // Venta finalizada
+  ventaId         String?   @unique
+  venta           VentaMoto? @relation(fields: [ventaId], references: [id])
+
+  observaciones   String?   @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clienteId])
+  @@index([estado])
+}
+
+enum EstadoMandato {
+  PENDIENTE       // recién cargado, falta firmar
+  ACTIVO          // firmado, en venta
+  VENDIDO         // se concretó la venta
+  CANCELADO       // el cliente retiró la moto
+  VENCIDO         // pasó fecha vencimiento
+}
+
+// ==================== VENTAS DE MOTOS ====================
+
+model VentaMoto {
+  id              String    @id @default(cuid())
+  numero          Int       @unique @default(autoincrement())  // V-0001, V-0002...
+  fecha           DateTime  @default(now())
+  estado          EstadoVenta @default(BORRADOR)
+
+  // Cliente comprador
+  clienteId       String
+  cliente         Cliente   @relation(fields: [clienteId], references: [id])
+
+  // Moto vendida (del catálogo)
+  modeloId        String?
+  modelo          Modelo?   @relation(fields: [modeloId], references: [id])
+
+  // Snapshot de datos de la moto al momento de la venta
+  motoDescripcion String    // "Honda XR150L 2025" — por si el modelo se elimina luego
+  motoChasis      String?
+  motoMotor       String?
+  motoPatente     String?
+  motoAnio        Int?
+  motoKilometros  Int?
+
+  // Económico
+  precioVenta     Int
+  moneda          String    @default("ARS")
+  formaPago       String?   // "Contado", "Financiado", "Permuta", "Mixta"
+  sena            Int?      @default(0)
+  saldo           Int?
+  detallePago     String?   @db.Text  // ej: "Seña $500.000, saldo al retirar"
+
+  // Permuta (si aplica)
+  permutaDescripcion String?
+  permutaValor       Int?
+
+  // Financiación (si aplica)
+  cuotas          Int?
+  valorCuota      Int?
+  entrega         Int?
+
+  // Mandato relacionado (si salió de una consignación)
+  mandato         MandatoVenta?
+
+  observaciones   String?   @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clienteId])
+  @@index([modeloId])
+  @@index([estado])
+  @@index([fecha])
+}
+
+enum EstadoVenta {
+  BORRADOR        // se está armando
+  RESERVADA       // seña pagada, falta saldo/entrega
+  CONCRETADA      // vendida y entregada
+  CANCELADA
+}
+
+// ==================== TALLER - ÓRDENES DE TRABAJO ====================
+
+model OrdenTrabajo {
+  id              String    @id @default(cuid())
+  numero          Int       @unique @default(autoincrement())  // OT-0001, OT-0002...
+  fechaIngreso    DateTime  @default(now())
+  fechaPrometida  DateTime?
+  fechaEntrega    DateTime?
+  estado          EstadoOT  @default(INGRESADA)
+
+  // Cliente
+  clienteId       String
+  cliente         Cliente   @relation(fields: [clienteId], references: [id])
+
+  // Moto (puede o no estar en el catálogo — ej: cliente externo que trae su moto)
+  modeloId        String?
+  modelo          Modelo?   @relation(fields: [modeloId], references: [id])
+
+  // Snapshot de la moto (si no está en catálogo)
+  motoMarca       String
+  motoModelo      String
+  motoAnio        Int?
+  motoPatente     String?
+  motoKilometros  Int?
+
+  // Trabajo
+  tipoServicioId  String?
+  tipoServicio    TipoServicio? @relation(fields: [tipoServicioId], references: [id])
+  motivoIngreso   String    @db.Text   // lo que dice el cliente
+  diagnostico     String?   @db.Text   // lo que detecta el mecánico
+  trabajosRealizados String? @db.Text
+
+  // Items (repuestos y mano de obra en JSON simple, no necesitamos otra tabla por ahora)
+  items           Json?     // [{ descripcion, cantidad, precio, tipo: "repuesto"|"mano_obra" }]
+
+  // Económico
+  subtotal        Int       @default(0)
+  descuento       Int       @default(0)
+  total           Int       @default(0)
+  pagado          Int       @default(0)
+  saldo           Int       @default(0)
+
+  // Notas internas
+  observaciones   String?   @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clienteId])
+  @@index([modeloId])
+  @@index([estado])
+  @@index([fechaIngreso])
+}
+
+enum EstadoOT {
+  INGRESADA          // recién llegó al taller
+  EN_DIAGNOSTICO     // revisando
+  PRESUPUESTADA      // esperando aprobación del cliente
+  APROBADA           // aprobó, en trabajo
+  EN_REPARACION      // trabajando
+  LISTA              // terminada, lista para entregar
+  ENTREGADA          // retirada por el cliente
+  CANCELADA          // cliente canceló
+}
+
+// ==================== TIPOS DE SERVICIO (TALLER) ====================
+
+model TipoServicio {
+  id              String    @id @default(cuid())
+  nombre          String    @unique  // "Service 1000km", "Cambio de aceite", "Reparación general"
+  descripcion     String?   @db.Text
+  precioBase      Int?      // precio orientativo
+  duracionMin     Int?      // duración estimada en minutos
+  activo          Boolean   @default(true)
+  orden           Int       @default(0)
+  ordenes         OrdenTrabajo[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([activo])
 }
