@@ -8,6 +8,7 @@ import { TrackVisita } from "@/components/public/track-visita"
 import { ShareButton } from "@/components/public/share-button"
 import { CalculadoraCuotas } from "@/components/public/calculadora-cuotas"
 import { WishlistButton } from "@/components/public/wishlist-button"
+import { CompareButton } from "@/components/public/compare-button"
 import {
   BUSINESS,
   formatPrice,
@@ -174,6 +175,23 @@ export default async function ModeloDetailPage({ params }: Props) {
                       moneda: model.moneda || "ARS",
                       cilindrada: model.cilindrada,
                       condicion: model.condicion,
+                    }}
+                  />
+                  <CompareButton
+                    variant="icon"
+                    item={{
+                      id: model.id,
+                      slug: model.slug,
+                      nombre: model.nombre,
+                      marca: model.marca,
+                      foto: model.fotos[0] || null,
+                      precio: model.precio,
+                      moneda: model.moneda || "ARS",
+                      cilindrada: model.cilindrada,
+                      condicion: model.condicion || "0KM",
+                      anio: model.anio,
+                      kilometros: model.kilometros,
+                      specs: (model.specs as Record<string, unknown> | null) ?? null,
                     }}
                   />
                   <ShareButton

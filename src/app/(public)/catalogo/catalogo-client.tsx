@@ -6,6 +6,7 @@ import Image from "next/image"
 import { formatPrice, CATEGORIAS_VEHICULO, CATEGORIA_VEHICULO_LABELS, ETIQUETAS_MAP } from "@/lib/constants"
 import { Bike, Search, Scale, SlidersHorizontal, X, Star, CreditCard } from "lucide-react"
 import { useCompare } from "@/components/public/comparador-provider"
+import { CompareButton } from "@/components/public/compare-button"
 import { WishlistButton } from "@/components/public/wishlist-button"
 
 interface ModeloColor {
@@ -61,7 +62,7 @@ export function CatalogoClient({
   const [condicion, setCondicion] = useState<string>("TODAS")
   const [marca, setMarca] = useState<string>("TODAS")
   const [search, setSearch] = useState("")
-  const { compareItems, addToCompare, removeFromCompare, isInCompare } = useCompare()
+  const { compareItems } = useCompare()
 
   // Rangos dinamicos de precio y cilindrada en base al catalogo
   const { precioMinCatalogo, precioMaxCatalogo, cilindradaMaxCatalogo } = useMemo(() => {
@@ -540,36 +541,23 @@ export function CatalogoClient({
                     condicion: model.condicion,
                   }}
                 />
-                <button
-                  type="button"
-                  onClick={() =>
-                    isInCompare(model.id)
-                      ? removeFromCompare(model.id)
-                      : addToCompare({
-                          id: model.id,
-                          slug: model.slug,
-                          nombre: model.nombre,
-                          marca: model.marca,
-                          foto: model.fotos[0] || null,
-                          precio: model.precio,
-                          moneda: model.moneda,
-                          cilindrada: model.cilindrada,
-                          condicion: model.condicion || "0KM",
-                          anio: model.anio,
-                          kilometros: model.kilometros,
-                          specs: (model.specs as Record<string, unknown> | null) ?? null,
-                        })
-                  }
-                  aria-label={isInCompare(model.id) ? "Quitar del comparador" : "Agregar al comparador"}
-                  title={isInCompare(model.id) ? "Quitar del comparador" : "Comparar modelo"}
-                  className={`inline-flex items-center justify-center size-9 rounded-full backdrop-blur-sm shadow-sm transition-all ${
-                    isInCompare(model.id)
-                      ? "bg-[#6B4F7A] text-white hover:bg-[#8B6F9A]"
-                      : "bg-white/90 text-[#6B4F7A] hover:bg-white"
-                  }`}
-                >
-                  <Scale className="size-4" />
-                </button>
+                <CompareButton
+                  variant="icon-floating"
+                  item={{
+                    id: model.id,
+                    slug: model.slug,
+                    nombre: model.nombre,
+                    marca: model.marca,
+                    foto: model.fotos[0] || null,
+                    precio: model.precio,
+                    moneda: model.moneda || "ARS",
+                    cilindrada: model.cilindrada,
+                    condicion: model.condicion || "0KM",
+                    anio: model.anio,
+                    kilometros: model.kilometros,
+                    specs: (model.specs as Record<string, unknown> | null) ?? null,
+                  }}
+                />
               </div>
             </article>
           ))}
