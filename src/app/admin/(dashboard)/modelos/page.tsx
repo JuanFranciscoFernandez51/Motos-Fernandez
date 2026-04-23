@@ -18,6 +18,17 @@ async function toggleActivo(id: string, activoActual: boolean) {
   revalidatePath("/")
 }
 
+async function updateFotos(id: string, fotos: string[]) {
+  "use server"
+  await prisma.modelo.update({
+    where: { id },
+    data: { fotos },
+  })
+  revalidatePath("/admin/modelos")
+  revalidatePath("/catalogo")
+  revalidatePath("/")
+}
+
 export default async function ModelosPage() {
   const modelos = await prisma.modelo.findMany({
     orderBy: [{ slug: "asc" }],
@@ -55,7 +66,11 @@ export default async function ModelosPage() {
         </Button>
       </div>
 
-      <ModelosList modelos={modelos} toggleActivo={toggleActivo} />
+      <ModelosList
+        modelos={modelos}
+        toggleActivo={toggleActivo}
+        updateFotos={updateFotos}
+      />
     </div>
   )
 }

@@ -15,7 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Pencil, Search, Eye, ImageOff, X } from "lucide-react"
+import { Pencil, Search, Eye, ImageOff, X, Camera } from "lucide-react"
+import { FotosModal } from "./fotos-modal"
 
 type Modelo = {
   id: string
@@ -39,14 +40,17 @@ type Filter = "todas" | "activas" | "inactivas" | "sin-foto" | "con-placeholder"
 export function ModelosList({
   modelos,
   toggleActivo,
+  updateFotos,
 }: {
   modelos: Modelo[]
   toggleActivo: (id: string, activoActual: boolean) => Promise<void>
+  updateFotos: (id: string, fotos: string[]) => Promise<void>
 }) {
   const [query, setQuery] = useState("")
   const [filter, setFilter] = useState<Filter>("todas")
   const [isPending, startTransition] = useTransition()
   const [optimisticIds, setOptimisticIds] = useState<Set<string>>(new Set())
+  const [fotosModeloId, setFotosModeloId] = useState<string | null>(null)
 
   const marcas = useMemo(
     () => Array.from(new Set(modelos.map((m) => m.marca))).sort(),
@@ -322,6 +326,14 @@ export function ModelosList({
                         <Button
                           variant="ghost"
                           size="sm"
+                          onClick={() => setFotosModeloId(modelo.id)}
+                          title="Cargar/editar fotos"
+                        >
+                          <Camera className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           render={
                             <Link href={`/admin/modelos/${modelo.id}`} />
                           }
@@ -351,6 +363,17 @@ export function ModelosList({
           </TableBody>
         </Table>
       </div>
+
+      <FotosModal
+        open={fotosModeloId !== null}
+        onClose={() => setFotosModeloId(null)}
+        modelo={
+          fotosModeloId
+            ? modelos.find((m) => m.id === fotosModeloId) ?? null
+            : null
+        }
+        updateFotos={updateFotos}
+      />
     </div>
   )
 }
