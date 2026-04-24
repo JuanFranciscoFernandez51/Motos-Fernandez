@@ -30,6 +30,11 @@ import {
 } from "lucide-react"
 import { FotosModal } from "./fotos-modal"
 import { DeleteModal } from "./delete-modal"
+import {
+  InlineTextCell,
+  InlineNumberCell,
+  InlineSelectCell,
+} from "@/components/admin/inline-cell"
 
 type Modelo = {
   id: string
@@ -60,6 +65,7 @@ export function ModelosList({
   toggleActivo,
   updateFotos,
   updateEtiqueta,
+  updateCampoModelo,
   markVendida,
   deleteModelo,
 }: {
@@ -67,6 +73,11 @@ export function ModelosList({
   toggleActivo: (id: string, activoActual: boolean) => Promise<void>
   updateFotos: (id: string, fotos: string[]) => Promise<void>
   updateEtiqueta: (id: string, etiqueta: string | null) => Promise<void>
+  updateCampoModelo: (
+    id: string,
+    field: string,
+    value: string | number | null
+  ) => Promise<void>
   markVendida: (id: string, vendida: boolean) => Promise<void>
   deleteModelo: (id: string, confirmText: string) => Promise<void>
 }) {
@@ -350,49 +361,115 @@ export function ModelosList({
                         )}
                       </TableCell>
                       <TableCell>
-                        <div>
-                          <p className="font-medium text-sm">{modelo.nombre}</p>
-                          <p className="text-xs text-gray-400">
-                            {[modelo.cilindrada, modelo.anio]
-                              .filter(Boolean)
-                              .join(" · ") ||
-                              CATEGORIA_VEHICULO_LABELS[
-                                modelo.categoriaVehiculo as keyof typeof CATEGORIA_VEHICULO_LABELS
-                              ]}
-                          </p>
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{modelo.marca}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="secondary"
-                          className={
-                            modelo.condicion === "0KM"
-                              ? "bg-emerald-100 text-emerald-800"
-                              : "bg-orange-100 text-orange-800"
+                        <InlineTextCell
+                          value={modelo.nombre}
+                          onSave={(v) =>
+                            updateCampoModelo(modelo.id, "nombre", v)
                           }
-                        >
-                          {modelo.condicion === "0KM" ? "0KM" : "Usada"}
-                        </Badge>
+                          display={
+                            <span className="font-medium text-sm">
+                              {modelo.nombre}
+                            </span>
+                          }
+                        />
+                        <p className="text-xs text-gray-400 mt-0.5 px-1">
+                          {[modelo.cilindrada, modelo.anio]
+                            .filter(Boolean)
+                            .join(" · ") ||
+                            CATEGORIA_VEHICULO_LABELS[
+                              modelo.categoriaVehiculo as keyof typeof CATEGORIA_VEHICULO_LABELS
+                            ]}
+                        </p>
+                      </TableCell>
+                      <TableCell>
+                        <InlineTextCell
+                          value={modelo.marca}
+                          onSave={(v) =>
+                            updateCampoModelo(modelo.id, "marca", v)
+                          }
+                          display={
+                            <Badge variant="outline">{modelo.marca}</Badge>
+                          }
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <InlineSelectCell
+                          value={modelo.condicion}
+                          options={[
+                            { value: "0KM", label: "0KM" },
+                            { value: "USADA", label: "Usada" },
+                          ]}
+                          onSave={(v) =>
+                            updateCampoModelo(modelo.id, "condicion", v)
+                          }
+                          renderValue={(v) => (
+                            <Badge
+                              variant="secondary"
+                              className={
+                                v === "0KM"
+                                  ? "bg-emerald-100 text-emerald-800"
+                                  : "bg-orange-100 text-orange-800"
+                              }
+                            >
+                              {v === "0KM" ? "0KM" : "Usada"}
+                            </Badge>
+                          )}
+                        />
                       </TableCell>
                       <TableCell className="whitespace-nowrap text-xs text-gray-600">
-                        {modelo.kilometros != null
-                          ? `${modelo.kilometros.toLocaleString("es-AR")} km`
-                          : modelo.condicion === "0KM"
-                          ? "0 km"
-                          : "—"}
+                        <InlineNumberCell
+                          value={modelo.kilometros}
+                          onSave={(v) =>
+                            updateCampoModelo(modelo.id, "kilometros", v)
+                          }
+                          placeholder={modelo.condicion === "0KM" ? "0" : ""}
+                          format={(v) =>
+                            v != null ? (
+                              `${v.toLocaleString("es-AR")} km`
+                            ) : modelo.condicion === "0KM" ? (
+                              "0 km"
+                            ) : (
+                              <span className="text-gray-400">—</span>
+                            )
+                          }
+                        />
                       </TableCell>
                       <TableCell className="whitespace-nowrap text-sm">
-                        {modelo.precio ? (
-                          <>
-                            {(modelo.moneda || "ARS") === "USD" ? "USD " : ""}
-                            {formatPrice(modelo.precio).replace("$", "").trim()}
-                          </>
-                        ) : (
-                          <span className="text-gray-400">Consultar</span>
-                        )}
+                        <div className="flex items-center gap-1">
+                          <select
+                            value={modelo.moneda || "ARS"}
+                            onChange={(e) =>
+                              startTransition(() =>
+                                updateCampoModelo(
+                                  modelo.id,
+                                  "moneda",
+                                  e.target.value
+                                )
+                              )
+                            }
+                            disabled={isPending}
+                            className="h-7 text-xs rounded border border-transparent bg-transparent hover:border-gray-200 cursor-pointer font-semibold text-[#6B4F7A]"
+                          >
+                            <option value="ARS">$</option>
+                            <option value="USD">USD</option>
+                          </select>
+                          <InlineNumberCell
+                            value={modelo.precio}
+                            onSave={(v) =>
+                              updateCampoModelo(modelo.id, "precio", v)
+                            }
+                            placeholder="Consultar"
+                            format={(v) =>
+                              v != null ? (
+                                v.toLocaleString("es-AR")
+                              ) : (
+                                <span className="text-gray-400 italic text-xs">
+                                  Consultar
+                                </span>
+                              )
+                            }
+                          />
+                        </div>
                       </TableCell>
                       <TableCell>
                         <select

@@ -28,6 +28,44 @@ async function updateEtiqueta(id: string, etiqueta: string | null) {
   revalidatePath("/catalogo")
 }
 
+// Whitelist de campos editables inline desde la lista
+const CAMPOS_EDITABLES_STRING = new Set([
+  "nombre",
+  "marca",
+  "condicion",
+  "moneda",
+])
+const CAMPOS_EDITABLES_NUMBER = new Set([
+  "kilometros",
+  "precio",
+  "anio",
+])
+
+async function updateCampoModelo(
+  id: string,
+  field: string,
+  value: string | number | null
+) {
+  "use server"
+  const data: Record<string, string | number | null> = {}
+
+  if (CAMPOS_EDITABLES_STRING.has(field)) {
+    data[field] = typeof value === "string" ? value.trim() || null : null
+  } else if (CAMPOS_EDITABLES_NUMBER.has(field)) {
+    data[field] = typeof value === "number" ? value : null
+  } else {
+    throw new Error(`Campo ${field} no es editable`)
+  }
+
+  await prisma.modelo.update({
+    where: { id },
+    data,
+  })
+  revalidatePath("/admin/modelos")
+  revalidatePath("/catalogo")
+  revalidatePath("/")
+}
+
 async function updateFotos(id: string, fotos: string[]) {
   "use server"
   await prisma.modelo.update({
@@ -121,6 +159,7 @@ export default async function ModelosPage() {
         toggleActivo={toggleActivo}
         updateFotos={updateFotos}
         updateEtiqueta={updateEtiqueta}
+        updateCampoModelo={updateCampoModelo}
         markVendida={markVendida}
         deleteModelo={deleteModelo}
       />
