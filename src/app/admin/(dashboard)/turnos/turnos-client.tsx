@@ -33,10 +33,10 @@ type Props = {
 }
 
 const ESTADO_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  PENDIENTE:  { label: "Pendiente",  color: "text-yellow-700", bg: "bg-yellow-100" },
-  CONFIRMADO: { label: "Confirmado", color: "text-green-700",  bg: "bg-green-100"  },
-  COMPLETADO: { label: "Completado", color: "text-blue-700",   bg: "bg-blue-100"   },
-  CANCELADO:  { label: "Cancelado",  color: "text-red-700",    bg: "bg-red-100"    },
+  PENDIENTE:  { label: "Pendiente",  color: "text-yellow-700", bg: "bg-yellow-100 dark:bg-yellow-900/40" },
+  CONFIRMADO: { label: "Confirmado", color: "text-green-700 dark:text-green-300",  bg: "bg-green-100 dark:bg-green-900/40"  },
+  COMPLETADO: { label: "Completado", color: "text-blue-700 dark:text-blue-300",   bg: "bg-blue-100 dark:bg-blue-900/40"   },
+  CANCELADO:  { label: "Cancelado",  color: "text-red-700 dark:text-red-300",    bg: "bg-red-100 dark:bg-red-900/40"    },
 }
 
 const DIAS_SEMANA = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"]
@@ -139,7 +139,7 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-white dark:bg-neutral-900 rounded-xl border p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/40 flex items-center justify-center">
             <Clock className="h-5 w-5 text-yellow-600" />
           </div>
           <div>
@@ -148,8 +148,8 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
           </div>
         </div>
         <div className="bg-white dark:bg-neutral-900 rounded-xl border p-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-            <CheckCircle className="h-5 w-5 text-green-600" />
+          <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
+            <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-300" />
           </div>
           <div>
             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{confirmadosHoy}</p>
@@ -215,7 +215,7 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
                 onClick={() => toggleBloqueo(dateStr)}
                 disabled={isLoading}
                 className={`relative rounded-lg p-1.5 text-sm text-center transition-colors min-h-[44px] flex flex-col items-center justify-start pt-2
-                  ${isBloqueado ? "bg-red-50 hover:bg-red-100" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}
+                  ${isBloqueado ? "bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:bg-red-900/40" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}
                   ${isToday ? "ring-2 ring-[#6B4F7A]" : ""}
                   ${isLoading ? "opacity-50" : ""}
                 `}
@@ -246,11 +246,11 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
                 const d = new Date(b.fecha)
                 const label = d.toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" })
                 return (
-                  <span key={b.id} className="inline-flex items-center gap-1 bg-red-100 text-red-700 text-xs px-2 py-0.5 rounded-full">
+                  <span key={b.id} className="inline-flex items-center gap-1 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 text-xs px-2 py-0.5 rounded-full">
                     {label}
                     <button
                       onClick={() => toggleBloqueo(b.fecha.slice(0, 10))}
-                      className="hover:text-red-900 ml-0.5"
+                      className="hover:text-red-900 dark:text-red-300 ml-0.5"
                     >
                       ×
                     </button>
@@ -322,7 +322,7 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
                           ? new Date(turno.fechaConfirmada).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" })
                           : new Date(turno.fechaPreferida!).toLocaleDateString("es-AR", { day: "numeric", month: "short", year: "numeric" })
                         }
-                        {turno.fechaConfirmada && <span className="text-green-600 font-medium ml-1">(confirmado)</span>}
+                        {turno.fechaConfirmada && <span className="text-green-600 dark:text-green-300 font-medium ml-1">(confirmado)</span>}
                       </span>
                     )}
                   </div>
@@ -340,7 +340,7 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
                         <button
                           onClick={() => cambiarEstado(turno.id, "CANCELADO")}
                           disabled={loadingTurno === turno.id}
-                          className="px-3 py-1 text-xs rounded-lg bg-red-100 text-red-700 hover:bg-red-200 transition-colors disabled:opacity-50"
+                          className="px-3 py-1 text-xs rounded-lg bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 hover:bg-red-200 transition-colors disabled:opacity-50"
                         >
                           Cancelar
                         </button>

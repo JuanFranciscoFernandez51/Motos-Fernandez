@@ -134,18 +134,18 @@ export default function ServicioTecnicoPage() {
               </p>
 
               {status === "success" ? (
-                <div className="rounded-xl border border-green-200 bg-green-50 p-8 text-center">
+                <div className="rounded-xl border border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-950/30 p-8 text-center">
                   <CheckCircle className="size-10 text-green-500 mx-auto mb-3" />
-                  <h3 className="text-lg font-bold text-green-800">
+                  <h3 className="text-lg font-bold text-green-800 dark:text-green-300">
                     Turno solicitado
                   </h3>
-                  <p className="mt-2 text-sm text-green-600">
+                  <p className="mt-2 text-sm text-green-600 dark:text-green-300">
                     Recibimos tu solicitud. Te contactaremos por WhatsApp para
                     confirmar dia y horario.
                   </p>
                   <button
                     onClick={() => setStatus("idle")}
-                    className="mt-4 text-sm font-semibold text-green-700 hover:underline"
+                    className="mt-4 text-sm font-semibold text-green-700 dark:text-green-300 hover:underline"
                   >
                     Solicitar otro turno
                   </button>

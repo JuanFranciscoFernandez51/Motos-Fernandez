@@ -268,7 +268,7 @@ export function ModeloForm({
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{error}</div>
+        <div className="rounded-md bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-600">{error}</div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -488,7 +488,7 @@ export function ModeloForm({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="shrink-0 text-red-500 hover:text-red-700"
+                    className="shrink-0 text-red-500 hover:text-red-700 dark:text-red-300"
                     onClick={() => setSpecs(specs.filter((_, j) => j !== i))}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -542,7 +542,7 @@ export function ModeloForm({
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="shrink-0 text-red-500 hover:text-red-700"
+                      className="shrink-0 text-red-500 hover:text-red-700 dark:text-red-300"
                       onClick={() => setFinanciacion(financiacion.filter((_, j) => j !== i))}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -650,7 +650,7 @@ export function ModeloForm({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="shrink-0 text-red-500 hover:text-red-700"
+                    className="shrink-0 text-red-500 hover:text-red-700 dark:text-red-300"
                     onClick={() => setColores(colores.filter((_, j) => j !== i))}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -719,17 +719,17 @@ export function ModeloForm({
       </div>
 
       {/* ========== Información interna (solo admin) ========== */}
-      <Card className="border-yellow-200 bg-yellow-50/30">
+      <Card className="border-yellow-200 dark:border-yellow-900/40 bg-yellow-50/30 dark:bg-yellow-950/30">
         <CardHeader>
           <div className="flex items-start gap-3">
-            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-yellow-100 text-yellow-700">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700">
               🔒
             </div>
             <div>
               <CardTitle className="text-yellow-900">
                 Información interna — solo admin
               </CardTitle>
-              <p className="mt-1 text-xs text-yellow-800/80">
+              <p className="mt-1 text-xs text-yellow-800 dark:text-yellow-300/80">
                 Estos datos NO se muestran en la web pública. Son solo para tu
                 uso interno.
               </p>

@@ -145,7 +145,7 @@ export default async function TestimoniosPage() {
                           variant="secondary"
                           className={
                             t.publicado
-                              ? "bg-green-100 text-green-800 cursor-pointer hover:bg-green-200"
+                              ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 cursor-pointer hover:bg-green-200"
                               : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200"
                           }
                         >
@@ -167,7 +167,7 @@ export default async function TestimoniosPage() {
                           variant="secondary"
                           className={
                             t.destacado
-                              ? "bg-purple-100 text-purple-800 cursor-pointer hover:bg-purple-200"
+                              ? "bg-purple-100 dark:bg-purple-900/40 text-purple-800 cursor-pointer hover:bg-purple-200"
                               : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200"
                           }
                         >

@@ -106,7 +106,7 @@ export default function CarritoPage() {
                         </div>
                         <button
                           onClick={() => removeItem(item.id, item.talle)}
-                          className="shrink-0 rounded-md p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                          className="shrink-0 rounded-md p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:bg-red-950/30 transition-colors"
                           aria-label="Eliminar producto"
                         >
                           <Trash2 className="size-4" />

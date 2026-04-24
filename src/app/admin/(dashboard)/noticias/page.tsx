@@ -130,7 +130,7 @@ export default async function NoticiasPage() {
                           variant="secondary"
                           className={
                             noticia.publicado
-                              ? "bg-green-100 text-green-800 cursor-pointer hover:bg-green-200"
+                              ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 cursor-pointer hover:bg-green-200"
                               : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200"
                           }
                         >
@@ -148,7 +148,7 @@ export default async function NoticiasPage() {
                           variant="secondary"
                           className={
                             noticia.destacado
-                              ? "bg-yellow-100 text-yellow-800 cursor-pointer hover:bg-yellow-200"
+                              ? "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300 cursor-pointer hover:bg-yellow-200"
                               : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200"
                           }
                         >

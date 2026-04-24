@@ -134,7 +134,7 @@ export default function ComparadorPage() {
                         <button
                           type="button"
                           onClick={() => removeFromCompare(item.id)}
-                          className="absolute -top-1 -right-1 inline-flex items-center justify-center size-7 rounded-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-400 hover:text-red-600 hover:border-red-200 transition-colors"
+                          className="absolute -top-1 -right-1 inline-flex items-center justify-center size-7 rounded-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-400 hover:text-red-600 hover:border-red-200 dark:border-red-900/40 transition-colors"
                           aria-label="Quitar del comparador"
                         >
                           <X className="size-4" />
@@ -189,8 +189,8 @@ export default function ComparadorPage() {
                       <span
                         className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-bold ${
                           item.condicion === "USADA"
-                            ? "bg-orange-100 text-orange-700"
-                            : "bg-emerald-100 text-emerald-700"
+                            ? "bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300"
+                            : "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300"
                         }`}
                       >
                         {item.condicion}

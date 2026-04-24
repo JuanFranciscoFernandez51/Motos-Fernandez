@@ -83,7 +83,7 @@ export function FotosModal({ open, onClose, modelo, updateFotos }: Props) {
               </span>
             )}
             {justSaved && !saving && !isPending && (
-              <span className="flex items-center gap-1.5 text-xs text-green-600">
+              <span className="flex items-center gap-1.5 text-xs text-green-600 dark:text-green-300">
                 <Check className="size-3" />
                 Guardado
               </span>

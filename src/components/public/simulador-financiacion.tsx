@@ -129,7 +129,7 @@ export function SimuladorFinanciacion() {
 
             {/* Info del tab */}
             <div className={`rounded-lg px-4 py-3 text-sm flex items-center gap-2 ${
-              tab === "PROPIA" ? "bg-purple-50 text-purple-700" : "bg-blue-50 text-blue-700"
+              tab === "PROPIA" ? "bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300" : "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300"
             }`}>
               {tab === "PROPIA" ? (
                 <><Landmark className="size-4 shrink-0" />Hasta 12 cuotas · TNA 72% · Anticipo mínimo 40%</>
@@ -239,9 +239,9 @@ export function SimuladorFinanciacion() {
             )}
 
             {/* Disclaimer */}
-            <div className="flex items-start gap-3 rounded-lg bg-yellow-50 border border-yellow-200 px-4 py-3">
+            <div className="flex items-start gap-3 rounded-lg bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-900/40 px-4 py-3">
               <AlertTriangle className="size-4 text-yellow-600 shrink-0 mt-0.5" />
-              <p className="text-xs text-yellow-800 leading-relaxed">
+              <p className="text-xs text-yellow-800 dark:text-yellow-300 leading-relaxed">
                 <span className="font-semibold">Valores orientativos.</span>{" "}
                 Las cuotas reales pueden variar según el modelo, perfil crediticio y condiciones vigentes
                 al momento de la operación. Consultá con nuestros asesores para un plan personalizado.

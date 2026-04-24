@@ -110,12 +110,12 @@ export default async function ProveedoresPage() {
                   <TableCell>
                     <div className="flex gap-1 flex-wrap">
                       {p._count.modelos > 0 && (
-                        <span className="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded">
                           {p._count.modelos} modelo{p._count.modelos !== 1 ? "s" : ""}
                         </span>
                       )}
                       {p._count.productos > 0 && (
-                        <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">
                           {p._count.productos} producto{p._count.productos !== 1 ? "s" : ""}
                         </span>
                       )}
@@ -130,7 +130,7 @@ export default async function ProveedoresPage() {
                       variant="secondary"
                       className={
                         p.activo
-                          ? "bg-green-100 text-green-800"
+                          ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300"
                           : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400"
                       }
                     >

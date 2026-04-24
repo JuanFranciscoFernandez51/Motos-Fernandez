@@ -82,7 +82,7 @@ export function VentasList({ ventas }: { ventas: Row[] }) {
         <button
           onClick={() => setEstadoFilter("BORRADOR")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            estadoFilter === "BORRADOR" ? "border-yellow-500 bg-yellow-50" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
+            estadoFilter === "BORRADOR" ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-950/30" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Borrador</p>
@@ -91,20 +91,20 @@ export function VentasList({ ventas }: { ventas: Row[] }) {
         <button
           onClick={() => setEstadoFilter("RESERVADA")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            estadoFilter === "RESERVADA" ? "border-blue-500 bg-blue-50" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
+            estadoFilter === "RESERVADA" ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Reservadas</p>
-          <p className="text-xl font-bold text-blue-700">{counts.RESERVADA}</p>
+          <p className="text-xl font-bold text-blue-700 dark:text-blue-300">{counts.RESERVADA}</p>
         </button>
         <button
           onClick={() => setEstadoFilter("CONCRETADA")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            estadoFilter === "CONCRETADA" ? "border-green-500 bg-green-50" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
+            estadoFilter === "CONCRETADA" ? "border-green-500 bg-green-50 dark:bg-green-950/30" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Concretadas</p>
-          <p className="text-xl font-bold text-green-700">{counts.CONCRETADA}</p>
+          <p className="text-xl font-bold text-green-700 dark:text-green-300">{counts.CONCRETADA}</p>
         </button>
       </div>
 

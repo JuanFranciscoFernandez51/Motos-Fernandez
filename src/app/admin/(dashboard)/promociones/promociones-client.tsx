@@ -58,12 +58,12 @@ function toDateInputValue(date: Date): string {
 function getEstado(p: Promocion): { label: string; className: string } {
   const now = new Date()
   if (!p.activo) {
-    return { label: "Inactiva", className: "bg-red-100 text-red-700" }
+    return { label: "Inactiva", className: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300" }
   }
   if (new Date(p.fechaFin) < now) {
     return { label: "Vencida", className: "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400" }
   }
-  return { label: "Activa", className: "bg-green-100 text-green-800" }
+  return { label: "Activa", className: "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300" }
 }
 
 export function PromocionesClient({ promociones }: { promociones: Promocion[] }) {
@@ -285,7 +285,7 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded px-3 py-2">
+              <p className="text-sm text-red-600 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 rounded px-3 py-2">
                 {error}
               </p>
             )}

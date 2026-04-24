@@ -18,7 +18,7 @@ export default async function CheckoutFalloPage({
       <div className="w-full max-w-md">
         <div className="rounded-2xl bg-white dark:bg-neutral-900 p-8 shadow-sm text-center">
           <div className="flex justify-center mb-5">
-            <div className="flex items-center justify-center size-20 rounded-full bg-red-100">
+            <div className="flex items-center justify-center size-20 rounded-full bg-red-100 dark:bg-red-900/40">
               <XCircle className="size-10 text-red-500" />
             </div>
           </div>

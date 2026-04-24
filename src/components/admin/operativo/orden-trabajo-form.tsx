@@ -181,7 +181,7 @@ export function OrdenTrabajoForm({
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-700 border border-red-200">
+        <div className="rounded-md bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/40">
           {error}
         </div>
       )}
@@ -390,7 +390,7 @@ export function OrdenTrabajoForm({
                       />
                     </div>
                     <div className="col-span-2 md:col-span-1">
-                      <Button type="button" variant="ghost" size="sm" onClick={() => removeItem(i)} className="text-red-600 hover:bg-red-50 w-full">
+                      <Button type="button" variant="ghost" size="sm" onClick={() => removeItem(i)} className="text-red-600 hover:bg-red-50 dark:bg-red-950/30 w-full">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -432,7 +432,7 @@ export function OrdenTrabajoForm({
                 </div>
                 <div className="flex justify-between font-medium">
                   <span className="text-gray-600 dark:text-gray-300">Saldo pendiente:</span>
-                  <span className={totales.saldo > 0 ? "text-orange-600" : "text-green-600"}>
+                  <span className={totales.saldo > 0 ? "text-orange-600 dark:text-orange-300" : "text-green-600 dark:text-green-300"}>
                     {formatMoney(totales.saldo)}
                   </span>
                 </div>

@@ -99,20 +99,20 @@ export function OrdenesList({ ordenes }: { ordenes: Row[] }) {
         <button
           onClick={() => setFilterId("activas")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            filterId === "activas" ? "border-orange-500 bg-orange-50" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
+            filterId === "activas" ? "border-orange-500 bg-orange-50 dark:bg-orange-950/30" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">En curso</p>
-          <p className="text-xl font-bold text-orange-700">{counts.activas}</p>
+          <p className="text-xl font-bold text-orange-700 dark:text-orange-300">{counts.activas}</p>
         </button>
         <button
           onClick={() => setFilterId("listas")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            filterId === "listas" ? "border-emerald-500 bg-emerald-50" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
+            filterId === "listas" ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Listas</p>
-          <p className="text-xl font-bold text-emerald-700">{counts.listas}</p>
+          <p className="text-xl font-bold text-emerald-700 dark:text-emerald-300">{counts.listas}</p>
         </button>
         <button
           onClick={() => setFilterId("entregadas")}
@@ -195,9 +195,9 @@ export function OrdenesList({ ordenes }: { ordenes: Row[] }) {
                   </TableCell>
                   <TableCell className="whitespace-nowrap text-sm">
                     {o.saldo > 0 ? (
-                      <span className="text-orange-600 font-medium">{formatMoney(o.saldo)}</span>
+                      <span className="text-orange-600 dark:text-orange-300 font-medium">{formatMoney(o.saldo)}</span>
                     ) : (
-                      <span className="text-green-600">Pagado</span>
+                      <span className="text-green-600 dark:text-green-300">Pagado</span>
                     )}
                   </TableCell>
                   <TableCell>

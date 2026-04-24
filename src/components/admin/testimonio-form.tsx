@@ -95,7 +95,7 @@ export function TestimonioForm({
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{error}</div>
+        <div className="rounded-md bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-600">{error}</div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

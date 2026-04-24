@@ -78,7 +78,7 @@ function SortableItem({ id, url, index, onRemove, onCrop }: SortableItemProps) {
             e.stopPropagation()
             onCrop()
           }}
-          className="size-7 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur flex items-center justify-center shadow hover:bg-blue-50"
+          className="size-7 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur flex items-center justify-center shadow hover:bg-blue-50 dark:bg-blue-950/30"
           aria-label="Recortar"
         >
           <Crop className="size-3.5 text-blue-600" />
@@ -89,7 +89,7 @@ function SortableItem({ id, url, index, onRemove, onCrop }: SortableItemProps) {
             e.stopPropagation()
             onRemove()
           }}
-          className="size-7 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur flex items-center justify-center shadow hover:bg-red-50"
+          className="size-7 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur flex items-center justify-center shadow hover:bg-red-50 dark:bg-red-950/30"
           aria-label="Eliminar"
         >
           <X className="size-3.5 text-red-600" />
@@ -239,7 +239,7 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
       />
 
       {error && (
-        <p className="text-sm text-red-500 bg-red-50 border border-red-200 rounded p-2">{error}</p>
+        <p className="text-sm text-red-500 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 rounded p-2">{error}</p>
       )}
 
       {/* Grilla de fotos */}

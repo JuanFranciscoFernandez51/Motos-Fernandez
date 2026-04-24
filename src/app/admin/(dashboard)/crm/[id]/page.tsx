@@ -345,7 +345,7 @@ export default async function LeadDetailPage({
                   <div
                     key={rec.id}
                     className={`text-sm p-2 rounded border ${
-                      rec.completado ? "bg-gray-50 dark:bg-neutral-900 line-through text-gray-400" : "bg-yellow-50 border-yellow-200"
+                      rec.completado ? "bg-gray-50 dark:bg-neutral-900 line-through text-gray-400" : "bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-900/40"
                     }`}
                   >
                     <p className="font-medium">{rec.titulo}</p>

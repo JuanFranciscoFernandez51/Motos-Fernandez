@@ -203,7 +203,7 @@ export default async function EditarVentaPage({
               <p className="font-bold text-green-900">
                 ¡Venta registrada con éxito!
               </p>
-              <p className="text-sm text-green-800/80 mt-0.5">
+              <p className="text-sm text-green-800 dark:text-green-300/80 mt-0.5">
                 Descargá el boleto de compra-venta para firmarlo con el cliente.
               </p>
             </div>
@@ -258,7 +258,7 @@ export default async function EditarVentaPage({
                 type="submit"
                 variant="ghost"
                 size="sm"
-                className="text-red-600 hover:bg-red-50"
+                className="text-red-600 hover:bg-red-50 dark:bg-red-950/30"
               >
                 <Trash2 className="size-4" />
               </Button>

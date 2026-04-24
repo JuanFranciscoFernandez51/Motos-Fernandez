@@ -64,7 +64,7 @@ export function ImageUpload({ value, onChange, folder = "productos", className }
           <button
             type="button"
             onClick={() => onChange("")}
-            className="absolute -top-2 -right-2 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-full p-0.5 shadow hover:bg-red-50 hover:border-red-300 transition-colors"
+            className="absolute -top-2 -right-2 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-full p-0.5 shadow hover:bg-red-50 dark:bg-red-950/30 hover:border-red-300 transition-colors"
           >
             <X className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400 hover:text-red-500" />
           </button>

@@ -145,7 +145,7 @@ export default async function PedidoDetailPage({
                   <span>{formatPrice(pedido.subtotal)}</span>
                 </div>
                 {pedido.descuento > 0 && (
-                  <div className="flex justify-between text-green-600">
+                  <div className="flex justify-between text-green-600 dark:text-green-300">
                     <span>Descuento {pedido.cuponCodigo && `(${pedido.cuponCodigo})`}</span>
                     <span>-{formatPrice(pedido.descuento)}</span>
                   </div>

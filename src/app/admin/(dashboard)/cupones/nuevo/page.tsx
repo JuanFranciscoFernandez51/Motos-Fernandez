@@ -80,7 +80,7 @@ export default async function NuevoCuponPage({
 
       {/* Error */}
       {error && (
-        <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 px-4 py-3 text-sm text-red-700 dark:text-red-300">
           {error === "codigo-duplicado"
             ? "El código ya existe. Probá con uno diferente."
             : "Ocurrió un error al crear el cupón. Intentá de nuevo."}

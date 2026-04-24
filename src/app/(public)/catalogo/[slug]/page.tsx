@@ -212,8 +212,8 @@ export default async function ModeloDetailPage({ params }: Props) {
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 <span className={`inline-block rounded-md px-2.5 py-0.5 text-xs font-bold ${
                   (model.condicion || "0KM") === "0KM"
-                    ? "bg-emerald-100 text-emerald-800"
-                    : "bg-orange-100 text-orange-800"
+                    ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300"
+                    : "bg-orange-100 dark:bg-orange-900/40 text-orange-800"
                 }`}>
                   {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
                 </span>
@@ -241,14 +241,14 @@ export default async function ModeloDetailPage({ params }: Props) {
               {(model.condicion || "0KM") === "USADA" && (model.anio || model.kilometros != null) && (
                 <div className="mt-4 grid grid-cols-2 gap-3">
                   {model.anio && (
-                    <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
-                      <p className="text-[10px] uppercase tracking-wider text-orange-700 font-semibold">Año</p>
+                    <div className="rounded-xl border border-orange-200 bg-orange-50 dark:bg-orange-950/30 p-4">
+                      <p className="text-[10px] uppercase tracking-wider text-orange-700 dark:text-orange-300 font-semibold">Año</p>
                       <p className="mt-1 text-2xl font-extrabold text-orange-900">{model.anio}</p>
                     </div>
                   )}
                   {model.kilometros != null && (
-                    <div className="rounded-xl border border-orange-200 bg-orange-50 p-4">
-                      <p className="text-[10px] uppercase tracking-wider text-orange-700 font-semibold">Kilómetros</p>
+                    <div className="rounded-xl border border-orange-200 bg-orange-50 dark:bg-orange-950/30 p-4">
+                      <p className="text-[10px] uppercase tracking-wider text-orange-700 dark:text-orange-300 font-semibold">Kilómetros</p>
                       <p className="mt-1 text-2xl font-extrabold text-orange-900">
                         {model.kilometros.toLocaleString("es-AR")}
                       </p>

@@ -113,7 +113,7 @@ export default async function EditarClientePage({
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <FileText className="size-4 text-purple-600" />
+              <FileText className="size-4 text-purple-600 dark:text-purple-300" />
               Mandatos ({cliente.mandatos.length})
             </CardTitle>
           </CardHeader>
@@ -201,7 +201,7 @@ export default async function EditarClientePage({
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
-              <Wrench className="size-4 text-orange-600" />
+              <Wrench className="size-4 text-orange-600 dark:text-orange-300" />
               Órdenes de taller ({cliente.ordenesTrabajo.length})
             </CardTitle>
           </CardHeader>

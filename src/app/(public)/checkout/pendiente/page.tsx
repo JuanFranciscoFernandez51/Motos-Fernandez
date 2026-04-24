@@ -18,7 +18,7 @@ export default async function CheckoutPendientePage({
       <div className="w-full max-w-md">
         <div className="rounded-2xl bg-white dark:bg-neutral-900 p-8 shadow-sm text-center">
           <div className="flex justify-center mb-5">
-            <div className="flex items-center justify-center size-20 rounded-full bg-yellow-100">
+            <div className="flex items-center justify-center size-20 rounded-full bg-yellow-100 dark:bg-yellow-900/40">
               <Clock className="size-10 text-yellow-600" />
             </div>
           </div>

@@ -150,7 +150,7 @@ export function ProductoForm({
       </div>
 
       {error && (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{error}</div>
+        <div className="rounded-md bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-600">{error}</div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -307,7 +307,7 @@ export function ProductoForm({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="shrink-0 text-red-500 hover:text-red-700"
+                    className="shrink-0 text-red-500 hover:text-red-700 dark:text-red-300"
                     onClick={() => setTalles(talles.filter((_, j) => j !== i))}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -351,7 +351,7 @@ export function ProductoForm({
                     type="button"
                     variant="ghost"
                     size="icon"
-                    className="shrink-0 text-red-500 hover:text-red-700 mt-1"
+                    className="shrink-0 text-red-500 hover:text-red-700 dark:text-red-300 mt-1"
                     onClick={() => setFotos(fotos.filter((_, j) => j !== i))}
                   >
                     <Trash2 className="h-4 w-4" />

@@ -223,7 +223,7 @@ export default async function EditarMandatoPage({
               {ESTADO_MANDATO_LABELS[mandato.estado]}
             </Badge>
             {mandato.modelo_ && (
-              <Badge variant="secondary" className="bg-green-100 text-green-800">
+              <Badge variant="secondary" className="bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300">
                 Publicado en catálogo
               </Badge>
             )}
@@ -261,7 +261,7 @@ export default async function EditarMandatoPage({
                 type="submit"
                 variant="ghost"
                 size="sm"
-                className="text-red-600 hover:bg-red-50"
+                className="text-red-600 hover:bg-red-50 dark:bg-red-950/30"
               >
                 <Trash2 className="size-4" />
               </Button>

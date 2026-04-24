@@ -69,12 +69,12 @@ export function DeleteModal({ open, onClose, modelo, deleteModelo }: Props) {
           </button>
         </div>
         <div className="p-5 space-y-4">
-          <div className="rounded-lg bg-red-50 border border-red-100 p-3">
-            <p className="text-sm text-red-800">
+          <div className="rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-100 dark:border-red-900/40 p-3">
+            <p className="text-sm text-red-800 dark:text-red-300">
               Esta acción es <strong>irreversible</strong>. Se va a eliminar la
               moto y todas sus fotos, datos internos y registros asociados.
             </p>
-            <p className="mt-2 text-sm text-red-900">
+            <p className="mt-2 text-sm text-red-900 dark:text-red-300">
               Moto: <strong>{modelo.nombre}</strong>{" "}
               <span className="font-mono text-xs uppercase">
                 ({modelo.slug})

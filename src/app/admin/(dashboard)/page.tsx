@@ -31,12 +31,12 @@ function toArgentinaDate(date: Date): Date {
 
 // Colors per origen for the pills
 const ORIGEN_COLORS: Record<string, string> = {
-  WEB:          "bg-blue-100 text-blue-800",
-  WHATSAPP:     "bg-green-100 text-green-800",
-  INSTAGRAM:    "bg-pink-100 text-pink-800",
-  MARKETPLACE:  "bg-orange-100 text-orange-800",
-  MERCADOLIBRE: "bg-yellow-100 text-yellow-800",
-  TELEFONO:     "bg-purple-100 text-purple-800",
+  WEB:          "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300",
+  WHATSAPP:     "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300",
+  INSTAGRAM:    "bg-pink-100 dark:bg-pink-900/40 text-pink-800",
+  MARKETPLACE:  "bg-orange-100 dark:bg-orange-900/40 text-orange-800",
+  MERCADOLIBRE: "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300",
+  TELEFONO:     "bg-purple-100 dark:bg-purple-900/40 text-purple-800",
   PRESENCIAL:   "bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-gray-100",
 }
 
@@ -330,25 +330,25 @@ export default async function AdminDashboardPage() {
       label: "Pedidos hoy",
       value: pedidosHoy,
       icon: Package,
-      color: "text-blue-600 bg-blue-50",
+      color: "text-blue-600 bg-blue-50 dark:bg-blue-950/30",
     },
     {
       label: "Turnos pendientes",
       value: turnosPendientes,
       icon: CalendarClock,
-      color: "text-orange-600 bg-orange-50",
+      color: "text-orange-600 dark:text-orange-300 bg-orange-50 dark:bg-orange-950/30",
     },
     {
       label: "Leads nuevos (semana)",
       value: leadsNuevos,
       icon: Users,
-      color: "text-green-600 bg-green-50",
+      color: "text-green-600 dark:text-green-300 bg-green-50 dark:bg-green-950/30",
     },
     {
       label: "Ventas del mes",
       value: formatPrice(ventasMes._sum.total ?? 0),
       icon: DollarSign,
-      color: "text-[#6B4F7A] bg-purple-50",
+      color: "text-[#6B4F7A] bg-purple-50 dark:bg-purple-950/30",
     },
   ]
 
@@ -613,7 +613,7 @@ export default async function AdminDashboardPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50 dark:bg-purple-950/30">
                   <Eye className="h-5 w-5" />
                 </div>
                 <div>
@@ -626,7 +626,7 @@ export default async function AdminDashboardPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50 dark:bg-purple-950/30">
                   <Eye className="h-5 w-5" />
                 </div>
                 <div>
@@ -703,7 +703,7 @@ export default async function AdminDashboardPage() {
                   {ciudades.map((c) => (
                     <div key={c.ciudad} className="flex items-center justify-between">
                       <span className="text-sm text-gray-700 dark:text-gray-300">{c.ciudad}</span>
-                      <Badge variant="secondary" className="text-xs bg-purple-50 text-[#6B4F7A]">
+                      <Badge variant="secondary" className="text-xs bg-purple-50 dark:bg-purple-950/30 text-[#6B4F7A]">
                         {c._count.ciudad} visita{c._count.ciudad !== 1 ? "s" : ""}
                       </Badge>
                     </div>
@@ -728,7 +728,7 @@ export default async function AdminDashboardPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-indigo-600 bg-indigo-50">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-indigo-600 bg-indigo-50 dark:bg-indigo-950/30">
                   <MessageSquare className="h-5 w-5" />
                 </div>
                 <div>
@@ -743,7 +743,7 @@ export default async function AdminDashboardPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-amber-600 bg-amber-50">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/30">
                   <Mail className="h-5 w-5" />
                 </div>
                 <div>
@@ -765,7 +765,7 @@ export default async function AdminDashboardPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-emerald-600 bg-emerald-50">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30">
                   <TrendingUp className="h-5 w-5" />
                 </div>
                 <div>
@@ -784,7 +784,7 @@ export default async function AdminDashboardPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50 dark:bg-purple-950/30">
                   <DollarSign className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
@@ -797,7 +797,7 @@ export default async function AdminDashboardPage() {
                       <span
                         className={`inline-flex items-center gap-0.5 font-semibold ${
                           variacionIngresos > 0
-                            ? "text-green-600"
+                            ? "text-green-600 dark:text-green-300"
                             : variacionIngresos < 0
                               ? "text-red-600"
                               : "text-gray-500 dark:text-gray-400"

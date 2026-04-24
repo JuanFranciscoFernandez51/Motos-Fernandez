@@ -48,7 +48,7 @@ function IntegrationStatus({ label, envKey }: { label: string; envKey?: string }
   return (
     <div className="flex items-center justify-between py-2.5 border-b last:border-0">
       <span className="text-sm text-gray-700 dark:text-gray-300">{label}</span>
-      <span className="flex items-center gap-1 text-xs text-green-600 font-medium">
+      <span className="flex items-center gap-1 text-xs text-green-600 dark:text-green-300 font-medium">
         <CheckCircle className="h-4 w-4" /> Conectado
       </span>
     </div>

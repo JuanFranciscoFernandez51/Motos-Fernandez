@@ -214,12 +214,12 @@ export function ModelosList({
             onClick={() => setFilter("activas")}
             className={`rounded-lg border p-3 text-left transition-colors ${
               filter === "activas"
-                ? "border-green-500 bg-green-50"
+                ? "border-green-500 bg-green-50 dark:bg-green-950/30"
                 : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
             }`}
           >
             <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Activas</p>
-            <p className="text-xl font-bold text-green-700">{counts.activas}</p>
+            <p className="text-xl font-bold text-green-700 dark:text-green-300">{counts.activas}</p>
           </button>
           <button
             onClick={() => setFilter("inactivas")}
@@ -238,12 +238,12 @@ export function ModelosList({
             onClick={() => setFilter("con-placeholder")}
             className={`rounded-lg border p-3 text-left transition-colors ${
               filter === "con-placeholder"
-                ? "border-orange-500 bg-orange-50"
+                ? "border-orange-500 bg-orange-50 dark:bg-orange-950/30"
                 : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
             }`}
           >
             <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Falta foto real</p>
-            <p className="text-xl font-bold text-orange-600">
+            <p className="text-xl font-bold text-orange-600 dark:text-orange-300">
               {counts.conPlaceholder}
             </p>
           </button>
@@ -251,7 +251,7 @@ export function ModelosList({
             onClick={() => setFilter("sin-foto")}
             className={`rounded-lg border p-3 text-left transition-colors ${
               filter === "sin-foto"
-                ? "border-red-500 bg-red-50"
+                ? "border-red-500 bg-red-50 dark:bg-red-950/30"
                 : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
             }`}
           >
@@ -338,14 +338,14 @@ export function ModelosList({
                   return (
                     <TableRow
                       key={modelo.id}
-                      className={isPlaceholder ? "bg-orange-50/40" : undefined}
+                      className={isPlaceholder ? "bg-orange-50/40 dark:bg-orange-950/30" : undefined}
                     >
                       <TableCell className="font-mono text-xs uppercase text-[#6B4F7A] font-semibold">
                         {modelo.slug}
                       </TableCell>
                       <TableCell>
                         {sinFoto ? (
-                          <div className="h-12 w-12 rounded bg-red-50 flex items-center justify-center text-red-400">
+                          <div className="h-12 w-12 rounded bg-red-50 dark:bg-red-950/30 flex items-center justify-center text-red-400">
                             <ImageOff className="size-5" />
                           </div>
                         ) : (
@@ -415,8 +415,8 @@ export function ModelosList({
                               variant="secondary"
                               className={
                                 v === "0KM"
-                                  ? "bg-emerald-100 text-emerald-800"
-                                  : "bg-orange-100 text-orange-800"
+                                  ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300"
+                                  : "bg-orange-100 dark:bg-orange-900/40 text-orange-800"
                               }
                             >
                               {v === "0KM" ? "0KM" : "Usada"}
@@ -537,7 +537,7 @@ export function ModelosList({
                             variant="secondary"
                             className={
                               shownActivo
-                                ? "bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer"
+                                ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 hover:bg-green-200 cursor-pointer"
                                 : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 cursor-pointer"
                             }
                           >
@@ -585,7 +585,7 @@ export function ModelosList({
                               handleMarkVendida(modelo.id, true)
                             }
                             title="Marcar como vendida"
-                            className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                            className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:bg-emerald-950/30"
                           >
                             <ShoppingCart className="h-4 w-4" />
                           </Button>
@@ -594,7 +594,7 @@ export function ModelosList({
                             size="sm"
                             onClick={() => setDeleteModeloId(modelo.id)}
                             title="Eliminar definitivamente"
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                            className="text-red-600 hover:text-red-700 dark:text-red-300 hover:bg-red-50 dark:bg-red-950/30"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
@@ -633,7 +633,7 @@ export function ModelosList({
           </div>
           <Badge
             variant="secondary"
-            className="bg-emerald-100 text-emerald-800"
+            className="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300"
           >
             {counts.vendidas}
           </Badge>
@@ -754,7 +754,7 @@ export function ModelosList({
                                     setDeleteModeloId(modelo.id)
                                   }
                                   title="Eliminar definitivamente"
-                                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  className="text-red-600 hover:text-red-700 dark:text-red-300 hover:bg-red-50 dark:bg-red-950/30"
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>

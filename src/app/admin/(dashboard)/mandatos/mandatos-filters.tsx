@@ -134,7 +134,7 @@ export function MandatosListFilters({
           onClick={() => setEstadoFilter("PENDIENTE")}
           className={`rounded-lg border p-3 text-left transition-colors ${
             estadoFilter === "PENDIENTE"
-              ? "border-yellow-500 bg-yellow-50"
+              ? "border-yellow-500 bg-yellow-50 dark:bg-yellow-950/30"
               : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
@@ -147,23 +147,23 @@ export function MandatosListFilters({
           onClick={() => setEstadoFilter("ACTIVO")}
           className={`rounded-lg border p-3 text-left transition-colors ${
             estadoFilter === "ACTIVO"
-              ? "border-green-500 bg-green-50"
+              ? "border-green-500 bg-green-50 dark:bg-green-950/30"
               : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Activos</p>
-          <p className="text-xl font-bold text-green-700">{counts.ACTIVO}</p>
+          <p className="text-xl font-bold text-green-700 dark:text-green-300">{counts.ACTIVO}</p>
         </button>
         <button
           onClick={() => setEstadoFilter("VENDIDO")}
           className={`rounded-lg border p-3 text-left transition-colors ${
             estadoFilter === "VENDIDO"
-              ? "border-blue-500 bg-blue-50"
+              ? "border-blue-500 bg-blue-50 dark:bg-blue-950/30"
               : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Vendidos</p>
-          <p className="text-xl font-bold text-blue-700">{counts.VENDIDO}</p>
+          <p className="text-xl font-bold text-blue-700 dark:text-blue-300">{counts.VENDIDO}</p>
         </button>
       </div>
 
@@ -254,7 +254,7 @@ export function MandatosListFilters({
                     </TableCell>
                     <TableCell>
                       {m.publicado ? (
-                        <span className="inline-flex items-center gap-1 text-xs text-green-700">
+                        <span className="inline-flex items-center gap-1 text-xs text-green-700 dark:text-green-300">
                           <CheckCircle className="size-3" /> Publicado
                         </span>
                       ) : (

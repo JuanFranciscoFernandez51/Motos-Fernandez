@@ -87,10 +87,10 @@ export default async function EditarProveedorPage({
     <div className="space-y-6">
       <ProveedorForm initialData={initialData} saveAction={updateProveedor} />
 
-      <div className="rounded-lg border bg-red-50/40 border-red-100 p-4 flex items-center justify-between">
+      <div className="rounded-lg border bg-red-50/40 dark:bg-red-950/30 border-red-100 dark:border-red-900/40 p-4 flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-red-900">Eliminar proveedor</p>
-          <p className="text-xs text-red-700">
+          <p className="text-sm font-medium text-red-900 dark:text-red-300">Eliminar proveedor</p>
+          <p className="text-xs text-red-700 dark:text-red-300">
             Se desasocian los modelos ({proveedor._count.modelos}) y productos (
             {proveedor._count.productos}) que lo tenían asignado.
           </p>
@@ -99,7 +99,7 @@ export default async function EditarProveedorPage({
           <Button
             type="submit"
             variant="outline"
-            className="border-red-300 text-red-700 hover:bg-red-100"
+            className="border-red-300 text-red-700 dark:text-red-300 hover:bg-red-100 dark:bg-red-900/40"
           >
             <Trash2 className="size-4 mr-1" /> Eliminar
           </Button>

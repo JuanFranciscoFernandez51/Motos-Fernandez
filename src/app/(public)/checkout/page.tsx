@@ -262,13 +262,13 @@ export default function CheckoutPage() {
                   Cupón de descuento
                 </h2>
                 {cupon ? (
-                  <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-4 py-3">
+                  <div className="flex items-center justify-between rounded-lg border border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-950/30 px-4 py-3">
                     <div className="flex items-center gap-2">
-                      <Tag className="size-4 text-green-600" />
-                      <span className="text-sm font-semibold text-green-700">
+                      <Tag className="size-4 text-green-600 dark:text-green-300" />
+                      <span className="text-sm font-semibold text-green-700 dark:text-green-300">
                         {cupon.codigo}
                       </span>
-                      <span className="text-sm text-green-600">
+                      <span className="text-sm text-green-600 dark:text-green-300">
                         — {cupon.porcentaje}% off
                         {cupon.montoMaximo
                           ? ` (máx. ${formatPrice(cupon.montoMaximo)})`
@@ -278,7 +278,7 @@ export default function CheckoutPage() {
                     <button
                       type="button"
                       onClick={handleRemoveCupon}
-                      className="rounded-md p-1 text-green-600 hover:bg-green-100 transition-colors"
+                      className="rounded-md p-1 text-green-600 dark:text-green-300 hover:bg-green-100 dark:bg-green-900/40 transition-colors"
                       aria-label="Quitar cupón"
                     >
                       <X className="size-4" />
@@ -364,7 +364,7 @@ export default function CheckoutPage() {
                     <span>{formatPrice(totalPrice)}</span>
                   </div>
                   {descuento > 0 && (
-                    <div className="flex justify-between text-sm text-green-600">
+                    <div className="flex justify-between text-sm text-green-600 dark:text-green-300">
                       <span>Descuento ({cupon?.porcentaje}%)</span>
                       <span>-{formatPrice(descuento)}</span>
                     </div>
@@ -378,7 +378,7 @@ export default function CheckoutPage() {
                 </div>
 
                 {error && (
-                  <div className="mt-4 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
+                  <div className="mt-4 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 px-4 py-3 text-sm text-red-700 dark:text-red-300">
                     {error}
                   </div>
                 )}

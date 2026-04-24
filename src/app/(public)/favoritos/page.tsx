@@ -103,7 +103,7 @@ export default function FavoritosPage() {
                     </Link>
                     <button
                       onClick={() => removeFromWishlist(item.id)}
-                      className="absolute top-2 right-2 size-8 rounded-full bg-white/95 dark:bg-neutral-900/95 backdrop-blur flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50"
+                      className="absolute top-2 right-2 size-8 rounded-full bg-white/95 dark:bg-neutral-900/95 backdrop-blur flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 dark:bg-red-950/30"
                       aria-label="Quitar de favoritos"
                     >
                       <Trash2 className="size-3.5 text-red-500" />

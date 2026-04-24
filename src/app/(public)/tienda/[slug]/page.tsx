@@ -126,7 +126,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
             </div>
 
             {/* Stock */}
-            <p className={`mt-2 text-sm ${producto.stock > 0 ? "text-green-600" : "text-red-500"}`}>
+            <p className={`mt-2 text-sm ${producto.stock > 0 ? "text-green-600 dark:text-green-300" : "text-red-500"}`}>
               {producto.stock > 0 ? `${producto.stock} en stock` : "Sin stock"}
             </p>
 

@@ -164,7 +164,7 @@ export default async function EditarOTPage({
                 type="submit"
                 variant="ghost"
                 size="sm"
-                className="text-red-600 hover:bg-red-50"
+                className="text-red-600 hover:bg-red-50 dark:bg-red-950/30"
               >
                 <Trash2 className="size-4" />
               </Button>

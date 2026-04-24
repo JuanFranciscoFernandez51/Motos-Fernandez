@@ -202,9 +202,9 @@ export function PlanesClient({
 
       {/* Banner si no hay planes reales */}
       {planes.length === 0 && (
-        <div className="flex items-start gap-3 rounded-lg border border-yellow-200 bg-yellow-50 px-4 py-3">
+        <div className="flex items-start gap-3 rounded-lg border border-yellow-200 dark:border-yellow-900/40 bg-yellow-50 dark:bg-yellow-950/30 px-4 py-3">
           <AlertTriangle className="h-5 w-5 text-yellow-600 shrink-0 mt-0.5" />
-          <p className="text-sm text-yellow-800">
+          <p className="text-sm text-yellow-800 dark:text-yellow-300">
             No hay planes cargados. El simulador usa valores de referencia predeterminados. Carga los planes reales abajo.
           </p>
         </div>
@@ -345,7 +345,7 @@ export function PlanesClient({
             </div>
 
             {error && (
-              <p className="text-sm text-red-600 bg-red-50 rounded-md px-3 py-2">{error}</p>
+              <p className="text-sm text-red-600 bg-red-50 dark:bg-red-950/30 rounded-md px-3 py-2">{error}</p>
             )}
 
             {/* Preview cuota */}
@@ -406,7 +406,7 @@ export function PlanesClient({
                   <TableCell className="text-sm text-gray-500 dark:text-gray-400">{plan.orden}</TableCell>
                   <TableCell className="font-medium">{plan.nombre}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className={plan.tipo === "TARJETA" ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"}>
+                    <Badge variant="secondary" className={plan.tipo === "TARJETA" ? "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300" : "bg-purple-100 dark:bg-purple-900/40 text-purple-800"}>
                       {plan.tipo === "TARJETA" ? "Tarjeta" : "Propia"}
                     </Badge>
                   </TableCell>
@@ -426,7 +426,7 @@ export function PlanesClient({
                           variant="secondary"
                           className={
                             plan.activo
-                              ? "bg-green-100 text-green-800 cursor-pointer hover:bg-green-200"
+                              ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300 cursor-pointer hover:bg-green-200"
                               : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200"
                           }
                         >
@@ -434,7 +434,7 @@ export function PlanesClient({
                         </Badge>
                       </button>
                     ) : (
-                      <Badge variant="secondary" className="bg-yellow-100 text-yellow-700">
+                      <Badge variant="secondary" className="bg-yellow-100 dark:bg-yellow-900/40 text-yellow-700">
                         Default
                       </Badge>
                     )}
@@ -453,7 +453,7 @@ export function PlanesClient({
                         <button
                           onClick={() => handleDelete(plan.id, plan.nombre)}
                           disabled={loading}
-                          className="rounded p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"
+                          className="rounded p-1.5 text-gray-400 hover:bg-red-50 dark:bg-red-950/30 hover:text-red-600 transition-colors"
                           title="Eliminar"
                         >
                           <Trash2 className="h-4 w-4" />

@@ -63,7 +63,7 @@ export function TiposServicioList({
       )}
 
       {error && (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-700 border border-red-200">
+        <div className="rounded-md bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/40">
           {error}
         </div>
       )}
@@ -113,7 +113,7 @@ export function TiposServicioList({
                 <form
                   key={t.id}
                   action={(fd) => handleActualizar(t.id, fd)}
-                  className="p-4 space-y-3 bg-yellow-50/40"
+                  className="p-4 space-y-3 bg-yellow-50/40 dark:bg-yellow-950/30"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                     <div className="md:col-span-2">
@@ -156,7 +156,7 @@ export function TiposServicioList({
                       <p className="font-medium text-sm">{t.nombre}</p>
                       {!t.activo && <Badge variant="secondary" className="bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300">Inactivo</Badge>}
                       {t.ordenesCount > 0 && (
-                        <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">
                           {t.ordenesCount} OT
                         </span>
                       )}
@@ -180,7 +180,7 @@ export function TiposServicioList({
                             startTransition(() => eliminarTipo(t.id))
                           }
                         }}
-                        className="text-red-600 hover:bg-red-50"
+                        className="text-red-600 hover:bg-red-50 dark:bg-red-950/30"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

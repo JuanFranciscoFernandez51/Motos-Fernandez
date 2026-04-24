@@ -129,17 +129,17 @@ export function ClientesList({ clientes }: { clientes: Cliente[] }) {
                   <TableCell>
                     <div className="flex gap-1 flex-wrap">
                       {c._count.mandatos > 0 && (
-                        <span className="text-[10px] bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded" title="Mandatos">
+                        <span className="text-[10px] bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded" title="Mandatos">
                           {c._count.mandatos} mand.
                         </span>
                       )}
                       {c._count.ventas > 0 && (
-                        <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded" title="Compras">
+                        <span className="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded" title="Compras">
                           {c._count.ventas} vtas.
                         </span>
                       )}
                       {c._count.ordenesTrabajo > 0 && (
-                        <span className="text-[10px] bg-orange-100 text-orange-700 px-1.5 py-0.5 rounded" title="Órdenes de trabajo">
+                        <span className="text-[10px] bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-300 px-1.5 py-0.5 rounded" title="Órdenes de trabajo">
                           {c._count.ordenesTrabajo} OT
                         </span>
                       )}

@@ -453,7 +453,7 @@ export default function RecomendadorPage() {
     return (
       <main className="min-h-screen bg-[#F8F5FA] dark:bg-neutral-900 flex items-center justify-center py-14">
         <div className="max-w-md text-center px-6">
-          <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-red-100 mb-5">
+          <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-red-100 dark:bg-red-900/40 mb-5">
             <AlertCircle className="size-8 text-red-500" />
           </div>
           <h2 className="text-2xl font-bold text-[#1A1A1A] dark:text-white font-heading">
