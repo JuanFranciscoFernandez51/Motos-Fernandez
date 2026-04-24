@@ -11,7 +11,7 @@ import {
   ESTADO_VENTA_STYLES,
   ESTADO_VENTA_LABELS,
 } from "@/lib/admin-helpers"
-import { FileText, CheckCircle, Trash2 } from "lucide-react"
+import { FileText, CheckCircle, Trash2, Download, PartyPopper } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -101,10 +101,14 @@ async function deleteVenta(id: string) {
 
 export default async function EditarVentaPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ recien?: string }>
 }) {
   const { id } = await params
+  const { recien } = await searchParams
+  const esReciente = recien === "1"
 
   const [venta, clientes, modelos] = await Promise.all([
     prisma.ventaMoto.findUnique({ where: { id } }),
@@ -172,6 +176,33 @@ export default async function EditarVentaPage({
 
   return (
     <div className="space-y-6">
+      {esReciente && (
+        <div className="rounded-xl border-2 border-green-400 bg-gradient-to-r from-green-50 to-emerald-50 p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-green-500 text-white">
+              <PartyPopper className="size-5" />
+            </div>
+            <div>
+              <p className="font-bold text-green-900">
+                ¡Venta registrada con éxito!
+              </p>
+              <p className="text-sm text-green-800/80 mt-0.5">
+                Descargá el boleto de compra-venta para firmarlo con el cliente.
+              </p>
+            </div>
+          </div>
+          <a
+            href={`/api/pdf/venta/${venta.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700 shadow-md"
+          >
+            <Download className="size-4" />
+            Descargar boleto (PDF)
+          </a>
+        </div>
+      )}
+
       <Card className="border-[#6B4F7A]/30">
         <CardContent className="p-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">

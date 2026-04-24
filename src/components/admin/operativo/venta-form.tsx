@@ -125,7 +125,11 @@ export function VentaForm({
         setError(result.error)
       } else {
         if (result?.id) {
-          router.push(`/admin/ventas/${result.id}`)
+          // Si es nueva venta (no había id inicial) → agregar ?recien=1 para mostrar banner con PDF
+          const esNueva = !initialData?.id
+          router.push(
+            `/admin/ventas/${result.id}${esNueva ? "?recien=1" : ""}`
+          )
         } else {
           router.push("/admin/ventas")
         }
