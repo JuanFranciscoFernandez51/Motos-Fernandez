@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table"
 import { Plus, Pencil, Search } from "lucide-react"
 import { revalidatePath } from "next/cache"
+import { ProveedorSelect } from "./proveedor-select"
 
 export const dynamic = "force-dynamic"
 
@@ -52,12 +53,13 @@ async function updateStock(formData: FormData) {
   revalidatePath("/admin/productos")
 }
 
-async function updateProveedorProducto(formData: FormData) {
+async function updateProveedorProducto(
+  productoId: string,
+  proveedorId: string | null
+) {
   "use server"
-  const id = formData.get("id") as string
-  const proveedorId = (formData.get("proveedorId") as string) || null
   await prisma.producto.update({
-    where: { id },
+    where: { id: productoId },
     data: { proveedorId },
   })
   revalidatePath("/admin/productos")
@@ -240,22 +242,12 @@ export default async function ProductosPage({
                     </form>
                   </TableCell>
                   <TableCell>
-                    <form action={updateProveedorProducto}>
-                      <input type="hidden" name="id" value={producto.id} />
-                      <select
-                        name="proveedorId"
-                        defaultValue={producto.proveedorId || ""}
-                        onChange={(e) => e.currentTarget.form?.requestSubmit()}
-                        className="h-8 w-full rounded-md border border-gray-200 bg-white px-2 text-xs"
-                      >
-                        <option value="">— Sin proveedor —</option>
-                        {proveedores.map((p) => (
-                          <option key={p.id} value={p.id}>
-                            {p.nombre}
-                          </option>
-                        ))}
-                      </select>
-                    </form>
+                    <ProveedorSelect
+                      productoId={producto.id}
+                      value={producto.proveedorId}
+                      proveedores={proveedores}
+                      action={updateProveedorProducto}
+                    />
                   </TableCell>
                   <TableCell>
                     <form action={toggleProductoActivo}>
