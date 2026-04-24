@@ -48,7 +48,26 @@ async function createVenta(formData: FormData) {
       },
     })
 
+    // Side effects según estado
+    if (venta.modeloId) {
+      if (venta.estado === "CONCRETADA") {
+        // Moto entregada → marcar vendida y sacar del catálogo público
+        await prisma.modelo.update({
+          where: { id: venta.modeloId },
+          data: { vendida: true, fechaVenta: venta.fecha, activo: false },
+        })
+      } else if (venta.estado === "RESERVADA") {
+        // Moto con seña → marcar etiqueta RESERVADA (sigue visible en catálogo)
+        await prisma.modelo.update({
+          where: { id: venta.modeloId },
+          data: { etiqueta: "RESERVADA" },
+        })
+      }
+    }
+
     revalidatePath("/admin/ventas")
+    revalidatePath("/admin/modelos")
+    revalidatePath("/catalogo")
     return { id: venta.id }
   } catch (e: unknown) {
     return {

@@ -29,7 +29,7 @@ async function updateVenta(formData: FormData) {
       return v && v.trim() ? new Date(v) : new Date()
     }
 
-    await prisma.ventaMoto.update({
+    const venta = await prisma.ventaMoto.update({
       where: { id },
       data: {
         clienteId: get("clienteId"),
@@ -61,7 +61,24 @@ async function updateVenta(formData: FormData) {
       },
     })
 
+    // Side effects según estado actualizado
+    if (venta.modeloId) {
+      if (venta.estado === "CONCRETADA") {
+        await prisma.modelo.update({
+          where: { id: venta.modeloId },
+          data: { vendida: true, fechaVenta: venta.fecha, activo: false },
+        })
+      } else if (venta.estado === "RESERVADA") {
+        await prisma.modelo.update({
+          where: { id: venta.modeloId },
+          data: { etiqueta: "RESERVADA" },
+        })
+      }
+    }
+
     revalidatePath("/admin/ventas")
+    revalidatePath("/admin/modelos")
+    revalidatePath("/catalogo")
     return {}
   } catch (e: unknown) {
     return { error: e instanceof Error ? e.message : "Error al actualizar" }
