@@ -1,10 +1,10 @@
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer"
+import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/renderer"
 
 const styles = StyleSheet.create({
   page: { padding: 40, fontSize: 10, fontFamily: "Helvetica", color: "#1A1A1A" },
   header: { borderBottom: "2px solid #6B4F7A", paddingBottom: 12, marginBottom: 16 },
   headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
-  brand: { fontSize: 20, fontWeight: 700, color: "#6B4F7A", letterSpacing: 1 },
+  logo: { width: 160, height: 58, objectFit: "contain" },
   brandSub: { fontSize: 8, color: "#666", marginTop: 2 },
   docInfo: { textAlign: "right" },
   docTitle: { fontSize: 14, fontWeight: 700 },
@@ -64,6 +64,7 @@ type OTItem = {
 type OTPDFData = {
   numero: number
   fecha: Date
+  logoSrc: string | Buffer
   fechaPrometida?: Date | null
   estado: string
   cliente: {
@@ -121,9 +122,13 @@ export function OrdenTrabajoPDF({ data }: { data: OTPDFData }) {
         <View style={styles.header}>
           <View style={styles.headerRow}>
             <View>
-              <Text style={styles.brand}>MOTOS FERNANDEZ</Text>
-              <Text style={styles.brandSub}>TALLER — {data.negocio.direccion}, {data.negocio.ciudad}</Text>
-              <Text style={styles.brandSub}>{data.negocio.telefono} · {data.negocio.email}</Text>
+              <Image src={data.logoSrc} style={styles.logo} />
+              <Text style={[styles.brandSub, { marginTop: 6 }]}>
+                TALLER — {data.negocio.direccion}, {data.negocio.ciudad}
+              </Text>
+              <Text style={styles.brandSub}>
+                {data.negocio.telefono} · {data.negocio.email}
+              </Text>
             </View>
             <View style={styles.docInfo}>
               <Text style={styles.docTitle}>ORDEN DE TRABAJO</Text>

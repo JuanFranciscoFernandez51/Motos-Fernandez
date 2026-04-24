@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { renderToBuffer } from "@react-pdf/renderer"
 import { MandatoPDF } from "@/lib/pdf/mandato-pdf"
 import { getNegocioConfig } from "@/lib/pdf/negocio-config"
+import { getLogoBuffer } from "@/lib/pdf/logo-loader"
 
 export const dynamic = "force-dynamic"
 
@@ -26,6 +27,7 @@ export async function GET(
   const pdfBuffer = await renderToBuffer(
     <MandatoPDF
       data={{
+        logoSrc: getLogoBuffer(),
         numero: mandato.numero,
         fecha: mandato.fechaFirma ?? mandato.createdAt,
         fechaVencimiento: mandato.fechaVencimiento,

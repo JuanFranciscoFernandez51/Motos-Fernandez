@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { renderToBuffer } from "@react-pdf/renderer"
 import { OrdenTrabajoPDF } from "@/lib/pdf/orden-trabajo-pdf"
 import { getNegocioConfig } from "@/lib/pdf/negocio-config"
+import { getLogoBuffer } from "@/lib/pdf/logo-loader"
 
 export const dynamic = "force-dynamic"
 
@@ -44,6 +45,7 @@ export async function GET(
   const pdfBuffer = await renderToBuffer(
     <OrdenTrabajoPDF
       data={{
+        logoSrc: getLogoBuffer(),
         numero: ot.numero,
         fecha: ot.fechaIngreso,
         fechaPrometida: ot.fechaPrometida,

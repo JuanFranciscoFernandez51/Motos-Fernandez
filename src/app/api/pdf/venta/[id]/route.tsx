@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { renderToBuffer } from "@react-pdf/renderer"
 import { VentaPDF } from "@/lib/pdf/venta-pdf"
 import { getNegocioConfig } from "@/lib/pdf/negocio-config"
+import { getLogoBuffer } from "@/lib/pdf/logo-loader"
 
 export const dynamic = "force-dynamic"
 
@@ -24,6 +25,7 @@ export async function GET(
   const pdfBuffer = await renderToBuffer(
     <VentaPDF
       data={{
+        logoSrc: getLogoBuffer(),
         numero: venta.numero,
         fecha: venta.fecha,
         cliente: {
