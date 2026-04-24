@@ -77,6 +77,29 @@ Conversado la noche del 23/4. Orden sugerido:
 
 ---
 
+## 🎨 LAVADA DE CARA VISUAL (pendiente)
+
+Disparado por comparar con phxtremeshop.com (Shopify estándar pero prolijo).
+La funcionalidad de Motos Fernandez ya supera lo de ellos; falta empatar el
+pulido visual.
+
+- [ ] **Hero de la home** más impactante:
+  - Slider con 3-4 imágenes grandes (motos 0km, usadas destacadas, consigna, taller)
+  - Frases cortas + CTA claro en cada slide
+  - Considerar video loop de background (ej: moto andando)
+- [ ] **Logos de marcas** en grid grande estilo "Shop by Brand" (Honda, Yamaha, Kawasaki, Suzuki, CF Moto, Benelli, KTM, BMW, etc.)
+- [ ] **Fotos profesionales** de las motos (reemplazar el placeholder del logo cuando las tengamos)
+- [ ] **Banner superior** con promo o mensaje destacado tipo "Financiación sin interés" / "Envío a todo el país"
+- [ ] **Sección "Por qué elegirnos"** con íconos + features ya existe → mejorar diseño/anim
+- [ ] **Testimonios con fotos reales** de clientes (cuando los tengamos)
+- [ ] **Micro-interacciones**: hover effects en cards, transitions suaves, parallax sutil
+- [ ] **Home más "scroll-friendly"**: secciones con separadores visuales, colores alternados
+- [ ] **Tipografía**: revisar si Antonio/Montserrat/Poppins tienen buen contraste o conviene alguna más bold para títulos (ej: Bebas Neue)
+- [ ] **Captura de emails** con popup de 10% descuento al primer pedido en tienda
+- [ ] **Animaciones al scrollear** (fade-in, slide-up) con Framer Motion o similar
+
+Tiempo estimado: **4-6 hs** de trabajo de diseño front.
+
 ## 🚀 FEATURES PARA DESPUÉS DEL LANZAMIENTO
 
 Cosas que no son críticas pero serían útiles más adelante:
