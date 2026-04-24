@@ -18,6 +18,16 @@ async function toggleActivo(id: string, activoActual: boolean) {
   revalidatePath("/")
 }
 
+async function updateEtiqueta(id: string, etiqueta: string | null) {
+  "use server"
+  await prisma.modelo.update({
+    where: { id },
+    data: { etiqueta: etiqueta || null },
+  })
+  revalidatePath("/admin/modelos")
+  revalidatePath("/catalogo")
+}
+
 async function updateFotos(id: string, fotos: string[]) {
   "use server"
   await prisma.modelo.update({
@@ -75,13 +85,16 @@ export default async function ModelosPage() {
       categoriaVehiculo: true,
       condicion: true,
       anio: true,
+      kilometros: true,
       precio: true,
+      moneda: true,
       fotos: true,
       activo: true,
       orden: true,
       cilindrada: true,
       vendida: true,
       fechaVenta: true,
+      etiqueta: true,
     },
   })
 
@@ -107,6 +120,7 @@ export default async function ModelosPage() {
         modelos={modelos}
         toggleActivo={toggleActivo}
         updateFotos={updateFotos}
+        updateEtiqueta={updateEtiqueta}
         markVendida={markVendida}
         deleteModelo={deleteModelo}
       />

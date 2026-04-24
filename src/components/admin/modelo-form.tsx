@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Plus, Trash2, ArrowLeft, Save } from "lucide-react"
+import { Plus, Trash2, ArrowLeft, Save, Sparkles, Loader2 } from "lucide-react"
 import Link from "next/link"
 import { CATEGORIAS_VEHICULO, ETIQUETAS_MODELO } from "@/lib/constants"
 import { ImageUpload } from "@/components/admin/image-upload"
@@ -134,6 +134,53 @@ export function ModeloForm({
   const [clienteContacto, setClienteContacto] = useState(initialData?.clienteContacto || "")
   const [notasInternas, setNotasInternas] = useState(initialData?.notasInternas || "")
   const [error, setError] = useState("")
+  // IA para specs
+  const [loadingIA, setLoadingIA] = useState(false)
+  const [iaError, setIaError] = useState("")
+
+  const autocompletarSpecs = async () => {
+    setIaError("")
+    if (!marca.trim() || !nombre.trim()) {
+      setIaError("Cargá marca y nombre del modelo primero")
+      return
+    }
+    setLoadingIA(true)
+    try {
+      const res = await fetch("/api/admin/specs-ia", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          marca,
+          modelo: nombre.replace(marca, "").trim() || nombre,
+          anio: anio ? parseInt(anio) : undefined,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setIaError(data.error || "Error consultando la IA")
+        return
+      }
+      const specsObj = data.specs as Record<string, string>
+      const entries = Object.entries(specsObj).map(([key, value]) => ({
+        key,
+        value,
+      }))
+      if (entries.length === 0) {
+        setIaError(
+          "La IA no encontró specs confiables para esta moto. Cargalas manualmente."
+        )
+        return
+      }
+      // Merge con specs existentes (nuevas ganan)
+      const existingKeys = new Set(entries.map((e) => e.key))
+      const keep = specs.filter((s) => s.key.trim() && !existingKeys.has(s.key))
+      setSpecs([...entries, ...keep])
+    } catch (err) {
+      setIaError(err instanceof Error ? err.message : "Error")
+    } finally {
+      setLoadingIA(false)
+    }
+  }
 
   const handleNombreChange = (value: string) => {
     setNombre(value)
@@ -377,18 +424,42 @@ export function ModeloForm({
           {/* Specs */}
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
                 <CardTitle>Especificaciones</CardTitle>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setSpecs([...specs, { key: "", value: "" }])}
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  Agregar
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={autocompletarSpecs}
+                    disabled={loadingIA}
+                    className="border-[#6B4F7A]/40 text-[#6B4F7A] hover:bg-[#6B4F7A]/5"
+                  >
+                    {loadingIA ? (
+                      <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                    ) : (
+                      <Sparkles className="h-4 w-4 mr-1" />
+                    )}
+                    Autocompletar con IA
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSpecs([...specs, { key: "", value: "" }])}
+                  >
+                    <Plus className="h-4 w-4 mr-1" />
+                    Agregar
+                  </Button>
+                </div>
               </div>
+              {iaError && (
+                <p className="mt-2 text-xs text-red-600">{iaError}</p>
+              )}
+              <p className="mt-1 text-xs text-gray-500">
+                La IA busca las specs por marca, modelo y año. Reemplaza
+                las claves que ya existan con los datos nuevos, mantiene las custom.
+              </p>
             </CardHeader>
             <CardContent className="space-y-3">
               {specs.map((spec, i) => (

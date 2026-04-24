@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { formatPrice, CATEGORIA_VEHICULO_LABELS } from "@/lib/constants"
+import { formatPrice, CATEGORIA_VEHICULO_LABELS, ETIQUETAS_MODELO } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -39,13 +39,16 @@ type Modelo = {
   categoriaVehiculo: string
   condicion: string
   anio: number | null
+  kilometros: number | null
   precio: number | null
+  moneda: string
   fotos: string[]
   activo: boolean
   orden: number
   cilindrada: string | null
   vendida: boolean
   fechaVenta: Date | null
+  etiqueta: string | null
 }
 
 const PLACEHOLDER = "/images/logo-clasico.png"
@@ -56,12 +59,14 @@ export function ModelosList({
   modelos,
   toggleActivo,
   updateFotos,
+  updateEtiqueta,
   markVendida,
   deleteModelo,
 }: {
   modelos: Modelo[]
   toggleActivo: (id: string, activoActual: boolean) => Promise<void>
   updateFotos: (id: string, fotos: string[]) => Promise<void>
+  updateEtiqueta: (id: string, etiqueta: string | null) => Promise<void>
   markVendida: (id: string, vendida: boolean) => Promise<void>
   deleteModelo: (id: string, confirmText: string) => Promise<void>
 }) {
@@ -283,7 +288,9 @@ export function ModelosList({
                 <TableHead>Nombre</TableHead>
                 <TableHead>Marca</TableHead>
                 <TableHead>Condición</TableHead>
+                <TableHead>Km</TableHead>
                 <TableHead>Precio</TableHead>
+                <TableHead className="w-40">Etiqueta</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead className="w-44">Acciones</TableHead>
               </TableRow>
@@ -292,7 +299,7 @@ export function ModelosList({
               {filtered.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={8}
+                    colSpan={10}
                     className="text-center py-8 text-gray-500"
                   >
                     No hay resultados
@@ -370,12 +377,41 @@ export function ModelosList({
                           {modelo.condicion === "0KM" ? "0KM" : "Usada"}
                         </Badge>
                       </TableCell>
+                      <TableCell className="whitespace-nowrap text-xs text-gray-600">
+                        {modelo.kilometros != null
+                          ? `${modelo.kilometros.toLocaleString("es-AR")} km`
+                          : modelo.condicion === "0KM"
+                          ? "0 km"
+                          : "—"}
+                      </TableCell>
                       <TableCell className="whitespace-nowrap text-sm">
                         {modelo.precio ? (
-                          formatPrice(modelo.precio)
+                          <>
+                            {(modelo.moneda || "ARS") === "USD" ? "USD " : ""}
+                            {formatPrice(modelo.precio).replace("$", "").trim()}
+                          </>
                         ) : (
                           <span className="text-gray-400">Consultar</span>
                         )}
+                      </TableCell>
+                      <TableCell>
+                        <select
+                          value={modelo.etiqueta || ""}
+                          onChange={(e) =>
+                            startTransition(() =>
+                              updateEtiqueta(modelo.id, e.target.value || null)
+                            )
+                          }
+                          disabled={isPending}
+                          className="h-8 w-full rounded-md border border-gray-200 bg-white px-2 text-xs"
+                        >
+                          <option value="">Sin etiqueta</option>
+                          {ETIQUETAS_MODELO.map((e) => (
+                            <option key={e.value} value={e.value}>
+                              {e.label}
+                            </option>
+                          ))}
+                        </select>
                       </TableCell>
                       <TableCell>
                         <button
