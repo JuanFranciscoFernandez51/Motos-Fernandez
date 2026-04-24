@@ -1,133 +1,106 @@
 # Pendientes — Motos Fernandez
 
-Lista de cosas que requieren tu input/acción para completar el setup.
-Son rápidas — cuando vuelvas las hacemos juntos.
+## 🎯 Estado actual
 
-## 🔴 Urgente (antes de usar los módulos nuevos)
+✅ **Lista para salir a producción real** — solo falta cargar datos.
 
-### 1. Cargar datos legales del negocio
-
-Para que los PDFs salgan bien (mandato de venta, boleto compra-venta, OT), hay que cargar:
-
-**Dónde**: `/admin/configuracion` → sección **"Datos legales (para PDFs)"**
-
-Campos:
-- **Razón social** (ej: "Fernandez Hermanos S.A." o lo que figure en AFIP)
-- **CUIT** del negocio
-- **Condición frente al IVA** (Responsable Inscripto / Monotributista / etc.)
-- **N° Ingresos Brutos** (si aplica)
-- **Teléfono** (con formato para PDF, ej: "+54 291 578-8671")
-- **Ciudad** (ej: "Bahía Blanca, Buenos Aires")
-
-Hasta que los cargues, los PDFs van a decir "—" o los defaults de ejemplo.
-
-### 2. Cargar tipos de servicio del taller
-
-**Dónde**: `/admin/taller/tipos-servicio`
-
-Cargá los servicios que hace el taller, por ejemplo:
-- Service 1.000 km
-- Service 10.000 km
-- Cambio de aceite
-- Cambio de cubiertas
-- Cambio de pastillas de freno
-- Reparación mecánica general
-- Diagnóstico
-- Otros
-
-Para cada uno podés poner un **precio base** orientativo y **duración estimada**.
-Esto hace que al crear una OT, elijas el tipo de un dropdown en lugar de escribirlo a mano.
-
-## 🟡 Opcionales / dudas de negocio
-
-### 3. Revisar términos de los PDFs
-
-Los PDFs actualmente tienen términos y condiciones **genéricos** que armé yo basándome en contratos típicos de concesionarias argentinas. **Cuando vuelvas, leélos y decime qué cambiar**:
-
-- **Mandato de venta** → 8 cláusulas (consignación, comisión, vencimiento, etc.)
-- **Boleto compra-venta** → 5 cláusulas (propiedad, gastos, transferencia, etc.)
-- Los PDFs los ves en: `/admin/mandatos/[id]` → botón "Generar PDF"
-
-Si tenés un texto de contrato que ya usás en papel, **pasámelo** y lo integro tal cual.
-
-### 4. Comisión típica en mandatos
-
-En el form de mandato puse **10% por defecto**. ¿Qué % usás realmente? ¿Varía por modelo?
-Si querés lo hago configurable desde `/admin/configuracion`.
-
-### 5. Numeración de documentos
-
-Los números arrancan en 1 y van de a uno (MV-0001, MV-0002...). ¿Querés arrancar desde otro número (ej: MV-1000 para que no parezca "chico")?
+- Dominio `motosfernandez.com.ar` online con HTTPS
+- Sistema operativo funcional (Clientes, Mandatos, Ventas, Taller, Proveedores)
+- PDFs con datos legales reales (razón social, CUIT, IIBB)
+- Chat IA andando
+- Dark mode activado
+- Edición inline en lista de modelos
+- Specs automáticas con IA
 
 ---
 
-## 🟢 Fases siguientes del plan (cuando termines lo anterior)
+## 📋 TAREAS DE CARGA DE DATOS (vos)
 
-### FASE A — Dashboard operativo (KPIs) ⏱ ~2 hs
-Rehacer el dashboard principal (`/admin`) con:
-- Ventas del mes / ventas del año (total $ + cantidad)
-- Mandatos activos / vencidos
-- OTs en taller / listas para entregar
-- Clientes nuevos del mes
-- Saldos pendientes (de OTs con saldo > 0)
-- Top modelos vendidos
-- Gráfico de ventas últimos 6 meses
+Son la mayoría del trabajo que queda antes del lanzamiento real.
 
-### FASE B — Integración con catálogo ⏱ ~1 hs
-- Botón "Crear mandato" en el detalle de un modelo del admin (consignación al vuelo)
-- Botón "Registrar venta" en el detalle del modelo
-- Cuando se marca "vendida" en modelos → crear venta automáticamente en borrador
+### Urgente — impactan a lo que ve el cliente
 
-### FASE C — Export PDF/Excel del catálogo ⏱ ~2 hs
-- `/admin/modelos` → botón Exportar
-- Dos opciones: PDF (catálogo con fotos) | Excel (tabla)
-- Filtros aplican al exportar (solo las activas, solo una marca, etc.)
+- [ ] **Fotos reales** a las 45 motos del Excel (reemplazar placeholder del logo)
+- [ ] **Activar** las motos que quieras mostrar en el catálogo
+- [ ] **Revisar precios y km** del import del Excel (16 tenían notas internas)
+- [ ] Cargar **datos internos** (chasis, motor, patente, cliente) en las motos que correspondan
 
-### FASE D — Importación masiva ⏱ ~2-3 hs
-- Importar **clientes** desde Excel (por si tenés una lista antigua)
-- Importar **productos** de la tienda desde Excel
+### Cuando puedas
 
-### FASE E — Avisos automáticos ⏱ ~3-4 hs
-- Email al cliente cuando su moto está lista (OT → LISTA)
-- Recordatorio email "Tu service fue hace 6 meses, ¿agendamos?"
-- Recordatorio "Tu mandato vence en 15 días, ¿renovamos?"
-- Requiere **Resend** configurado (API key en Vercel)
-
-### FASE F — WhatsApp Business API ⏱ ~3-4 hs
-- Enviar PDF del mandato directo por WhatsApp al cliente
-- Notificación automática "Su OT #123 está lista"
-- Requiere **WhatsApp Business API** (costo extra ~$30 USD/mes de Twilio o similar)
-
-### FASE G — Caja / Movimientos ⏱ ~4-5 hs
-- Registro de ingresos/egresos diarios
-- Reporte mensual
-- Integración con las ventas y OTs (cuando se paga una OT, entra a caja)
+- [ ] **Proveedores**: cargar los 4-5 principales (Honda, Yamaha, etc.)
+- [ ] Asignar proveedor a cada moto 0KM
+- [ ] Asignar proveedor a productos de tienda
 
 ---
 
-## 📊 Estado actual
+## 🔧 TAREAS DE MIGRACIÓN / OPS (cuando quieras)
 
-| Módulo | Estado |
-|---|---|
-| ✅ Web pública (catálogo, tienda, chat IA) | Live en motosfernandez.com.ar |
-| ✅ Admin — Modelos (con carrito de ventas, foto modal, etc.) | Completo |
-| ✅ Admin — Clientes | **Nuevo** — listo para usar |
-| ✅ Admin — Mandatos + PDF | **Nuevo** — listo para usar |
-| ✅ Admin — Ventas + PDF boleto | **Nuevo** — listo para usar |
-| ✅ Admin — Taller + Tipos servicio + PDF OT | **Nuevo** — listo para usar |
-| ⏳ Email con dominio propio | Google Workspace trabado, form enviado a soporte |
-| ⏳ Dashboard operativo | Fase A (pendiente) |
-| ⏳ Export catálogo PDF/Excel | Fase C (pendiente) |
+- [ ] **Google Workspace** con `motosfernandez.com.ar` (form de reclamo en https://support.google.com/a/contact/domain-transfer — Google tarda 1-3 días)
+- [ ] **Eliminar cuentas Gmail viejas** (motosfernandezbahia@gmail, etc.) cuando migres al Workspace
+- [ ] Confirmar que `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME = dgtlyzyra` esté en Vercel
+- [ ] Crear **cuenta Cloudinary propia** de Motos Fernandez (gratis, 25 GB) — la actual `dgtlyzyra` es heredada
 
 ---
 
-## 🔧 Archivos clave del código (por si buscás algo)
+## 🔒 OPTIMIZACIÓN Y SEGURIDAD (próxima sesión)
 
-- `prisma/schema.prisma` → modelos de datos
-- `src/app/admin/(dashboard)/clientes/` → módulo clientes
-- `src/app/admin/(dashboard)/mandatos/` → módulo mandatos
-- `src/app/admin/(dashboard)/ventas/` → módulo ventas
-- `src/app/admin/(dashboard)/taller/` → módulo taller + tipos servicio
-- `src/components/admin/operativo/` → componentes reusables (forms, selectores)
-- `src/lib/pdf/` → templates de PDFs
-- `src/app/api/pdf/*/[id]/route.tsx` → endpoints de generación de PDFs
+Conversado la noche del 23/4. Orden sugerido:
+
+### Prioridad 🥇 (hacer primero)
+
+- [ ] **Backup automático de DB** — script que exporte Neon a archivo externo semanal
+- [ ] **Caché de queries** en rutas públicas con `unstable_cache` (catálogo, tienda, home)
+- [ ] **Sentry** o **Logtail** — capturar errores automáticamente, saber qué se rompe
+
+### Prioridad 🥈
+
+- [ ] **Rate limiting** en endpoints sensibles: `/api/contacto`, `/api/recomendador`, `/api/admin/upload`
+- [ ] **Uptime monitoring** (UptimeRobot o Better Uptime) — alerta si el sitio cae
+- [ ] **Vercel Analytics** habilitado (gratis)
+
+### Prioridad 🥉 (cuando crezca el equipo)
+
+- [ ] **2FA** para login admin
+- [ ] **Logs de acceso admin** (quién entró, desde qué IP, cuándo)
+- [ ] **Bundle analyzer** para reducir tamaño de JS
+
+### Ya implementado ✅
+
+- HTTPS forzado
+- Headers de seguridad (X-Frame-Options, HSTS, XSS-Protection)
+- Passwords con bcrypt
+- CSRF protection en server actions (por defecto de Next)
+- Env vars en Vercel
+- Middleware auth para `/admin` y `/api/admin`
+- Rate limiting en chat (20 msgs/hora por IP)
+- Visitas trackeadas
+
+---
+
+## 🚀 FEATURES PARA DESPUÉS DEL LANZAMIENTO
+
+Cosas que no son críticas pero serían útiles más adelante:
+
+- [ ] **Dashboard operativo** con KPIs (Fase A que conversamos): ventas del mes, OTs abiertas, mandatos vencidos, etc.
+- [ ] **Export PDF/Excel** del catálogo desde admin
+- [ ] **Importación masiva** de clientes y productos desde Excel
+- [ ] **Avisos automáticos email** (Resend): OT lista, recordatorio service, mandato vence
+- [ ] **WhatsApp Business API** para enviar PDFs y notificaciones
+- [ ] **Caja** / movimientos diarios
+- [ ] **Reportes** mensuales (ventas por marca, rentabilidad, etc.)
+- [ ] **Email recovery por dominio** cuando Google libere el Workspace viejo
+
+---
+
+## 🐞 BUGS / INVESTIGAR
+
+- [ ] `/admin/modelos` reportado como caído el 23/4 a la noche — pedir captura y diagnosticar (build local pasa OK)
+
+---
+
+## 📝 Preguntas pendientes de negocio
+
+- Términos del mandato de venta → ¿están OK los 8 que armé, o tenés un contrato propio?
+- Términos del boleto compra-venta → idem (5 cláusulas)
+- Comisión típica en mandatos → puse 10% default, ¿varía?
+- Numeración de documentos → arranca en MV-0001 / V-0001 / OT-0001, ¿te sirve o querés arrancar desde otro número?
