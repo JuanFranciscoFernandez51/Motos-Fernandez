@@ -3,6 +3,7 @@ import { Montserrat, Poppins, Antonio } from "next/font/google"
 import Script from "next/script"
 import "./globals.css"
 import { BUSINESS } from "@/lib/constants"
+import { ThemeProvider } from "@/components/theme-provider"
 
 const montserrat = Montserrat({
   variable: "--font-heading",
@@ -142,6 +143,7 @@ export default function RootLayout({
     <html
       lang="es-AR"
       className={`${montserrat.variable} ${poppins.variable} ${antonio.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
       <head>
         <script
@@ -149,8 +151,8 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-full flex flex-col font-body">
-        {children}
+      <body className="min-h-full flex flex-col font-body bg-white dark:bg-neutral-950 text-gray-900 dark:text-gray-100 transition-colors">
+        <ThemeProvider>{children}</ThemeProvider>
         {process.env.NEXT_PUBLIC_GA_ID && (
           <>
             <Script

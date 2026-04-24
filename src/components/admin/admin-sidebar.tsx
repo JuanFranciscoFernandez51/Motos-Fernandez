@@ -37,6 +37,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
+import { ThemeToggleSegmented } from "@/components/theme-toggle"
 
 type LucideIcon = typeof LayoutDashboard
 
@@ -275,6 +276,14 @@ export function AdminSidebar({ userName }: { userName: string }) {
       </ScrollArea>
 
       <div className="border-t border-neutral-800 px-3 py-4">
+        {(!collapsed || mobile) && (
+          <div className="mb-3 px-3 flex items-center justify-between gap-2">
+            <span className="text-[11px] uppercase tracking-wider text-neutral-500">
+              Tema
+            </span>
+            <ThemeToggleSegmented />
+          </div>
+        )}
         <div
           className={cn(
             "flex items-center gap-3 mb-3 px-3",

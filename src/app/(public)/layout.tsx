@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { BUSINESS, HORARIOS, getWhatsAppUrl, WHATSAPP_MESSAGES } from "@/lib/constants"
 import { Menu, X, Phone, MapPin, Clock, MessageCircle, ShoppingBag, Heart } from "lucide-react"
+import { ThemeToggleSubtle } from "@/components/theme-toggle"
 import { Chatbot } from "@/components/public/chatbot"
 import { CartProvider, useCart } from "@/lib/cart-context"
 import { ComparadorProvider } from "@/components/public/comparador-provider"
@@ -98,6 +99,7 @@ function Navbar() {
           {/* Right: cart + mobile hamburger */}
           <div className="flex items-center gap-2 ml-auto lg:ml-4">
             <div className="hidden lg:flex items-center gap-1">
+              <ThemeToggleSubtle className="text-gray-300 hover:text-white hover:bg-white/5" />
               <WishlistIcon />
               <CartIcon />
             </div>
@@ -132,6 +134,7 @@ function Navbar() {
               </Link>
             ))}
             <div className="pt-2 border-t border-white/10 flex items-center gap-2">
+              <ThemeToggleSubtle className="text-gray-300 hover:text-white hover:bg-white/5" />
               <WishlistIcon />
               <CartIcon />
             </div>
