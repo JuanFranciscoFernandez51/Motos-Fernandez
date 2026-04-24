@@ -310,18 +310,18 @@ export function AdminSidebar({ userName }: { userName: string }) {
 
   return (
     <>
-      {/* Desktop */}
+      {/* Desktop — fixed sidebar */}
       <aside
         className={cn(
-          "hidden md:flex md:flex-col border-r border-neutral-800 transition-all",
-          collapsed ? "md:w-20" : "md:w-64"
+          "hidden lg:flex lg:flex-col lg:fixed lg:inset-y-0 lg:left-0 lg:z-30 border-r border-neutral-800 transition-all",
+          collapsed ? "lg:w-20" : "lg:w-64"
         )}
       >
         {sidebarContent(false)}
       </aside>
 
       {/* Mobile header + sheet */}
-      <div className="md:hidden flex items-center gap-3 border-b bg-white px-4 py-3">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center gap-3 border-b bg-white px-4 py-3 h-14">
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger
             render={
