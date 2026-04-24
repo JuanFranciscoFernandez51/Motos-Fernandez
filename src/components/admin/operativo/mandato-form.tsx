@@ -153,11 +153,11 @@ export function MandatoForm({
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Cliente */}
-        <Card className="lg:col-span-3">
+        <Card className="lg:col-span-3 overflow-visible">
           <CardHeader>
             <CardTitle>Cliente (dueño de la moto) *</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="overflow-visible">
             <ClienteSelector
               clientes={clientes}
               value={data.clienteId}

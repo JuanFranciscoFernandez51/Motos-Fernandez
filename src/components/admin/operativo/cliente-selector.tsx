@@ -120,7 +120,7 @@ export function ClienteSelector({
         </div>
 
         {open && (
-          <div className="absolute z-20 mt-1 w-full rounded-md border bg-white shadow-lg max-h-80 overflow-y-auto">
+          <div className="absolute z-40 mt-1 w-full rounded-md border bg-white shadow-lg max-h-80 overflow-y-auto">
             {filtered.length === 0 ? (
               <div className="p-4 text-center">
                 <p className="text-sm text-gray-500 mb-2">Sin resultados</p>

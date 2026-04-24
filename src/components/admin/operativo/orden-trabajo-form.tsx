@@ -187,11 +187,11 @@ export function OrdenTrabajoForm({
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-3">
+        <Card className="lg:col-span-3 overflow-visible">
           <CardHeader>
             <CardTitle>Cliente *</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="overflow-visible">
             <ClienteSelector
               clientes={clientes}
               value={data.clienteId}
@@ -200,11 +200,11 @@ export function OrdenTrabajoForm({
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2">
+        <Card className="lg:col-span-2 overflow-visible">
           <CardHeader>
             <CardTitle>Moto que ingresa al taller</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 overflow-visible">
             <div>
               <Label>Moto del catálogo (si es una nuestra)</Label>
               <MotoSelector
