@@ -56,6 +56,10 @@ model Modelo {
   clienteContacto   String?           // teléfono/email del comprador
   notasInternas     String?           @db.Text
 
+  // Proveedor (relevante sobre todo para 0KM)
+  proveedorId       String?
+  proveedor         Proveedor?        @relation(fields: [proveedorId], references: [id])
+
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 
@@ -144,9 +148,14 @@ model Producto {
   destacado      Boolean      @default(false)
   categoriaId    String
   categoria      Categoria    @relation(fields: [categoriaId], references: [id])
+  // Proveedor (solo admin, no se muestra en la web pública)
+  proveedorId    String?
+  proveedor      Proveedor?   @relation(fields: [proveedorId], references: [id])
   pedidoItems    PedidoItem[]
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt
+
+  @@index([proveedorId])
 }
 
 // ==================== PEDIDOS ====================
@@ -444,6 +453,31 @@ model Conversion {
 
   @@index([createdAt])
   @@index([evento])
+}
+
+// ==================== PROVEEDORES ====================
+
+model Proveedor {
+  id            String    @id @default(cuid())
+  nombre        String    // razón social o nombre del proveedor
+  contacto      String?   // persona de contacto
+  telefono      String?
+  email         String?
+  cuit          String?
+  direccion     String?
+  ciudad        String?
+  rubro         String?   // "motos 0km", "accesorios", "repuestos", "cascos", etc.
+  sitio         String?   // sitio web o URL
+  notas         String?   @db.Text
+  activo        Boolean   @default(true)
+
+  modelos       Modelo[]
+  productos     Producto[]
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([activo])
 }
 
 // ==================== CLIENTES (CRM OPERATIVO) ====================

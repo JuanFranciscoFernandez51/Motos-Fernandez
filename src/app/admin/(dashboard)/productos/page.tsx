@@ -52,6 +52,17 @@ async function updateStock(formData: FormData) {
   revalidatePath("/admin/productos")
 }
 
+async function updateProveedorProducto(formData: FormData) {
+  "use server"
+  const id = formData.get("id") as string
+  const proveedorId = (formData.get("proveedorId") as string) || null
+  await prisma.producto.update({
+    where: { id },
+    data: { proveedorId },
+  })
+  revalidatePath("/admin/productos")
+}
+
 export default async function ProductosPage({
   searchParams,
 }: {
@@ -74,11 +85,18 @@ export default async function ProductosPage({
     where.categoriaId = cat
   }
 
-  const productos = await prisma.producto.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    include: { categoria: true },
-  })
+  const [productos, proveedores] = await Promise.all([
+    prisma.producto.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      include: { categoria: true },
+    }),
+    prisma.proveedor.findMany({
+      where: { activo: true },
+      orderBy: { nombre: "asc" },
+      select: { id: true, nombre: true },
+    }),
+  ])
 
   return (
     <div className="space-y-6">
@@ -152,6 +170,7 @@ export default async function ProductosPage({
               <TableHead>Categoria</TableHead>
               <TableHead className="w-36">Precio</TableHead>
               <TableHead className="w-28">Stock</TableHead>
+              <TableHead className="w-44">Proveedor</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead className="w-24">Acciones</TableHead>
             </TableRow>
@@ -159,7 +178,7 @@ export default async function ProductosPage({
           <TableBody>
             {productos.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
                   No hay productos {q ? `que coincidan con "${q}"` : "cargados"}
                 </TableCell>
               </TableRow>
@@ -218,6 +237,24 @@ export default async function ProductosPage({
                       <button type="submit" className="text-xs text-[#6B4F7A] hover:underline whitespace-nowrap">
                         OK
                       </button>
+                    </form>
+                  </TableCell>
+                  <TableCell>
+                    <form action={updateProveedorProducto}>
+                      <input type="hidden" name="id" value={producto.id} />
+                      <select
+                        name="proveedorId"
+                        defaultValue={producto.proveedorId || ""}
+                        onChange={(e) => e.currentTarget.form?.requestSubmit()}
+                        className="h-8 w-full rounded-md border border-gray-200 bg-white px-2 text-xs"
+                      >
+                        <option value="">— Sin proveedor —</option>
+                        {proveedores.map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.nombre}
+                          </option>
+                        ))}
+                      </select>
                     </form>
                   </TableCell>
                   <TableCell>

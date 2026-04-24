@@ -28,6 +28,15 @@ async function updateEtiqueta(id: string, etiqueta: string | null) {
   revalidatePath("/catalogo")
 }
 
+async function updateProveedorModelo(id: string, proveedorId: string | null) {
+  "use server"
+  await prisma.modelo.update({
+    where: { id },
+    data: { proveedorId: proveedorId || null },
+  })
+  revalidatePath("/admin/modelos")
+}
+
 // Whitelist de campos editables inline desde la lista
 const CAMPOS_EDITABLES_STRING = new Set([
   "nombre",
@@ -113,28 +122,36 @@ async function deleteModelo(id: string, confirmText: string) {
 }
 
 export default async function ModelosPage() {
-  const modelos = await prisma.modelo.findMany({
-    orderBy: [{ slug: "asc" }],
-    select: {
-      id: true,
-      nombre: true,
-      slug: true,
-      marca: true,
-      categoriaVehiculo: true,
-      condicion: true,
-      anio: true,
-      kilometros: true,
-      precio: true,
-      moneda: true,
-      fotos: true,
-      activo: true,
-      orden: true,
-      cilindrada: true,
-      vendida: true,
-      fechaVenta: true,
-      etiqueta: true,
-    },
-  })
+  const [modelos, proveedores] = await Promise.all([
+    prisma.modelo.findMany({
+      orderBy: [{ slug: "asc" }],
+      select: {
+        id: true,
+        nombre: true,
+        slug: true,
+        marca: true,
+        categoriaVehiculo: true,
+        condicion: true,
+        anio: true,
+        kilometros: true,
+        precio: true,
+        moneda: true,
+        fotos: true,
+        activo: true,
+        orden: true,
+        cilindrada: true,
+        vendida: true,
+        fechaVenta: true,
+        etiqueta: true,
+        proveedorId: true,
+      },
+    }),
+    prisma.proveedor.findMany({
+      where: { activo: true },
+      orderBy: { nombre: "asc" },
+      select: { id: true, nombre: true },
+    }),
+  ])
 
   return (
     <div className="space-y-6">
@@ -156,10 +173,12 @@ export default async function ModelosPage() {
 
       <ModelosList
         modelos={modelos}
+        proveedores={proveedores}
         toggleActivo={toggleActivo}
         updateFotos={updateFotos}
         updateEtiqueta={updateEtiqueta}
         updateCampoModelo={updateCampoModelo}
+        updateProveedorModelo={updateProveedorModelo}
         markVendida={markVendida}
         deleteModelo={deleteModelo}
       />

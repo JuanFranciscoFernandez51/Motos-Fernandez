@@ -31,6 +31,7 @@ import {
   UserCircle,
   Tag,
   ListChecks,
+  Truck as TruckIcon,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -63,6 +64,7 @@ const navEntries: NavEntry[] = [
       { href: "/admin/clientes", label: "Clientes", icon: UserCircle },
       { href: "/admin/mandatos", label: "Mandatos de venta", icon: FileText },
       { href: "/admin/ventas", label: "Ventas", icon: Receipt },
+      { href: "/admin/proveedores", label: "Proveedores", icon: TruckIcon },
     ],
   },
   {

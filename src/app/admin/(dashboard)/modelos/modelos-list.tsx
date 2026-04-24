@@ -54,7 +54,10 @@ type Modelo = {
   vendida: boolean
   fechaVenta: Date | null
   etiqueta: string | null
+  proveedorId: string | null
 }
+
+type ProveedorOpt = { id: string; nombre: string }
 
 const PLACEHOLDER = "/images/logo-clasico.png"
 
@@ -62,14 +65,17 @@ type Filter = "todas" | "activas" | "inactivas" | "sin-foto" | "con-placeholder"
 
 export function ModelosList({
   modelos,
+  proveedores,
   toggleActivo,
   updateFotos,
   updateEtiqueta,
   updateCampoModelo,
+  updateProveedorModelo,
   markVendida,
   deleteModelo,
 }: {
   modelos: Modelo[]
+  proveedores: ProveedorOpt[]
   toggleActivo: (id: string, activoActual: boolean) => Promise<void>
   updateFotos: (id: string, fotos: string[]) => Promise<void>
   updateEtiqueta: (id: string, etiqueta: string | null) => Promise<void>
@@ -78,6 +84,7 @@ export function ModelosList({
     field: string,
     value: string | number | null
   ) => Promise<void>
+  updateProveedorModelo: (id: string, proveedorId: string | null) => Promise<void>
   markVendida: (id: string, vendida: boolean) => Promise<void>
   deleteModelo: (id: string, confirmText: string) => Promise<void>
 }) {
@@ -302,6 +309,7 @@ export function ModelosList({
                 <TableHead>Km</TableHead>
                 <TableHead>Precio</TableHead>
                 <TableHead className="w-40">Etiqueta</TableHead>
+                <TableHead className="w-44">Proveedor</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead className="w-44">Acciones</TableHead>
               </TableRow>
@@ -310,7 +318,7 @@ export function ModelosList({
               {filtered.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={10}
+                    colSpan={11}
                     className="text-center py-8 text-gray-500"
                   >
                     No hay resultados
@@ -489,6 +497,34 @@ export function ModelosList({
                             </option>
                           ))}
                         </select>
+                      </TableCell>
+                      <TableCell>
+                        {modelo.condicion === "0KM" ? (
+                          <select
+                            value={modelo.proveedorId || ""}
+                            onChange={(e) =>
+                              startTransition(() =>
+                                updateProveedorModelo(
+                                  modelo.id,
+                                  e.target.value || null
+                                )
+                              )
+                            }
+                            disabled={isPending}
+                            className="h-8 w-full rounded-md border border-gray-200 bg-white px-2 text-xs"
+                          >
+                            <option value="">— Sin proveedor —</option>
+                            {proveedores.map((p) => (
+                              <option key={p.id} value={p.id}>
+                                {p.nombre}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <span className="text-xs text-gray-400 italic px-2">
+                            —
+                          </span>
+                        )}
                       </TableCell>
                       <TableCell>
                         <button
