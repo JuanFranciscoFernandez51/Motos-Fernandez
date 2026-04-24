@@ -124,21 +124,21 @@ export function MandatosListFilters({
           className={`rounded-lg border p-3 text-left transition-colors ${
             estadoFilter === ""
               ? "border-[#6B4F7A] bg-[#6B4F7A]/5"
-              : "border-gray-200 bg-white hover:bg-gray-50"
+              : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
-          <p className="text-xs text-gray-500 uppercase">Total</p>
-          <p className="text-xl font-bold text-gray-900">{counts.total}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Total</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{counts.total}</p>
         </button>
         <button
           onClick={() => setEstadoFilter("PENDIENTE")}
           className={`rounded-lg border p-3 text-left transition-colors ${
             estadoFilter === "PENDIENTE"
               ? "border-yellow-500 bg-yellow-50"
-              : "border-gray-200 bg-white hover:bg-gray-50"
+              : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
-          <p className="text-xs text-gray-500 uppercase">Pendientes</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Pendientes</p>
           <p className="text-xl font-bold text-yellow-700">
             {counts.PENDIENTE}
           </p>
@@ -148,10 +148,10 @@ export function MandatosListFilters({
           className={`rounded-lg border p-3 text-left transition-colors ${
             estadoFilter === "ACTIVO"
               ? "border-green-500 bg-green-50"
-              : "border-gray-200 bg-white hover:bg-gray-50"
+              : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
-          <p className="text-xs text-gray-500 uppercase">Activos</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Activos</p>
           <p className="text-xl font-bold text-green-700">{counts.ACTIVO}</p>
         </button>
         <button
@@ -159,10 +159,10 @@ export function MandatosListFilters({
           className={`rounded-lg border p-3 text-left transition-colors ${
             estadoFilter === "VENDIDO"
               ? "border-blue-500 bg-blue-50"
-              : "border-gray-200 bg-white hover:bg-gray-50"
+              : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
-          <p className="text-xs text-gray-500 uppercase">Vendidos</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Vendidos</p>
           <p className="text-xl font-bold text-blue-700">{counts.VENDIDO}</p>
         </button>
       </div>
@@ -179,14 +179,14 @@ export function MandatosListFilters({
         {query && (
           <button
             onClick={() => setQuery("")}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
           >
             <X className="size-4" />
           </button>
         )}
       </div>
 
-      <div className="rounded-lg border bg-white overflow-hidden">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -205,7 +205,7 @@ export function MandatosListFilters({
               <TableRow>
                 <TableCell
                   colSpan={8}
-                  className="text-center py-12 text-gray-500"
+                  className="text-center py-12 text-gray-500 dark:text-gray-400"
                 >
                   {mandatos.length === 0 ? (
                     <div className="space-y-2">
@@ -230,13 +230,13 @@ export function MandatosListFilters({
                         {m.marca} {m.modelo}
                       </p>
                       {m.anio && (
-                        <p className="text-xs text-gray-500">{m.anio}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{m.anio}</p>
                       )}
                     </TableCell>
                     <TableCell>
                       <p className="text-sm">{m.clienteNombre}</p>
                       {m.clienteDni && (
-                        <p className="text-xs font-mono text-gray-500">
+                        <p className="text-xs font-mono text-gray-500 dark:text-gray-400">
                           {m.clienteDni}
                         </p>
                       )}
@@ -278,7 +278,7 @@ export function MandatosListFilters({
                     </TableCell>
                     <TableCell>
                       {m.fotos.length > 0 ? (
-                        <span className="text-xs text-gray-600 font-medium">
+                        <span className="text-xs text-gray-600 dark:text-gray-300 font-medium">
                           {m.fotos.length} foto{m.fotos.length !== 1 ? "s" : ""}
                         </span>
                       ) : (
@@ -307,7 +307,7 @@ export function MandatosListFilters({
                           href={`/api/pdf/mandato/${m.id}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center rounded-md h-9 px-2 text-sm hover:bg-gray-100"
+                          className="inline-flex items-center justify-center rounded-md h-9 px-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-800"
                           title="Generar PDF"
                         >
                           <FileText className="h-4 w-4" />

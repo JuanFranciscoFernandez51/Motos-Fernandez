@@ -89,7 +89,7 @@ export function ProveedorForm({
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {initialData?.id ? "Editar proveedor" : "Nuevo proveedor"}
           </h1>
         </div>

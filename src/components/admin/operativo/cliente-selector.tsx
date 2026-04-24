@@ -54,7 +54,7 @@ export function ClienteSelector({
   if (selected) {
     return (
       <>
-        <div className="rounded-md border border-gray-200 bg-white p-3 flex items-center justify-between">
+        <div className="rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="size-9 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center text-[#6B4F7A]">
               <User className="size-4" />
@@ -63,7 +63,7 @@ export function ClienteSelector({
               <p className="font-medium text-sm">
                 {selected.apellido}, {selected.nombre}
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 {selected.dni ? `DNI ${selected.dni}` : "Sin DNI"}
                 {selected.telefono && ` · ${selected.telefono}`}
               </p>
@@ -75,7 +75,7 @@ export function ClienteSelector({
               onChange("")
               setQuery("")
             }}
-            className="text-xs text-gray-500 hover:text-red-600 px-2 py-1 rounded"
+            className="text-xs text-gray-500 dark:text-gray-400 hover:text-red-600 px-2 py-1 rounded"
           >
             Cambiar
           </button>
@@ -104,7 +104,7 @@ export function ClienteSelector({
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="absolute right-28 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100"
+              className="absolute right-28 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
             >
               <X className="size-4" />
             </button>
@@ -120,10 +120,10 @@ export function ClienteSelector({
         </div>
 
         {open && (
-          <div className="absolute z-40 mt-1 w-full rounded-md border bg-white shadow-lg max-h-80 overflow-y-auto">
+          <div className="absolute z-40 mt-1 w-full rounded-md border bg-white dark:bg-neutral-900 shadow-lg max-h-80 overflow-y-auto">
             {filtered.length === 0 ? (
               <div className="p-4 text-center">
-                <p className="text-sm text-gray-500 mb-2">Sin resultados</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Sin resultados</p>
                 <button
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
@@ -145,13 +145,13 @@ export function ClienteSelector({
                       setQuery("")
                       setOpen(false)
                     }}
-                    className="w-full text-left px-3 py-2 hover:bg-gray-50 border-b border-gray-50 last:border-0 flex items-center justify-between"
+                    className="w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-neutral-900 border-b border-gray-50 last:border-0 flex items-center justify-between"
                   >
                     <div>
                       <p className="text-sm font-medium">
                         {c.apellido}, {c.nombre}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
                         {c.dni ? `DNI ${c.dni}` : "Sin DNI"}
                         {c.telefono && ` · ${c.telefono}`}
                       </p>
@@ -165,7 +165,7 @@ export function ClienteSelector({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => setModalOpen(true)}
-                  className="w-full flex items-center gap-2 px-3 py-2 bg-gray-50 text-[#6B4F7A] hover:bg-[#6B4F7A]/5 text-sm font-medium border-t"
+                  className="w-full flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-neutral-900 text-[#6B4F7A] hover:bg-[#6B4F7A]/5 text-sm font-medium border-t"
                 >
                   <Plus className="size-4" /> Crear cliente nuevo
                 </button>

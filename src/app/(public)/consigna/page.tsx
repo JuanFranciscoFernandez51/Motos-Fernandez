@@ -149,7 +149,7 @@ export default function ConsignaPage() {
                 href={whatsappGeneral}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-8 py-4 text-sm font-semibold text-white hover:bg-white/10 hover:border-white/40 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 dark:bg-neutral-900/5 px-8 py-4 text-sm font-semibold text-white hover:bg-white/10 dark:hover:bg-neutral-900/10 hover:border-white/40 transition-colors"
               >
                 <MessageCircle className="size-4" />
                 Consultar por WhatsApp
@@ -160,16 +160,16 @@ export default function ConsignaPage() {
       </section>
 
       {/* ===== CÓMO FUNCIONA ===== */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <p className="text-[#8B6F9A] font-semibold text-sm uppercase tracking-widest mb-3">
               Simple y transparente
             </p>
-            <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading">
+            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
               ¿Cómo funciona?
             </h2>
-            <p className="mt-3 text-gray-500 font-body max-w-lg mx-auto">
+            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body max-w-lg mx-auto">
               Tres pasos para que tu moto encuentre nuevo dueño sin que tengas que mover un dedo.
             </p>
           </div>
@@ -187,10 +187,10 @@ export default function ConsignaPage() {
                     {idx + 1}
                   </span>
                 </div>
-                <h3 className="text-xl font-bold text-[#1A1A1A] font-heading mb-3">
+                <h3 className="text-xl font-bold text-[#1A1A1A] dark:text-white font-heading mb-3">
                   {paso.titulo}
                 </h3>
-                <p className="text-gray-500 font-body leading-relaxed text-sm">
+                <p className="text-gray-500 dark:text-gray-400 font-body leading-relaxed text-sm">
                   {paso.descripcion}
                 </p>
               </div>
@@ -200,13 +200,13 @@ export default function ConsignaPage() {
       </section>
 
       {/* ===== BENEFICIOS ===== */}
-      <section className="py-20 bg-[#F0F0F0]">
+      <section className="py-20 bg-[#F0F0F0] dark:bg-neutral-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading">
+            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
               ¿Por qué dejar tu moto con nosotros?
             </h2>
-            <p className="mt-3 text-gray-500 font-body max-w-lg mx-auto">
+            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body max-w-lg mx-auto">
               Más de {BUSINESS.yearsInBusiness} años vendiendo motos nos dan la experiencia para
               hacer la mejor transacción.
             </p>
@@ -216,12 +216,12 @@ export default function ConsignaPage() {
             {BENEFICIOS.map((b, idx) => (
               <div
                 key={idx}
-                className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 bg-white hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200"
+                className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200"
               >
                 <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
                   <b.icon className="size-7" />
                 </div>
-                <h3 className="text-base font-bold text-[#1A1A1A] font-heading mb-2">
+                <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-2">
                   {b.titulo}
                 </h3>
                 <p className="text-sm text-gray-400 font-body leading-relaxed">{b.descripcion}</p>
@@ -261,8 +261,8 @@ export default function ConsignaPage() {
                 ))}
               </ul>
 
-              <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 p-6">
-                <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">¿Preferís hablar directo?</p>
+              <div className="mt-10 rounded-2xl border border-white/10 bg-white/5 dark:bg-neutral-900/5 p-6">
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-widest mb-1">¿Preferís hablar directo?</p>
                 <a
                   href={whatsappGeneral}
                   target="_blank"
@@ -278,7 +278,7 @@ export default function ConsignaPage() {
             {/* Formulario */}
             <form
               onSubmit={handleSubmit}
-              className="rounded-2xl border border-white/10 bg-white/5 p-8 space-y-5"
+              className="rounded-2xl border border-white/10 bg-white/5 dark:bg-neutral-900/5 p-8 space-y-5"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
@@ -292,7 +292,7 @@ export default function ConsignaPage() {
                     value={form.nombre}
                     onChange={handleChange}
                     placeholder="Juan García"
-                    className="w-full rounded-xl border border-white/15 bg-white/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
+                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
                   />
                 </div>
                 <div>
@@ -306,7 +306,7 @@ export default function ConsignaPage() {
                     value={form.telefono}
                     onChange={handleChange}
                     placeholder="291 555-0000"
-                    className="w-full rounded-xl border border-white/15 bg-white/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
+                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
                   />
                 </div>
               </div>
@@ -322,7 +322,7 @@ export default function ConsignaPage() {
                   value={form.marcaModelo}
                   onChange={handleChange}
                   placeholder="Honda CB 250 Twister"
-                  className="w-full rounded-xl border border-white/15 bg-white/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
+                  className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
                 />
               </div>
 
@@ -338,7 +338,7 @@ export default function ConsignaPage() {
                     placeholder="2020"
                     min="1970"
                     max={new Date().getFullYear()}
-                    className="w-full rounded-xl border border-white/15 bg-white/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
+                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
                   />
                 </div>
                 <div>
@@ -352,7 +352,7 @@ export default function ConsignaPage() {
                     value={form.km}
                     onChange={handleChange}
                     placeholder="15.000"
-                    className="w-full rounded-xl border border-white/15 bg-white/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
+                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
                   />
                 </div>
                 <div>
@@ -366,7 +366,7 @@ export default function ConsignaPage() {
                     value={form.precio}
                     onChange={handleChange}
                     placeholder="800.000"
-                    className="w-full rounded-xl border border-white/15 bg-white/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
+                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
                   />
                 </div>
               </div>
@@ -378,7 +378,7 @@ export default function ConsignaPage() {
                 <MessageCircle className="size-4" />
                 Enviar consulta por WhatsApp
               </button>
-              <p className="text-xs text-center text-gray-500">
+              <p className="text-xs text-center text-gray-500 dark:text-gray-400">
                 Al enviar se abrirá WhatsApp con tus datos pre-completados.
               </p>
             </form>
@@ -389,7 +389,7 @@ export default function ConsignaPage() {
       {/* ===== CTA FINAL ===== */}
       <section className="relative py-20 bg-gradient-to-r from-[#6B4F7A] to-[#9B59B6] overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-10" />
-        <div className="absolute -top-20 -right-20 size-80 rounded-full bg-white/5 blur-3xl" />
+        <div className="absolute -top-20 -right-20 size-80 rounded-full bg-white/5 dark:bg-neutral-900/5 blur-3xl" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white font-heading mb-4">
             ¿Querés vender tu moto ya?
@@ -403,14 +403,14 @@ export default function ConsignaPage() {
               href={whatsappGeneral}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-gray-50 transition-colors shadow-lg"
+              className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors shadow-lg"
             >
               <MessageCircle className="size-4" />
               Escribinos al {BUSINESS.whatsappDisplay}
             </a>
             <Link
               href="/contacto"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/40 bg-white/10 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/20 transition-colors"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/40 bg-white/10 dark:bg-neutral-900/10 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/20 dark:hover:bg-neutral-900/20 transition-colors"
             >
               Más información
             </Link>

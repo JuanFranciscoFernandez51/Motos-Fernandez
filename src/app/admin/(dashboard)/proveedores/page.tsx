@@ -26,8 +26,8 @@ export default async function ProveedoresPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Proveedores</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Proveedores</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             De quién compramos motos 0km, accesorios, repuestos, etc.
           </p>
         </div>
@@ -40,7 +40,7 @@ export default async function ProveedoresPage() {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-white overflow-hidden">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -57,7 +57,7 @@ export default async function ProveedoresPage() {
               <TableRow>
                 <TableCell
                   colSpan={6}
-                  className="text-center py-12 text-gray-500"
+                  className="text-center py-12 text-gray-500 dark:text-gray-400"
                 >
                   Todavía no cargaste proveedores. Agregá el primero con el
                   botón de arriba.
@@ -70,7 +70,7 @@ export default async function ProveedoresPage() {
                     <div>
                       <p className="font-medium text-sm">{p.nombre}</p>
                       {p.contacto && (
-                        <p className="text-xs text-gray-500">{p.contacto}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{p.contacto}</p>
                       )}
                       {p.cuit && (
                         <p className="text-xs font-mono text-gray-400">
@@ -85,12 +85,12 @@ export default async function ProveedoresPage() {
                   <TableCell>
                     <div className="space-y-0.5 text-xs">
                       {p.telefono && (
-                        <p className="flex items-center gap-1 text-gray-600">
+                        <p className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
                           <Phone className="size-3" /> {p.telefono}
                         </p>
                       )}
                       {p.email && (
-                        <p className="flex items-center gap-1 text-gray-600">
+                        <p className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
                           <Mail className="size-3" /> {p.email}
                         </p>
                       )}
@@ -131,7 +131,7 @@ export default async function ProveedoresPage() {
                       className={
                         p.activo
                           ? "bg-green-100 text-green-800"
-                          : "bg-gray-100 text-gray-500"
+                          : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400"
                       }
                     >
                       {p.activo ? "Activo" : "Inactivo"}

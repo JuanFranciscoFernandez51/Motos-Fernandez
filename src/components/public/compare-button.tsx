@@ -37,7 +37,7 @@ export function CompareButton({
         className={`size-9 rounded-full backdrop-blur-sm shadow-sm transition-all flex items-center justify-center ${
           active
             ? "bg-[#6B4F7A] text-white hover:bg-[#8B6F9A]"
-            : "bg-white/95 text-[#6B4F7A] hover:bg-white"
+            : "bg-white/95 dark:bg-neutral-900/95 text-[#6B4F7A] hover:bg-white dark:hover:bg-neutral-900"
         } ${className}`}
       >
         <Scale className="size-4" />
@@ -55,7 +55,7 @@ export function CompareButton({
       className={`inline-flex size-10 items-center justify-center rounded-full border transition-colors ${
         active
           ? "border-[#6B4F7A] bg-[#6B4F7A] text-white hover:bg-[#8B6F9A]"
-          : "border-gray-200 bg-white text-[#6B4F7A] hover:border-[#6B4F7A] hover:bg-[#6B4F7A]/5"
+          : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#6B4F7A] hover:border-[#6B4F7A] hover:bg-[#6B4F7A]/5"
       } ${className}`}
     >
       <Scale className="size-4" />

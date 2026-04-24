@@ -26,7 +26,7 @@ export function ProveedorSelect({
             action(productoId, e.target.value || null)
           )
         }
-        className="h-8 w-full rounded-md border border-gray-200 bg-white px-2 text-xs disabled:opacity-60"
+        className="h-8 w-full rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-2 text-xs disabled:opacity-60"
       >
         <option value="">— Sin proveedor —</option>
         {proveedores.map((p) => (

@@ -104,13 +104,13 @@ export default function NosotrosPage() {
       </section>
 
       {/* Values */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading">
+            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
               Nuestros valores
             </h2>
-            <p className="mt-3 text-gray-500 font-body">
+            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body">
               Los pilares que guian cada decision
             </p>
           </div>
@@ -118,15 +118,15 @@ export default function NosotrosPage() {
             {VALUES.map((v) => (
               <div
                 key={v.title}
-                className="rounded-xl border border-gray-100 bg-white p-6 hover:border-[#6B4F7A]/20 hover:shadow-sm transition-all"
+                className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 hover:border-[#6B4F7A]/20 hover:shadow-sm transition-all"
               >
                 <div className="flex items-center justify-center size-12 rounded-full bg-[#6B4F7A]/10 text-[#6B4F7A] mb-4">
                   <v.icon className="size-5" />
                 </div>
-                <h3 className="text-base font-bold text-[#1A1A1A] font-heading">
+                <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading">
                   {v.title}
                 </h3>
-                <p className="mt-2 text-sm text-gray-500 leading-relaxed font-body">
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-body">
                   {v.desc}
                 </p>
               </div>
@@ -136,9 +136,9 @@ export default function NosotrosPage() {
       </section>
 
       {/* Timeline */}
-      <section className="py-20 bg-[#F0F0F0]">
+      <section className="py-20 bg-[#F0F0F0] dark:bg-neutral-950">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading text-center mb-12">
+          <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading text-center mb-12">
             Nuestra historia
           </h2>
           <div className="relative">
@@ -152,10 +152,10 @@ export default function NosotrosPage() {
                     {item.year}
                   </div>
                   <div className="pt-1">
-                    <h3 className="text-base font-bold text-[#1A1A1A] font-heading">
+                    <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading">
                       {item.title}
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500 font-body">
+                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 font-body">
                       {item.desc}
                     </p>
                   </div>
@@ -167,28 +167,28 @@ export default function NosotrosPage() {
       </section>
 
       {/* Location */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <MapPin className="size-8 text-[#6B4F7A] mb-4" />
-              <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading">
+              <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
                 Donde encontrarnos
               </h2>
-              <p className="mt-4 text-gray-500 font-body leading-relaxed">
+              <p className="mt-4 text-gray-500 dark:text-gray-400 font-body leading-relaxed">
                 Estamos en {BUSINESS.address}. Visitanos de lunes a viernes
                 o los sabados por la manana.
               </p>
               <div className="mt-6 space-y-2">
-                <p className="text-sm text-[#1A1A1A]">
+                <p className="text-sm text-[#1A1A1A] dark:text-white">
                   <span className="font-semibold">Direccion:</span>{" "}
                   {BUSINESS.address}
                 </p>
-                <p className="text-sm text-[#1A1A1A]">
+                <p className="text-sm text-[#1A1A1A] dark:text-white">
                   <span className="font-semibold">Telefono:</span>{" "}
                   {BUSINESS.whatsappDisplay}
                 </p>
-                <p className="text-sm text-[#1A1A1A]">
+                <p className="text-sm text-[#1A1A1A] dark:text-white">
                   <span className="font-semibold">Email:</span>{" "}
                   {BUSINESS.email}
                 </p>
@@ -212,7 +212,7 @@ export default function NosotrosPage() {
                 </Link>
               </div>
             </div>
-            <div className="aspect-[4/3] rounded-xl bg-[#F0F0F0] overflow-hidden">
+            <div className="aspect-[4/3] rounded-xl bg-[#F0F0F0] dark:bg-neutral-950 overflow-hidden">
               {/* Map placeholder */}
               <div className="flex items-center justify-center h-full">
                 <div className="text-center">

@@ -131,13 +131,13 @@ export default function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="bg-[#F0F0F0] min-h-screen flex items-center justify-center">
+      <div className="bg-[#F0F0F0] dark:bg-neutral-950 min-h-screen flex items-center justify-center">
         <div className="text-center py-20">
           <ShoppingBag className="size-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-[#1A1A1A] mb-2">
+          <h2 className="text-xl font-semibold text-[#1A1A1A] dark:text-white mb-2">
             Tu carrito está vacío
           </h2>
-          <p className="text-sm text-gray-500 mb-6">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
             Agregá productos antes de ir al checkout.
           </p>
           <Link
@@ -152,7 +152,7 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="bg-[#F0F0F0] min-h-screen">
+    <div className="bg-[#F0F0F0] dark:bg-neutral-950 min-h-screen">
       {/* Hero */}
       <div className="bg-[#1A1A1A] py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -178,13 +178,13 @@ export default function CheckoutPage() {
             {/* Form */}
             <div className="lg:col-span-2 space-y-6">
               {/* Personal data */}
-              <div className="rounded-xl bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-bold text-[#1A1A1A] mb-5">
+              <div className="rounded-xl bg-white dark:bg-neutral-900 p-6 shadow-sm">
+                <h2 className="text-lg font-bold text-[#1A1A1A] dark:text-white mb-5">
                   Datos personales
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">
+                    <label className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5">
                       Nombre <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -193,12 +193,12 @@ export default function CheckoutPage() {
                       value={form.nombre}
                       onChange={handleChange}
                       required
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
                       placeholder="Juan"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">
+                    <label className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5">
                       Apellido <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -207,12 +207,12 @@ export default function CheckoutPage() {
                       value={form.apellido}
                       onChange={handleChange}
                       required
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
                       placeholder="García"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">
+                    <label className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5">
                       Email <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -221,12 +221,12 @@ export default function CheckoutPage() {
                       value={form.email}
                       onChange={handleChange}
                       required
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
                       placeholder="juan@ejemplo.com"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">
+                    <label className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5">
                       Teléfono <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -235,12 +235,12 @@ export default function CheckoutPage() {
                       value={form.telefono}
                       onChange={handleChange}
                       required
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
                       placeholder="291 578-8671"
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-sm font-medium text-[#1A1A1A] mb-1.5">
+                    <label className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5">
                       DNI <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -249,7 +249,7 @@ export default function CheckoutPage() {
                       value={form.dni}
                       onChange={handleChange}
                       required
-                      className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
                       placeholder="30.123.456"
                     />
                   </div>
@@ -257,8 +257,8 @@ export default function CheckoutPage() {
               </div>
 
               {/* Coupon */}
-              <div className="rounded-xl bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-bold text-[#1A1A1A] mb-4">
+              <div className="rounded-xl bg-white dark:bg-neutral-900 p-6 shadow-sm">
+                <h2 className="text-lg font-bold text-[#1A1A1A] dark:text-white mb-4">
                   Cupón de descuento
                 </h2>
                 {cupon ? (
@@ -292,7 +292,7 @@ export default function CheckoutPage() {
                         value={cuponInput}
                         onChange={(e) => setCuponInput(e.target.value.toUpperCase())}
                         placeholder="CÓDIGO DE CUPÓN"
-                        className="flex-1 rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-sm text-[#1A1A1A] placeholder-gray-400 uppercase focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
+                        className="flex-1 rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 uppercase focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
                         onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAplicarCupon())}
                       />
                       <button
@@ -314,8 +314,8 @@ export default function CheckoutPage() {
 
             {/* Order summary */}
             <div className="lg:col-span-1">
-              <div className="sticky top-24 rounded-xl bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-bold text-[#1A1A1A] mb-5">
+              <div className="sticky top-24 rounded-xl bg-white dark:bg-neutral-900 p-6 shadow-sm">
+                <h2 className="text-lg font-bold text-[#1A1A1A] dark:text-white mb-5">
                   Resumen del pedido
                 </h2>
 
@@ -325,7 +325,7 @@ export default function CheckoutPage() {
                     const key = `${item.id}-${item.talle ?? "sin-talle"}`
                     return (
                       <div key={key} className="flex gap-3 items-center">
-                        <div className="relative size-12 shrink-0 rounded-md overflow-hidden bg-gray-100">
+                        <div className="relative size-12 shrink-0 rounded-md overflow-hidden bg-gray-100 dark:bg-neutral-800">
                           {item.foto ? (
                             <Image
                               src={item.foto}
@@ -341,15 +341,15 @@ export default function CheckoutPage() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium text-[#1A1A1A] line-clamp-1">
+                          <p className="text-xs font-medium text-[#1A1A1A] dark:text-white line-clamp-1">
                             {item.nombre}
                             {item.talle && ` (${item.talle})`}
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
                             x{item.cantidad}
                           </p>
                         </div>
-                        <p className="text-sm font-semibold text-[#1A1A1A] shrink-0">
+                        <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white shrink-0">
                           {formatPrice((item.precioOferta ?? item.precio) * item.cantidad)}
                         </p>
                       </div>
@@ -358,8 +358,8 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Totals */}
-                <div className="border-t border-gray-100 pt-4 space-y-2">
-                  <div className="flex justify-between text-sm text-gray-600">
+                <div className="border-t border-gray-100 dark:border-neutral-800 pt-4 space-y-2">
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
                     <span>Subtotal</span>
                     <span>{formatPrice(totalPrice)}</span>
                   </div>
@@ -369,8 +369,8 @@ export default function CheckoutPage() {
                       <span>-{formatPrice(descuento)}</span>
                     </div>
                   )}
-                  <div className="flex justify-between pt-2 border-t border-gray-100">
-                    <span className="font-bold text-[#1A1A1A]">Total</span>
+                  <div className="flex justify-between pt-2 border-t border-gray-100 dark:border-neutral-800">
+                    <span className="font-bold text-[#1A1A1A] dark:text-white">Total</span>
                     <span className="text-xl font-bold text-[#6B4F7A]">
                       {formatPrice(totalFinal)}
                     </span>

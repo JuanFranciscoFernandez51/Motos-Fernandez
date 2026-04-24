@@ -23,7 +23,7 @@ export default async function TiendaPage() {
   ])
 
   return (
-    <div className="bg-[#F0F0F0] min-h-screen">
+    <div className="bg-[#F0F0F0] dark:bg-neutral-950 min-h-screen">
       <TrackVisita pagina="tienda" />
       {/* Hero */}
       <section className="bg-[#1A1A1A] py-12 sm:py-16">

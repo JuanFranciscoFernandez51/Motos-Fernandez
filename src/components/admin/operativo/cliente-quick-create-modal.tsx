@@ -87,19 +87,19 @@ export function ClienteQuickCreateModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg rounded-xl bg-white shadow-2xl"
+        className="w-full max-w-lg rounded-xl bg-white dark:bg-neutral-900 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-gray-100 dark:border-neutral-800 px-5 py-4">
           <div className="flex items-center gap-2">
             <UserPlus className="size-5 text-[#6B4F7A]" />
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               Nuevo cliente
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="rounded-md p-1.5 text-gray-400 hover:bg-gray-100"
+            className="rounded-md p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
             disabled={loading}
           >
             <X className="size-5" />
@@ -108,7 +108,7 @@ export function ClienteQuickCreateModal({
 
         <form onSubmit={handleSubmit}>
           <div className="p-5 space-y-4">
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               Cargá los datos básicos. Podés completar el resto después desde{" "}
               <strong>Clientes</strong>.
             </p>
@@ -186,12 +186,12 @@ export function ClienteQuickCreateModal({
             </div>
           </div>
 
-          <div className="flex items-center justify-end gap-2 border-t border-gray-100 px-5 py-3 bg-gray-50 rounded-b-xl">
+          <div className="flex items-center justify-end gap-2 border-t border-gray-100 dark:border-neutral-800 px-5 py-3 bg-gray-50 dark:bg-neutral-900 rounded-b-xl">
             <button
               type="button"
               onClick={onClose}
               disabled={loading}
-              className="rounded-md border border-gray-200 bg-white px-4 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              className="rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-900 disabled:opacity-50"
             >
               Cancelar
             </button>

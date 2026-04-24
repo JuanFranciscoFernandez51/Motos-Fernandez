@@ -5,7 +5,7 @@ export const metadata = { title: "Términos y condiciones | Motos Fernandez" }
 
 export default function Page() {
   return (
-    <div className="bg-[#F0F0F0] min-h-screen">
+    <div className="bg-[#F0F0F0] dark:bg-neutral-950 min-h-screen">
       <div className="bg-[#1A1A1A] py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-white" style={{ fontFamily: "var(--font-heading)" }}>
@@ -14,9 +14,9 @@ export default function Page() {
         </div>
       </div>
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
-        <div className="rounded-xl bg-white p-8 shadow-sm">
+        <div className="rounded-xl bg-white dark:bg-neutral-900 p-8 shadow-sm">
           <div
-            className="prose prose-sm max-w-none text-[#4E4B48]"
+            className="prose prose-sm max-w-none text-[#4E4B48] dark:text-gray-200"
             dangerouslySetInnerHTML={{
               __html: `
 <h2>Términos y Condiciones</h2>

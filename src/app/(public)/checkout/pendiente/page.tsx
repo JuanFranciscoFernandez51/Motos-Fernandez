@@ -14,9 +14,9 @@ export default async function CheckoutPendientePage({
   const { payment_id, external_reference } = await searchParams
 
   return (
-    <div className="bg-[#F0F0F0] min-h-screen flex items-center justify-center px-4">
+    <div className="bg-[#F0F0F0] dark:bg-neutral-950 min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="rounded-2xl bg-white p-8 shadow-sm text-center">
+        <div className="rounded-2xl bg-white dark:bg-neutral-900 p-8 shadow-sm text-center">
           <div className="flex justify-center mb-5">
             <div className="flex items-center justify-center size-20 rounded-full bg-yellow-100">
               <Clock className="size-10 text-yellow-600" />
@@ -24,30 +24,30 @@ export default async function CheckoutPendientePage({
           </div>
 
           <h1
-            className="text-2xl font-bold text-[#1A1A1A] mb-3"
+            className="text-2xl font-bold text-[#1A1A1A] dark:text-white mb-3"
             style={{ fontFamily: "var(--font-heading)" }}
           >
             Pago pendiente
           </h1>
 
-          <p className="text-gray-600 mb-2">
+          <p className="text-gray-600 dark:text-gray-300 mb-2">
             Tu pago está siendo procesado.
           </p>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-gray-300 mb-6">
             Recibirás una confirmación por email cuando se acredite. Este proceso puede
             demorar hasta 2 días hábiles según el método de pago elegido.
           </p>
 
           {(payment_id || external_reference) && (
-            <div className="rounded-lg bg-gray-50 px-4 py-3 mb-6 text-sm text-gray-500 text-left space-y-1">
+            <div className="rounded-lg bg-gray-50 dark:bg-neutral-900 px-4 py-3 mb-6 text-sm text-gray-500 dark:text-gray-400 text-left space-y-1">
               {payment_id && (
                 <p>
-                  <span className="font-medium text-gray-700">N° de pago:</span> {payment_id}
+                  <span className="font-medium text-gray-700 dark:text-gray-300">N° de pago:</span> {payment_id}
                 </p>
               )}
               {external_reference && (
                 <p>
-                  <span className="font-medium text-gray-700">N° de pedido:</span> {external_reference.slice(0, 8).toUpperCase()}
+                  <span className="font-medium text-gray-700 dark:text-gray-300">N° de pedido:</span> {external_reference.slice(0, 8).toUpperCase()}
                 </p>
               )}
             </div>
@@ -56,13 +56,13 @@ export default async function CheckoutPendientePage({
           {/* Contact info */}
           <div className="rounded-lg bg-[#6B4F7A]/5 border border-[#6B4F7A]/20 px-4 py-4 mb-6 text-left text-sm">
             <p className="font-semibold text-[#6B4F7A] mb-2">¿Necesitás ayuda?</p>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               <span className="font-medium">WhatsApp:</span> {BUSINESS.whatsappDisplay}
             </p>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-gray-300">
               <span className="font-medium">Email:</span> {BUSINESS.email}
             </p>
-            <p className="text-gray-500 text-xs mt-2">
+            <p className="text-gray-500 dark:text-gray-400 text-xs mt-2">
               Lunes a Viernes: {HORARIOS.lunesViernes}
             </p>
           </div>
@@ -82,7 +82,7 @@ export default async function CheckoutPendientePage({
 
             <Link
               href="/tienda"
-              className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-200 px-6 py-3 text-sm font-medium text-gray-600 hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
+              className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
             >
               <ShoppingBag className="size-4" />
               Volver a la tienda

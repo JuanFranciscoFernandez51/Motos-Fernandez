@@ -135,7 +135,7 @@ export function ProductoForm({
           <Button variant="ghost" size="icon" render={<Link href="/admin/productos" />}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {initialData?.id ? "Editar producto" : "Nuevo producto"}
           </h1>
         </div>
@@ -275,7 +275,7 @@ export function ProductoForm({
             </CardHeader>
             <CardContent className="space-y-3">
               {talles.length === 0 && (
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   Sin talles (producto sin variantes de talle)
                 </p>
               )}

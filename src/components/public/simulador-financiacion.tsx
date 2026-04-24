@@ -75,11 +75,11 @@ export function SimuladorFinanciacion() {
     : 0
 
   return (
-    <div className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden">
+    <div className="rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
       {/* Header */}
       <div className="bg-gradient-to-r from-[#6B4F7A] to-[#9B59B6] px-6 py-5 sm:px-8">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center size-10 rounded-xl bg-white/20">
+          <div className="flex items-center justify-center size-10 rounded-xl bg-white/20 dark:bg-neutral-900/20">
             <Calculator className="size-5 text-white" />
           </div>
           <div>
@@ -102,13 +102,13 @@ export function SimuladorFinanciacion() {
           <div className="space-y-7">
 
             {/* Tabs */}
-            <div className="flex rounded-xl bg-gray-100 p-1 gap-1">
+            <div className="flex rounded-xl bg-gray-100 dark:bg-neutral-800 p-1 gap-1">
               <button
                 onClick={() => handleTabChange("PROPIA")}
                 className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${
                   tab === "PROPIA"
-                    ? "bg-white text-[#6B4F7A] shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
+                    ? "bg-white dark:bg-neutral-900 text-[#6B4F7A] shadow-sm"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300"
                 }`}
               >
                 <Landmark className="size-4" />
@@ -118,8 +118,8 @@ export function SimuladorFinanciacion() {
                 onClick={() => handleTabChange("TARJETA")}
                 className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${
                   tab === "TARJETA"
-                    ? "bg-white text-[#6B4F7A] shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
+                    ? "bg-white dark:bg-neutral-900 text-[#6B4F7A] shadow-sm"
+                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300"
                 }`}
               >
                 <CreditCard className="size-4" />
@@ -140,7 +140,7 @@ export function SimuladorFinanciacion() {
 
             {/* Slider de monto */}
             <div>
-              <label className="block text-sm font-semibold text-[#1A1A1A] mb-3">
+              <label className="block text-sm font-semibold text-[#1A1A1A] dark:text-white mb-3">
                 Valor del vehículo
               </label>
               <input
@@ -163,10 +163,10 @@ export function SimuladorFinanciacion() {
 
             {/* Pills de anticipo */}
             <div>
-              <label className="block text-sm font-semibold text-[#1A1A1A] mb-3">
+              <label className="block text-sm font-semibold text-[#1A1A1A] dark:text-white mb-3">
                 Anticipo
                 {tab === "PROPIA" && (
-                  <span className="ml-2 text-xs font-normal text-gray-500">(mínimo 40%)</span>
+                  <span className="ml-2 text-xs font-normal text-gray-500 dark:text-gray-400">(mínimo 40%)</span>
                 )}
               </label>
               <div className="flex items-center gap-2 flex-wrap">
@@ -177,7 +177,7 @@ export function SimuladorFinanciacion() {
                     className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
                       anticipo === pct
                         ? "bg-[#6B4F7A] text-white"
-                        : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                        : "bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200"
                     }`}
                   >
                     {pct === 0 ? "Sin anticipo" : `${pct}%`}
@@ -191,7 +191,7 @@ export function SimuladorFinanciacion() {
 
             {/* Selector de cuotas */}
             <div>
-              <label className="block text-sm font-semibold text-[#1A1A1A] mb-3">
+              <label className="block text-sm font-semibold text-[#1A1A1A] dark:text-white mb-3">
                 Cantidad de cuotas
               </label>
               <div className="flex gap-2 flex-wrap">
@@ -202,7 +202,7 @@ export function SimuladorFinanciacion() {
                     className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border-2 ${
                       planSeleccionado === plan.id
                         ? "bg-[#6B4F7A] text-white border-[#6B4F7A] shadow-md scale-105"
-                        : "bg-white text-gray-600 border-gray-200 hover:border-[#6B4F7A]/40 hover:text-[#6B4F7A]"
+                        : "bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/40 hover:text-[#6B4F7A]"
                     }`}
                   >
                     {plan.cuotas}
@@ -225,7 +225,7 @@ export function SimuladorFinanciacion() {
                     <p className="text-sm text-white/70 mt-1">por mes</p>
                   </div>
                   <div className="sm:text-right">
-                    <div className="bg-white/10 rounded-xl px-5 py-3 space-y-1">
+                    <div className="bg-white/10 dark:bg-neutral-900/10 rounded-xl px-5 py-3 space-y-1">
                       <div className="text-sm text-white/80">
                         Anticipo: <span className="font-semibold text-white">{formatPrice(montoAnticipo)}</span>
                       </div>

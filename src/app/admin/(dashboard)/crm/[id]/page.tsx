@@ -105,10 +105,10 @@ export default async function LeadDetailPage({
           Volver
         </Button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {lead.nombre} {lead.apellido || ""}
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             Lead desde {lead.createdAt.toLocaleDateString("es-AR", {
               day: "numeric",
               month: "long",
@@ -175,7 +175,7 @@ export default async function LeadDetailPage({
             </CardHeader>
             <CardContent>
               {lead.interacciones.length === 0 ? (
-                <p className="text-sm text-gray-500 py-4 text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
                   No hay interacciones registradas
                 </p>
               ) : (
@@ -206,7 +206,7 @@ export default async function LeadDetailPage({
                             })}
                           </span>
                         </div>
-                        <p className="text-sm text-gray-700 whitespace-pre-wrap">
+                        <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
                           {inter.contenido}
                         </p>
                       </div>
@@ -257,7 +257,7 @@ export default async function LeadDetailPage({
                 </div>
               )}
               <div className="pt-2 border-t">
-                <p className="text-gray-500 text-xs mb-1">Modelo de interes</p>
+                <p className="text-gray-500 dark:text-gray-400 text-xs mb-1">Modelo de interes</p>
                 <p className="font-medium">
                   {lead.modelo?.nombre || lead.modeloInteres || "No especificado"}
                 </p>
@@ -345,11 +345,11 @@ export default async function LeadDetailPage({
                   <div
                     key={rec.id}
                     className={`text-sm p-2 rounded border ${
-                      rec.completado ? "bg-gray-50 line-through text-gray-400" : "bg-yellow-50 border-yellow-200"
+                      rec.completado ? "bg-gray-50 dark:bg-neutral-900 line-through text-gray-400" : "bg-yellow-50 border-yellow-200"
                     }`}
                   >
                     <p className="font-medium">{rec.titulo}</p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
                       {rec.fecha.toLocaleDateString("es-AR")}
                     </p>
                   </div>

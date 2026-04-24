@@ -63,21 +63,21 @@ export function FotosModal({ open, onClose, modelo, updateFotos }: Props) {
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-3xl rounded-xl bg-white shadow-2xl"
+        className="relative w-full max-w-3xl rounded-xl bg-white dark:bg-neutral-900 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4">
+        <div className="flex items-center justify-between border-b border-gray-100 dark:border-neutral-800 px-5 py-4">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               Fotos — {modelo.nombre}
             </h2>
-            <p className="text-xs text-gray-500 font-mono uppercase">
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-mono uppercase">
               {modelo.slug}
             </p>
           </div>
           <div className="flex items-center gap-3">
             {(saving || isPending) && (
-              <span className="flex items-center gap-1.5 text-xs text-gray-500">
+              <span className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
                 <Loader2 className="size-3 animate-spin" />
                 Guardando...
               </span>
@@ -90,7 +90,7 @@ export function FotosModal({ open, onClose, modelo, updateFotos }: Props) {
             )}
             <button
               onClick={onClose}
-              className="rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              className="rounded-md p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800 hover:text-gray-600 dark:text-gray-300"
             >
               <X className="size-5" />
             </button>
@@ -98,7 +98,7 @@ export function FotosModal({ open, onClose, modelo, updateFotos }: Props) {
         </div>
 
         <div className="p-5">
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
             Arrastrá las fotos para subir. La primera se usa como portada.
             Los cambios se guardan automáticamente.
           </p>
@@ -109,8 +109,8 @@ export function FotosModal({ open, onClose, modelo, updateFotos }: Props) {
           />
         </div>
 
-        <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3 bg-gray-50 rounded-b-xl">
-          <p className="text-xs text-gray-500">
+        <div className="flex items-center justify-between border-t border-gray-100 dark:border-neutral-800 px-5 py-3 bg-gray-50 dark:bg-neutral-900 rounded-b-xl">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             {fotos.length} foto{fotos.length !== 1 ? "s" : ""}
           </p>
           <button

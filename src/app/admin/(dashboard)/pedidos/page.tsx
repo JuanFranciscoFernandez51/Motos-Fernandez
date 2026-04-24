@@ -61,15 +61,15 @@ export default async function PedidosPage({
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Pedidos</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Pedidos</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {pedidos.length} pedido(s) · Total pagado:{" "}
-            <span className="font-semibold text-gray-700">{formatPrice(totalVentas)}</span>
+            <span className="font-semibold text-gray-700 dark:text-gray-300">{formatPrice(totalVentas)}</span>
           </p>
         </div>
         <a
           href={`/api/admin/pedidos/export?${exportParams.toString()}`}
-          className="flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
+          className="flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors"
         >
           <Download className="h-4 w-4" />
           Exportar CSV
@@ -89,19 +89,19 @@ export default async function PedidosPage({
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500">Desde</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">Desde</label>
             <Input type="date" name="desde" defaultValue={desde || ""} className="w-36" />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-xs text-gray-500">Hasta</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">Hasta</label>
             <Input type="date" name="hasta" defaultValue={hasta || ""} className="w-36" />
           </div>
           {estado && <input type="hidden" name="estado" value={estado} />}
-          <button type="submit" className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50">
+          <button type="submit" className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-900">
             Filtrar
           </button>
           {(q || desde || hasta) && (
-            <a href={`/admin/pedidos${estado ? `?estado=${estado}` : ""}`} className="px-3 py-2 text-xs text-gray-500 hover:text-gray-700">
+            <a href={`/admin/pedidos${estado ? `?estado=${estado}` : ""}`} className="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300">
               Limpiar
             </a>
           )}
@@ -113,7 +113,7 @@ export default async function PedidosPage({
         <Link
           href={`/admin/pedidos${q || desde || hasta ? `?${new URLSearchParams({ ...(q ? { q } : {}), ...(desde ? { desde } : {}), ...(hasta ? { hasta } : {}) })}` : ""}`}
           className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
-            !estado ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50"
+            !estado ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
           Todos
@@ -125,7 +125,7 @@ export default async function PedidosPage({
               key={key}
               href={`/admin/pedidos?${params}`}
               className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
-                estado === key ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50"
+                estado === key ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"
               }`}
             >
               {val.label}
@@ -135,7 +135,7 @@ export default async function PedidosPage({
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border bg-white">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900">
         <Table>
           <TableHeader>
             <TableRow>
@@ -152,7 +152,7 @@ export default async function PedidosPage({
           <TableBody>
             {pedidos.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={8} className="text-center py-8 text-gray-500 dark:text-gray-400">
                   <Package className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                   No hay pedidos
                 </TableCell>
@@ -162,7 +162,7 @@ export default async function PedidosPage({
                 const estadoInfo = ESTADO_PEDIDO_LABELS[pedido.estado]
                 const pagoInfo = ESTADO_PAGO_LABELS[pedido.estadoPago]
                 return (
-                  <TableRow key={pedido.id} className="hover:bg-gray-50">
+                  <TableRow key={pedido.id} className="hover:bg-gray-50 dark:hover:bg-neutral-900">
                     <TableCell className="font-mono font-medium">
                       #{pedido.numero}
                     </TableCell>
@@ -171,10 +171,10 @@ export default async function PedidosPage({
                         <p className="font-medium text-sm">
                           {pedido.nombre} {pedido.apellido}
                         </p>
-                        <p className="text-xs text-gray-500">{pedido.email}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{pedido.email}</p>
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-gray-600">
+                    <TableCell className="text-sm text-gray-600 dark:text-gray-300">
                       {pedido.items.length} item(s)
                     </TableCell>
                     <TableCell className="font-semibold">
@@ -190,7 +190,7 @@ export default async function PedidosPage({
                         {pagoInfo?.label || pedido.estadoPago}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-gray-500">
+                    <TableCell className="text-sm text-gray-500 dark:text-gray-400">
                       {pedido.createdAt.toLocaleDateString("es-AR")}
                     </TableCell>
                     <TableCell>

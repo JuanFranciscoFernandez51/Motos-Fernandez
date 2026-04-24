@@ -73,37 +73,37 @@ export function VentasList({ ventas }: { ventas: Row[] }) {
         <button
           onClick={() => setEstadoFilter("")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            estadoFilter === "" ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 bg-white hover:bg-gray-50"
+            estadoFilter === "" ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
-          <p className="text-xs text-gray-500 uppercase">Total</p>
-          <p className="text-xl font-bold text-gray-900">{counts.total}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Total</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{counts.total}</p>
         </button>
         <button
           onClick={() => setEstadoFilter("BORRADOR")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            estadoFilter === "BORRADOR" ? "border-yellow-500 bg-yellow-50" : "border-gray-200 bg-white hover:bg-gray-50"
+            estadoFilter === "BORRADOR" ? "border-yellow-500 bg-yellow-50" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
-          <p className="text-xs text-gray-500 uppercase">Borrador</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Borrador</p>
           <p className="text-xl font-bold text-yellow-700">{counts.BORRADOR}</p>
         </button>
         <button
           onClick={() => setEstadoFilter("RESERVADA")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            estadoFilter === "RESERVADA" ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-white hover:bg-gray-50"
+            estadoFilter === "RESERVADA" ? "border-blue-500 bg-blue-50" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
-          <p className="text-xs text-gray-500 uppercase">Reservadas</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Reservadas</p>
           <p className="text-xl font-bold text-blue-700">{counts.RESERVADA}</p>
         </button>
         <button
           onClick={() => setEstadoFilter("CONCRETADA")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            estadoFilter === "CONCRETADA" ? "border-green-500 bg-green-50" : "border-gray-200 bg-white hover:bg-gray-50"
+            estadoFilter === "CONCRETADA" ? "border-green-500 bg-green-50" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
-          <p className="text-xs text-gray-500 uppercase">Concretadas</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Concretadas</p>
           <p className="text-xl font-bold text-green-700">{counts.CONCRETADA}</p>
         </button>
       </div>
@@ -117,13 +117,13 @@ export function VentasList({ ventas }: { ventas: Row[] }) {
           className="pl-9"
         />
         {query && (
-          <button onClick={() => setQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100">
+          <button onClick={() => setQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800">
             <X className="size-4" />
           </button>
         )}
       </div>
 
-      <div className="rounded-lg border bg-white overflow-hidden">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -140,7 +140,7 @@ export function VentasList({ ventas }: { ventas: Row[] }) {
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-12 text-gray-500">
+                <TableCell colSpan={8} className="text-center py-12 text-gray-500 dark:text-gray-400">
                   {ventas.length === 0 ? (
                     <div className="space-y-2">
                       <Receipt className="size-10 mx-auto text-gray-300" />
@@ -160,18 +160,18 @@ export function VentasList({ ventas }: { ventas: Row[] }) {
                   <TableCell className="text-sm font-medium">{v.motoDescripcion}</TableCell>
                   <TableCell>
                     <p className="text-sm">{v.clienteNombre}</p>
-                    {v.clienteDni && <p className="text-xs font-mono text-gray-500">{v.clienteDni}</p>}
+                    {v.clienteDni && <p className="text-xs font-mono text-gray-500 dark:text-gray-400">{v.clienteDni}</p>}
                   </TableCell>
                   <TableCell className="whitespace-nowrap text-sm font-medium">
                     {formatMoney(v.precioVenta, v.moneda)}
                   </TableCell>
-                  <TableCell className="text-xs text-gray-600">{v.formaPago || "—"}</TableCell>
+                  <TableCell className="text-xs text-gray-600 dark:text-gray-300">{v.formaPago || "—"}</TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={ESTADO_VENTA_STYLES[v.estado]}>
                       {ESTADO_VENTA_LABELS[v.estado]}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-xs text-gray-500">{formatDate(v.fecha)}</TableCell>
+                  <TableCell className="text-xs text-gray-500 dark:text-gray-400">{formatDate(v.fecha)}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <Button variant="ghost" size="sm" render={<Link href={`/admin/ventas/${v.id}`} />} title="Editar">
@@ -181,7 +181,7 @@ export function VentasList({ ventas }: { ventas: Row[] }) {
                         href={`/api/pdf/venta/${v.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center rounded-md h-9 px-2 text-sm hover:bg-gray-100"
+                        className="inline-flex items-center justify-center rounded-md h-9 px-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-800"
                         title="Boleto de compra-venta PDF"
                       >
                         <FileText className="h-4 w-4" />

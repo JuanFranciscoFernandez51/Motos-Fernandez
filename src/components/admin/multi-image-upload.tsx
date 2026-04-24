@@ -47,7 +47,7 @@ function SortableItem({ id, url, index, onRemove, onCrop }: SortableItemProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className="relative group aspect-square rounded-lg overflow-hidden border-2 border-gray-200 bg-gray-50"
+      className="relative group aspect-square rounded-lg overflow-hidden border-2 border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={url} alt="Foto" className="w-full h-full object-cover" />
@@ -64,10 +64,10 @@ function SortableItem({ id, url, index, onRemove, onCrop }: SortableItemProps) {
         type="button"
         {...attributes}
         {...listeners}
-        className="absolute top-1.5 right-1.5 size-7 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
+        className="absolute top-1.5 right-1.5 size-7 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
         aria-label="Reordenar"
       >
-        <GripVertical className="size-3.5 text-gray-700" />
+        <GripVertical className="size-3.5 text-gray-700 dark:text-gray-300" />
       </button>
 
       {/* Action buttons */}
@@ -78,7 +78,7 @@ function SortableItem({ id, url, index, onRemove, onCrop }: SortableItemProps) {
             e.stopPropagation()
             onCrop()
           }}
-          className="size-7 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow hover:bg-blue-50"
+          className="size-7 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur flex items-center justify-center shadow hover:bg-blue-50"
           aria-label="Recortar"
         >
           <Crop className="size-3.5 text-blue-600" />
@@ -89,7 +89,7 @@ function SortableItem({ id, url, index, onRemove, onCrop }: SortableItemProps) {
             e.stopPropagation()
             onRemove()
           }}
-          className="size-7 rounded-full bg-white/90 backdrop-blur flex items-center justify-center shadow hover:bg-red-50"
+          className="size-7 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur flex items-center justify-center shadow hover:bg-red-50"
           aria-label="Eliminar"
         >
           <X className="size-3.5 text-red-600" />
@@ -199,12 +199,12 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
-        className="border-2 border-dashed border-gray-300 rounded-xl p-8 hover:border-[#6B4F7A] hover:bg-[#6B4F7A]/5 cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 min-h-[140px]"
+        className="border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded-xl p-8 hover:border-[#6B4F7A] hover:bg-[#6B4F7A]/5 cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 min-h-[140px]"
       >
         {uploading ? (
           <>
             <Loader2 className="size-8 text-[#6B4F7A] animate-spin" />
-            <p className="text-sm font-medium text-gray-700">
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Subiendo {progress.current} de {progress.total}...
             </p>
             <div className="w-full max-w-xs bg-gray-200 rounded-full h-1.5 overflow-hidden">
@@ -219,10 +219,10 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
         ) : (
           <>
             <Upload className="size-8 text-gray-400" />
-            <p className="text-sm font-medium text-gray-700">
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Arrastrá fotos acá o hacé click para seleccionar
             </p>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               Podés subir varias a la vez · Se recortan automáticamente en cuadrado
             </p>
           </>
@@ -266,7 +266,7 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
       )}
 
       {urls.length > 0 && (
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-500 dark:text-gray-400">
           {urls.length} foto{urls.length !== 1 ? "s" : ""} · Arrastrá las miniaturas para reordenar · La primera es la portada
         </p>
       )}

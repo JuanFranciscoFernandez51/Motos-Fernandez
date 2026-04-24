@@ -70,21 +70,21 @@ export function CalculadoraCuotas({ precio, moneda, financiacion = [] }: Calcula
   }, [precio, anticipoPct, plazo, planMatch, tasaMensual])
 
   return (
-    <div className="rounded-xl border border-gray-100 bg-white p-5">
+    <div className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5">
       <div className="flex items-center gap-2 mb-4">
         <div className="size-9 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center">
           <Calculator className="size-4 text-[#6B4F7A]" />
         </div>
         <div>
-          <h3 className="text-sm font-bold text-[#1A1A1A]">Calculá tu cuota</h3>
-          <p className="text-xs text-gray-500">Simulación rápida y orientativa</p>
+          <h3 className="text-sm font-bold text-[#1A1A1A] dark:text-white">Calculá tu cuota</h3>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Simulación rápida y orientativa</p>
         </div>
       </div>
 
       {/* Anticipo */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <label className="text-xs font-medium text-gray-600">Anticipo</label>
+          <label className="text-xs font-medium text-gray-600 dark:text-gray-300">Anticipo</label>
           <span className="text-xs font-bold text-[#6B4F7A]">
             {anticipoPct}% · {formatear(calculo.anticipo)}
           </span>
@@ -107,7 +107,7 @@ export function CalculadoraCuotas({ precio, moneda, financiacion = [] }: Calcula
 
       {/* Plazo */}
       <div className="mt-5 space-y-2">
-        <label className="text-xs font-medium text-gray-600 block">Plazo en cuotas</label>
+        <label className="text-xs font-medium text-gray-600 dark:text-gray-300 block">Plazo en cuotas</label>
         <div className="grid grid-cols-5 gap-1.5">
           {PLAZOS.map((p) => (
             <button
@@ -117,7 +117,7 @@ export function CalculadoraCuotas({ precio, moneda, financiacion = [] }: Calcula
               className={`rounded-lg border px-2 py-2 text-xs font-semibold transition-colors ${
                 plazo === p
                   ? "border-[#6B4F7A] bg-[#6B4F7A] text-white"
-                  : "border-gray-200 bg-white text-gray-600 hover:border-[#6B4F7A]"
+                  : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A]"
               }`}
             >
               {p}
@@ -128,18 +128,18 @@ export function CalculadoraCuotas({ precio, moneda, financiacion = [] }: Calcula
 
       {/* Resultado */}
       <div className="mt-5 rounded-lg bg-[#6B4F7A]/5 border border-[#6B4F7A]/10 p-4">
-        <p className="text-xs text-gray-500 uppercase tracking-wider">Cuota mensual</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cuota mensual</p>
         <p className="mt-1 text-2xl font-extrabold text-[#6B4F7A]">
           {formatear(calculo.cuota)}
         </p>
         <div className="mt-3 pt-3 border-t border-[#6B4F7A]/10 grid grid-cols-2 gap-2 text-xs">
           <div>
-            <p className="text-gray-500">A financiar</p>
-            <p className="font-semibold text-[#1A1A1A]">{formatear(calculo.aFinanciar)}</p>
+            <p className="text-gray-500 dark:text-gray-400">A financiar</p>
+            <p className="font-semibold text-[#1A1A1A] dark:text-white">{formatear(calculo.aFinanciar)}</p>
           </div>
           <div>
-            <p className="text-gray-500">Total estimado</p>
-            <p className="font-semibold text-[#1A1A1A]">{formatear(calculo.total)}</p>
+            <p className="text-gray-500 dark:text-gray-400">Total estimado</p>
+            <p className="font-semibold text-[#1A1A1A] dark:text-white">{formatear(calculo.total)}</p>
           </div>
         </div>
       </div>

@@ -117,7 +117,7 @@ export default function NotFound() {
           </Link>
           <Link
             href="/catalogo"
-            className="inline-flex items-center justify-center gap-2 rounded-lg border-2 px-6 py-3 text-sm font-semibold transition-all hover:bg-white/5 sm:text-base"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border-2 px-6 py-3 text-sm font-semibold transition-all hover:bg-white/5 dark:hover:bg-neutral-900/5 sm:text-base"
             style={{ borderColor: "#9B7BA8", color: "#C9AFD4" }}
           >
             <Bike className="h-4 w-4" />
@@ -125,7 +125,7 @@ export default function NotFound() {
           </Link>
           <Link
             href="/contacto"
-            className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-white/20 px-6 py-3 text-sm font-semibold text-white/80 transition-all hover:border-white/40 hover:bg-white/5 sm:text-base"
+            className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-white/20 px-6 py-3 text-sm font-semibold text-white/80 transition-all hover:border-white/40 hover:bg-white/5 dark:hover:bg-neutral-900/5 sm:text-base"
           >
             <MessageCircle className="h-4 w-4" />
             Contactanos
@@ -134,18 +134,18 @@ export default function NotFound() {
 
         {/* Separador */}
         <div className="mt-14 flex w-full max-w-md items-center gap-4">
-          <div className="h-px flex-1 bg-white/10" />
+          <div className="h-px flex-1 bg-white/10 dark:bg-neutral-900/10" />
           <span className="text-xs uppercase tracking-widest text-white/40">
             O quizás te interesa
           </span>
-          <div className="h-px flex-1 bg-white/10" />
+          <div className="h-px flex-1 bg-white/10 dark:bg-neutral-900/10" />
         </div>
 
         {/* Sugerencias de páginas populares */}
         <div className="mt-8 grid w-full max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4">
           <Link
             href="/catalogo"
-            className="group flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-center transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.06]"
+            className="group flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white dark:bg-neutral-900/[0.03] p-4 text-center transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white dark:hover:bg-neutral-900/[0.06]"
           >
             <div
               className="flex h-10 w-10 items-center justify-center rounded-lg transition-colors"
@@ -160,7 +160,7 @@ export default function NotFound() {
 
           <Link
             href="/catalogo"
-            className="group flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-center transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.06]"
+            className="group flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white dark:bg-neutral-900/[0.03] p-4 text-center transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white dark:hover:bg-neutral-900/[0.06]"
           >
             <div
               className="flex h-10 w-10 items-center justify-center rounded-lg"
@@ -175,7 +175,7 @@ export default function NotFound() {
 
           <Link
             href="/tienda"
-            className="group flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-center transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.06]"
+            className="group flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white dark:bg-neutral-900/[0.03] p-4 text-center transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white dark:hover:bg-neutral-900/[0.06]"
           >
             <div
               className="flex h-10 w-10 items-center justify-center rounded-lg"
@@ -193,7 +193,7 @@ export default function NotFound() {
 
           <Link
             href="/servicio-tecnico"
-            className="group flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white/[0.03] p-4 text-center transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white/[0.06]"
+            className="group flex flex-col items-center gap-2 rounded-xl border border-white/10 bg-white dark:bg-neutral-900/[0.03] p-4 text-center transition-all hover:-translate-y-0.5 hover:border-white/20 hover:bg-white dark:hover:bg-neutral-900/[0.06]"
           >
             <div
               className="flex h-10 w-10 items-center justify-center rounded-lg"

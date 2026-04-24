@@ -61,7 +61,7 @@ export function TiendaClient({
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               categoriaId === "TODAS"
                 ? "bg-[#6B4F7A] text-white"
-                : "bg-white text-[#4E4B48] hover:bg-gray-100"
+                : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
             }`}
           >
             Todas ({productos.length})
@@ -75,7 +75,7 @@ export function TiendaClient({
                 className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   categoriaId === cat.id
                     ? "bg-[#6B4F7A] text-white"
-                    : "bg-white text-[#4E4B48] hover:bg-gray-100"
+                    : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
                 }`}
               >
                 {cat.nombre} ({cat._count.productos})
@@ -92,7 +92,7 @@ export function TiendaClient({
               placeholder="Buscar producto..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+              className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 pl-10 pr-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
             />
           </div>
         </div>
@@ -102,7 +102,7 @@ export function TiendaClient({
       {filtered.length === 0 ? (
         <div className="py-20 text-center">
           <ShoppingBag className="size-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500">No se encontraron productos con esos filtros.</p>
+          <p className="text-gray-500 dark:text-gray-400">No se encontraron productos con esos filtros.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -110,9 +110,9 @@ export function TiendaClient({
             <Link
               key={producto.id}
               href={`/tienda/${producto.slug}`}
-              className="group rounded-xl bg-white overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all flex flex-col"
+              className="group rounded-xl bg-white dark:bg-neutral-900 overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all flex flex-col"
             >
-              <div className="relative aspect-square bg-gray-100 overflow-hidden">
+              <div className="relative aspect-square bg-gray-100 dark:bg-neutral-800 overflow-hidden">
                 {producto.fotos[0] ? (
                   <Image
                     src={producto.fotos[0]}
@@ -133,7 +133,7 @@ export function TiendaClient({
                 )}
                 {producto.stock <= 0 && (
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <span className="rounded-md bg-white/90 px-3 py-1.5 text-sm font-semibold text-[#1A1A1A]">
+                    <span className="rounded-md bg-white/90 dark:bg-neutral-900/90 px-3 py-1.5 text-sm font-semibold text-[#1A1A1A] dark:text-white">
                       Sin stock
                     </span>
                   </div>
@@ -143,7 +143,7 @@ export function TiendaClient({
                 <p className="text-xs font-medium text-[#8B6F9A] uppercase tracking-wider">
                   {producto.categoria.nombre}
                 </p>
-                <h3 className="mt-1 text-base font-semibold text-[#1A1A1A] line-clamp-2 flex-1">
+                <h3 className="mt-1 text-base font-semibold text-[#1A1A1A] dark:text-white line-clamp-2 flex-1">
                   {producto.nombre}
                 </h3>
                 <div className="mt-3 flex items-center justify-between">

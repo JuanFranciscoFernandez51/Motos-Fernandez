@@ -61,7 +61,7 @@ function getEstado(p: Promocion): { label: string; className: string } {
     return { label: "Inactiva", className: "bg-red-100 text-red-700" }
   }
   if (new Date(p.fechaFin) < now) {
-    return { label: "Vencida", className: "bg-gray-100 text-gray-500" }
+    return { label: "Vencida", className: "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400" }
   }
   return { label: "Activa", className: "bg-green-100 text-green-800" }
 }
@@ -166,8 +166,8 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Promociones</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Promociones</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {promociones.length} promoción(es)
           </p>
         </div>
@@ -184,8 +184,8 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
 
       {/* Formulario inline */}
       {showForm && (
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="rounded-lg border bg-white dark:bg-neutral-900 p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             {editingId ? "Editar promoción" : "Nueva promoción"}
           </h2>
 
@@ -276,7 +276,7 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
                   type="checkbox"
                   checked={form.activo}
                   onChange={(e) => setForm({ ...form, activo: e.target.checked })}
-                  className="h-4 w-4 rounded border-gray-300 text-[#6B4F7A] accent-[#6B4F7A]"
+                  className="h-4 w-4 rounded border-gray-300 dark:border-neutral-700 text-[#6B4F7A] accent-[#6B4F7A]"
                 />
                 <Label htmlFor="activo" className="cursor-pointer">
                   Activa
@@ -312,7 +312,7 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
       )}
 
       {/* Tabla */}
-      <div className="rounded-lg border bg-white">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900">
         <Table>
           <TableHeader>
             <TableRow>
@@ -326,7 +326,7 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
           <TableBody>
             {promociones.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10 text-gray-500">
+                <TableCell colSpan={5} className="text-center py-10 text-gray-500 dark:text-gray-400">
                   <Tag className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                   No hay promociones cargadas
                 </TableCell>
@@ -339,7 +339,7 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
                     {/* Thumbnail */}
                     <TableCell>
                       {p.imagen ? (
-                        <div className="relative w-[60px] h-[40px] rounded overflow-hidden border border-gray-200 bg-gray-50">
+                        <div className="relative w-[60px] h-[40px] rounded overflow-hidden border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900">
                           <Image
                             src={p.imagen}
                             alt={p.titulo}
@@ -349,7 +349,7 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
                           />
                         </div>
                       ) : (
-                        <div className="w-[60px] h-[40px] rounded border border-dashed border-gray-200 bg-gray-50 flex items-center justify-center">
+                        <div className="w-[60px] h-[40px] rounded border border-dashed border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 flex items-center justify-center">
                           <Tag className="h-4 w-4 text-gray-300" />
                         </div>
                       )}
@@ -357,9 +357,9 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
 
                     {/* Título + descripción */}
                     <TableCell>
-                      <div className="font-medium text-gray-900">{p.titulo}</div>
+                      <div className="font-medium text-gray-900 dark:text-gray-100">{p.titulo}</div>
                       {p.descripcion && (
-                        <div className="text-xs text-gray-500 mt-0.5 line-clamp-1">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-1">
                           {p.descripcion}
                         </div>
                       )}
@@ -376,7 +376,7 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
                     </TableCell>
 
                     {/* Período */}
-                    <TableCell className="text-sm text-gray-600 whitespace-nowrap">
+                    <TableCell className="text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
                       <span>
                         {new Date(p.fechaInicio).toLocaleDateString("es-AR", {
                           day: "numeric",
@@ -413,7 +413,7 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
                           onClick={() => openEditar(p)}
                           title="Editar"
                         >
-                          <Pencil className="h-4 w-4 text-gray-500" />
+                          <Pencil className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                         </Button>
                         <Button
                           variant="ghost"

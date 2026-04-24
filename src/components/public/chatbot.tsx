@@ -114,7 +114,7 @@ function formatMessage(text: string) {
               onError={(e) => {
                 e.currentTarget.style.display = "none"
               }}
-              className="max-w-[200px] w-full h-auto rounded-lg shadow-sm border border-gray-200 object-cover"
+              className="max-w-[200px] w-full h-auto rounded-lg shadow-sm border border-gray-200 dark:border-neutral-800 object-cover"
             />
           </span>
         )
@@ -237,7 +237,7 @@ export function Chatbot() {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
       {/* Panel de chat */}
       {open && (
-        <div className="w-80 sm:w-96 h-[500px] bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden border border-gray-200">
+        <div className="w-80 sm:w-96 h-[500px] bg-white dark:bg-neutral-900 rounded-2xl shadow-xl flex flex-col overflow-hidden border border-gray-200 dark:border-neutral-800">
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-[#1A1A1A]">
             <div className="flex items-center gap-2">
@@ -254,7 +254,7 @@ export function Chatbot() {
           </div>
 
           {/* Mensajes */}
-          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-gray-50">
+          <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 bg-gray-50 dark:bg-neutral-900">
             {messages.map((msg, i) => (
               <div
                 key={i}
@@ -264,7 +264,7 @@ export function Chatbot() {
                   className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
                     msg.role === "user"
                       ? "bg-[#6B4F7A] text-white rounded-br-sm"
-                      : "bg-white text-gray-800 rounded-bl-sm shadow-sm border border-gray-100"
+                      : "bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-100 rounded-bl-sm shadow-sm border border-gray-100 dark:border-neutral-800"
                   }`}
                 >
                   {msg.content ? formatMessage(msg.content) : (
@@ -283,7 +283,7 @@ export function Chatbot() {
           {/* Input */}
           <form
             onSubmit={handleSubmit}
-            className="flex items-center gap-2 px-3 py-3 border-t border-gray-100 bg-white"
+            className="flex items-center gap-2 px-3 py-3 border-t border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900"
           >
             <input
               ref={inputRef}
@@ -293,7 +293,7 @@ export function Chatbot() {
               onKeyDown={handleKeyDown}
               placeholder="Escribí tu consulta..."
               disabled={loading}
-              className="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 outline-none focus:border-[#6B4F7A] focus:ring-1 focus:ring-[#6B4F7A] disabled:opacity-50 transition-colors"
+              className="flex-1 text-sm bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl px-3 py-2 outline-none focus:border-[#6B4F7A] focus:ring-1 focus:ring-[#6B4F7A] disabled:opacity-50 transition-colors"
             />
             <button
               type="submit"

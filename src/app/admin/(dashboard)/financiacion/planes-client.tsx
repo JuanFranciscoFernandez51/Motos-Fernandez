@@ -184,8 +184,8 @@ export function PlanesClient({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Planes de financiacion</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Planes de financiacion</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Configura los coeficientes del simulador publico
           </p>
         </div>
@@ -212,21 +212,21 @@ export function PlanesClient({
 
       {/* Formulario */}
       {showForm && (
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="rounded-lg border bg-white dark:bg-neutral-900 p-6 shadow-sm">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             {editingId ? "Editar plan" : "Nuevo plan"}
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {/* Tipo */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Tipo <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={form.tipo}
                   onChange={(e) => setForm({ ...form, tipo: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
                 >
                   <option value="PROPIA">Financiación propia</option>
                   <option value="TARJETA">Con tarjeta</option>
@@ -235,7 +235,7 @@ export function PlanesClient({
 
               {/* Nombre */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Nombre <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -244,13 +244,13 @@ export function PlanesClient({
                   placeholder="Ej: 12 cuotas"
                   value={form.nombre}
                   onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
                 />
               </div>
 
               {/* Anticipo mínimo */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Anticipo mínimo (%)
                 </label>
                 <input
@@ -260,14 +260,14 @@ export function PlanesClient({
                   placeholder="0"
                   value={form.anticipoMinimo}
                   onChange={(e) => setForm({ ...form, anticipoMinimo: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
                 />
-                <p className="text-xs text-gray-500 mt-1">0 = sin anticipo mínimo</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">0 = sin anticipo mínimo</p>
               </div>
 
               {/* Cuotas */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Cuotas <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -277,13 +277,13 @@ export function PlanesClient({
                   placeholder="12"
                   value={form.cuotas}
                   onChange={(e) => setForm({ ...form, cuotas: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
                 />
               </div>
 
               {/* Coeficiente */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Coeficiente <span className="text-red-500">*</span>
                 </label>
                 <input
@@ -294,16 +294,16 @@ export function PlanesClient({
                   placeholder="0.110"
                   value={form.coeficiente}
                   onChange={(e) => setForm({ ...form, coeficiente: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Cuota mensual = monto financiado × coeficiente
                 </p>
               </div>
 
               {/* Descripcion */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Descripcion (opcional)
                 </label>
                 <input
@@ -311,13 +311,13 @@ export function PlanesClient({
                   placeholder="Ej: incluye seguro"
                   value={form.descripcion}
                   onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
                 />
               </div>
 
               {/* Orden */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Orden
                 </label>
                 <input
@@ -325,7 +325,7 @@ export function PlanesClient({
                   min={0}
                   value={form.orden}
                   onChange={(e) => setForm({ ...form, orden: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
                 />
               </div>
 
@@ -336,9 +336,9 @@ export function PlanesClient({
                   id="activo"
                   checked={form.activo}
                   onChange={(e) => setForm({ ...form, activo: e.target.checked })}
-                  className="h-4 w-4 rounded border-gray-300 text-[#6B4F7A] focus:ring-[#6B4F7A]"
+                  className="h-4 w-4 rounded border-gray-300 dark:border-neutral-700 text-[#6B4F7A] focus:ring-[#6B4F7A]"
                 />
-                <label htmlFor="activo" className="text-sm font-medium text-gray-700">
+                <label htmlFor="activo" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Activo
                 </label>
               </div>
@@ -377,7 +377,7 @@ export function PlanesClient({
       )}
 
       {/* Tabla */}
-      <div className="rounded-lg border bg-white">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900">
         <Table>
           <TableHeader>
             <TableRow>
@@ -395,7 +395,7 @@ export function PlanesClient({
           <TableBody>
             {displayPlanes.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={8} className="text-center py-8 text-gray-500 dark:text-gray-400">
                   <CreditCard className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                   No hay planes cargados
                 </TableCell>
@@ -403,7 +403,7 @@ export function PlanesClient({
             ) : (
               displayPlanes.map((plan) => (
                 <TableRow key={plan.id || plan.nombre} className={!plan.id ? "opacity-60" : ""}>
-                  <TableCell className="text-sm text-gray-500">{plan.orden}</TableCell>
+                  <TableCell className="text-sm text-gray-500 dark:text-gray-400">{plan.orden}</TableCell>
                   <TableCell className="font-medium">{plan.nombre}</TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={plan.tipo === "TARJETA" ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"}>
@@ -416,7 +416,7 @@ export function PlanesClient({
                   <TableCell className="text-sm font-semibold text-[#6B4F7A]">
                     {formatPrice(1_000_000 * plan.coeficiente)}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-500">
+                  <TableCell className="text-sm text-gray-500 dark:text-gray-400">
                     {plan.descripcion || "-"}
                   </TableCell>
                   <TableCell>
@@ -427,7 +427,7 @@ export function PlanesClient({
                           className={
                             plan.activo
                               ? "bg-green-100 text-green-800 cursor-pointer hover:bg-green-200"
-                              : "bg-gray-100 text-gray-500 cursor-pointer hover:bg-gray-200"
+                              : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200"
                           }
                         >
                           {plan.activo ? "Activo" : "Inactivo"}
@@ -445,7 +445,7 @@ export function PlanesClient({
                         <button
                           onClick={() => startEdit(plan)}
                           disabled={loading}
-                          className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 transition-colors"
+                          className="rounded p-1.5 text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800 hover:text-gray-700 dark:text-gray-300 transition-colors"
                           title="Editar"
                         >
                           <Pencil className="h-4 w-4" />

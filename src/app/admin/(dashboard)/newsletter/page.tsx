@@ -40,18 +40,18 @@ export default async function NewsletterPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <Mail className="h-6 w-6 text-[#6B4F7A]" />
             Newsletter
           </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {totalActivos} suscriptor(es) activos &middot; {subs.length} en total
           </p>
         </div>
         <ExportNewsletterCsvButton exportAction={exportSubscribersCSV} />
       </div>
 
-      <div className="rounded-lg border bg-white">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900">
         <Table>
           <TableHeader>
             <TableRow>
@@ -65,7 +65,7 @@ export default async function NewsletterPage() {
           <TableBody>
             {subs.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={5} className="text-center py-8 text-gray-500 dark:text-gray-400">
                   Todavía no hay suscriptores
                 </TableCell>
               </TableRow>
@@ -93,7 +93,7 @@ export default async function NewsletterPage() {
                           className={
                             s.activo
                               ? "bg-green-100 text-green-800 cursor-pointer hover:bg-green-200"
-                              : "bg-gray-100 text-gray-500 cursor-pointer hover:bg-gray-200"
+                              : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200"
                           }
                         >
                           {s.activo ? "Activo" : "Inactivo"}
@@ -101,7 +101,7 @@ export default async function NewsletterPage() {
                       </button>
                     </form>
                   </TableCell>
-                  <TableCell className="text-sm text-gray-500">
+                  <TableCell className="text-sm text-gray-500 dark:text-gray-400">
                     {formatFecha(s.createdAt)}
                   </TableCell>
                 </TableRow>

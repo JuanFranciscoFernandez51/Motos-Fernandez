@@ -66,13 +66,13 @@ export default async function CRMPage({
     <div className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">CRM / Leads</h1>
-          <p className="text-sm text-gray-500 mt-1">{leads.length} lead(s)</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">CRM / Leads</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{leads.length} lead(s)</p>
         </div>
         <div className="flex gap-2">
           <a
             href={`/api/admin/crm/export?${exportParams.toString()}`}
-            className="flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors"
           >
             <Download className="h-4 w-4" />
             Exportar CSV
@@ -101,7 +101,7 @@ export default async function CRMPage({
         {temp && <input type="hidden" name="temp" value={temp} />}
         {etapa && <input type="hidden" name="etapa" value={etapa} />}
         {origen && <input type="hidden" name="origen" value={origen} />}
-        <button type="submit" className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50">
+        <button type="submit" className="px-3 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-900">
           Buscar
         </button>
       </form>
@@ -109,36 +109,36 @@ export default async function CRMPage({
       {/* Filters */}
       <div className="space-y-2">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs text-gray-500 w-20 shrink-0">Temperatura:</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 w-20 shrink-0">Temperatura:</span>
           <div className="flex gap-1 flex-wrap">
-            <Link href={buildUrl({ temp: undefined })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${!temp ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50"}`}>Todas</Link>
+            <Link href={buildUrl({ temp: undefined })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${!temp ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>Todas</Link>
             {temperaturas.map(([key, val]) => (
-              <Link key={key} href={buildUrl({ temp: key })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${temp === key ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50"}`}>{val.label}</Link>
+              <Link key={key} href={buildUrl({ temp: key })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${temp === key ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>{val.label}</Link>
             ))}
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs text-gray-500 w-20 shrink-0">Etapa:</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 w-20 shrink-0">Etapa:</span>
           <div className="flex gap-1 flex-wrap">
-            <Link href={buildUrl({ etapa: undefined })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${!etapa ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50"}`}>Todas</Link>
+            <Link href={buildUrl({ etapa: undefined })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${!etapa ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>Todas</Link>
             {etapas.map(([key, val]) => (
-              <Link key={key} href={buildUrl({ etapa: key })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${etapa === key ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50"}`}>{val.label}</Link>
+              <Link key={key} href={buildUrl({ etapa: key })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${etapa === key ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>{val.label}</Link>
             ))}
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs text-gray-500 w-20 shrink-0">Origen:</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 w-20 shrink-0">Origen:</span>
           <div className="flex gap-1 flex-wrap">
-            <Link href={buildUrl({ origen: undefined })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${!origen ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50"}`}>Todos</Link>
+            <Link href={buildUrl({ origen: undefined })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${!origen ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>Todos</Link>
             {origenes.map(([key, val]) => (
-              <Link key={key} href={buildUrl({ origen: key })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${origen === key ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50"}`}>{val.label}</Link>
+              <Link key={key} href={buildUrl({ origen: key })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${origen === key ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>{val.label}</Link>
             ))}
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border bg-white">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900">
         <Table>
           <TableHeader>
             <TableRow>
@@ -155,7 +155,7 @@ export default async function CRMPage({
           <TableBody>
             {leads.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={8} className="text-center py-8 text-gray-500 dark:text-gray-400">
                   <Users className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                   No hay leads
                 </TableCell>
@@ -166,7 +166,7 @@ export default async function CRMPage({
                 const etapaInfo = ETAPA_LABELS[lead.etapa]
                 const origenInfo = ORIGEN_LABELS[lead.origen]
                 return (
-                  <TableRow key={lead.id} className="hover:bg-gray-50">
+                  <TableRow key={lead.id} className="hover:bg-gray-50 dark:hover:bg-neutral-900">
                     <TableCell>
                       <p className="font-medium text-sm">{lead.nombre} {lead.apellido || ""}</p>
                       {lead.ciudad && <p className="text-xs text-gray-400">{lead.ciudad}</p>}
@@ -179,13 +179,13 @@ export default async function CRMPage({
                           </a>
                         )}
                         {lead.email && (
-                          <span className="text-xs text-gray-600 flex items-center gap-1">
+                          <span className="text-xs text-gray-600 dark:text-gray-300 flex items-center gap-1">
                             <Mail className="h-3 w-3" />{lead.email}
                           </span>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-sm text-gray-600">
+                    <TableCell className="text-sm text-gray-600 dark:text-gray-300">
                       {lead.modelo?.nombre || lead.modeloInteres || "-"}
                     </TableCell>
                     <TableCell>
@@ -203,7 +203,7 @@ export default async function CRMPage({
                         {etapaInfo?.label || lead.etapa}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-sm text-gray-500">
+                    <TableCell className="text-sm text-gray-500 dark:text-gray-400">
                       {lead.createdAt.toLocaleDateString("es-AR")}
                     </TableCell>
                     <TableCell>

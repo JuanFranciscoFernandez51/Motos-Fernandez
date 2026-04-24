@@ -114,13 +114,13 @@ export function ImageCropperModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl flex flex-col">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl w-full max-w-2xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b">
           <h3 className="font-semibold text-lg">Recortar imagen</h3>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors"
+            className="text-gray-400 hover:text-gray-600 dark:text-gray-300 transition-colors"
             disabled={saving}
           >
             <X className="size-5" />
@@ -143,7 +143,7 @@ export function ImageCropperModal({
         {/* Controls */}
         <div className="px-5 py-4 space-y-3 border-t">
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-500 uppercase tracking-wider">Zoom</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Zoom</span>
             <input
               type="range"
               value={zoom}
@@ -154,14 +154,14 @@ export function ImageCropperModal({
               className="flex-1"
             />
           </div>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             Arrastrá la imagen para reposicionar y usá el zoom para ajustar el encuadre.
           </p>
           {error && <p className="text-sm text-red-500">{error}</p>}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-5 py-4 border-t bg-gray-50">
+        <div className="flex items-center justify-end gap-2 px-5 py-4 border-t bg-gray-50 dark:bg-neutral-900">
           <Button variant="outline" onClick={onClose} disabled={saving}>
             Cancelar
           </Button>

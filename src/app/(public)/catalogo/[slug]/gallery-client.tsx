@@ -15,7 +15,7 @@ export function ModelGallery({
 
   if (fotos.length === 0) {
     return (
-      <div className="aspect-[4/3] rounded-xl bg-[#F0F0F0] flex items-center justify-center">
+      <div className="aspect-[4/3] rounded-xl bg-[#F0F0F0] dark:bg-neutral-950 flex items-center justify-center">
         <Bike className="size-16 text-gray-300" />
       </div>
     )
@@ -24,7 +24,7 @@ export function ModelGallery({
   return (
     <div>
       {/* Main image */}
-      <div className="relative aspect-[4/3] rounded-xl bg-[#F0F0F0] overflow-hidden">
+      <div className="relative aspect-[4/3] rounded-xl bg-[#F0F0F0] dark:bg-neutral-950 overflow-hidden">
         <Image
           src={fotos[current]}
           alt={`${nombre} - Foto ${current + 1}`}
@@ -59,7 +59,7 @@ export function ModelGallery({
                   key={i}
                   onClick={() => setCurrent(i)}
                   className={`size-2 rounded-full transition-colors ${
-                    i === current ? "bg-white" : "bg-white/40"
+                    i === current ? "bg-white dark:bg-neutral-900" : "bg-white/40 dark:bg-neutral-900/40"
                   }`}
                   aria-label={`Ir a foto ${i + 1}`}
                 />
@@ -79,7 +79,7 @@ export function ModelGallery({
               className={`relative aspect-[4/3] rounded-lg overflow-hidden border-2 transition-colors ${
                 i === current
                   ? "border-[#6B4F7A]"
-                  : "border-transparent hover:border-gray-300"
+                  : "border-transparent hover:border-gray-300 dark:border-neutral-700"
               }`}
             >
               <Image

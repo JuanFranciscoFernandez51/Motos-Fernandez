@@ -47,8 +47,8 @@ export default async function NoticiasPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Noticias</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Noticias</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {noticias.length} noticia(s)
           </p>
         </div>
@@ -58,7 +58,7 @@ export default async function NoticiasPage() {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-white">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900">
         <Table>
           <TableHeader>
             <TableRow>
@@ -74,7 +74,7 @@ export default async function NoticiasPage() {
           <TableBody>
             {noticias.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={7} className="text-center py-8 text-gray-500 dark:text-gray-400">
                   <Newspaper className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                   No hay noticias cargadas
                 </TableCell>
@@ -92,7 +92,7 @@ export default async function NoticiasPage() {
                         className="rounded object-cover"
                       />
                     ) : (
-                      <div className="h-12 w-12 rounded bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
+                      <div className="h-12 w-12 rounded bg-gray-100 dark:bg-neutral-800 flex items-center justify-center text-gray-400 text-xs">
                         Sin img
                       </div>
                     )}
@@ -101,7 +101,7 @@ export default async function NoticiasPage() {
                     <div>
                       <p className="font-medium">{noticia.titulo}</p>
                       {noticia.resumen && (
-                        <p className="text-xs text-gray-500 line-clamp-1">{noticia.resumen}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{noticia.resumen}</p>
                       )}
                     </div>
                   </TableCell>
@@ -114,7 +114,7 @@ export default async function NoticiasPage() {
                       <span className="text-gray-400 text-sm">-</span>
                     )}
                   </TableCell>
-                  <TableCell className="text-sm text-gray-500">
+                  <TableCell className="text-sm text-gray-500 dark:text-gray-400">
                     {noticia.fechaPublicacion.toLocaleDateString("es-AR", {
                       day: "numeric",
                       month: "short",
@@ -131,7 +131,7 @@ export default async function NoticiasPage() {
                           className={
                             noticia.publicado
                               ? "bg-green-100 text-green-800 cursor-pointer hover:bg-green-200"
-                              : "bg-gray-100 text-gray-500 cursor-pointer hover:bg-gray-200"
+                              : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200"
                           }
                         >
                           {noticia.publicado ? "Publicado" : "Borrador"}
@@ -149,7 +149,7 @@ export default async function NoticiasPage() {
                           className={
                             noticia.destacado
                               ? "bg-yellow-100 text-yellow-800 cursor-pointer hover:bg-yellow-200"
-                              : "bg-gray-100 text-gray-500 cursor-pointer hover:bg-gray-200"
+                              : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200"
                           }
                         >
                           {noticia.destacado ? "Destacado" : "Normal"}

@@ -332,7 +332,7 @@ export function AdminSidebar({ userName }: { userName: string }) {
       </aside>
 
       {/* Mobile header + sheet */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center gap-3 border-b bg-white px-4 py-3 h-14">
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center gap-3 border-b bg-white dark:bg-neutral-900 px-4 py-3 h-14">
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger
             render={

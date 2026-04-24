@@ -145,7 +145,7 @@ export function VentaForm({
           <Button variant="ghost" size="icon" render={<Link href="/admin/ventas" />}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {initialData?.id ? "Editar venta" : "Nueva venta"}
           </h1>
         </div>
@@ -190,7 +190,7 @@ export function VentaForm({
               />
             </div>
             <div className="border-t pt-4">
-              <p className="text-xs text-gray-500 mb-3">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
                 Confirmá/ajustá los datos para el contrato:
               </p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -245,7 +245,7 @@ export function VentaForm({
                 id="formaPago"
                 value={data.formaPago}
                 onChange={(e) => set("formaPago", e.target.value)}
-                className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm"
+                className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 px-3 text-sm"
               >
                 <option value="Contado">Contado</option>
                 <option value="Financiado">Financiado</option>
@@ -267,7 +267,7 @@ export function VentaForm({
                 id="moneda"
                 value={data.moneda}
                 onChange={(e) => set("moneda", e.target.value)}
-                className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm"
+                className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 px-3 text-sm"
               >
                 <option value="ARS">ARS</option>
                 <option value="USD">USD</option>
@@ -350,7 +350,7 @@ export function VentaForm({
                 id="estado"
                 value={data.estado}
                 onChange={(e) => set("estado", e.target.value)}
-                className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm"
+                className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 px-3 text-sm"
               >
                 <option value="BORRADOR">Borrador</option>
                 <option value="RESERVADA">Reservada (con seña)</option>

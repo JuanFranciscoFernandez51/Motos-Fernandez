@@ -85,7 +85,7 @@ export default async function NoticiaDetailPage({ params }: Props) {
         </div>
       </div>
 
-      <article className="py-12 bg-white">
+      <article className="py-12 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           {/* Category + date */}
           <div className="flex items-center gap-3 mb-4">
@@ -106,7 +106,7 @@ export default async function NoticiaDetailPage({ params }: Props) {
 
           {/* Title */}
           <h1
-            className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] leading-tight mb-6"
+            className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] dark:text-white leading-tight mb-6"
             style={{ fontFamily: "var(--font-display)" }}
           >
             {noticia.titulo}
@@ -114,7 +114,7 @@ export default async function NoticiaDetailPage({ params }: Props) {
 
           {/* Featured image */}
           {noticia.imagen && (
-            <div className="relative aspect-video rounded-xl overflow-hidden mb-8 bg-gray-100">
+            <div className="relative aspect-video rounded-xl overflow-hidden mb-8 bg-gray-100 dark:bg-neutral-800">
               <Image
                 src={noticia.imagen}
                 alt={noticia.titulo}
@@ -128,23 +128,23 @@ export default async function NoticiaDetailPage({ params }: Props) {
 
           {/* Resumen destacado */}
           {noticia.resumen && (
-            <div className="border-l-4 border-[#6B4F7A] pl-4 mb-8 text-gray-600 italic text-lg leading-relaxed">
+            <div className="border-l-4 border-[#6B4F7A] pl-4 mb-8 text-gray-600 dark:text-gray-300 italic text-lg leading-relaxed">
               {noticia.resumen}
             </div>
           )}
 
           {/* HTML Content */}
           <div
-            className="prose prose-gray max-w-none text-gray-700 leading-relaxed
-              prose-headings:text-[#1A1A1A] prose-headings:font-bold
+            className="prose prose-gray max-w-none text-gray-700 dark:text-gray-300 leading-relaxed
+              prose-headings:text-[#1A1A1A] dark:text-white prose-headings:font-bold
               prose-a:text-[#6B4F7A] prose-a:no-underline hover:prose-a:underline
               prose-img:rounded-xl prose-img:shadow-sm
-              prose-strong:text-[#1A1A1A]"
+              prose-strong:text-[#1A1A1A] dark:text-white"
             dangerouslySetInnerHTML={{ __html: noticia.contenido }}
           />
 
           {/* Back link */}
-          <div className="mt-12 pt-6 border-t border-gray-100">
+          <div className="mt-12 pt-6 border-t border-gray-100 dark:border-neutral-800">
             <Link
               href="/noticias"
               className="inline-flex items-center gap-2 text-sm font-semibold text-[#6B4F7A] hover:text-[#8B6F9A] transition-colors"
@@ -157,9 +157,9 @@ export default async function NoticiaDetailPage({ params }: Props) {
 
       {/* Related */}
       {related.length > 0 && (
-        <section className="py-12 bg-[#F0F0F0]">
+        <section className="py-12 bg-[#F0F0F0] dark:bg-neutral-950">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-bold text-[#1A1A1A] mb-6">
+            <h2 className="text-2xl font-bold text-[#1A1A1A] dark:text-white mb-6">
               Noticias relacionadas
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -167,9 +167,9 @@ export default async function NoticiaDetailPage({ params }: Props) {
                 <Link
                   key={n.id}
                   href={`/noticias/${n.slug}`}
-                  className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                  className="group bg-white dark:bg-neutral-900 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                 >
-                  <div className="relative aspect-video bg-gray-100 overflow-hidden">
+                  <div className="relative aspect-video bg-gray-100 dark:bg-neutral-800 overflow-hidden">
                     {n.imagen ? (
                       <Image
                         src={n.imagen}
@@ -192,7 +192,7 @@ export default async function NoticiaDetailPage({ params }: Props) {
                         year: "numeric",
                       })}
                     </p>
-                    <h3 className="font-bold text-[#1A1A1A] text-sm leading-snug group-hover:text-[#6B4F7A] transition-colors line-clamp-2">
+                    <h3 className="font-bold text-[#1A1A1A] dark:text-white text-sm leading-snug group-hover:text-[#6B4F7A] transition-colors line-clamp-2">
                       {n.titulo}
                     </h3>
                   </div>

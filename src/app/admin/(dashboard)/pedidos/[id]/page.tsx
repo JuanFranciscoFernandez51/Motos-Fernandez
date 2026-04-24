@@ -80,10 +80,10 @@ export default async function PedidoDetailPage({
           Volver
         </Button>
         <div className="flex-1">
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             Pedido #{pedido.numero}
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-gray-400">
             {pedido.createdAt.toLocaleDateString("es-AR", {
               day: "numeric",
               month: "long",
@@ -141,7 +141,7 @@ export default async function PedidoDetailPage({
 
               <div className="border-t mt-4 pt-4 space-y-1 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Subtotal</span>
+                  <span className="text-gray-500 dark:text-gray-400">Subtotal</span>
                   <span>{formatPrice(pedido.subtotal)}</span>
                 </div>
                 {pedido.descuento > 0 && (
@@ -151,7 +151,7 @@ export default async function PedidoDetailPage({
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-gray-500">Envio</span>
+                  <span className="text-gray-500 dark:text-gray-400">Envio</span>
                   <span>{pedido.costoEnvio > 0 ? formatPrice(pedido.costoEnvio) : "Gratis"}</span>
                 </div>
                 <div className="flex justify-between text-lg font-bold border-t pt-2">
@@ -180,7 +180,7 @@ export default async function PedidoDetailPage({
                     className={`px-3 py-1.5 text-xs rounded-full border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                       pedido.estado === key
                         ? "bg-[#6B4F7A] text-white border-[#6B4F7A]"
-                        : "hover:bg-gray-50"
+                        : "hover:bg-gray-50 dark:hover:bg-neutral-900"
                     }`}
                   >
                     {val.label}
@@ -202,7 +202,7 @@ export default async function PedidoDetailPage({
               <form action={updateTracking} className="flex gap-3 items-end">
                 <input type="hidden" name="id" value={pedido.id} />
                 <div className="flex-1">
-                  <label className="text-xs text-gray-500 mb-1 block">Empresa</label>
+                  <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Empresa</label>
                   <Input
                     name="trackingCompany"
                     defaultValue={pedido.trackingCompany || ""}
@@ -210,7 +210,7 @@ export default async function PedidoDetailPage({
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="text-xs text-gray-500 mb-1 block">Numero de seguimiento</label>
+                  <label className="text-xs text-gray-500 dark:text-gray-400 mb-1 block">Numero de seguimiento</label>
                   <Input
                     name="trackingNumber"
                     defaultValue={pedido.trackingNumber || ""}
@@ -239,8 +239,8 @@ export default async function PedidoDetailPage({
               <p className="font-medium">
                 {pedido.nombre} {pedido.apellido}
               </p>
-              <p className="text-gray-600">{pedido.email}</p>
-              <p className="text-gray-600">{pedido.telefono}</p>
+              <p className="text-gray-600 dark:text-gray-300">{pedido.email}</p>
+              <p className="text-gray-600 dark:text-gray-300">{pedido.telefono}</p>
             </CardContent>
           </Card>
 
@@ -260,12 +260,12 @@ export default async function PedidoDetailPage({
                 <>
                   {pedido.direccion && <p>{pedido.direccion}</p>}
                   {pedido.ciudad && (
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-300">
                       {pedido.ciudad}, {pedido.provincia}
                     </p>
                   )}
                   {pedido.codigoPostal && (
-                    <p className="text-gray-500">CP: {pedido.codigoPostal}</p>
+                    <p className="text-gray-500 dark:text-gray-400">CP: {pedido.codigoPostal}</p>
                   )}
                 </>
               )}
@@ -279,14 +279,14 @@ export default async function PedidoDetailPage({
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
               <div className="flex items-center justify-between">
-                <span className="text-gray-500">Estado</span>
+                <span className="text-gray-500 dark:text-gray-400">Estado</span>
                 <Badge variant="secondary" className={`text-xs ${pagoInfo?.color || ""}`}>
                   {pagoInfo?.label || pedido.estadoPago}
                 </Badge>
               </div>
               {pedido.mpPaymentId && (
                 <div className="flex items-center justify-between">
-                  <span className="text-gray-500">MP ID</span>
+                  <span className="text-gray-500 dark:text-gray-400">MP ID</span>
                   <span className="font-mono text-xs">{pedido.mpPaymentId}</span>
                 </div>
               )}

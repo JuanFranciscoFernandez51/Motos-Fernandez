@@ -136,7 +136,7 @@ export function MandatoForm({
           <Button variant="ghost" size="icon" render={<Link href="/admin/mandatos" />}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {initialData?.id ? "Editar mandato" : "Nuevo mandato de venta"}
           </h1>
         </div>
@@ -311,7 +311,7 @@ export function MandatoForm({
                   id="moneda"
                   value={data.moneda}
                   onChange={(e) => set("moneda", e.target.value)}
-                  className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm"
+                  className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 px-3 text-sm"
                 >
                   <option value="ARS">ARS</option>
                   <option value="USD">USD</option>
@@ -381,7 +381,7 @@ export function MandatoForm({
                 id="estado"
                 value={data.estado}
                 onChange={(e) => set("estado", e.target.value)}
-                className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm"
+                className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 px-3 text-sm"
               >
                 <option value="PENDIENTE">Pendiente</option>
                 <option value="ACTIVO">Activo</option>
@@ -430,7 +430,7 @@ export function MandatoForm({
         <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Fotos de la moto</CardTitle>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Cuando publiques al catálogo, estas fotos se pasan automáticamente.
               Si no subís ninguna, se usa el logo como placeholder.
             </p>

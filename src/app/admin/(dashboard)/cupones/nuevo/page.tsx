@@ -62,17 +62,17 @@ export default async function NuevoCuponPage({
       <div className="flex items-center gap-4">
         <Link
           href="/admin/cupones"
-          className="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+          className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 transition-colors"
         >
           <ArrowLeft className="h-4 w-4" />
           Volver
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <Ticket className="h-6 w-6 text-[#6B4F7A]" />
             Nuevo cupón
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             Completá los datos para crear el cupón de descuento
           </p>
         </div>
@@ -88,16 +88,16 @@ export default async function NuevoCuponPage({
       )}
 
       {/* Form */}
-      <form action={createCupon} className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
+      <form action={createCupon} className="bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800 p-6 space-y-6">
 
         {/* Código y Descripción */}
         <div className="space-y-4">
-          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
             Información del cupón
           </h2>
 
           <div>
-            <label htmlFor="codigo" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="codigo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Código <span className="text-red-500">*</span>
             </label>
             <input
@@ -107,13 +107,13 @@ export default async function NuevoCuponPage({
               required
               placeholder="Ej: VERANO20"
               style={{ textTransform: "uppercase" }}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+              className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
             />
             <p className="mt-1 text-xs text-gray-400">Se guardará en mayúsculas automáticamente.</p>
           </div>
 
           <div>
-            <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Descripción
             </label>
             <textarea
@@ -121,22 +121,22 @@ export default async function NuevoCuponPage({
               name="descripcion"
               rows={2}
               placeholder="Ej: Descuento de verano para clientes nuevos"
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A] resize-none"
+              className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A] resize-none"
             />
           </div>
         </div>
 
-        <hr className="border-gray-100" />
+        <hr className="border-gray-100 dark:border-neutral-800" />
 
         {/* Descuento */}
         <div className="space-y-4">
-          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
             Condiciones del descuento
           </h2>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="porcentaje" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="porcentaje" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Porcentaje de descuento <span className="text-red-500">*</span>
               </label>
               <div className="relative">
@@ -148,14 +148,14 @@ export default async function NuevoCuponPage({
                   min={1}
                   max={100}
                   placeholder="20"
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+                  className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">%</span>
               </div>
             </div>
 
             <div>
-              <label htmlFor="montoMaximo" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="montoMaximo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Monto máximo de descuento
               </label>
               <div className="relative">
@@ -167,14 +167,14 @@ export default async function NuevoCuponPage({
                   min={0}
                   step={0.01}
                   placeholder="Sin límite"
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 pl-7 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+                  className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 pl-7 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
                 />
               </div>
               <p className="mt-1 text-xs text-gray-400">Dejá vacío para sin límite.</p>
             </div>
 
             <div>
-              <label htmlFor="montoMinimo" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="montoMinimo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Monto mínimo de compra
               </label>
               <div className="relative">
@@ -186,14 +186,14 @@ export default async function NuevoCuponPage({
                   min={0}
                   step={0.01}
                   placeholder="Sin mínimo"
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2 pl-7 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+                  className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 pl-7 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
                 />
               </div>
               <p className="mt-1 text-xs text-gray-400">Dejá vacío para sin mínimo.</p>
             </div>
 
             <div>
-              <label htmlFor="usosMaximos" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="usosMaximos" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Usos máximos
               </label>
               <input
@@ -202,24 +202,24 @@ export default async function NuevoCuponPage({
                 type="number"
                 min={1}
                 placeholder="Sin límite"
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+                className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
               />
               <p className="mt-1 text-xs text-gray-400">Dejá vacío para usos ilimitados.</p>
             </div>
           </div>
         </div>
 
-        <hr className="border-gray-100" />
+        <hr className="border-gray-100 dark:border-neutral-800" />
 
         {/* Vigencia */}
         <div className="space-y-4">
-          <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+          <h2 className="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
             Vigencia
           </h2>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="fechaInicio" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="fechaInicio" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Fecha de inicio <span className="text-red-500">*</span>
               </label>
               <input
@@ -228,31 +228,31 @@ export default async function NuevoCuponPage({
                 type="date"
                 required
                 defaultValue={today}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+                className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
               />
             </div>
 
             <div>
-              <label htmlFor="fechaFin" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="fechaFin" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Fecha de vencimiento
               </label>
               <input
                 id="fechaFin"
                 name="fechaFin"
                 type="date"
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+                className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
               />
               <p className="mt-1 text-xs text-gray-400">Dejá vacío para que no expire.</p>
             </div>
           </div>
         </div>
 
-        <hr className="border-gray-100" />
+        <hr className="border-gray-100 dark:border-neutral-800" />
 
         {/* Estado */}
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-gray-700">Activo</p>
+            <p className="text-sm font-medium text-gray-700 dark:text-gray-300">Activo</p>
             <p className="text-xs text-gray-400">El cupón estará disponible para usar desde el inicio.</p>
           </div>
           <label className="relative inline-flex items-center cursor-pointer">
@@ -262,7 +262,7 @@ export default async function NuevoCuponPage({
               defaultChecked
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#6B4F7A]/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#6B4F7A]" />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#6B4F7A]/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-neutral-900 after:border-gray-300 dark:border-neutral-700 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#6B4F7A]" />
           </label>
         </div>
 
@@ -270,7 +270,7 @@ export default async function NuevoCuponPage({
         <div className="flex items-center justify-end gap-3 pt-2">
           <Link
             href="/admin/cupones"
-            className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:text-gray-100 transition-colors"
           >
             Cancelar
           </Link>

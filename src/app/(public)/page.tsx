@@ -132,7 +132,7 @@ export default async function HomePage() {
               </Link>
               <Link
                 href="/servicio-tecnico"
-                className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-8 py-4 text-sm font-semibold text-white hover:bg-white/10 hover:border-white/40 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 dark:bg-neutral-900/5 px-8 py-4 text-sm font-semibold text-white hover:bg-white/10 dark:hover:bg-neutral-900/10 hover:border-white/40 transition-colors"
               >
                 <Calendar className="size-4" />
                 Pedir turno
@@ -143,17 +143,17 @@ export default async function HomePage() {
             <div className="mt-7 flex flex-wrap gap-10">
               <div>
                 <p className="text-4xl font-extrabold text-white font-heading">+{BUSINESS.yearsInBusiness}</p>
-                <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Años</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider">Años</p>
               </div>
-              <div className="w-px bg-white/10 self-stretch" />
+              <div className="w-px bg-white/10 dark:bg-neutral-900/10 self-stretch" />
               <div>
                 <p className="text-4xl font-extrabold text-white font-heading">+50</p>
-                <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">Marcas</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider">Marcas</p>
               </div>
-              <div className="w-px bg-white/10 self-stretch" />
+              <div className="w-px bg-white/10 dark:bg-neutral-900/10 self-stretch" />
               <div>
                 <p className="text-4xl font-extrabold text-white font-heading">#1</p>
-                <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">{BUSINESS.city}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider">{BUSINESS.city}</p>
               </div>
             </div>
           </div>
@@ -161,13 +161,13 @@ export default async function HomePage() {
       </section>
 
       {/* ===== 2. CATEGORIAS DE VEHICULOS ===== */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading">
+            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
               ¿Qué estás buscando?
             </h2>
-            <p className="mt-3 text-gray-500 font-body">
+            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body">
               Exploramos todo tipo de vehículos para tu estilo de vida
             </p>
           </div>
@@ -176,12 +176,12 @@ export default async function HomePage() {
               <Link
                 key={cat.value}
                 href={`/catalogo?categoria=${cat.value}`}
-                className="group flex flex-col items-center gap-4 rounded-2xl border border-gray-100 bg-white p-8 text-center hover:border-[#6B4F7A]/40 hover:shadow-xl hover:shadow-[#6B4F7A]/8 transition-all duration-200"
+                className="group flex flex-col items-center gap-4 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-8 text-center hover:border-[#6B4F7A]/40 hover:shadow-xl hover:shadow-[#6B4F7A]/8 transition-all duration-200"
               >
-                <div className="flex items-center justify-center size-16 rounded-2xl bg-[#F0F0F0] text-[#4E4B48] group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
+                <div className="flex items-center justify-center size-16 rounded-2xl bg-[#F0F0F0] dark:bg-neutral-950 text-[#4E4B48] dark:text-gray-200 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
                   {CATEGORY_ICONS[cat.value]}
                 </div>
-                <h3 className="text-sm font-semibold text-[#1A1A1A] font-heading group-hover:text-[#6B4F7A] transition-colors">
+                <h3 className="text-sm font-semibold text-[#1A1A1A] dark:text-white font-heading group-hover:text-[#6B4F7A] transition-colors">
                   {cat.label}
                 </h3>
                 <span className="text-xs text-[#6B4F7A] font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
@@ -194,14 +194,14 @@ export default async function HomePage() {
       </section>
 
       {/* ===== 3. MODELOS DESTACADOS ===== */}
-      <section className="py-14 bg-[#F0F0F0]">
+      <section className="py-14 bg-[#F0F0F0] dark:bg-neutral-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-8">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] font-heading">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
                 Modelos destacados
               </h2>
-              <p className="mt-2 text-sm text-gray-500 font-body">
+              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 font-body">
                 Los más elegidos por nuestros clientes
               </p>
             </div>
@@ -221,9 +221,9 @@ export default async function HomePage() {
                   <Link
                     key={model.id}
                     href={`/catalogo/${model.slug}`}
-                    className="group rounded-xl bg-white overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all duration-200"
+                    className="group rounded-xl bg-white dark:bg-neutral-900 overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all duration-200"
                   >
-                    <div className="relative aspect-square bg-gray-100 overflow-hidden">
+                    <div className="relative aspect-square bg-gray-100 dark:bg-neutral-800 overflow-hidden">
                       {model.fotos[0] ? (
                         <Image
                           src={model.fotos[0]}
@@ -255,7 +255,7 @@ export default async function HomePage() {
                       <p className="text-[10px] font-semibold text-[#8B6F9A] uppercase tracking-wider truncate">
                         {model.marca}
                       </p>
-                      <h3 className="mt-0.5 text-sm font-bold text-[#1A1A1A] font-heading truncate">
+                      <h3 className="mt-0.5 text-sm font-bold text-[#1A1A1A] dark:text-white font-heading truncate">
                         {model.nombre}
                       </h3>
                       <p className="text-[10px] text-gray-400 truncate">
@@ -295,7 +295,7 @@ export default async function HomePage() {
               </div>
             </>
           ) : (
-            <div className="text-center py-16 rounded-2xl bg-white border border-gray-100">
+            <div className="text-center py-16 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800">
               <Bike className="size-12 mx-auto text-gray-200 mb-4" />
               <p className="text-gray-400 font-body">
                 Próximamente cargamos nuestro catálogo de modelos.
@@ -313,16 +313,16 @@ export default async function HomePage() {
       </section>
 
       {/* ===== QUIZ RECOMENDADOR CTA ===== */}
-      <section className="relative py-16 bg-white overflow-hidden">
+      <section className="relative py-16 bg-white dark:bg-neutral-900 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#6B4F7A] via-[#7B5A8A] to-[#9B59B6] p-8 sm:p-12 shadow-xl">
             <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-10" />
-            <div className="absolute -top-16 -right-16 size-64 rounded-full bg-white/10 blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 size-72 rounded-full bg-white/5 blur-3xl" />
+            <div className="absolute -top-16 -right-16 size-64 rounded-full bg-white/10 dark:bg-neutral-900/10 blur-3xl" />
+            <div className="absolute -bottom-20 -left-20 size-72 rounded-full bg-white/5 dark:bg-neutral-900/5 blur-3xl" />
 
             <div className="relative flex flex-col lg:flex-row items-center justify-between gap-8">
               <div className="flex-1 text-center lg:text-left max-w-2xl">
-                <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-white/15 backdrop-blur-sm mb-5">
+                <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-white/15 dark:bg-neutral-900/15 backdrop-blur-sm mb-5">
                   <Sparkles className="size-7 text-white" />
                 </div>
                 <p className="text-white/70 font-semibold text-xs uppercase tracking-widest mb-2">
@@ -341,7 +341,7 @@ export default async function HomePage() {
               <div className="shrink-0">
                 <Link
                   href="/recomendador"
-                  className="group inline-flex items-center gap-3 rounded-2xl bg-white px-8 py-4 text-base font-bold text-[#6B4F7A] hover:bg-gray-50 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                  className="group inline-flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 px-8 py-4 text-base font-bold text-[#6B4F7A] hover:bg-gray-50 dark:hover:bg-neutral-900 transition-all shadow-lg hover:shadow-xl hover:scale-105"
                 >
                   Hacer quiz
                   <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
@@ -354,16 +354,16 @@ export default async function HomePage() {
 
       {/* ===== TESTIMONIOS ===== */}
       {testimonios.length > 0 && (
-        <section className="py-20 bg-white">
+        <section className="py-20 bg-white dark:bg-neutral-900">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <p className="text-[#8B6F9A] font-semibold text-sm uppercase tracking-widest mb-3">
                 Testimonios
               </p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] font-heading">
+              <h2 className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] dark:text-white font-heading">
                 Lo que dicen nuestros clientes
               </h2>
-              <p className="mt-3 text-gray-500 font-body max-w-lg mx-auto">
+              <p className="mt-3 text-gray-500 dark:text-gray-400 font-body max-w-lg mx-auto">
                 Historias reales de quienes ya eligieron {BUSINESS.name}.
               </p>
             </div>
@@ -377,7 +377,7 @@ export default async function HomePage() {
                 return (
                   <div
                     key={t.id}
-                    className="group flex flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm hover:shadow-lg hover:shadow-[#6B4F7A]/5 hover:border-[#6B4F7A]/20 transition-all duration-200"
+                    className="group flex flex-col rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 shadow-sm hover:shadow-lg hover:shadow-[#6B4F7A]/5 hover:border-[#6B4F7A]/20 transition-all duration-200"
                   >
                     {/* Estrellas */}
                     <div className="flex items-center gap-0.5 mb-3">
@@ -394,12 +394,12 @@ export default async function HomePage() {
                     </div>
 
                     {/* Contenido */}
-                    <p className="text-sm text-gray-600 font-body leading-relaxed flex-1">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 font-body leading-relaxed flex-1">
                       &ldquo;{contenido}&rdquo;
                     </p>
 
                     {/* Cliente */}
-                    <div className="mt-5 flex items-center gap-3 pt-4 border-t border-gray-100">
+                    <div className="mt-5 flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-neutral-800">
                       {t.foto ? (
                         <Image
                           src={t.foto}
@@ -419,7 +419,7 @@ export default async function HomePage() {
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-[#1A1A1A] font-heading truncate">
+                        <p className="text-sm font-bold text-[#1A1A1A] dark:text-white font-heading truncate">
                           {t.nombre}
                         </p>
                         {t.ubicacion && (
@@ -445,11 +445,11 @@ export default async function HomePage() {
       {/* ===== 4. FINANCIACION PREVIEW ===== */}
       <section className="relative py-20 bg-gradient-to-r from-[#6B4F7A] to-[#9B59B6] overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-10" />
-        <div className="absolute -top-20 -right-20 size-80 rounded-full bg-white/5 blur-3xl" />
+        <div className="absolute -top-20 -right-20 size-80 rounded-full bg-white/5 dark:bg-neutral-900/5 blur-3xl" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
             <div className="text-center lg:text-left max-w-xl">
-              <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-white/15 mb-6">
+              <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-white/15 dark:bg-neutral-900/15 mb-6">
                 <CreditCard className="size-7 text-white" />
               </div>
               <h2 className="text-3xl sm:text-4xl font-bold text-white font-heading">
@@ -463,14 +463,14 @@ export default async function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4 shrink-0">
               <Link
                 href="/financiacion"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-gray-50 transition-colors shadow-lg"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors shadow-lg"
               >
                 Ver planes de financiación
                 <ArrowRight className="size-4" />
               </Link>
               <Link
                 href="/contacto"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/40 bg-white/10 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/20 transition-colors"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/40 bg-white/10 dark:bg-neutral-900/10 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/20 dark:hover:bg-neutral-900/20 transition-colors"
               >
                 Hablar con un asesor
               </Link>
@@ -480,7 +480,7 @@ export default async function HomePage() {
       </section>
 
       {/* ===== 5. CONSIGNA DE MOTOS ===== */}
-      <section className="py-20 bg-[#F8F5FA]">
+      <section className="py-20 bg-[#F8F5FA] dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
             {/* Texto */}
@@ -488,10 +488,10 @@ export default async function HomePage() {
               <p className="text-[#8B6F9A] font-semibold text-sm uppercase tracking-widest mb-3">
                 Servicio exclusivo
               </p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] font-heading mb-5">
+              <h2 className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] dark:text-white font-heading mb-5">
                 ¿Querés vender tu moto?
               </h2>
-              <p className="text-gray-500 font-body leading-relaxed max-w-lg mx-auto lg:mx-0">
+              <p className="text-gray-500 dark:text-gray-400 font-body leading-relaxed max-w-lg mx-auto lg:mx-0">
                 Dejala en nuestro local y nosotros nos encargamos de todo. La exhibimos, la
                 publicamos en todos nuestros canales y te avisamos cuando se vende. Vos fijás el
                 precio, nosotros ponemos la vidriera y cobramos solo una comisión al cerrar.
@@ -508,7 +508,7 @@ export default async function HomePage() {
                   href={`https://wa.me/5492915788671?text=${encodeURIComponent("Hola! Quiero consultar sobre el servicio de consigna de motos.")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 hover:border-[#6B4F7A]/60 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 hover:border-[#6B4F7A]/60 transition-colors"
                 >
                   Consultar por WhatsApp
                 </a>
@@ -525,10 +525,10 @@ export default async function HomePage() {
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="rounded-2xl border border-[#6B4F7A]/15 bg-white p-5 hover:border-[#6B4F7A]/35 hover:shadow-md transition-all duration-200"
+                  className="rounded-2xl border border-[#6B4F7A]/15 bg-white dark:bg-neutral-900 p-5 hover:border-[#6B4F7A]/35 hover:shadow-md transition-all duration-200"
                 >
                   <div className="text-2xl mb-2">{item.icon}</div>
-                  <h3 className="text-sm font-bold text-[#1A1A1A] font-heading">{item.titulo}</h3>
+                  <h3 className="text-sm font-bold text-[#1A1A1A] dark:text-white font-heading">{item.titulo}</h3>
                   <p className="text-xs text-gray-400 mt-0.5">{item.desc}</p>
                 </div>
               ))}
@@ -538,16 +538,16 @@ export default async function HomePage() {
       </section>
 
       {/* ===== 6. POR QUE ELEGIRNOS ===== */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
             <p className="text-[#8B6F9A] font-semibold text-sm uppercase tracking-widest mb-3">
               Desde {BUSINESS.yearFounded}
             </p>
-            <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading">
+            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
               ¿Por qué elegirnos?
             </h2>
-            <p className="mt-3 text-gray-500 font-body max-w-lg mx-auto">
+            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body max-w-lg mx-auto">
               Más de {BUSINESS.yearsInBusiness} años de experiencia nos respaldan. Somos
               una empresa familiar con raíces en {BUSINESS.city}.
             </p>
@@ -555,11 +555,11 @@ export default async function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Card 1 */}
-            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 bg-white hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
+            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
               <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
                 <ShieldCheck className="size-7" />
               </div>
-              <h3 className="text-base font-bold text-[#1A1A1A] font-heading mb-2">
+              <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-2">
                 {BUSINESS.yearsInBusiness} años de experiencia
               </h3>
               <p className="text-sm text-gray-400 font-body leading-relaxed">
@@ -569,11 +569,11 @@ export default async function HomePage() {
             </div>
 
             {/* Card 2 */}
-            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 bg-white hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
+            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
               <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
                 <CreditCard className="size-7" />
               </div>
-              <h3 className="text-base font-bold text-[#1A1A1A] font-heading mb-2">
+              <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-2">
                 Financiación propia
               </h3>
               <p className="text-sm text-gray-400 font-body leading-relaxed">
@@ -583,11 +583,11 @@ export default async function HomePage() {
             </div>
 
             {/* Card 3 */}
-            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 bg-white hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
+            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
               <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
                 <Wrench className="size-7" />
               </div>
-              <h3 className="text-base font-bold text-[#1A1A1A] font-heading mb-2">
+              <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-2">
                 Servicio técnico
               </h3>
               <p className="text-sm text-gray-400 font-body leading-relaxed">
@@ -597,11 +597,11 @@ export default async function HomePage() {
             </div>
 
             {/* Card 4 */}
-            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 bg-white hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
+            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
               <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
                 <Package className="size-7" />
               </div>
-              <h3 className="text-base font-bold text-[#1A1A1A] font-heading mb-2">
+              <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-2">
                 Stock permanente
               </h3>
               <p className="text-sm text-gray-400 font-body leading-relaxed">
@@ -614,14 +614,14 @@ export default async function HomePage() {
       </section>
 
       {/* ===== 7. NOTICIAS RECIENTES ===== */}
-      <section className="py-20 bg-[#F0F0F0]">
+      <section className="py-20 bg-[#F0F0F0] dark:bg-neutral-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-12">
             <div>
-              <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading">
+              <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
                 Noticias recientes
               </h2>
-              <p className="mt-3 text-gray-500 font-body">
+              <p className="mt-3 text-gray-500 dark:text-gray-400 font-body">
                 Novedades, lanzamientos y consejos del mundo moto
               </p>
             </div>
@@ -641,9 +641,9 @@ export default async function HomePage() {
                   <Link
                     key={noticia.id}
                     href={`/noticias/${noticia.slug}`}
-                    className="group rounded-2xl bg-white overflow-hidden hover:shadow-xl hover:shadow-black/8 transition-all duration-200"
+                    className="group rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden hover:shadow-xl hover:shadow-black/8 transition-all duration-200"
                   >
-                    <div className="relative aspect-video bg-gray-100 overflow-hidden">
+                    <div className="relative aspect-video bg-gray-100 dark:bg-neutral-800 overflow-hidden">
                       {noticia.imagen ? (
                         <Image
                           src={noticia.imagen}
@@ -671,7 +671,7 @@ export default async function HomePage() {
                           year: "numeric",
                         })}
                       </p>
-                      <h3 className="font-bold text-[#1A1A1A] font-heading leading-snug line-clamp-2 group-hover:text-[#6B4F7A] transition-colors">
+                      <h3 className="font-bold text-[#1A1A1A] dark:text-white font-heading leading-snug line-clamp-2 group-hover:text-[#6B4F7A] transition-colors">
                         {noticia.titulo}
                       </h3>
                       {noticia.resumen && (
@@ -697,7 +697,7 @@ export default async function HomePage() {
               </div>
             </>
           ) : (
-            <div className="text-center py-16 rounded-2xl bg-white border border-gray-100">
+            <div className="text-center py-16 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800">
               <p className="text-gray-400 font-body">
                 Próximamente publicamos nuestras primeras noticias.
               </p>
@@ -730,7 +730,7 @@ export default async function HomePage() {
             </Link>
             <Link
               href="/servicio-tecnico"
-              className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 dark:bg-neutral-900/5 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/10 dark:hover:bg-neutral-900/10 transition-colors"
             >
               <Calendar className="size-4" />
               Sacar turno

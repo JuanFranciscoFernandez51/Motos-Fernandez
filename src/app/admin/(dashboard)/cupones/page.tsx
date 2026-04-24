@@ -36,8 +36,8 @@ export default async function CuponesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Cupones</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Cupones</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {cupones.length} cupon(es)
           </p>
         </div>
@@ -47,7 +47,7 @@ export default async function CuponesPage() {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-white">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900">
         <Table>
           <TableHeader>
             <TableRow>
@@ -64,7 +64,7 @@ export default async function CuponesPage() {
           <TableBody>
             {cupones.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={8} className="text-center py-8 text-gray-500 dark:text-gray-400">
                   <Ticket className="h-8 w-8 mx-auto mb-2 text-gray-300" />
                   No hay cupones cargados
                 </TableCell>
@@ -79,11 +79,11 @@ export default async function CuponesPage() {
                 return (
                   <TableRow key={cupon.id}>
                     <TableCell>
-                      <span className="font-mono font-bold text-sm bg-gray-100 px-2 py-1 rounded">
+                      <span className="font-mono font-bold text-sm bg-gray-100 dark:bg-neutral-800 px-2 py-1 rounded">
                         {cupon.codigo}
                       </span>
                     </TableCell>
-                    <TableCell className="text-sm text-gray-600">
+                    <TableCell className="text-sm text-gray-600 dark:text-gray-300">
                       {cupon.descripcion || "-"}
                     </TableCell>
                     <TableCell>
@@ -108,7 +108,7 @@ export default async function CuponesPage() {
                         <span className="text-xs text-red-500">Agotado</span>
                       )}
                     </TableCell>
-                    <TableCell className="text-sm text-gray-500">
+                    <TableCell className="text-sm text-gray-500 dark:text-gray-400">
                       <div>
                         {cupon.fechaInicio.toLocaleDateString("es-AR", {
                           day: "numeric",
@@ -139,7 +139,7 @@ export default async function CuponesPage() {
                             className={
                               effectiveActive
                                 ? "bg-green-100 text-green-800 cursor-pointer hover:bg-green-200"
-                                : "bg-gray-100 text-gray-500 cursor-pointer hover:bg-gray-200"
+                                : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200"
                             }
                           >
                             {effectiveActive ? "Activo" : cupon.activo ? "Activo (vencido)" : "Inactivo"}

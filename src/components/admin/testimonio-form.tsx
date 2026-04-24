@@ -80,7 +80,7 @@ export function TestimonioForm({
           <Button variant="ghost" size="icon" render={<Link href="/admin/testimonios" />}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {initialData?.id ? "Editar testimonio" : "Nuevo testimonio"}
           </h1>
         </div>
@@ -135,7 +135,7 @@ export function TestimonioForm({
                   onChange={(e) => setModelo(e.target.value)}
                   placeholder="Honda XR 150L"
                 />
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   Opcional. Texto libre con el modelo o producto al que se refiere el testimonio.
                 </p>
               </div>
@@ -168,7 +168,7 @@ export function TestimonioForm({
                       />
                     </button>
                   ))}
-                  <span className="ml-2 text-sm text-gray-500">
+                  <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
                     {rating} / 5
                   </span>
                 </div>
@@ -198,7 +198,7 @@ export function TestimonioForm({
                 onChange={setFoto}
                 folder="testimonios"
               />
-              <p className="mt-2 text-xs text-gray-500">
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
                 Opcional. Foto del cliente para mostrar junto al testimonio.
               </p>
             </CardContent>
@@ -236,7 +236,7 @@ export function TestimonioForm({
                   value={orden}
                   onChange={(e) => setOrden(Number(e.target.value))}
                 />
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
                   Menor numero aparece primero.
                 </p>
               </div>

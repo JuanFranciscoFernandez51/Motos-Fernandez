@@ -40,16 +40,16 @@ export default function NuevoLeadPage() {
   return (
     <div className="max-w-xl space-y-6">
       <div className="flex items-center gap-3">
-        <Link href="/admin/crm" className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors">
+        <Link href="/admin/crm" className="p-1.5 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded-lg transition-colors">
           <ArrowLeft className="h-4 w-4" />
         </Link>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Nuevo lead</h1>
-          <p className="text-sm text-gray-500">Agregar un contacto manualmente</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Nuevo lead</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Agregar un contacto manualmente</p>
         </div>
       </div>
 
-      <form action={crearLead} className="bg-white rounded-xl border p-6 space-y-4">
+      <form action={crearLead} className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <label className="text-sm font-medium">Nombre *</label>
@@ -121,7 +121,7 @@ export default function NuevoLeadPage() {
           <Button type="submit" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]">
             Crear lead
           </Button>
-          <Link href="/admin/crm" className="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 transition-colors">
+          <Link href="/admin/crm" className="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors">
             Cancelar
           </Link>
         </div>

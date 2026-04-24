@@ -69,7 +69,7 @@ export function InlineTextCell({
           }}
           placeholder={placeholder}
           disabled={isPending}
-          className={`h-8 w-full rounded border border-[#6B4F7A] bg-white px-2 text-sm outline-none ${className}`}
+          className={`h-8 w-full rounded border border-[#6B4F7A] bg-white dark:bg-neutral-900 px-2 text-sm outline-none ${className}`}
         />
         {isPending && <Loader2 className="size-3 animate-spin text-gray-400 shrink-0" />}
       </div>
@@ -87,7 +87,7 @@ export function InlineTextCell({
           {value || placeholder || "—"}
         </span>
       )}
-      <Pencil className="size-3 ml-1.5 inline opacity-0 group-hover:opacity-50 transition-opacity text-gray-500" />
+      <Pencil className="size-3 ml-1.5 inline opacity-0 group-hover:opacity-50 transition-opacity text-gray-500 dark:text-gray-400" />
     </button>
   )
 }
@@ -152,7 +152,7 @@ export function InlineSelectCell({
           startTransition(() => onSave(e.target.value))
         }
         disabled={isPending}
-        className="h-8 w-full appearance-none rounded border border-transparent bg-transparent pl-2 pr-6 text-sm hover:border-gray-200 cursor-pointer"
+        className="h-8 w-full appearance-none rounded border border-transparent bg-transparent pl-2 pr-6 text-sm hover:border-gray-200 dark:border-neutral-800 cursor-pointer"
       >
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>

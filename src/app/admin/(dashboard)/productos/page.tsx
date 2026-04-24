@@ -104,8 +104,8 @@ export default async function ProductosPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Productos</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Productos</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {productos.length} producto(s)
           </p>
         </div>
@@ -130,7 +130,7 @@ export default async function ProductosPage({
           />
         </div>
         {cat && <input type="hidden" name="cat" value={cat} />}
-        <button type="submit" className="rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+        <button type="submit" className="rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors">
           Buscar
         </button>
       </form>
@@ -142,7 +142,7 @@ export default async function ProductosPage({
           className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
             !cat
               ? "bg-[#6B4F7A] text-white"
-              : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+              : "bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800"
           }`}
         >
           Todas
@@ -154,7 +154,7 @@ export default async function ProductosPage({
             className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
               cat === c.id
                 ? "bg-[#6B4F7A] text-white"
-                : "bg-white text-gray-600 hover:bg-gray-100 border border-gray-200"
+                : "bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800"
             }`}
           >
             {c.nombre}
@@ -163,7 +163,7 @@ export default async function ProductosPage({
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border bg-white">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900">
         <Table>
           <TableHeader>
             <TableRow>
@@ -180,7 +180,7 @@ export default async function ProductosPage({
           <TableBody>
             {productos.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={8} className="text-center py-8 text-gray-500 dark:text-gray-400">
                   No hay productos {q ? `que coincidan con "${q}"` : "cargados"}
                 </TableCell>
               </TableRow>
@@ -197,7 +197,7 @@ export default async function ProductosPage({
                         className="rounded object-cover"
                       />
                     ) : (
-                      <div className="h-12 w-12 rounded bg-gray-100 flex items-center justify-center text-gray-400 text-xs">
+                      <div className="h-12 w-12 rounded bg-gray-100 dark:bg-neutral-800 flex items-center justify-center text-gray-400 text-xs">
                         Sin foto
                       </div>
                     )}
@@ -205,7 +205,7 @@ export default async function ProductosPage({
                   <TableCell>
                     <div>
                       <p className="font-medium">{producto.nombre}</p>
-                      <p className="text-xs text-gray-500">{producto.codigo || producto.slug}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{producto.codigo || producto.slug}</p>
                     </div>
                   </TableCell>
                   <TableCell>
@@ -259,7 +259,7 @@ export default async function ProductosPage({
                           className={
                             producto.activo
                               ? "bg-green-100 text-green-800 cursor-pointer hover:bg-green-200"
-                              : "bg-gray-100 text-gray-500 cursor-pointer hover:bg-gray-200"
+                              : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200"
                           }
                         >
                           {producto.activo ? "Activo" : "Inactivo"}
@@ -270,7 +270,7 @@ export default async function ProductosPage({
                   <TableCell>
                     <Link
                       href={`/admin/productos/${producto.id}`}
-                      className="inline-flex items-center gap-1 text-sm text-gray-600 hover:text-[#6B4F7A] transition-colors"
+                      className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300 hover:text-[#6B4F7A] transition-colors"
                     >
                       <Pencil className="h-4 w-4" />
                       Editar

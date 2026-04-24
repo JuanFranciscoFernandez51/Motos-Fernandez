@@ -69,7 +69,7 @@ export function TiposServicioList({
       )}
 
       {adding && (
-        <form action={handleCrear} className="rounded-lg border bg-white p-4 space-y-3">
+        <form action={handleCrear} className="rounded-lg border bg-white dark:bg-neutral-900 p-4 space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="md:col-span-2">
               <Label htmlFor="nombre">Nombre *</Label>
@@ -100,9 +100,9 @@ export function TiposServicioList({
         </form>
       )}
 
-      <div className="rounded-lg border bg-white overflow-hidden">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900 overflow-hidden">
         {tipos.length === 0 ? (
-          <p className="text-center py-8 text-gray-500 text-sm">
+          <p className="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
             Todavía no cargaste tipos de servicio. Cargá los que ofrezcas (cambio de aceite,
             service grande, reparación, etc.)
           </p>
@@ -134,7 +134,7 @@ export function TiposServicioList({
                     </div>
                     <div>
                       <Label>Activo</Label>
-                      <select name="activo" defaultValue={String(t.activo)} className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm">
+                      <select name="activo" defaultValue={String(t.activo)} className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 px-3 text-sm">
                         <option value="true">Sí</option>
                         <option value="false">No</option>
                       </select>
@@ -150,19 +150,19 @@ export function TiposServicioList({
                   </div>
                 </form>
               ) : (
-                <div key={t.id} className="p-4 flex items-center justify-between hover:bg-gray-50">
+                <div key={t.id} className="p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-neutral-900">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-sm">{t.nombre}</p>
-                      {!t.activo && <Badge variant="secondary" className="bg-gray-100 text-gray-600">Inactivo</Badge>}
+                      {!t.activo && <Badge variant="secondary" className="bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300">Inactivo</Badge>}
                       {t.ordenesCount > 0 && (
                         <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded">
                           {t.ordenesCount} OT
                         </span>
                       )}
                     </div>
-                    {t.descripcion && <p className="text-xs text-gray-500 mt-1">{t.descripcion}</p>}
-                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                    {t.descripcion && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t.descripcion}</p>}
+                    <div className="flex items-center gap-3 mt-1 text-xs text-gray-500 dark:text-gray-400">
                       {t.precioBase != null && <span>💰 {formatMoney(t.precioBase)}</span>}
                       {t.duracionMin != null && <span>⏱ {t.duracionMin} min</span>}
                     </div>

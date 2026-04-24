@@ -29,7 +29,7 @@ function CartIcon() {
   return (
     <Link
       href="/carrito"
-      className="relative inline-flex items-center justify-center size-9 rounded-md text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+      className="relative inline-flex items-center justify-center size-9 rounded-md text-gray-300 hover:text-white hover:bg-white/5 dark:hover:bg-neutral-900/5 transition-colors"
       aria-label="Carrito"
     >
       <ShoppingBag className="size-5" />
@@ -47,7 +47,7 @@ function WishlistIcon() {
   return (
     <Link
       href="/favoritos"
-      className="relative inline-flex items-center justify-center size-9 rounded-md text-gray-300 hover:text-white hover:bg-white/5 transition-colors"
+      className="relative inline-flex items-center justify-center size-9 rounded-md text-gray-300 hover:text-white hover:bg-white/5 dark:hover:bg-neutral-900/5 transition-colors"
       aria-label="Favoritos"
     >
       <Heart className="size-5" />
@@ -87,8 +87,8 @@ function Navbar() {
                 href={link.href}
                 className={`whitespace-nowrap px-3 py-2 text-sm font-medium transition-colors rounded-md ${
                   (link as { highlight?: boolean }).highlight
-                    ? "text-[#9B59B6] hover:text-[#B07FCC] hover:bg-white/5 font-semibold"
-                    : "text-gray-300 hover:text-white hover:bg-white/5"
+                    ? "text-[#9B59B6] hover:text-[#B07FCC] hover:bg-white/5 dark:hover:bg-neutral-900/5 font-semibold"
+                    : "text-gray-300 hover:text-white hover:bg-white/5 dark:hover:bg-neutral-900/5"
                 }`}
               >
                 {link.label}
@@ -99,13 +99,13 @@ function Navbar() {
           {/* Right: cart + mobile hamburger */}
           <div className="flex items-center gap-2 ml-auto lg:ml-4">
             <div className="hidden lg:flex items-center gap-1">
-              <ThemeToggleSubtle className="text-gray-300 hover:text-white hover:bg-white/5" />
+              <ThemeToggleSubtle className="text-gray-300 hover:text-white hover:bg-white/5 dark:hover:bg-neutral-900/5" />
               <WishlistIcon />
               <CartIcon />
             </div>
             <button
               type="button"
-              className="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+              className="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-gray-300 hover:text-white hover:bg-white/10 dark:hover:bg-neutral-900/10 transition-colors"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label={mobileOpen ? "Cerrar menu" : "Abrir menu"}
             >
@@ -126,7 +126,7 @@ function Navbar() {
                 className={`block rounded-md px-3 py-2.5 text-base font-medium transition-colors ${
                   (link as { highlight?: boolean }).highlight
                     ? "text-[#9B59B6] font-semibold"
-                    : "text-gray-300 hover:text-white hover:bg-white/5"
+                    : "text-gray-300 hover:text-white hover:bg-white/5 dark:hover:bg-neutral-900/5"
                 }`}
                 onClick={() => setMobileOpen(false)}
               >
@@ -134,7 +134,7 @@ function Navbar() {
               </Link>
             ))}
             <div className="pt-2 border-t border-white/10 flex items-center gap-2">
-              <ThemeToggleSubtle className="text-gray-300 hover:text-white hover:bg-white/5" />
+              <ThemeToggleSubtle className="text-gray-300 hover:text-white hover:bg-white/5 dark:hover:bg-neutral-900/5" />
               <WishlistIcon />
               <CartIcon />
             </div>
@@ -261,13 +261,13 @@ function Footer() {
         </div>
 
         <div className="mt-10 border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-gray-500 dark:text-gray-400">
             &copy; {new Date().getFullYear()} {BUSINESS.name}. Todos los derechos reservados.
           </p>
           <div className="flex items-center gap-4">
-            <Link href="/envios" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">Envíos</Link>
-            <Link href="/privacidad" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">Privacidad</Link>
-            <Link href="/terminos" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">Términos</Link>
+            <Link href="/envios" className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">Envíos</Link>
+            <Link href="/privacidad" className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">Privacidad</Link>
+            <Link href="/terminos" className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">Términos</Link>
           </div>
         </div>
       </div>

@@ -190,7 +190,7 @@ export function CatalogoClient({
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               categoria === "TODAS"
                 ? "bg-[#6B4F7A] text-white"
-                : "bg-white text-[#4E4B48] hover:bg-gray-100"
+                : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
             }`}
           >
             Todas
@@ -202,7 +202,7 @@ export function CatalogoClient({
               className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                 categoria === cat.value
                   ? "bg-[#6B4F7A] text-white"
-                  : "bg-white text-[#4E4B48] hover:bg-gray-100"
+                  : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
               }`}
             >
               {cat.label}
@@ -227,7 +227,7 @@ export function CatalogoClient({
                     : opt.value === "USADA"
                     ? "bg-orange-500 text-white"
                     : "bg-[#6B4F7A] text-white"
-                  : "bg-white text-[#4E4B48] hover:bg-gray-100"
+                  : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
               }`}
             >
               {opt.label}
@@ -244,13 +244,13 @@ export function CatalogoClient({
               placeholder="Buscar modelo, marca..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pl-10 pr-4 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+              className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 pl-10 pr-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
             />
           </div>
           <select
             value={marca}
             onChange={(e) => setMarca(e.target.value)}
-            className="rounded-lg border border-gray-200 bg-white py-2.5 px-4 text-sm text-[#1A1A1A] focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+            className="rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
           >
             <option value="TODAS">Todas las marcas</option>
             {brands.map((b) => (
@@ -270,13 +270,13 @@ export function CatalogoClient({
             className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
               mostrarAvanzados || filtrosAvanzadosActivos > 0
                 ? "bg-[#6B4F7A] text-white hover:bg-[#8B6F9A]"
-                : "bg-white text-[#4E4B48] hover:bg-gray-100 border border-gray-200"
+                : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800"
             }`}
           >
             <SlidersHorizontal className="size-4" />
             Filtros avanzados
             {filtrosAvanzadosActivos > 0 && (
-              <span className="inline-flex items-center justify-center min-w-5 h-5 rounded-full bg-white text-[#6B4F7A] text-[11px] font-bold px-1.5">
+              <span className="inline-flex items-center justify-center min-w-5 h-5 rounded-full bg-white dark:bg-neutral-900 text-[#6B4F7A] text-[11px] font-bold px-1.5">
                 {filtrosAvanzadosActivos}
               </span>
             )}
@@ -285,7 +285,7 @@ export function CatalogoClient({
             <button
               type="button"
               onClick={limpiarFiltrosAvanzados}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-white border border-gray-200 px-3 py-2 text-sm font-medium text-[#4E4B48] hover:bg-gray-100 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm font-medium text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
             >
               <X className="size-4" />
               Limpiar filtros
@@ -299,12 +299,12 @@ export function CatalogoClient({
             mostrarAvanzados ? "max-h-[1200px] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="max-w-3xl mx-auto mt-2 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div className="max-w-3xl mx-auto mt-2 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 shadow-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Slider de precio */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-semibold text-[#1A1A1A]">
+                  <label className="text-sm font-semibold text-[#1A1A1A] dark:text-white">
                     Precio
                   </label>
                   <span className="text-xs font-medium text-[#6B4F7A]">
@@ -313,7 +313,7 @@ export function CatalogoClient({
                 </div>
                 <div className="space-y-2">
                   <div>
-                    <label className="block text-[11px] text-gray-500 mb-1">Mínimo</label>
+                    <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">Mínimo</label>
                     <input
                       type="range"
                       min={precioMinCatalogo}
@@ -328,7 +328,7 @@ export function CatalogoClient({
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-gray-500 mb-1">Máximo</label>
+                    <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">Máximo</label>
                     <input
                       type="range"
                       min={precioMinCatalogo}
@@ -351,7 +351,7 @@ export function CatalogoClient({
               {/* Slider de cilindrada */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-semibold text-[#1A1A1A]">
+                  <label className="text-sm font-semibold text-[#1A1A1A] dark:text-white">
                     Cilindrada
                   </label>
                   <span className="text-xs font-medium text-[#6B4F7A]">
@@ -360,7 +360,7 @@ export function CatalogoClient({
                 </div>
                 <div className="space-y-2">
                   <div>
-                    <label className="block text-[11px] text-gray-500 mb-1">Mínimo</label>
+                    <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">Mínimo</label>
                     <input
                       type="range"
                       min={0}
@@ -375,7 +375,7 @@ export function CatalogoClient({
                     />
                   </div>
                   <div>
-                    <label className="block text-[11px] text-gray-500 mb-1">Máximo</label>
+                    <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">Máximo</label>
                     <input
                       type="range"
                       min={0}
@@ -405,7 +405,7 @@ export function CatalogoClient({
                 className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   soloDestacados
                     ? "bg-[#6B4F7A] text-white hover:bg-[#8B6F9A]"
-                    : "bg-white text-[#4E4B48] hover:bg-gray-100 border border-gray-200"
+                    : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800"
                 }`}
               >
                 <Star className={`size-4 ${soloDestacados ? "fill-white" : ""}`} />
@@ -418,7 +418,7 @@ export function CatalogoClient({
                 className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   soloConFinanciacion
                     ? "bg-[#6B4F7A] text-white hover:bg-[#8B6F9A]"
-                    : "bg-white text-[#4E4B48] hover:bg-gray-100 border border-gray-200"
+                    : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800"
                 }`}
               >
                 <CreditCard className="size-4" />
@@ -433,7 +433,7 @@ export function CatalogoClient({
       {filtered.length === 0 ? (
         <div className="py-20 text-center">
           <Bike className="size-12 text-gray-300 mx-auto mb-4" />
-          <p className="text-gray-500 font-body">
+          <p className="text-gray-500 dark:text-gray-400 font-body">
             No se encontraron modelos con esos filtros.
           </p>
         </div>
@@ -442,11 +442,11 @@ export function CatalogoClient({
           {filtered.map((model) => (
             <article
               key={model.id}
-              className="group relative rounded-xl bg-white overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all"
+              className="group relative rounded-xl bg-white dark:bg-neutral-900 overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all"
             >
               {/* Link principal — envuelve imagen + info */}
               <Link href={`/catalogo/${model.slug}`} className="block">
-                <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
+                <div className="relative aspect-[4/3] bg-gray-100 dark:bg-neutral-800 overflow-hidden">
                   {model.fotos[0] ? (
                     <Image
                       src={model.fotos[0]}
@@ -477,7 +477,7 @@ export function CatalogoClient({
                     {model.marca}
                   </p>
                   <h3
-                    className="mt-1 text-lg font-bold text-[#1A1A1A]"
+                    className="mt-1 text-lg font-bold text-[#1A1A1A] dark:text-white"
                     style={{ fontFamily: "var(--font-display)" }}
                   >
                     {model.nombre}

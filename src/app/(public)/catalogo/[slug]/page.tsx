@@ -139,7 +139,7 @@ export default async function ModeloDetailPage({ params }: Props) {
         </div>
       </div>
 
-      <section className="py-12 bg-white">
+      <section className="py-12 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {/* Gallery + calculadora */}
@@ -204,7 +204,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                 </div>
               </div>
               <h1
-                className="mt-3 text-3xl sm:text-4xl font-bold text-[#1A1A1A]"
+                className="mt-3 text-3xl sm:text-4xl font-bold text-[#1A1A1A] dark:text-white"
                 style={{ fontFamily: "var(--font-display)" }}
               >
                 {model.nombre}
@@ -231,7 +231,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                   <span className="text-sm text-gray-400">· 0 km</span>
                 )}
                 {model.cilindrada && (
-                  <span className="text-sm text-gray-500">· {model.cilindrada}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">· {model.cilindrada}</span>
                 )}
                 <span className="text-sm text-gray-400">
                   · {CATEGORIA_VEHICULO_LABELS[model.categoriaVehiculo]}
@@ -258,15 +258,15 @@ export default async function ModeloDetailPage({ params }: Props) {
               )}
 
               {model.observaciones && (
-                <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
-                  <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-1">Observaciones</p>
-                  <p className="text-sm text-gray-700 leading-relaxed">{model.observaciones}</p>
+                <div className="mt-4 rounded-xl border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 p-4">
+                  <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold mb-1">Observaciones</p>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{model.observaciones}</p>
                 </div>
               )}
 
               {/* Price */}
-              <div className="mt-6 p-5 rounded-xl bg-[#F0F0F0]">
-                <p className="text-sm text-gray-500 mb-1">Precio de lista</p>
+              <div className="mt-6 p-5 rounded-xl bg-[#F0F0F0] dark:bg-neutral-950">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Precio de lista</p>
                 <p className="text-3xl font-bold text-[#6B4F7A]">
                   {model.precio
                     ? (model.moneda || "ARS") === "USD"
@@ -290,10 +290,10 @@ export default async function ModeloDetailPage({ params }: Props) {
               {/* Description */}
               {model.descripcion && (
                 <div className="mt-6">
-                  <h2 className="text-sm font-semibold text-[#1A1A1A] uppercase tracking-wider mb-2">
+                  <h2 className="text-sm font-semibold text-[#1A1A1A] dark:text-white uppercase tracking-wider mb-2">
                     Descripcion
                   </h2>
-                  <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-line">
                     {model.descripcion}
                   </p>
                 </div>
@@ -302,18 +302,18 @@ export default async function ModeloDetailPage({ params }: Props) {
               {/* Colors */}
               {model.colores.length > 0 && (
                 <div className="mt-6">
-                  <h2 className="text-sm font-semibold text-[#1A1A1A] uppercase tracking-wider mb-3">
+                  <h2 className="text-sm font-semibold text-[#1A1A1A] dark:text-white uppercase tracking-wider mb-3">
                     Colores disponibles
                   </h2>
                   <div className="flex flex-wrap gap-3">
                     {model.colores.map((color) => (
                       <div key={color.id} className="flex items-center gap-2">
                         <span
-                          className="size-6 rounded-full border border-gray-200"
+                          className="size-6 rounded-full border border-gray-200 dark:border-neutral-800"
                           style={{ backgroundColor: color.hex }}
                           title={color.nombre}
                         />
-                        <span className="text-xs text-gray-600">{color.nombre}</span>
+                        <span className="text-xs text-gray-600 dark:text-gray-300">{color.nombre}</span>
                       </div>
                     ))}
                   </div>
@@ -345,21 +345,21 @@ export default async function ModeloDetailPage({ params }: Props) {
           {/* Specs table */}
           {Object.keys(specs).length > 0 && (
             <div className="mt-16">
-              <h2 className="text-2xl font-bold text-[#1A1A1A] font-heading mb-6">
+              <h2 className="text-2xl font-bold text-[#1A1A1A] dark:text-white font-heading mb-6">
                 Especificaciones tecnicas
               </h2>
-              <div className="rounded-xl border border-gray-100 overflow-hidden">
+              <div className="rounded-xl border border-gray-100 dark:border-neutral-800 overflow-hidden">
                 <table className="w-full">
                   <tbody>
                     {Object.entries(specs).map(([key, value], i) => (
                       <tr
                         key={key}
-                        className={i % 2 === 0 ? "bg-white" : "bg-[#F0F0F0]/50"}
+                        className={i % 2 === 0 ? "bg-white dark:bg-neutral-900" : "bg-[#F0F0F0] dark:bg-neutral-950/50"}
                       >
-                        <td className="px-5 py-3 text-sm font-medium text-[#4E4B48] w-1/3">
+                        <td className="px-5 py-3 text-sm font-medium text-[#4E4B48] dark:text-gray-200 w-1/3">
                           {key}
                         </td>
-                        <td className="px-5 py-3 text-sm text-[#1A1A1A]">
+                        <td className="px-5 py-3 text-sm text-[#1A1A1A] dark:text-white">
                           {value}
                         </td>
                       </tr>
@@ -373,16 +373,16 @@ export default async function ModeloDetailPage({ params }: Props) {
           {/* Financiacion plans */}
           {financiacion.length > 0 && (
             <div className="mt-16">
-              <h2 className="text-2xl font-bold text-[#1A1A1A] font-heading mb-6">
+              <h2 className="text-2xl font-bold text-[#1A1A1A] dark:text-white font-heading mb-6">
                 Planes de financiacion
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {financiacion.map((plan, i) => (
                   <div
                     key={i}
-                    className="rounded-xl border border-gray-100 bg-white p-6 hover:border-[#6B4F7A]/30 transition-colors"
+                    className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 hover:border-[#6B4F7A]/30 transition-colors"
                   >
-                    <h3 className="text-sm font-semibold text-[#1A1A1A]">
+                    <h3 className="text-sm font-semibold text-[#1A1A1A] dark:text-white">
                       {plan.plan}
                     </h3>
                     {plan.cuota && (
@@ -394,7 +394,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                       </p>
                     )}
                     {plan.entrega && (
-                      <p className="mt-1 text-xs text-gray-500">
+                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                         Entrega: {formatPrice(plan.entrega)}
                       </p>
                     )}
@@ -407,7 +407,7 @@ export default async function ModeloDetailPage({ params }: Props) {
           {/* Related models */}
           {related.length > 0 && (
             <div className="mt-16">
-              <h2 className="text-2xl font-bold text-[#1A1A1A] font-heading mb-6">
+              <h2 className="text-2xl font-bold text-[#1A1A1A] dark:text-white font-heading mb-6">
                 Modelos relacionados
               </h2>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -415,7 +415,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                   <Link
                     key={m.id}
                     href={`/catalogo/${m.slug}`}
-                    className="group rounded-xl bg-[#F0F0F0] overflow-hidden hover:shadow-md transition-all"
+                    className="group rounded-xl bg-[#F0F0F0] dark:bg-neutral-950 overflow-hidden hover:shadow-md transition-all"
                   >
                     <div className="relative aspect-[4/3] bg-gray-200 overflow-hidden">
                       {m.fotos[0] ? (
@@ -437,7 +437,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                         {m.marca}
                       </p>
                       <h3
-                        className="text-sm font-bold text-[#1A1A1A] mt-0.5"
+                        className="text-sm font-bold text-[#1A1A1A] dark:text-white mt-0.5"
                         style={{ fontFamily: "var(--font-display)" }}
                       >
                         {m.nombre}

@@ -14,9 +14,9 @@ export default async function CheckoutFalloPage({
   await searchParams
 
   return (
-    <div className="bg-[#F0F0F0] min-h-screen flex items-center justify-center px-4">
+    <div className="bg-[#F0F0F0] dark:bg-neutral-950 min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md">
-        <div className="rounded-2xl bg-white p-8 shadow-sm text-center">
+        <div className="rounded-2xl bg-white dark:bg-neutral-900 p-8 shadow-sm text-center">
           <div className="flex justify-center mb-5">
             <div className="flex items-center justify-center size-20 rounded-full bg-red-100">
               <XCircle className="size-10 text-red-500" />
@@ -24,16 +24,16 @@ export default async function CheckoutFalloPage({
           </div>
 
           <h1
-            className="text-2xl font-bold text-[#1A1A1A] mb-3"
+            className="text-2xl font-bold text-[#1A1A1A] dark:text-white mb-3"
             style={{ fontFamily: "var(--font-heading)" }}
           >
             El pago no pudo procesarse
           </h1>
 
-          <p className="text-gray-600 mb-2">
+          <p className="text-gray-600 dark:text-gray-300 mb-2">
             Hubo un problema con tu pago. No se realizó ningún cobro.
           </p>
-          <p className="text-gray-600 mb-8">
+          <p className="text-gray-600 dark:text-gray-300 mb-8">
             Podés intentarlo de nuevo o contactarnos para ayudarte.
           </p>
 

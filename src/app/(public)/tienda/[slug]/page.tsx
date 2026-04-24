@@ -40,7 +40,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
   const stockPorTalle = (producto.stockPorTalle as Record<string, number>) || {}
 
   return (
-    <div className="bg-[#F0F0F0] min-h-screen">
+    <div className="bg-[#F0F0F0] dark:bg-neutral-950 min-h-screen">
       <TrackVisita pagina="producto-detalle" />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
@@ -52,7 +52,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Images */}
           <div className="space-y-4">
-            <div className="relative aspect-square rounded-xl bg-white overflow-hidden">
+            <div className="relative aspect-square rounded-xl bg-white dark:bg-neutral-900 overflow-hidden">
               {producto.fotos[0] ? (
                 <Image
                   src={producto.fotos[0]}
@@ -76,7 +76,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
             {producto.fotos.length > 1 && (
               <div className="grid grid-cols-4 gap-3">
                 {producto.fotos.slice(1, 5).map((foto, i) => (
-                  <div key={i} className="relative aspect-square rounded-lg bg-white overflow-hidden">
+                  <div key={i} className="relative aspect-square rounded-lg bg-white dark:bg-neutral-900 overflow-hidden">
                     <Image src={foto} alt={`${producto.nombre} ${i + 2}`} fill className="object-cover" sizes="120px" />
                   </div>
                 ))}
@@ -98,7 +98,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
               />
             </div>
             <h1
-              className="mt-2 text-2xl sm:text-3xl font-bold text-[#1A1A1A]"
+              className="mt-2 text-2xl sm:text-3xl font-bold text-[#1A1A1A] dark:text-white"
               style={{ fontFamily: "var(--font-heading)" }}
             >
               {producto.nombre}
@@ -133,7 +133,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
             {/* Talles */}
             {talles.length > 0 && (
               <div className="mt-6">
-                <p className="text-sm font-semibold text-[#1A1A1A] mb-3">Talles disponibles</p>
+                <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white mb-3">Talles disponibles</p>
                 <div className="flex flex-wrap gap-2">
                   {talles.map((talle) => {
                     const stock = stockPorTalle[talle] ?? 0
@@ -143,7 +143,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
                         className={`flex items-center justify-center rounded-lg border-2 px-4 py-2 text-sm font-medium transition-colors ${
                           stock > 0
                             ? "border-[#6B4F7A] text-[#6B4F7A] bg-[#6B4F7A]/5"
-                            : "border-gray-200 text-gray-300 line-through"
+                            : "border-gray-200 dark:border-neutral-800 text-gray-300 line-through"
                         }`}
                       >
                         {talle}
@@ -158,8 +158,8 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
             {/* Description */}
             {producto.descripcion && (
               <div className="mt-6">
-                <p className="text-sm font-semibold text-[#1A1A1A] mb-2">Descripcion</p>
-                <div className="prose prose-sm text-[#4E4B48] max-w-none">
+                <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white mb-2">Descripcion</p>
+                <div className="prose prose-sm text-[#4E4B48] dark:text-gray-200 max-w-none">
                   <p>{producto.descripcion}</p>
                 </div>
               </div>
@@ -167,9 +167,9 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
 
             {/* Compatible motos */}
             {producto.motoCompatible && (
-              <div className="mt-4 rounded-lg bg-white p-4">
-                <p className="text-sm font-semibold text-[#1A1A1A] mb-1">Motos compatibles</p>
-                <p className="text-sm text-[#4E4B48]">{producto.motoCompatible}</p>
+              <div className="mt-4 rounded-lg bg-white dark:bg-neutral-900 p-4">
+                <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white mb-1">Motos compatibles</p>
+                <p className="text-sm text-[#4E4B48] dark:text-gray-200">{producto.motoCompatible}</p>
               </div>
             )}
 
@@ -219,7 +219,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
         {related.length > 0 && (
           <section className="mt-16">
             <h2
-              className="text-xl font-bold text-[#1A1A1A] mb-6"
+              className="text-xl font-bold text-[#1A1A1A] dark:text-white mb-6"
               style={{ fontFamily: "var(--font-heading)" }}
             >
               Productos relacionados
@@ -229,9 +229,9 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
                 <Link
                   key={prod.id}
                   href={`/tienda/${prod.slug}`}
-                  className="group rounded-xl bg-white overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all flex flex-col"
+                  className="group rounded-xl bg-white dark:bg-neutral-900 overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all flex flex-col"
                 >
-                  <div className="relative aspect-square bg-gray-100 overflow-hidden">
+                  <div className="relative aspect-square bg-gray-100 dark:bg-neutral-800 overflow-hidden">
                     {prod.fotos[0] ? (
                       <Image
                         src={prod.fotos[0]}
@@ -250,7 +250,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
                     <p className="text-xs font-medium text-[#8B6F9A] uppercase tracking-wider">
                       {prod.categoria.nombre}
                     </p>
-                    <h3 className="mt-1 text-sm font-semibold text-[#1A1A1A] line-clamp-2 flex-1">
+                    <h3 className="mt-1 text-sm font-semibold text-[#1A1A1A] dark:text-white line-clamp-2 flex-1">
                       {prod.nombre}
                     </h3>
                     <p className="mt-2 text-base font-bold text-[#6B4F7A]">

@@ -86,7 +86,7 @@ export default function ServicioTecnicoPage() {
       </section>
 
       {/* Features */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
             {[
@@ -115,10 +115,10 @@ export default function ServicioTecnicoPage() {
                 <div className="flex items-center justify-center size-12 rounded-full bg-[#6B4F7A]/10 text-[#6B4F7A] mx-auto mb-3">
                   <f.icon className="size-5" />
                 </div>
-                <h3 className="text-sm font-bold text-[#1A1A1A] font-heading">
+                <h3 className="text-sm font-bold text-[#1A1A1A] dark:text-white font-heading">
                   {f.title}
                 </h3>
-                <p className="mt-1 text-xs text-gray-500 font-body">{f.desc}</p>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 font-body">{f.desc}</p>
               </div>
             ))}
           </div>
@@ -126,10 +126,10 @@ export default function ServicioTecnicoPage() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
             {/* Form */}
             <div className="lg:col-span-3">
-              <h2 className="text-xl font-bold text-[#1A1A1A] font-heading mb-1">
+              <h2 className="text-xl font-bold text-[#1A1A1A] dark:text-white font-heading mb-1">
                 Saca turno online
               </h2>
-              <p className="text-sm text-gray-500 font-body mb-6">
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-body mb-6">
                 Completa el formulario y te contactamos para confirmar.
               </p>
 
@@ -156,7 +156,7 @@ export default function ServicioTecnicoPage() {
                     <div>
                       <label
                         htmlFor="nombre"
-                        className="block text-sm font-medium text-[#1A1A1A] mb-1.5"
+                        className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5"
                       >
                         Nombre completo *
                       </label>
@@ -166,14 +166,14 @@ export default function ServicioTecnicoPage() {
                         required
                         value={form.nombre}
                         onChange={(e) => update("nombre", e.target.value)}
-                        className="w-full rounded-lg border border-gray-200 bg-white py-2.5 px-4 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
                         placeholder="Tu nombre"
                       />
                     </div>
                     <div>
                       <label
                         htmlFor="telefono"
-                        className="block text-sm font-medium text-[#1A1A1A] mb-1.5"
+                        className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5"
                       >
                         Telefono *
                       </label>
@@ -183,7 +183,7 @@ export default function ServicioTecnicoPage() {
                         required
                         value={form.telefono}
                         onChange={(e) => update("telefono", e.target.value)}
-                        className="w-full rounded-lg border border-gray-200 bg-white py-2.5 px-4 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
                         placeholder="291 000-0000"
                       />
                     </div>
@@ -192,7 +192,7 @@ export default function ServicioTecnicoPage() {
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-[#1A1A1A] mb-1.5"
+                      className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5"
                     >
                       Email
                     </label>
@@ -201,7 +201,7 @@ export default function ServicioTecnicoPage() {
                       type="email"
                       value={form.email}
                       onChange={(e) => update("email", e.target.value)}
-                      className="w-full rounded-lg border border-gray-200 bg-white py-2.5 px-4 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
                       placeholder="tu@email.com"
                     />
                   </div>
@@ -209,7 +209,7 @@ export default function ServicioTecnicoPage() {
                   <div>
                     <label
                       htmlFor="modeloMoto"
-                      className="block text-sm font-medium text-[#1A1A1A] mb-1.5"
+                      className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5"
                     >
                       Modelo de moto *
                     </label>
@@ -219,7 +219,7 @@ export default function ServicioTecnicoPage() {
                       required
                       value={form.modeloMoto}
                       onChange={(e) => update("modeloMoto", e.target.value)}
-                      className="w-full rounded-lg border border-gray-200 bg-white py-2.5 px-4 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
                       placeholder="Ej: Honda CB 250 Twister 2024"
                     />
                   </div>
@@ -227,7 +227,7 @@ export default function ServicioTecnicoPage() {
                   <div>
                     <label
                       htmlFor="tipoServicio"
-                      className="block text-sm font-medium text-[#1A1A1A] mb-1.5"
+                      className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5"
                     >
                       Tipo de servicio *
                     </label>
@@ -236,7 +236,7 @@ export default function ServicioTecnicoPage() {
                       required
                       value={form.tipoServicio}
                       onChange={(e) => update("tipoServicio", e.target.value)}
-                      className="w-full rounded-lg border border-gray-200 bg-white py-2.5 px-4 text-sm text-[#1A1A1A] focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
                     >
                       <option value="">Selecciona un servicio</option>
                       {SERVICIOS_TALLER.map((s) => (
@@ -250,7 +250,7 @@ export default function ServicioTecnicoPage() {
                   <div>
                     <label
                       htmlFor="fechaPreferida"
-                      className="block text-sm font-medium text-[#1A1A1A] mb-1.5"
+                      className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5"
                     >
                       Fecha preferida
                     </label>
@@ -260,14 +260,14 @@ export default function ServicioTecnicoPage() {
                       value={form.fechaPreferida}
                       onChange={(e) => update("fechaPreferida", e.target.value)}
                       min={new Date().toISOString().split("T")[0]}
-                      className="w-full rounded-lg border border-gray-200 bg-white py-2.5 px-4 text-sm text-[#1A1A1A] focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
                     />
                   </div>
 
                   <div>
                     <label
                       htmlFor="comentarios"
-                      className="block text-sm font-medium text-[#1A1A1A] mb-1.5"
+                      className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5"
                     >
                       Comentarios
                     </label>
@@ -276,7 +276,7 @@ export default function ServicioTecnicoPage() {
                       rows={4}
                       value={form.comentarios}
                       onChange={(e) => update("comentarios", e.target.value)}
-                      className="w-full rounded-lg border border-gray-200 bg-white py-2.5 px-4 text-sm text-[#1A1A1A] placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 resize-none"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 resize-none"
                       placeholder="Detalles adicionales sobre el trabajo que necesitas..."
                     />
                   </div>
@@ -310,17 +310,17 @@ export default function ServicioTecnicoPage() {
 
             {/* Services list */}
             <div className="lg:col-span-2">
-              <h2 className="text-xl font-bold text-[#1A1A1A] font-heading mb-6">
+              <h2 className="text-xl font-bold text-[#1A1A1A] dark:text-white font-heading mb-6">
                 Servicios disponibles
               </h2>
               <div className="space-y-3">
                 {SERVICIOS_TALLER.map((s) => (
                   <div
                     key={s}
-                    className="flex items-center gap-3 rounded-lg border border-gray-100 bg-white p-4 hover:border-[#6B4F7A]/20 transition-colors"
+                    className="flex items-center gap-3 rounded-lg border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 hover:border-[#6B4F7A]/20 transition-colors"
                   >
                     <Wrench className="size-4 text-[#6B4F7A] shrink-0" />
-                    <span className="text-sm text-[#1A1A1A]">{s}</span>
+                    <span className="text-sm text-[#1A1A1A] dark:text-white">{s}</span>
                   </div>
                 ))}
               </div>

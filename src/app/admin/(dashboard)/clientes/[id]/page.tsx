@@ -126,16 +126,16 @@ export default async function EditarClientePage({
                   <li key={m.id} className="text-sm">
                     <Link
                       href={`/admin/mandatos/${m.id}`}
-                      className="flex items-center justify-between hover:bg-gray-50 rounded p-2 -m-2"
+                      className="flex items-center justify-between hover:bg-gray-50 dark:hover:bg-neutral-900 rounded p-2 -m-2"
                     >
                       <div>
-                        <p className="font-mono text-xs text-gray-500">
+                        <p className="font-mono text-xs text-gray-500 dark:text-gray-400">
                           {formatNumero("MV", m.numero)}
                         </p>
                         <p className="font-medium">
                           {m.marca} {m.modelo}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {formatMoney(m.precioVenta, m.moneda)} ·{" "}
                           {formatDate(m.createdAt)}
                         </p>
@@ -171,14 +171,14 @@ export default async function EditarClientePage({
                   <li key={v.id} className="text-sm">
                     <Link
                       href={`/admin/ventas/${v.id}`}
-                      className="flex items-center justify-between hover:bg-gray-50 rounded p-2 -m-2"
+                      className="flex items-center justify-between hover:bg-gray-50 dark:hover:bg-neutral-900 rounded p-2 -m-2"
                     >
                       <div>
-                        <p className="font-mono text-xs text-gray-500">
+                        <p className="font-mono text-xs text-gray-500 dark:text-gray-400">
                           {formatNumero("V", v.numero)}
                         </p>
                         <p className="font-medium">{v.motoDescripcion}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {formatMoney(v.precioVenta, v.moneda)} ·{" "}
                           {formatDate(v.fecha)}
                         </p>
@@ -214,16 +214,16 @@ export default async function EditarClientePage({
                   <li key={ot.id} className="text-sm">
                     <Link
                       href={`/admin/taller/${ot.id}`}
-                      className="flex items-center justify-between hover:bg-gray-50 rounded p-2 -m-2"
+                      className="flex items-center justify-between hover:bg-gray-50 dark:hover:bg-neutral-900 rounded p-2 -m-2"
                     >
                       <div>
-                        <p className="font-mono text-xs text-gray-500">
+                        <p className="font-mono text-xs text-gray-500 dark:text-gray-400">
                           {formatNumero("OT", ot.numero)}
                         </p>
                         <p className="font-medium">
                           {ot.motoMarca} {ot.motoModelo}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {formatMoney(ot.total)} ·{" "}
                           {formatDate(ot.fechaIngreso)}
                         </p>

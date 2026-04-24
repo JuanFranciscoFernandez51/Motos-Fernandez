@@ -170,7 +170,7 @@ export function OrdenTrabajoForm({
           <Button variant="ghost" size="icon" render={<Link href="/admin/taller" />}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {initialData?.id ? "Editar orden de trabajo" : "Nueva orden de trabajo"}
           </h1>
         </div>
@@ -213,7 +213,7 @@ export function OrdenTrabajoForm({
                 onChange={(id) => set("modeloId", id)}
                 onPick={onPickMoto}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                 Si la moto NO es del catálogo (cliente externo), dejá esto vacío y cargá los datos abajo.
               </p>
             </div>
@@ -253,7 +253,7 @@ export function OrdenTrabajoForm({
                 id="tipoServicioId"
                 value={data.tipoServicioId}
                 onChange={(e) => set("tipoServicioId", e.target.value)}
-                className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm"
+                className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 px-3 text-sm"
               >
                 <option value="">— Sin clasificar —</option>
                 {tiposServicio.map((t) => (
@@ -272,7 +272,7 @@ export function OrdenTrabajoForm({
                 id="estado"
                 value={data.estado}
                 onChange={(e) => set("estado", e.target.value)}
-                className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm"
+                className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 px-3 text-sm"
               >
                 <option value="INGRESADA">Ingresada</option>
                 <option value="EN_DIAGNOSTICO">En diagnóstico</option>
@@ -359,7 +359,7 @@ export function OrdenTrabajoForm({
                       <select
                         value={item.tipo}
                         onChange={(e) => updateItem(i, "tipo", e.target.value)}
-                        className="w-full h-10 rounded-md border border-gray-200 px-3 text-sm"
+                        className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 px-3 text-sm"
                       >
                         <option value="repuesto">Repuesto</option>
                         <option value="mano_obra">Mano de obra</option>
@@ -403,11 +403,11 @@ export function OrdenTrabajoForm({
             <div className="mt-4 border-t pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Subtotal:</span>
+                  <span className="text-gray-600 dark:text-gray-300">Subtotal:</span>
                   <span className="font-medium">{formatMoney(totales.subtotal)}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Descuento:</span>
+                  <span className="text-gray-600 dark:text-gray-300">Descuento:</span>
                   <Input
                     type="number"
                     value={data.descuento}
@@ -422,7 +422,7 @@ export function OrdenTrabajoForm({
               </div>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-600">Pagado:</span>
+                  <span className="text-gray-600 dark:text-gray-300">Pagado:</span>
                   <Input
                     type="number"
                     value={data.pagado}
@@ -431,7 +431,7 @@ export function OrdenTrabajoForm({
                   />
                 </div>
                 <div className="flex justify-between font-medium">
-                  <span className="text-gray-600">Saldo pendiente:</span>
+                  <span className="text-gray-600 dark:text-gray-300">Saldo pendiente:</span>
                   <span className={totales.saldo > 0 ? "text-orange-600" : "text-green-600"}>
                     {formatMoney(totales.saldo)}
                   </span>

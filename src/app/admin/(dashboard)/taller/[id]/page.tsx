@@ -141,7 +141,7 @@ export default async function EditarOTPage({
         <CardContent className="p-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div>
-              <p className="text-xs text-gray-500 uppercase">Orden de trabajo</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Orden de trabajo</p>
               <p className="font-mono text-lg font-bold text-[#6B4F7A]">
                 {formatNumero("OT", ot.numero)}
               </p>
@@ -155,7 +155,7 @@ export default async function EditarOTPage({
               href={`/api/pdf/orden-trabajo/${ot.id}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-3 py-1.5 text-sm hover:bg-gray-50"
+              className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-neutral-900"
             >
               <FileText className="size-4" /> PDF
             </a>

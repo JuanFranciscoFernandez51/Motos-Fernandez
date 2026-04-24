@@ -289,23 +289,23 @@ export default function RecomendadorPage() {
   // ============ VISTA: RESULTADO ============
   if (resultado) {
     return (
-      <main className="min-h-screen bg-[#F8F5FA] py-14">
+      <main className="min-h-screen bg-[#F8F5FA] dark:bg-neutral-900 py-14">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
             <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-gradient-to-br from-[#6B4F7A] to-[#9B59B6] mb-5 shadow-lg">
               <Sparkles className="size-8 text-white" />
             </div>
-            <h1 className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] font-heading">
+            <h1 className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] dark:text-white font-heading">
               Las 3 motos que te recomendamos
             </h1>
-            <p className="mt-3 text-gray-500 font-body max-w-xl mx-auto">
+            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body max-w-xl mx-auto">
               Elegidas especialmente según tus respuestas
             </p>
           </div>
 
           {/* Razonamiento */}
           {resultado.razonamiento && (
-            <div className="mb-10 mx-auto max-w-3xl rounded-2xl bg-white border border-[#6B4F7A]/20 p-5 shadow-sm">
+            <div className="mb-10 mx-auto max-w-3xl rounded-2xl bg-white dark:bg-neutral-900 border border-[#6B4F7A]/20 p-5 shadow-sm">
               <div className="flex items-start gap-3">
                 <div className="shrink-0 size-9 rounded-xl bg-[#6B4F7A]/10 flex items-center justify-center text-[#6B4F7A]">
                   <Sparkles className="size-5" />
@@ -314,7 +314,7 @@ export default function RecomendadorPage() {
                   <p className="text-xs font-semibold text-[#6B4F7A] uppercase tracking-wider mb-1">
                     Por qué elegimos estas motos
                   </p>
-                  <p className="text-sm text-gray-700 font-body leading-relaxed">
+                  <p className="text-sm text-gray-700 dark:text-gray-300 font-body leading-relaxed">
                     {resultado.razonamiento}
                   </p>
                 </div>
@@ -328,14 +328,14 @@ export default function RecomendadorPage() {
               <Link
                 key={modelo.id}
                 href={`/catalogo/${modelo.slug}`}
-                className="group relative flex flex-col rounded-2xl bg-white overflow-hidden border border-gray-100 hover:border-[#6B4F7A]/40 hover:shadow-xl hover:shadow-[#6B4F7A]/10 transition-all duration-300"
+                className="group relative flex flex-col rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden border border-gray-100 dark:border-neutral-800 hover:border-[#6B4F7A]/40 hover:shadow-xl hover:shadow-[#6B4F7A]/10 transition-all duration-300"
               >
                 {/* Badge numero de recomendación */}
                 <div
                   className={`absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold shadow-md ${
                     idx === 0
                       ? "bg-gradient-to-r from-[#6B4F7A] to-[#9B59B6] text-white"
-                      : "bg-white text-[#6B4F7A] border border-[#6B4F7A]/30"
+                      : "bg-white dark:bg-neutral-900 text-[#6B4F7A] border border-[#6B4F7A]/30"
                   }`}
                 >
                   {idx === 0 ? (
@@ -352,7 +352,7 @@ export default function RecomendadorPage() {
                 </div>
 
                 {/* Foto */}
-                <div className="relative aspect-[4/3] bg-gray-100 overflow-hidden">
+                <div className="relative aspect-[4/3] bg-gray-100 dark:bg-neutral-800 overflow-hidden">
                   {modelo.fotos && modelo.fotos[0] ? (
                     <Image
                       src={modelo.fotos[0]}
@@ -382,7 +382,7 @@ export default function RecomendadorPage() {
                   <p className="text-[11px] font-semibold text-[#8B6F9A] uppercase tracking-wider">
                     {modelo.marca}
                   </p>
-                  <h3 className="mt-1 text-lg font-bold text-[#1A1A1A] font-heading leading-tight">
+                  <h3 className="mt-1 text-lg font-bold text-[#1A1A1A] dark:text-white font-heading leading-tight">
                     {modelo.nombre}
                   </h3>
                   <p className="mt-1 text-xs text-gray-400">
@@ -394,7 +394,7 @@ export default function RecomendadorPage() {
                     <p className="text-lg font-bold text-[#6B4F7A]">
                       {formatPrice(modelo.precio, modelo.moneda)}
                     </p>
-                    <div className="mt-3 flex items-center justify-between gap-2 pt-3 border-t border-gray-100">
+                    <div className="mt-3 flex items-center justify-between gap-2 pt-3 border-t border-gray-100 dark:border-neutral-800">
                       <span className="text-xs font-semibold text-[#6B4F7A] group-hover:text-[#9B59B6] transition-colors">
                         Ver detalle
                       </span>
@@ -417,7 +417,7 @@ export default function RecomendadorPage() {
             </Link>
             <button
               onClick={reiniciar}
-              className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white px-6 py-3 text-sm font-semibold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white dark:bg-neutral-900 px-6 py-3 text-sm font-semibold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 transition-colors"
             >
               <RefreshCw className="size-4" />
               Hacer quiz de nuevo
@@ -431,15 +431,15 @@ export default function RecomendadorPage() {
   // ============ VISTA: CARGANDO ============
   if (cargando) {
     return (
-      <main className="min-h-screen bg-[#F8F5FA] flex items-center justify-center py-14">
+      <main className="min-h-screen bg-[#F8F5FA] dark:bg-neutral-900 flex items-center justify-center py-14">
         <div className="text-center">
           <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-gradient-to-br from-[#6B4F7A] to-[#9B59B6] mb-5 shadow-lg animate-pulse">
             <Sparkles className="size-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-[#1A1A1A] font-heading">
+          <h2 className="text-2xl font-bold text-[#1A1A1A] dark:text-white font-heading">
             Analizando tus respuestas...
           </h2>
-          <p className="mt-2 text-gray-500 font-body">
+          <p className="mt-2 text-gray-500 dark:text-gray-400 font-body">
             Estamos eligiendo las 3 motos ideales para vos
           </p>
           <Loader2 className="size-8 text-[#6B4F7A] animate-spin mx-auto mt-6" />
@@ -451,15 +451,15 @@ export default function RecomendadorPage() {
   // ============ VISTA: ERROR ============
   if (error) {
     return (
-      <main className="min-h-screen bg-[#F8F5FA] flex items-center justify-center py-14">
+      <main className="min-h-screen bg-[#F8F5FA] dark:bg-neutral-900 flex items-center justify-center py-14">
         <div className="max-w-md text-center px-6">
           <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-red-100 mb-5">
             <AlertCircle className="size-8 text-red-500" />
           </div>
-          <h2 className="text-2xl font-bold text-[#1A1A1A] font-heading">
+          <h2 className="text-2xl font-bold text-[#1A1A1A] dark:text-white font-heading">
             Ups, algo salió mal
           </h2>
-          <p className="mt-2 text-gray-600 font-body">{error}</p>
+          <p className="mt-2 text-gray-600 dark:text-gray-300 font-body">{error}</p>
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
               onClick={reintentar}
@@ -470,7 +470,7 @@ export default function RecomendadorPage() {
             </button>
             <button
               onClick={reiniciar}
-              className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white px-6 py-3 text-sm font-semibold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white dark:bg-neutral-900 px-6 py-3 text-sm font-semibold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 transition-colors"
             >
               Empezar de nuevo
             </button>
@@ -482,17 +482,17 @@ export default function RecomendadorPage() {
 
   // ============ VISTA: QUIZ ============
   return (
-    <main className="min-h-screen bg-[#F8F5FA] py-10 sm:py-14">
+    <main className="min-h-screen bg-[#F8F5FA] dark:bg-neutral-900 py-10 sm:py-14">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-gradient-to-br from-[#6B4F7A] to-[#9B59B6] mb-4 shadow-lg">
             <Sparkles className="size-7 text-white" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] font-heading">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
             ¿Qué moto te conviene?
           </h1>
-          <p className="mt-2 text-sm text-gray-500 font-body">
+          <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 font-body">
             Contestá unas preguntas rápidas y te recomendamos las 3 motos ideales para vos
           </p>
         </div>
@@ -518,13 +518,13 @@ export default function RecomendadorPage() {
         {/* Pregunta */}
         <div
           key={paso}
-          className="rounded-2xl bg-white border border-gray-100 p-6 sm:p-8 shadow-sm animate-fadeIn"
+          className="rounded-2xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 p-6 sm:p-8 shadow-sm animate-fadeIn"
         >
-          <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A] font-heading text-center">
+          <h2 className="text-xl sm:text-2xl font-bold text-[#1A1A1A] dark:text-white font-heading text-center">
             {preguntaActual.titulo}
           </h2>
           {preguntaActual.subtitulo && (
-            <p className="mt-2 text-sm text-gray-500 font-body text-center">
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 font-body text-center">
               {preguntaActual.subtitulo}
             </p>
           )}
@@ -546,7 +546,7 @@ export default function RecomendadorPage() {
                   className={`relative text-left rounded-xl border-2 p-4 transition-all duration-200 hover:shadow-md ${
                     seleccionada
                       ? "border-[#6B4F7A] bg-[#6B4F7A]/5 shadow-md"
-                      : "border-gray-200 bg-white hover:border-[#6B4F7A]/40"
+                      : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/40"
                   }`}
                 >
                   {opcion.recomendado && (
@@ -568,13 +568,13 @@ export default function RecomendadorPage() {
                   )}
                   <p
                     className={`font-semibold font-heading ${
-                      seleccionada ? "text-[#6B4F7A]" : "text-[#1A1A1A]"
+                      seleccionada ? "text-[#6B4F7A]" : "text-[#1A1A1A] dark:text-white"
                     }`}
                   >
                     {opcion.label}
                   </p>
                   {opcion.descripcion && (
-                    <p className="mt-1 text-xs text-gray-500 font-body leading-relaxed">
+                    <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 font-body leading-relaxed">
                       {opcion.descripcion}
                     </p>
                   )}
@@ -589,7 +589,7 @@ export default function RecomendadorPage() {
           <button
             onClick={volverPaso}
             disabled={paso === 0}
-            className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-gray-600 hover:text-[#6B4F7A] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-[#6B4F7A] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             <ArrowLeft className="size-4" />
             Anterior

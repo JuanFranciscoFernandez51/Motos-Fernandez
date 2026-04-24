@@ -90,38 +90,38 @@ export function OrdenesList({ ordenes }: { ordenes: Row[] }) {
         <button
           onClick={() => setFilterId("todas")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            filterId === "todas" ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 bg-white hover:bg-gray-50"
+            filterId === "todas" ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
-          <p className="text-xs text-gray-500 uppercase">Total</p>
-          <p className="text-xl font-bold text-gray-900">{counts.total}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Total</p>
+          <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{counts.total}</p>
         </button>
         <button
           onClick={() => setFilterId("activas")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            filterId === "activas" ? "border-orange-500 bg-orange-50" : "border-gray-200 bg-white hover:bg-gray-50"
+            filterId === "activas" ? "border-orange-500 bg-orange-50" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
-          <p className="text-xs text-gray-500 uppercase">En curso</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">En curso</p>
           <p className="text-xl font-bold text-orange-700">{counts.activas}</p>
         </button>
         <button
           onClick={() => setFilterId("listas")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            filterId === "listas" ? "border-emerald-500 bg-emerald-50" : "border-gray-200 bg-white hover:bg-gray-50"
+            filterId === "listas" ? "border-emerald-500 bg-emerald-50" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
-          <p className="text-xs text-gray-500 uppercase">Listas</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Listas</p>
           <p className="text-xl font-bold text-emerald-700">{counts.listas}</p>
         </button>
         <button
           onClick={() => setFilterId("entregadas")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            filterId === "entregadas" ? "border-gray-400 bg-gray-100" : "border-gray-200 bg-white hover:bg-gray-50"
+            filterId === "entregadas" ? "border-gray-400 bg-gray-100 dark:bg-neutral-800" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
-          <p className="text-xs text-gray-500 uppercase">Entregadas</p>
-          <p className="text-xl font-bold text-gray-600">{counts.entregadas}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Entregadas</p>
+          <p className="text-xl font-bold text-gray-600 dark:text-gray-300">{counts.entregadas}</p>
         </button>
       </div>
 
@@ -134,13 +134,13 @@ export function OrdenesList({ ordenes }: { ordenes: Row[] }) {
           className="pl-9"
         />
         {query && (
-          <button onClick={() => setQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100">
+          <button onClick={() => setQuery("")} className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800">
             <X className="size-4" />
           </button>
         )}
       </div>
 
-      <div className="rounded-lg border bg-white overflow-hidden">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -158,7 +158,7 @@ export function OrdenesList({ ordenes }: { ordenes: Row[] }) {
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="text-center py-12 text-gray-500">
+                <TableCell colSpan={9} className="text-center py-12 text-gray-500 dark:text-gray-400">
                   {ordenes.length === 0 ? (
                     <div className="space-y-2">
                       <Wrench className="size-10 mx-auto text-gray-300" />
@@ -180,13 +180,13 @@ export function OrdenesList({ ordenes }: { ordenes: Row[] }) {
                       {o.motoMarca} {o.motoModelo}
                     </p>
                     {o.motoPatente && (
-                      <p className="text-xs font-mono text-gray-500">{o.motoPatente}</p>
+                      <p className="text-xs font-mono text-gray-500 dark:text-gray-400">{o.motoPatente}</p>
                     )}
                   </TableCell>
                   <TableCell>
                     <p className="text-sm">{o.clienteNombre}</p>
                     {o.clienteTelefono && (
-                      <p className="text-xs text-gray-500">{o.clienteTelefono}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{o.clienteTelefono}</p>
                     )}
                   </TableCell>
                   <TableCell className="text-xs">{o.tipoServicio || "—"}</TableCell>
@@ -205,7 +205,7 @@ export function OrdenesList({ ordenes }: { ordenes: Row[] }) {
                       {ESTADO_OT_LABELS[o.estado]}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-xs text-gray-500">{formatDate(o.fechaIngreso)}</TableCell>
+                  <TableCell className="text-xs text-gray-500 dark:text-gray-400">{formatDate(o.fechaIngreso)}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
                       <Button variant="ghost" size="sm" render={<Link href={`/admin/taller/${o.id}`} />}>
@@ -215,7 +215,7 @@ export function OrdenesList({ ordenes }: { ordenes: Row[] }) {
                         href={`/api/pdf/orden-trabajo/${o.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center rounded-md h-9 px-2 text-sm hover:bg-gray-100"
+                        className="inline-flex items-center justify-center rounded-md h-9 px-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-800"
                         title="PDF"
                       >
                         <FileText className="h-4 w-4" />

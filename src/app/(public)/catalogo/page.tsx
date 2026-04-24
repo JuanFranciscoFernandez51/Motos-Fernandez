@@ -63,7 +63,7 @@ export default async function ModelosPage() {
       </section>
 
       {/* Catalog */}
-      <section className="py-12 bg-[#F0F0F0] min-h-[60vh]">
+      <section className="py-12 bg-[#F0F0F0] dark:bg-neutral-950 min-h-[60vh]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <CatalogoClient
             models={JSON.parse(JSON.stringify(models))}

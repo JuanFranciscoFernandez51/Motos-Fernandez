@@ -37,7 +37,7 @@ const ORIGEN_COLORS: Record<string, string> = {
   MARKETPLACE:  "bg-orange-100 text-orange-800",
   MERCADOLIBRE: "bg-yellow-100 text-yellow-800",
   TELEFONO:     "bg-purple-100 text-purple-800",
-  PRESENCIAL:   "bg-gray-100 text-gray-800",
+  PRESENCIAL:   "bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-gray-100",
 }
 
 // Bar-only bg color (must be a full standalone class for Tailwind JIT)
@@ -355,8 +355,8 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Dashboard</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Dashboard</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Resumen general de Motos Fernandez
         </p>
       </div>
@@ -374,7 +374,7 @@ export default async function AdminDashboardPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{stat.value}</p>
-                  <p className="text-xs text-gray-500">{stat.label}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">{stat.label}</p>
                 </div>
               </div>
             </CardContent>
@@ -398,7 +398,7 @@ export default async function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
             {recentOrders.length === 0 ? (
-              <p className="text-sm text-gray-500 py-4 text-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
                 No hay pedidos aun
               </p>
             ) : (
@@ -409,13 +409,13 @@ export default async function AdminDashboardPage() {
                     <Link
                       key={pedido.id}
                       href={`/admin/pedidos/${pedido.id}`}
-                      className="flex items-center justify-between rounded-lg border p-3 hover:bg-gray-50 transition-colors"
+                      className="flex items-center justify-between rounded-lg border p-3 hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors"
                     >
                       <div>
                         <p className="text-sm font-medium">
                           #{pedido.numero} - {pedido.nombre} {pedido.apellido}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {pedido.items.length} item(s) -{" "}
                           {pedido.createdAt.toLocaleDateString("es-AR")}
                         </p>
@@ -454,7 +454,7 @@ export default async function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
             {leadsSinContactar.length === 0 ? (
-              <p className="text-sm text-gray-500 py-4 text-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
                 No hay leads nuevos
               </p>
             ) : (
@@ -465,13 +465,13 @@ export default async function AdminDashboardPage() {
                     <Link
                       key={lead.id}
                       href={`/admin/crm/${lead.id}`}
-                      className="flex items-center justify-between rounded-lg border p-3 hover:bg-gray-50 transition-colors"
+                      className="flex items-center justify-between rounded-lg border p-3 hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors"
                     >
                       <div>
                         <p className="text-sm font-medium">
                           {lead.nombre} {lead.apellido || ""}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {lead.telefono || lead.email || "Sin contacto"} -{" "}
                           {lead.modelo?.nombre || lead.modeloInteres || "Sin modelo"}
                         </p>
@@ -503,7 +503,7 @@ export default async function AdminDashboardPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">Ventas por mes</CardTitle>
-            <p className="text-xs text-gray-500">Ultimos 6 meses (pedidos confirmados)</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Ultimos 6 meses (pedidos confirmados)</p>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
@@ -512,11 +512,11 @@ export default async function AdminDashboardPage() {
                 return (
                   <div key={v.key} className="flex items-center gap-3">
                     {/* Month label */}
-                    <span className="w-8 text-xs font-medium text-gray-600 shrink-0">
+                    <span className="w-8 text-xs font-medium text-gray-600 dark:text-gray-300 shrink-0">
                       {v.mes}
                     </span>
                     {/* Bar container */}
-                    <div className="flex-1 h-7 bg-gray-100 rounded-md overflow-hidden">
+                    <div className="flex-1 h-7 bg-gray-100 dark:bg-neutral-800 rounded-md overflow-hidden">
                       <div
                         className="h-full rounded-md transition-all duration-500 flex items-center px-2"
                         style={{
@@ -532,7 +532,7 @@ export default async function AdminDashboardPage() {
                       </div>
                     </div>
                     {/* Amount outside bar when bar is short */}
-                    <span className="w-24 text-right text-xs font-semibold text-gray-700 shrink-0">
+                    <span className="w-24 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 shrink-0">
                       {v.total > 0 ? formatPrice(v.total) : <span className="text-gray-400">—</span>}
                     </span>
                   </div>
@@ -546,13 +546,13 @@ export default async function AdminDashboardPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">Leads por origen</CardTitle>
-            <p className="text-xs text-gray-500">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
               Total: {totalLeads} lead{totalLeads !== 1 ? "s" : ""}
             </p>
           </CardHeader>
           <CardContent>
             {leadsPorOrigen.length === 0 ? (
-              <p className="text-sm text-gray-500 py-4 text-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
                 No hay leads registrados
               </p>
             ) : (
@@ -560,7 +560,7 @@ export default async function AdminDashboardPage() {
                 {/* Pills row */}
                 <div className="flex flex-wrap gap-2">
                   {leadsPorOrigen.map((l) => {
-                    const color = ORIGEN_COLORS[l.origen] ?? "bg-gray-100 text-gray-800"
+                    const color = ORIGEN_COLORS[l.origen] ?? "bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-gray-100"
                     const label = ORIGEN_LABELS[l.origen]?.label ?? l.origen
                     return (
                       <span
@@ -568,7 +568,7 @@ export default async function AdminDashboardPage() {
                         className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-medium ${color}`}
                       >
                         {label}
-                        <span className="rounded-full bg-white/60 px-1.5 py-0.5 text-xs font-bold">
+                        <span className="rounded-full bg-white/60 dark:bg-neutral-900/60 px-1.5 py-0.5 text-xs font-bold">
                           {l.cantidad}
                         </span>
                       </span>
@@ -584,14 +584,14 @@ export default async function AdminDashboardPage() {
                     const label = ORIGEN_LABELS[l.origen]?.label ?? l.origen
                     return (
                       <div key={l.origen} className="flex items-center gap-2 text-xs">
-                        <span className="w-24 text-gray-600 truncate shrink-0">{label}</span>
-                        <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <span className="w-24 text-gray-600 dark:text-gray-300 truncate shrink-0">{label}</span>
+                        <div className="flex-1 h-2 bg-gray-100 dark:bg-neutral-800 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full ${barColor}`}
                             style={{ width: `${Math.max(pct, 2)}%` }}
                           />
                         </div>
-                        <span className="w-8 text-right text-gray-500 shrink-0">{pct}%</span>
+                        <span className="w-8 text-right text-gray-500 dark:text-gray-400 shrink-0">{pct}%</span>
                       </div>
                     )
                   })}
@@ -605,7 +605,7 @@ export default async function AdminDashboardPage() {
 
       {/* Visitas */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
           <Eye className="h-5 w-5 text-[#6B4F7A]" />
           Visitas al sitio
         </h2>
@@ -618,7 +618,7 @@ export default async function AdminDashboardPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{visitasHoy}</p>
-                  <p className="text-xs text-gray-500">Visitas hoy</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Visitas hoy</p>
                 </div>
               </div>
             </CardContent>
@@ -631,7 +631,7 @@ export default async function AdminDashboardPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{visitasSemana}</p>
-                  <p className="text-xs text-gray-500">Visitas esta semana</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Visitas esta semana</p>
                 </div>
               </div>
             </CardContent>
@@ -643,11 +643,11 @@ export default async function AdminDashboardPage() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">Páginas más visitadas</CardTitle>
-              <p className="text-xs text-gray-500">Últimos 7 días</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Últimos 7 días</p>
             </CardHeader>
             <CardContent>
               {visitasPorPagina.length === 0 ? (
-                <p className="text-sm text-gray-500 py-4 text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
                   Sin datos aún
                 </p>
               ) : (
@@ -657,8 +657,8 @@ export default async function AdminDashboardPage() {
                     const pct = maxCount > 0 ? Math.round((v._count.pagina / maxCount) * 100) : 0
                     return (
                       <div key={v.pagina} className="flex items-center gap-3">
-                        <span className="w-28 text-xs text-gray-600 truncate shrink-0">{v.pagina}</span>
-                        <div className="flex-1 h-6 bg-gray-100 rounded-md overflow-hidden">
+                        <span className="w-28 text-xs text-gray-600 dark:text-gray-300 truncate shrink-0">{v.pagina}</span>
+                        <div className="flex-1 h-6 bg-gray-100 dark:bg-neutral-800 rounded-md overflow-hidden">
                           <div
                             className="h-full rounded-md flex items-center px-2"
                             style={{
@@ -673,7 +673,7 @@ export default async function AdminDashboardPage() {
                             )}
                           </div>
                         </div>
-                        <span className="w-8 text-right text-xs font-semibold text-gray-700 shrink-0">
+                        <span className="w-8 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 shrink-0">
                           {v._count.pagina}
                         </span>
                       </div>
@@ -691,18 +691,18 @@ export default async function AdminDashboardPage() {
                 <MapPin className="h-4 w-4 text-[#6B4F7A]" />
                 Ciudades de origen
               </CardTitle>
-              <p className="text-xs text-gray-500">Últimos 7 días</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Últimos 7 días</p>
             </CardHeader>
             <CardContent>
               {ciudades.length === 0 ? (
-                <p className="text-sm text-gray-500 py-4 text-center">
+                <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">
                   Sin datos de ubicación aún (requiere Vercel)
                 </p>
               ) : (
                 <div className="space-y-3">
                   {ciudades.map((c) => (
                     <div key={c.ciudad} className="flex items-center justify-between">
-                      <span className="text-sm text-gray-700">{c.ciudad}</span>
+                      <span className="text-sm text-gray-700 dark:text-gray-300">{c.ciudad}</span>
                       <Badge variant="secondary" className="text-xs bg-purple-50 text-[#6B4F7A]">
                         {c._count.ciudad} visita{c._count.ciudad !== 1 ? "s" : ""}
                       </Badge>
@@ -717,7 +717,7 @@ export default async function AdminDashboardPage() {
 
       {/* Métricas de conversión y engagement */}
       <div>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
           <TrendingUp className="h-5 w-5 text-[#6B4F7A]" />
           Conversión y engagement
         </h2>
@@ -733,7 +733,7 @@ export default async function AdminDashboardPage() {
                 </div>
                 <div>
                   <p className="text-2xl font-bold">{conversionesChat}</p>
-                  <p className="text-xs text-gray-500">Conversiones chatbot (30d)</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Conversiones chatbot (30d)</p>
                 </div>
               </div>
             </CardContent>
@@ -755,7 +755,7 @@ export default async function AdminDashboardPage() {
                       </span>
                     )}
                   </p>
-                  <p className="text-xs text-gray-500">Consultas formulario (30d)</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Consultas formulario (30d)</p>
                 </div>
               </div>
             </CardContent>
@@ -772,7 +772,7 @@ export default async function AdminDashboardPage() {
                   <p className="text-2xl font-bold">
                     {visitasTienda30d > 0 ? `${tasaConversion.toFixed(2)}%` : "—"}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     Tasa conversión tienda (30d)
                   </p>
                 </div>
@@ -791,7 +791,7 @@ export default async function AdminDashboardPage() {
                   <p className="text-xl font-bold truncate">
                     {ingresos7d > 0 ? formatPrice(ingresos7d) : "—"}
                   </p>
-                  <p className="text-xs text-gray-500 flex items-center gap-1">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                     Ingresos 7d
                     {ingresosPrev7d > 0 || ingresos7d > 0 ? (
                       <span
@@ -800,7 +800,7 @@ export default async function AdminDashboardPage() {
                             ? "text-green-600"
                             : variacionIngresos < 0
                               ? "text-red-600"
-                              : "text-gray-500"
+                              : "text-gray-500 dark:text-gray-400"
                         }`}
                       >
                         {variacionIngresos > 0 ? (
@@ -831,11 +831,11 @@ export default async function AdminDashboardPage() {
                 <ShoppingBag className="h-4 w-4 text-[#6B4F7A]" />
                 Productos más vistos
               </CardTitle>
-              <p className="text-xs text-gray-500">Top 5 - últimos 30 días</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Top 5 - últimos 30 días</p>
             </CardHeader>
             <CardContent>
               {productosMasVistos.length === 0 ? (
-                <p className="text-sm text-gray-500 py-4 text-center">Sin datos</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">Sin datos</p>
               ) : (
                 <div className="space-y-2">
                   {productosMasVistos.map((p, idx) => {
@@ -848,12 +848,12 @@ export default async function AdminDashboardPage() {
                         </span>
                         <Link
                           href={p.pagina}
-                          className="w-32 text-xs text-gray-700 truncate shrink-0 hover:text-[#6B4F7A] hover:underline"
+                          className="w-32 text-xs text-gray-700 dark:text-gray-300 truncate shrink-0 hover:text-[#6B4F7A] hover:underline"
                           title={p.slug}
                         >
                           {p.slug}
                         </Link>
-                        <div className="flex-1 h-5 bg-gray-100 rounded-md overflow-hidden">
+                        <div className="flex-1 h-5 bg-gray-100 dark:bg-neutral-800 rounded-md overflow-hidden">
                           <div
                             className="h-full rounded-md"
                             style={{
@@ -862,7 +862,7 @@ export default async function AdminDashboardPage() {
                             }}
                           />
                         </div>
-                        <span className="w-10 text-right text-xs font-semibold text-gray-700 shrink-0">
+                        <span className="w-10 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 shrink-0">
                           {p.cantidad}
                         </span>
                       </div>
@@ -880,11 +880,11 @@ export default async function AdminDashboardPage() {
                 <Bike className="h-4 w-4 text-[#6B4F7A]" />
                 Modelos más consultados
               </CardTitle>
-              <p className="text-xs text-gray-500">Top 5 - últimos 30 días</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Top 5 - últimos 30 días</p>
             </CardHeader>
             <CardContent>
               {modelosMasVistos.length === 0 ? (
-                <p className="text-sm text-gray-500 py-4 text-center">Sin datos</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 py-4 text-center">Sin datos</p>
               ) : (
                 <div className="space-y-2">
                   {modelosMasVistos.map((m, idx) => {
@@ -897,12 +897,12 @@ export default async function AdminDashboardPage() {
                         </span>
                         <Link
                           href={m.pagina}
-                          className="w-32 text-xs text-gray-700 truncate shrink-0 hover:text-[#6B4F7A] hover:underline"
+                          className="w-32 text-xs text-gray-700 dark:text-gray-300 truncate shrink-0 hover:text-[#6B4F7A] hover:underline"
                           title={m.slug}
                         >
                           {m.slug}
                         </Link>
-                        <div className="flex-1 h-5 bg-gray-100 rounded-md overflow-hidden">
+                        <div className="flex-1 h-5 bg-gray-100 dark:bg-neutral-800 rounded-md overflow-hidden">
                           <div
                             className="h-full rounded-md"
                             style={{
@@ -911,7 +911,7 @@ export default async function AdminDashboardPage() {
                             }}
                           />
                         </div>
-                        <span className="w-10 text-right text-xs font-semibold text-gray-700 shrink-0">
+                        <span className="w-10 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 shrink-0">
                           {m.cantidad}
                         </span>
                       </div>

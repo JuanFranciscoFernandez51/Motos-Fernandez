@@ -63,7 +63,7 @@ export function ShareButton({ title, text, path, variant = "full", className = "
           type="button"
           onClick={handleClick}
           aria-label="Compartir"
-          className="inline-flex items-center justify-center size-9 rounded-full bg-white border border-gray-200 text-gray-600 hover:text-[#6B4F7A] hover:border-[#6B4F7A] transition-colors"
+          className="inline-flex items-center justify-center size-9 rounded-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-600 dark:text-gray-300 hover:text-[#6B4F7A] hover:border-[#6B4F7A] transition-colors"
         >
           <Share2 className="size-4" />
         </button>
@@ -71,7 +71,7 @@ export function ShareButton({ title, text, path, variant = "full", className = "
         <button
           type="button"
           onClick={handleClick}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-gray-700 hover:text-[#6B4F7A] hover:border-[#6B4F7A] transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#6B4F7A] hover:border-[#6B4F7A] transition-colors"
         >
           <Share2 className="size-4" />
           Compartir
@@ -86,12 +86,12 @@ export function ShareButton({ title, text, path, variant = "full", className = "
             onClick={() => setOpen(false)}
           />
           {/* Popover */}
-          <div className="absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-xl border border-gray-100 p-2 z-50">
+          <div className="absolute right-0 mt-2 w-56 rounded-xl bg-white dark:bg-neutral-900 shadow-xl border border-gray-100 dark:border-neutral-800 p-2 z-50">
             <a
               href={whatsappHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-sm text-gray-700"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-900 text-sm text-gray-700 dark:text-gray-300"
               onClick={() => setOpen(false)}
             >
               <span className="size-8 rounded-full bg-[#25D366]/10 flex items-center justify-center">
@@ -103,7 +103,7 @@ export function ShareButton({ title, text, path, variant = "full", className = "
               href={telegramHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-sm text-gray-700"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-900 text-sm text-gray-700 dark:text-gray-300"
               onClick={() => setOpen(false)}
             >
               <span className="size-8 rounded-full bg-[#0088cc]/10 flex items-center justify-center">
@@ -115,7 +115,7 @@ export function ShareButton({ title, text, path, variant = "full", className = "
               href={facebookHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-sm text-gray-700"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-900 text-sm text-gray-700 dark:text-gray-300"
               onClick={() => setOpen(false)}
             >
               <span className="size-8 rounded-full bg-[#1877F2]/10 flex items-center justify-center">
@@ -126,13 +126,13 @@ export function ShareButton({ title, text, path, variant = "full", className = "
             <button
               type="button"
               onClick={handleCopy}
-              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 text-sm text-gray-700"
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-900 text-sm text-gray-700 dark:text-gray-300"
             >
-              <span className="size-8 rounded-full bg-gray-100 flex items-center justify-center">
+              <span className="size-8 rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center">
                 {copied ? (
                   <Check className="size-4 text-emerald-600" />
                 ) : (
-                  <Copy className="size-4 text-gray-600" />
+                  <Copy className="size-4 text-gray-600 dark:text-gray-300" />
                 )}
               </span>
               {copied ? "¡Copiado!" : "Copiar link"}

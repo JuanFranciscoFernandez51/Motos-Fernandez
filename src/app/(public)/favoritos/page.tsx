@@ -33,12 +33,12 @@ export default function FavoritosPage() {
       </section>
 
       {/* Lista */}
-      <section className="py-12 bg-[#F0F0F0] min-h-[60vh]">
+      <section className="py-12 bg-[#F0F0F0] dark:bg-neutral-950 min-h-[60vh]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {items.length === 0 ? (
-            <div className="rounded-xl bg-white p-12 text-center max-w-md mx-auto">
+            <div className="rounded-xl bg-white dark:bg-neutral-900 p-12 text-center max-w-md mx-auto">
               <Heart className="size-12 text-gray-200 mx-auto mb-4" />
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
                 Tu lista de favoritos está vacía.
               </p>
               <Link
@@ -54,7 +54,7 @@ export default function FavoritosPage() {
               <div className="flex items-center justify-end mb-4">
                 <button
                   onClick={clear}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 hover:text-red-500 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 hover:text-red-500 transition-colors"
                 >
                   <Trash2 className="size-3.5" />
                   Vaciar lista
@@ -64,10 +64,10 @@ export default function FavoritosPage() {
                 {items.map((item) => (
                   <div
                     key={item.id}
-                    className="group rounded-xl bg-white overflow-hidden hover:shadow-lg transition-all relative"
+                    className="group rounded-xl bg-white dark:bg-neutral-900 overflow-hidden hover:shadow-lg transition-all relative"
                   >
                     <Link href={`/catalogo/${item.slug}`}>
-                      <div className="relative aspect-square bg-gray-100 overflow-hidden">
+                      <div className="relative aspect-square bg-gray-100 dark:bg-neutral-800 overflow-hidden">
                         {item.fotos[0] ? (
                           <Image
                             src={item.fotos[0]}
@@ -86,7 +86,7 @@ export default function FavoritosPage() {
                         <p className="text-[10px] font-semibold text-[#8B6F9A] uppercase tracking-wider truncate">
                           {item.marca}
                         </p>
-                        <h3 className="mt-0.5 text-sm font-bold text-[#1A1A1A] truncate">
+                        <h3 className="mt-0.5 text-sm font-bold text-[#1A1A1A] dark:text-white truncate">
                           {item.nombre}
                         </h3>
                         {item.cilindrada && (
@@ -103,7 +103,7 @@ export default function FavoritosPage() {
                     </Link>
                     <button
                       onClick={() => removeFromWishlist(item.id)}
-                      className="absolute top-2 right-2 size-8 rounded-full bg-white/95 backdrop-blur flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50"
+                      className="absolute top-2 right-2 size-8 rounded-full bg-white/95 dark:bg-neutral-900/95 backdrop-blur flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50"
                       aria-label="Quitar de favoritos"
                     >
                       <Trash2 className="size-3.5 text-red-500" />

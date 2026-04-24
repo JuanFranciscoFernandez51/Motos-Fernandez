@@ -47,7 +47,7 @@ const DEFAULT: Config = {
 function IntegrationStatus({ label, envKey }: { label: string; envKey?: string }) {
   return (
     <div className="flex items-center justify-between py-2.5 border-b last:border-0">
-      <span className="text-sm text-gray-700">{label}</span>
+      <span className="text-sm text-gray-700 dark:text-gray-300">{label}</span>
       <span className="flex items-center gap-1 text-xs text-green-600 font-medium">
         <CheckCircle className="h-4 w-4" /> Conectado
       </span>
@@ -99,69 +99,69 @@ export default function ConfiguracionPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Configuración</h1>
-        <p className="text-sm text-gray-500 mt-1">Configuración general del sitio web</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Configuración</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Configuración general del sitio web</p>
       </div>
 
       {/* Datos del sitio */}
-      <div className="bg-white rounded-xl border p-6 space-y-4">
-        <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-4">
+        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
           <Globe className="h-4 w-4 text-[#6B4F7A]" />
           Datos del sitio
         </h2>
         <div className="space-y-1">
-          <label className="text-xs text-gray-500">Nombre del sitio</label>
+          <label className="text-xs text-gray-500 dark:text-gray-400">Nombre del sitio</label>
           <Input value={config.nombre} onChange={e => set("nombre", e.target.value)} />
         </div>
         <div className="space-y-1">
-          <label className="text-xs text-gray-500">Descripción</label>
+          <label className="text-xs text-gray-500 dark:text-gray-400">Descripción</label>
           <Input value={config.descripcion} onChange={e => set("descripcion", e.target.value)} placeholder="Descripción breve del negocio" />
         </div>
       </div>
 
       {/* Contacto */}
-      <div className="bg-white rounded-xl border p-6 space-y-4">
-        <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-4">
+        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
           <Phone className="h-4 w-4 text-[#6B4F7A]" />
           Contacto
         </h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-xs text-gray-500">WhatsApp (con código de país)</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">WhatsApp (con código de país)</label>
             <Input value={config.whatsapp} onChange={e => set("whatsapp", e.target.value)} placeholder="5492910000000" />
           </div>
           <div className="space-y-1">
-            <label className="text-xs text-gray-500">Email de contacto</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">Email de contacto</label>
             <Input type="email" value={config.email} onChange={e => set("email", e.target.value)} />
           </div>
         </div>
         <div className="space-y-1">
-          <label className="text-xs text-gray-500">Dirección</label>
+          <label className="text-xs text-gray-500 dark:text-gray-400">Dirección</label>
           <Input value={config.direccion} onChange={e => set("direccion", e.target.value)} />
         </div>
       </div>
 
       {/* Horarios */}
-      <div className="bg-white rounded-xl border p-6 space-y-4">
-        <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-4">
+        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
           <Clock className="h-4 w-4 text-[#6B4F7A]" />
           Horarios
         </h2>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-xs text-gray-500">Lunes a Viernes</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">Lunes a Viernes</label>
             <Input value={config.horarioLV} onChange={e => set("horarioLV", e.target.value)} />
           </div>
           <div className="space-y-1">
-            <label className="text-xs text-gray-500">Sábados</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">Sábados</label>
             <Input value={config.horarioSab} onChange={e => set("horarioSab", e.target.value)} />
           </div>
         </div>
       </div>
 
       {/* Opciones de venta */}
-      <div className="bg-white rounded-xl border p-6 space-y-3">
-        <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-3">
+        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
           <ShoppingCart className="h-4 w-4 text-[#6B4F7A]" />
           Opciones de venta
         </h2>
@@ -174,14 +174,14 @@ export default function ConfiguracionPage() {
           />
           <div>
             <p className="text-sm font-medium">MercadoPago habilitado</p>
-            <p className="text-xs text-gray-500">Permite pago online con MercadoPago</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Permite pago online con MercadoPago</p>
           </div>
         </label>
       </div>
 
       {/* Opciones de entrega */}
-      <div className="bg-white rounded-xl border p-6 space-y-3">
-        <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-3">
+        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
           <Truck className="h-4 w-4 text-[#6B4F7A]" />
           Opciones de entrega
         </h2>
@@ -194,7 +194,7 @@ export default function ConfiguracionPage() {
           />
           <div>
             <p className="text-sm font-medium">Envíos habilitados</p>
-            <p className="text-xs text-gray-500">Permite envíos a domicilio</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Permite envíos a domicilio</p>
           </div>
         </label>
         <label className="flex items-center gap-3 cursor-pointer">
@@ -206,24 +206,24 @@ export default function ConfiguracionPage() {
           />
           <div>
             <p className="text-sm font-medium">Retiro en local habilitado</p>
-            <p className="text-xs text-gray-500">Permite retiro en {config.direccion}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Permite retiro en {config.direccion}</p>
           </div>
         </label>
       </div>
 
       {/* Datos legales para PDFs */}
-      <div className="bg-white rounded-xl border p-6 space-y-4">
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-4">
         <div>
-          <h2 className="text-sm font-semibold text-gray-900 flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
             <FileText className="h-4 w-4 text-[#6B4F7A]" />
             Datos legales (para PDFs)
           </h2>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
             Estos datos aparecen en los mandatos de venta, boletos de compra-venta y órdenes de trabajo.
           </p>
         </div>
         <div className="space-y-1">
-          <label className="text-xs text-gray-500">Razón social</label>
+          <label className="text-xs text-gray-500 dark:text-gray-400">Razón social</label>
           <Input
             value={config.razonSocial}
             onChange={(e) => set("razonSocial", e.target.value)}
@@ -232,7 +232,7 @@ export default function ConfiguracionPage() {
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <label className="text-xs text-gray-500">CUIT</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">CUIT</label>
             <Input
               value={config.cuit}
               onChange={(e) => set("cuit", e.target.value)}
@@ -240,7 +240,7 @@ export default function ConfiguracionPage() {
             />
           </div>
           <div className="space-y-1">
-            <label className="text-xs text-gray-500">Condición frente al IVA</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">Condición frente al IVA</label>
             <Input
               value={config.iva}
               onChange={(e) => set("iva", e.target.value)}
@@ -248,7 +248,7 @@ export default function ConfiguracionPage() {
             />
           </div>
           <div className="space-y-1">
-            <label className="text-xs text-gray-500">N° Ingresos Brutos</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">N° Ingresos Brutos</label>
             <Input
               value={config.ingresosBrutos}
               onChange={(e) => set("ingresosBrutos", e.target.value)}
@@ -256,7 +256,7 @@ export default function ConfiguracionPage() {
             />
           </div>
           <div className="space-y-1">
-            <label className="text-xs text-gray-500">Teléfono (formato PDF)</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">Teléfono (formato PDF)</label>
             <Input
               value={config.telefonoLegal}
               onChange={(e) => set("telefonoLegal", e.target.value)}
@@ -264,7 +264,7 @@ export default function ConfiguracionPage() {
             />
           </div>
           <div className="space-y-1 col-span-2">
-            <label className="text-xs text-gray-500">Ciudad (formato PDF)</label>
+            <label className="text-xs text-gray-500 dark:text-gray-400">Ciudad (formato PDF)</label>
             <Input
               value={config.ciudad}
               onChange={(e) => set("ciudad", e.target.value)}
@@ -275,8 +275,8 @@ export default function ConfiguracionPage() {
       </div>
 
       {/* Integraciones */}
-      <div className="bg-white rounded-xl border p-6">
-        <h2 className="text-sm font-semibold text-gray-900 mb-3">Estado de integraciones</h2>
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6">
+        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Estado de integraciones</h2>
         <IntegrationStatus label="MercadoPago" />
         <IntegrationStatus label="Anthropic IA (Chatbot)" />
         <IntegrationStatus label="Cloudinary (Imágenes)" />

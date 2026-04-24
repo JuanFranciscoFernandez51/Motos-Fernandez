@@ -253,7 +253,7 @@ export function ModeloForm({
           <Button variant="ghost" size="icon" render={<Link href="/admin/modelos" />}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
             {initialData?.id ? "Editar modelo" : "Nuevo modelo"}
           </h1>
         </div>
@@ -456,7 +456,7 @@ export function ModeloForm({
               {iaError && (
                 <p className="mt-2 text-xs text-red-600">{iaError}</p>
               )}
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 La IA busca las specs por marca, modelo y año. Reemplaza
                 las claves que ya existan con los datos nuevos, mantiene las custom.
               </p>
@@ -521,7 +521,7 @@ export function ModeloForm({
             </CardHeader>
             <CardContent className="space-y-4">
               {financiacion.length === 0 && (
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   No hay planes de financiacion. Agrega uno para mostrar en el detalle del modelo.
                 </p>
               )}

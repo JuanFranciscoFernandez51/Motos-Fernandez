@@ -70,7 +70,7 @@ export function NewsletterForm({ origen = "footer" }: NewsletterFormProps) {
           }}
           placeholder="Tu email"
           disabled={status === "loading" || status === "success"}
-          className="flex-1 min-w-0 rounded-md border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white placeholder:text-gray-500 focus:border-[#9B59B6] focus:outline-none focus:ring-1 focus:ring-[#9B59B6] disabled:opacity-60"
+          className="flex-1 min-w-0 rounded-md border border-white/10 bg-white/5 dark:bg-neutral-900/5 px-3 py-2.5 text-sm text-white placeholder:text-gray-500 dark:text-gray-400 focus:border-[#9B59B6] focus:outline-none focus:ring-1 focus:ring-[#9B59B6] disabled:opacity-60"
           aria-label="Email para suscripción al newsletter"
         />
         <button

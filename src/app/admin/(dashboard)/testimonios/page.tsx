@@ -49,8 +49,8 @@ export default async function TestimoniosPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Testimonios</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Testimonios</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             {testimonios.length} testimonio(s) cargados
           </p>
         </div>
@@ -63,7 +63,7 @@ export default async function TestimoniosPage() {
         </Button>
       </div>
 
-      <div className="rounded-lg border bg-white">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900">
         <Table>
           <TableHeader>
             <TableRow>
@@ -80,7 +80,7 @@ export default async function TestimoniosPage() {
           <TableBody>
             {testimonios.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8 text-gray-500">
+                <TableCell colSpan={8} className="text-center py-8 text-gray-500 dark:text-gray-400">
                   No hay testimonios cargados todavia
                 </TableCell>
               </TableRow>
@@ -98,7 +98,7 @@ export default async function TestimoniosPage() {
                         className="rounded-full object-cover h-12 w-12"
                       />
                     ) : (
-                      <div className="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                      <div className="h-12 w-12 rounded-full bg-gray-100 dark:bg-neutral-800 flex items-center justify-center text-gray-400">
                         <User className="h-5 w-5" />
                       </div>
                     )}
@@ -107,7 +107,7 @@ export default async function TestimoniosPage() {
                     <div>
                       <p className="font-medium">{t.nombre}</p>
                       {t.ubicacion && (
-                        <p className="text-xs text-gray-500">{t.ubicacion}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">{t.ubicacion}</p>
                       )}
                     </div>
                   </TableCell>
@@ -146,7 +146,7 @@ export default async function TestimoniosPage() {
                           className={
                             t.publicado
                               ? "bg-green-100 text-green-800 cursor-pointer hover:bg-green-200"
-                              : "bg-gray-100 text-gray-500 cursor-pointer hover:bg-gray-200"
+                              : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200"
                           }
                         >
                           {t.publicado ? "Publicado" : "Oculto"}
@@ -168,7 +168,7 @@ export default async function TestimoniosPage() {
                           className={
                             t.destacado
                               ? "bg-purple-100 text-purple-800 cursor-pointer hover:bg-purple-200"
-                              : "bg-gray-100 text-gray-500 cursor-pointer hover:bg-gray-200"
+                              : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 cursor-pointer hover:bg-gray-200"
                           }
                         >
                           {t.destacado ? "Destacado" : "Normal"}

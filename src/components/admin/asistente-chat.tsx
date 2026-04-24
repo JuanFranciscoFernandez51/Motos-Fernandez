@@ -140,8 +140,8 @@ export function AsistenteChat() {
             <Bot className="size-5 text-white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Asistente IA</h1>
-            <p className="text-sm text-gray-500">Consultá datos de la tienda en tiempo real</p>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">Asistente IA</h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Consultá datos de la tienda en tiempo real</p>
           </div>
         </div>
 
@@ -150,7 +150,7 @@ export function AsistenteChat() {
             onClick={resetConversation}
             disabled={loading}
             title="Nueva conversación"
-            className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-[#6B4F7A] border border-gray-200 hover:border-[#6B4F7A] rounded-lg px-3 py-1.5 transition-colors disabled:opacity-40"
+            className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-[#6B4F7A] border border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A] rounded-lg px-3 py-1.5 transition-colors disabled:opacity-40"
           >
             <RotateCcw className="size-3.5" />
             Nueva consulta
@@ -159,7 +159,7 @@ export function AsistenteChat() {
       </div>
 
       {/* Chat container */}
-      <div className="flex flex-col flex-1 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+      <div className="flex flex-col flex-1 bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 shadow-sm overflow-hidden">
         {/* Mensajes */}
         <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
           {messages.map((msg, i) => (
@@ -177,7 +177,7 @@ export function AsistenteChat() {
                 className={`max-w-[78%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
                   msg.role === "user"
                     ? "bg-[#6B4F7A] text-white rounded-br-sm"
-                    : "bg-gray-50 text-gray-800 rounded-bl-sm border border-gray-100"
+                    : "bg-gray-50 dark:bg-neutral-900 text-gray-800 dark:text-gray-100 rounded-bl-sm border border-gray-100 dark:border-neutral-800"
                 }`}
               >
                 {msg.content || (
@@ -191,7 +191,7 @@ export function AsistenteChat() {
 
               {msg.role === "user" && (
                 <div className="size-7 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <User className="size-3.5 text-gray-600" />
+                  <User className="size-3.5 text-gray-600 dark:text-gray-300" />
                 </div>
               )}
             </div>
@@ -224,7 +224,7 @@ export function AsistenteChat() {
         {/* Input */}
         <form
           onSubmit={handleSubmit}
-          className="flex items-center gap-2 px-4 py-3 border-t border-gray-100"
+          className="flex items-center gap-2 px-4 py-3 border-t border-gray-100 dark:border-neutral-800"
         >
           <input
             ref={inputRef}
@@ -234,7 +234,7 @@ export function AsistenteChat() {
             onKeyDown={handleKeyDown}
             placeholder="Consultá pedidos, turnos, leads, stock..."
             disabled={loading}
-            className="flex-1 text-sm bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 outline-none focus:border-[#6B4F7A] focus:ring-1 focus:ring-[#6B4F7A] disabled:opacity-50 transition-colors"
+            className="flex-1 text-sm bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 outline-none focus:border-[#6B4F7A] focus:ring-1 focus:ring-[#6B4F7A] disabled:opacity-50 transition-colors"
           />
           <button
             type="submit"

@@ -20,7 +20,7 @@ export default function CarritoPage() {
   }, [])
 
   return (
-    <div className="bg-[#F0F0F0] min-h-screen">
+    <div className="bg-[#F0F0F0] dark:bg-neutral-950 min-h-screen">
       <TrackVisita pagina="carrito" />
       {/* Hero */}
       <div className="bg-[#1A1A1A] py-10">
@@ -44,10 +44,10 @@ export default function CarritoPage() {
           /* Empty state */
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <ShoppingBag className="size-16 text-gray-300 mb-4" />
-            <h2 className="text-xl font-semibold text-[#1A1A1A] mb-2">
+            <h2 className="text-xl font-semibold text-[#1A1A1A] dark:text-white mb-2">
               Tu carrito está vacío
             </h2>
-            <p className="text-sm text-gray-500 mb-8">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-8">
               Explorá nuestra tienda y encontrá lo que necesitás.
             </p>
             <Link
@@ -69,10 +69,10 @@ export default function CarritoPage() {
                 return (
                   <div
                     key={key}
-                    className="flex gap-4 rounded-xl bg-white p-4 shadow-sm"
+                    className="flex gap-4 rounded-xl bg-white dark:bg-neutral-900 p-4 shadow-sm"
                   >
                     {/* Image */}
-                    <div className="relative size-24 shrink-0 rounded-lg overflow-hidden bg-gray-100">
+                    <div className="relative size-24 shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-neutral-800">
                       {item.foto ? (
                         <Image
                           src={item.foto}
@@ -94,12 +94,12 @@ export default function CarritoPage() {
                         <div>
                           <Link
                             href={`/tienda/${item.slug}`}
-                            className="text-sm font-semibold text-[#1A1A1A] hover:text-[#6B4F7A] line-clamp-2 transition-colors"
+                            className="text-sm font-semibold text-[#1A1A1A] dark:text-white hover:text-[#6B4F7A] line-clamp-2 transition-colors"
                           >
                             {item.nombre}
                           </Link>
                           {item.talle && (
-                            <p className="text-xs text-gray-500 mt-0.5">
+                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                               Talle: <span className="font-medium">{item.talle}</span>
                             </p>
                           )}
@@ -115,24 +115,24 @@ export default function CarritoPage() {
 
                       <div className="flex items-center justify-between mt-3">
                         {/* Quantity controls */}
-                        <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-gray-50 p-1">
+                        <div className="flex items-center gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 p-1">
                           <button
                             onClick={() =>
                               updateQuantity(item.id, item.talle, item.cantidad - 1)
                             }
-                            className="flex items-center justify-center size-7 rounded-md text-gray-600 hover:bg-white hover:text-[#6B4F7A] transition-colors"
+                            className="flex items-center justify-center size-7 rounded-md text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-neutral-900 hover:text-[#6B4F7A] transition-colors"
                             aria-label="Reducir cantidad"
                           >
                             <Minus className="size-3.5" />
                           </button>
-                          <span className="w-6 text-center text-sm font-semibold text-[#1A1A1A]">
+                          <span className="w-6 text-center text-sm font-semibold text-[#1A1A1A] dark:text-white">
                             {item.cantidad}
                           </span>
                           <button
                             onClick={() =>
                               updateQuantity(item.id, item.talle, item.cantidad + 1)
                             }
-                            className="flex items-center justify-center size-7 rounded-md text-gray-600 hover:bg-white hover:text-[#6B4F7A] transition-colors"
+                            className="flex items-center justify-center size-7 rounded-md text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-neutral-900 hover:text-[#6B4F7A] transition-colors"
                             aria-label="Aumentar cantidad"
                           >
                             <Plus className="size-3.5" />
@@ -159,21 +159,21 @@ export default function CarritoPage() {
 
             {/* Summary sidebar */}
             <div className="lg:col-span-1">
-              <div className="sticky top-24 rounded-xl bg-white p-6 shadow-sm">
-                <h2 className="text-lg font-bold text-[#1A1A1A] mb-5">
+              <div className="sticky top-24 rounded-xl bg-white dark:bg-neutral-900 p-6 shadow-sm">
+                <h2 className="text-lg font-bold text-[#1A1A1A] dark:text-white mb-5">
                   Resumen del pedido
                 </h2>
 
-                <div className="space-y-3 border-b border-gray-100 pb-4 mb-4">
+                <div className="space-y-3 border-b border-gray-100 dark:border-neutral-800 pb-4 mb-4">
                   {items.map((item) => {
                     const key = `${item.id}-${item.talle ?? "sin-talle"}`
                     return (
                       <div key={key} className="flex justify-between text-sm">
-                        <span className="text-gray-600 line-clamp-1 flex-1 mr-2">
+                        <span className="text-gray-600 dark:text-gray-300 line-clamp-1 flex-1 mr-2">
                           {item.nombre}
                           {item.talle && ` (${item.talle})`} x{item.cantidad}
                         </span>
-                        <span className="font-medium text-[#1A1A1A] shrink-0">
+                        <span className="font-medium text-[#1A1A1A] dark:text-white shrink-0">
                           {formatPrice((item.precioOferta ?? item.precio) * item.cantidad)}
                         </span>
                       </div>
@@ -182,7 +182,7 @@ export default function CarritoPage() {
                 </div>
 
                 <div className="flex items-center justify-between mb-6">
-                  <span className="text-base font-semibold text-[#1A1A1A]">Total</span>
+                  <span className="text-base font-semibold text-[#1A1A1A] dark:text-white">Total</span>
                   <span className="text-xl font-bold text-[#6B4F7A]">
                     {formatPrice(totalPrice)}
                   </span>
@@ -199,7 +199,7 @@ export default function CarritoPage() {
 
                 <Link
                   href="/tienda"
-                  className="mt-3 flex items-center justify-center w-full rounded-lg border border-gray-200 px-6 py-3 text-sm font-medium text-gray-600 hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
+                  className="mt-3 flex items-center justify-center w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
                 >
                   Seguir comprando
                 </Link>

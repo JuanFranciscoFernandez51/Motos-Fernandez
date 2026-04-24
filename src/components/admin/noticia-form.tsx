@@ -102,12 +102,12 @@ export function NoticiaForm({ initialData, saveAction }: NoticiaFormProps) {
           variant="ghost"
           size="sm"
           render={<Link href="/admin/noticias" />}
-          className="text-gray-500 hover:text-gray-900"
+          className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100"
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           Volver
         </Button>
-        <h1 className="text-2xl font-bold text-gray-900">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
           {initialData?.id ? "Editar noticia" : "Nueva noticia"}
         </h1>
       </div>

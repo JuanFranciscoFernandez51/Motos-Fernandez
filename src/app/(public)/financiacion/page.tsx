@@ -73,7 +73,7 @@ export default function FinanciacionPage() {
               href={getWhatsAppUrl(WHATSAPP_MESSAGES.general)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-white px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-gray-100 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
             >
               <MessageCircle className="size-5" />
               Consultar por WhatsApp
@@ -83,20 +83,20 @@ export default function FinanciacionPage() {
       </section>
 
       {/* Simulador de financiacion */}
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <SimuladorFinanciacion />
         </div>
       </section>
 
       {/* Benefits */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading">
+            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
               Por que financiar con nosotros?
             </h2>
-            <p className="mt-3 text-gray-500 font-body">
+            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body">
               Mas de {BUSINESS.yearsInBusiness} anos nos respaldan
             </p>
           </div>
@@ -104,10 +104,10 @@ export default function FinanciacionPage() {
             {BENEFICIOS.map((b) => (
               <div
                 key={b}
-                className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-5 hover:border-[#6B4F7A]/20 transition-colors"
+                className="flex items-center gap-3 rounded-xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 hover:border-[#6B4F7A]/20 transition-colors"
               >
                 <CheckCircle className="size-5 text-[#6B4F7A] shrink-0" />
-                <span className="text-sm font-medium text-[#1A1A1A]">{b}</span>
+                <span className="text-sm font-medium text-[#1A1A1A] dark:text-white">{b}</span>
               </div>
             ))}
           </div>
@@ -115,9 +115,9 @@ export default function FinanciacionPage() {
       </section>
 
       {/* How it works */}
-      <section className="py-20 bg-[#F0F0F0]">
+      <section className="py-20 bg-[#F0F0F0] dark:bg-neutral-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading text-center mb-12">
+          <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading text-center mb-12">
             Como funciona?
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -140,15 +140,15 @@ export default function FinanciacionPage() {
             ].map((item) => (
               <div
                 key={item.step}
-                className="relative rounded-xl bg-white p-8 text-center"
+                className="relative rounded-xl bg-white dark:bg-neutral-900 p-8 text-center"
               >
                 <span className="text-5xl font-extrabold text-[#6B4F7A]/10 font-heading">
                   {item.step}
                 </span>
-                <h3 className="mt-2 text-lg font-bold text-[#1A1A1A] font-heading">
+                <h3 className="mt-2 text-lg font-bold text-[#1A1A1A] dark:text-white font-heading">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-sm text-gray-500 font-body">
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 font-body">
                   {item.desc}
                 </p>
               </div>
@@ -158,11 +158,11 @@ export default function FinanciacionPage() {
       </section>
 
       {/* FAQ */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <HelpCircle className="size-8 text-[#6B4F7A] mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-[#1A1A1A] font-heading">
+            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
               Preguntas frecuentes
             </h2>
           </div>
@@ -170,14 +170,14 @@ export default function FinanciacionPage() {
             {FAQ.map((item, i) => (
               <details
                 key={i}
-                className="group rounded-xl border border-gray-100 bg-white overflow-hidden"
+                className="group rounded-xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden"
               >
-                <summary className="flex items-center justify-between cursor-pointer p-5 text-sm font-semibold text-[#1A1A1A] hover:bg-gray-50 transition-colors">
+                <summary className="flex items-center justify-between cursor-pointer p-5 text-sm font-semibold text-[#1A1A1A] dark:text-white hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors">
                   {item.q}
                   <ChevronDown className="size-4 text-gray-400 group-open:rotate-180 transition-transform" />
                 </summary>
                 <div className="px-5 pb-5">
-                  <p className="text-sm text-gray-600 leading-relaxed font-body">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed font-body">
                     {item.a}
                   </p>
                 </div>

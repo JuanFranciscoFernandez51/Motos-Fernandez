@@ -112,9 +112,9 @@ export default function UbicacionPage() {
       </section>
 
       {/* Mapa grande */}
-      <section className="bg-[#F0F0F0]">
+      <section className="bg-[#F0F0F0] dark:bg-neutral-950">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-          <div className="rounded-2xl overflow-hidden shadow-lg shadow-black/10 border border-gray-200 bg-white">
+          <div className="rounded-2xl overflow-hidden shadow-lg shadow-black/10 border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
             <iframe
               src={mapEmbedUrl}
               width="100%"
@@ -126,25 +126,25 @@ export default function UbicacionPage() {
               className="w-full h-[400px] sm:h-[500px]"
             />
           </div>
-          <p className="mt-3 text-center text-xs text-gray-500">
+          <p className="mt-3 text-center text-xs text-gray-500 dark:text-gray-400">
             <MapPin className="inline size-3 -mt-0.5" /> {BUSINESS.address}
           </p>
         </div>
       </section>
 
       {/* Info cards */}
-      <section className="bg-white py-14">
+      <section className="bg-white dark:bg-neutral-900 py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Dirección y contacto */}
-            <div className="rounded-xl border border-gray-100 bg-[#F7F7F7] p-6">
+            <div className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-[#F7F7F7] p-6">
               <div className="size-10 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center mb-4">
                 <MapPin className="size-5 text-[#6B4F7A]" />
               </div>
-              <h2 className="text-base font-bold text-[#1A1A1A] font-heading mb-3">
+              <h2 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-3">
                 Dónde estamos
               </h2>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                 {BUSINESS.address}
                 <br />
                 <span className="text-gray-400 text-xs">CP {BUSINESS.postalCode}</span>
@@ -161,42 +161,42 @@ export default function UbicacionPage() {
             </div>
 
             {/* Horarios */}
-            <div className="rounded-xl border border-gray-100 bg-[#F7F7F7] p-6">
+            <div className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-[#F7F7F7] p-6">
               <div className="size-10 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center mb-4">
                 <Clock className="size-5 text-[#6B4F7A]" />
               </div>
-              <h2 className="text-base font-bold text-[#1A1A1A] font-heading mb-3">
+              <h2 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-3">
                 Horarios
               </h2>
               <ul className="space-y-1.5 text-sm">
                 <li className="flex justify-between">
-                  <span className="text-gray-600">Lun - Vie</span>
-                  <span className="font-medium text-[#1A1A1A]">{HORARIOS.lunesViernes}</span>
+                  <span className="text-gray-600 dark:text-gray-300">Lun - Vie</span>
+                  <span className="font-medium text-[#1A1A1A] dark:text-white">{HORARIOS.lunesViernes}</span>
                 </li>
                 <li className="flex justify-between">
-                  <span className="text-gray-600">Sábados</span>
-                  <span className="font-medium text-[#1A1A1A]">{HORARIOS.sabados}</span>
+                  <span className="text-gray-600 dark:text-gray-300">Sábados</span>
+                  <span className="font-medium text-[#1A1A1A] dark:text-white">{HORARIOS.sabados}</span>
                 </li>
                 <li className="flex justify-between">
-                  <span className="text-gray-600">Domingos</span>
+                  <span className="text-gray-600 dark:text-gray-300">Domingos</span>
                   <span className="text-gray-400">{HORARIOS.domingos}</span>
                 </li>
               </ul>
             </div>
 
             {/* Contacto rápido */}
-            <div className="rounded-xl border border-gray-100 bg-[#F7F7F7] p-6">
+            <div className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-[#F7F7F7] p-6">
               <div className="size-10 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center mb-4">
                 <Phone className="size-5 text-[#6B4F7A]" />
               </div>
-              <h2 className="text-base font-bold text-[#1A1A1A] font-heading mb-3">
+              <h2 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-3">
                 Contacto
               </h2>
               <ul className="space-y-2 text-sm">
                 <li>
                   <a
                     href={`tel:${BUSINESS.phone}`}
-                    className="flex items-center gap-2 text-gray-600 hover:text-[#6B4F7A] transition-colors"
+                    className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-[#6B4F7A] transition-colors"
                   >
                     <Phone className="size-3.5 shrink-0" />
                     {BUSINESS.whatsappDisplay}
@@ -205,7 +205,7 @@ export default function UbicacionPage() {
                 <li>
                   <a
                     href={`mailto:${BUSINESS.email}`}
-                    className="flex items-center gap-2 text-gray-600 hover:text-[#6B4F7A] transition-colors break-all"
+                    className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-[#6B4F7A] transition-colors break-all"
                   >
                     <Mail className="size-3.5 shrink-0" />
                     {BUSINESS.email}
@@ -216,7 +216,7 @@ export default function UbicacionPage() {
                     href={getWhatsAppUrl(WHATSAPP_MESSAGES.general)}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-gray-600 hover:text-[#25D366] transition-colors"
+                    className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-[#25D366] transition-colors"
                   >
                     <MessageCircle className="size-3.5 shrink-0" />
                     WhatsApp
@@ -229,35 +229,35 @@ export default function UbicacionPage() {
       </section>
 
       {/* Cómo llegar */}
-      <section className="bg-[#F0F0F0] py-14">
+      <section className="bg-[#F0F0F0] dark:bg-neutral-950 py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
             <div>
-              <h2 className="text-2xl font-bold text-[#1A1A1A] font-heading">
+              <h2 className="text-2xl font-bold text-[#1A1A1A] dark:text-white font-heading">
                 Cómo llegar
               </h2>
-              <p className="mt-3 text-sm text-gray-600 leading-relaxed">
+              <p className="mt-3 text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                 Estamos en pleno centro de {BUSINESS.city}, sobre calle Brown al 1052. Una de las arterias principales, fácil de ubicar y con estacionamiento en la zona.
               </p>
               <div className="mt-6 space-y-4">
                 <div className="flex items-start gap-3">
-                  <div className="size-9 shrink-0 rounded-full bg-white border border-gray-200 flex items-center justify-center">
+                  <div className="size-9 shrink-0 rounded-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 flex items-center justify-center">
                     <Car className="size-4 text-[#6B4F7A]" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[#1A1A1A]">En auto</p>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white">En auto</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                       Estacionamiento sobre Brown y calles aledañas. A 5 minutos del centro comercial.
                     </p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
-                  <div className="size-9 shrink-0 rounded-full bg-white border border-gray-200 flex items-center justify-center">
+                  <div className="size-9 shrink-0 rounded-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 flex items-center justify-center">
                     <Bike className="size-4 text-[#6B4F7A]" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[#1A1A1A]">En moto</p>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white">En moto</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                       Espacio para estacionar en la puerta del local.
                     </p>
                   </div>
@@ -275,31 +275,31 @@ export default function UbicacionPage() {
             </div>
 
             {/* Quick links */}
-            <div className="rounded-xl bg-white border border-gray-100 p-6">
-              <h3 className="text-base font-bold text-[#1A1A1A] font-heading mb-4">
+            <div className="rounded-xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 p-6">
+              <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-4">
                 ¿Querés visitarnos?
               </h3>
-              <p className="text-sm text-gray-600 mb-5">
+              <p className="text-sm text-gray-600 dark:text-gray-300 mb-5">
                 Pasá por el local sin compromiso o te atendemos antes por WhatsApp para coordinar la visita y dejarte la moto preparada.
               </p>
               <div className="space-y-2.5">
                 <Link
                   href="/catalogo"
-                  className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-[#1A1A1A] hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
+                  className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 text-sm font-semibold text-[#1A1A1A] dark:text-white hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
                 >
                   Ver catálogo
                   <span className="text-xs text-gray-400">→</span>
                 </Link>
                 <Link
                   href="/servicio-tecnico"
-                  className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-[#1A1A1A] hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
+                  className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 text-sm font-semibold text-[#1A1A1A] dark:text-white hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
                 >
                   Pedir turno para servicio
                   <span className="text-xs text-gray-400">→</span>
                 </Link>
                 <Link
                   href="/contacto"
-                  className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 px-4 py-3 text-sm font-semibold text-[#1A1A1A] hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
+                  className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 text-sm font-semibold text-[#1A1A1A] dark:text-white hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
                 >
                   Enviar consulta
                   <span className="text-xs text-gray-400">→</span>

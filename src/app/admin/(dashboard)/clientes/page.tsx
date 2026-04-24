@@ -32,8 +32,8 @@ export default async function ClientesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Clientes</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Clientes</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Base única de clientes. Se conecta con mandatos, ventas y taller.
           </p>
         </div>

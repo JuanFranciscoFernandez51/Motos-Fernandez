@@ -25,11 +25,11 @@ export function WishlistButton({ item, variant = "icon-floating", className = ""
         type="button"
         onClick={handleClick}
         aria-label={active ? "Quitar de favoritos" : "Agregar a favoritos"}
-        className={`size-9 rounded-full bg-white/95 backdrop-blur shadow flex items-center justify-center transition-colors hover:bg-white ${className}`}
+        className={`size-9 rounded-full bg-white/95 dark:bg-neutral-900/95 backdrop-blur shadow flex items-center justify-center transition-colors hover:bg-white dark:hover:bg-neutral-900 ${className}`}
       >
         <Heart
           className={`size-4 transition-colors ${
-            active ? "fill-red-500 text-red-500" : "text-gray-500"
+            active ? "fill-red-500 text-red-500" : "text-gray-500 dark:text-gray-400"
           }`}
         />
       </button>
@@ -42,7 +42,7 @@ export function WishlistButton({ item, variant = "icon-floating", className = ""
       type="button"
       onClick={handleClick}
       aria-label={active ? "Quitar de favoritos" : "Agregar a favoritos"}
-      className={`inline-flex items-center justify-center size-9 rounded-full border border-gray-200 bg-white text-gray-500 hover:text-red-500 hover:border-red-300 transition-colors ${className}`}
+      className={`inline-flex items-center justify-center size-9 rounded-full border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-500 dark:text-gray-400 hover:text-red-500 hover:border-red-300 transition-colors ${className}`}
     >
       <Heart className={`size-4 ${active ? "fill-red-500 text-red-500" : ""}`} />
     </button>

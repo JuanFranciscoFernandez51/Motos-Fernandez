@@ -59,19 +59,19 @@ export function ClientesList({ clientes }: { clientes: Cliente[] }) {
         {query && (
           <button
             onClick={() => setQuery("")}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
           >
             <X className="size-4" />
           </button>
         )}
       </div>
 
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-gray-500 dark:text-gray-400">
         {filtered.length} {filtered.length === 1 ? "cliente" : "clientes"}
         {query && ` (filtrados de ${clientes.length})`}
       </p>
 
-      <div className="rounded-lg border bg-white overflow-hidden">
+      <div className="rounded-lg border bg-white dark:bg-neutral-900 overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow>
@@ -87,7 +87,7 @@ export function ClientesList({ clientes }: { clientes: Cliente[] }) {
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-12 text-gray-500">
+                <TableCell colSpan={7} className="text-center py-12 text-gray-500 dark:text-gray-400">
                   {clientes.length === 0 ? (
                     <div className="space-y-2">
                       <User className="size-10 mx-auto text-gray-300" />
@@ -105,25 +105,25 @@ export function ClientesList({ clientes }: { clientes: Cliente[] }) {
                   <TableCell>
                     <p className="font-medium text-sm">{nombreCompleto(c)}</p>
                   </TableCell>
-                  <TableCell className="font-mono text-xs text-gray-600">
+                  <TableCell className="font-mono text-xs text-gray-600 dark:text-gray-300">
                     {c.dni || "—"}
                   </TableCell>
                   <TableCell>
                     <div className="space-y-0.5 text-xs">
                       {c.telefono && (
-                        <p className="flex items-center gap-1 text-gray-600">
+                        <p className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
                           <Phone className="size-3" /> {c.telefono}
                         </p>
                       )}
                       {c.email && (
-                        <p className="flex items-center gap-1 text-gray-600">
+                        <p className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
                           <Mail className="size-3" /> {c.email}
                         </p>
                       )}
                       {!c.telefono && !c.email && "—"}
                     </div>
                   </TableCell>
-                  <TableCell className="text-sm text-gray-600">
+                  <TableCell className="text-sm text-gray-600 dark:text-gray-300">
                     {c.ciudad || "—"}
                   </TableCell>
                   <TableCell>
@@ -150,7 +150,7 @@ export function ClientesList({ clientes }: { clientes: Cliente[] }) {
                         )}
                     </div>
                   </TableCell>
-                  <TableCell className="text-xs text-gray-500">
+                  <TableCell className="text-xs text-gray-500 dark:text-gray-400">
                     {formatDate(c.createdAt)}
                   </TableCell>
                   <TableCell>

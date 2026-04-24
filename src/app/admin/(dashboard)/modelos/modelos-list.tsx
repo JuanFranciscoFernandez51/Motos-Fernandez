@@ -204,33 +204,33 @@ export function ModelosList({
             className={`rounded-lg border p-3 text-left transition-colors ${
               filter === "todas"
                 ? "border-[#6B4F7A] bg-[#6B4F7A]/5"
-                : "border-gray-200 bg-white hover:bg-gray-50"
+                : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
             }`}
           >
-            <p className="text-xs text-gray-500 uppercase">Total</p>
-            <p className="text-xl font-bold text-gray-900">{counts.total}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Total</p>
+            <p className="text-xl font-bold text-gray-900 dark:text-gray-100">{counts.total}</p>
           </button>
           <button
             onClick={() => setFilter("activas")}
             className={`rounded-lg border p-3 text-left transition-colors ${
               filter === "activas"
                 ? "border-green-500 bg-green-50"
-                : "border-gray-200 bg-white hover:bg-gray-50"
+                : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
             }`}
           >
-            <p className="text-xs text-gray-500 uppercase">Activas</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Activas</p>
             <p className="text-xl font-bold text-green-700">{counts.activas}</p>
           </button>
           <button
             onClick={() => setFilter("inactivas")}
             className={`rounded-lg border p-3 text-left transition-colors ${
               filter === "inactivas"
-                ? "border-gray-400 bg-gray-100"
-                : "border-gray-200 bg-white hover:bg-gray-50"
+                ? "border-gray-400 bg-gray-100 dark:bg-neutral-800"
+                : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
             }`}
           >
-            <p className="text-xs text-gray-500 uppercase">Inactivas</p>
-            <p className="text-xl font-bold text-gray-600">
+            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Inactivas</p>
+            <p className="text-xl font-bold text-gray-600 dark:text-gray-300">
               {counts.inactivas}
             </p>
           </button>
@@ -239,10 +239,10 @@ export function ModelosList({
             className={`rounded-lg border p-3 text-left transition-colors ${
               filter === "con-placeholder"
                 ? "border-orange-500 bg-orange-50"
-                : "border-gray-200 bg-white hover:bg-gray-50"
+                : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
             }`}
           >
-            <p className="text-xs text-gray-500 uppercase">Falta foto real</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Falta foto real</p>
             <p className="text-xl font-bold text-orange-600">
               {counts.conPlaceholder}
             </p>
@@ -252,10 +252,10 @@ export function ModelosList({
             className={`rounded-lg border p-3 text-left transition-colors ${
               filter === "sin-foto"
                 ? "border-red-500 bg-red-50"
-                : "border-gray-200 bg-white hover:bg-gray-50"
+                : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
             }`}
           >
-            <p className="text-xs text-gray-500 uppercase">Sin foto</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Sin foto</p>
             <p className="text-xl font-bold text-red-600">{counts.sinFoto}</p>
           </button>
         </div>
@@ -273,7 +273,7 @@ export function ModelosList({
             {query && (
               <button
                 onClick={() => setQuery("")}
-                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100"
+                className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
               >
                 <X className="size-4" />
               </button>
@@ -282,7 +282,7 @@ export function ModelosList({
           <select
             value={marcaFilter}
             onChange={(e) => setMarcaFilter(e.target.value)}
-            className="h-10 rounded-md border border-gray-200 bg-white px-3 text-sm"
+            className="h-10 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 text-sm"
           >
             <option value="">Todas las marcas</option>
             {marcas.map((m) => (
@@ -291,13 +291,13 @@ export function ModelosList({
               </option>
             ))}
           </select>
-          <p className="text-sm text-gray-500 whitespace-nowrap">
+          <p className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
             {filtered.length} / {modelosActivas.length}
           </p>
         </div>
 
         {/* Tabla */}
-        <div className="rounded-lg border bg-white overflow-hidden">
+        <div className="rounded-lg border bg-white dark:bg-neutral-900 overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
@@ -319,7 +319,7 @@ export function ModelosList({
                 <TableRow>
                   <TableCell
                     colSpan={11}
-                    className="text-center py-8 text-gray-500"
+                    className="text-center py-8 text-gray-500 dark:text-gray-400"
                   >
                     No hay resultados
                   </TableCell>
@@ -424,7 +424,7 @@ export function ModelosList({
                           )}
                         />
                       </TableCell>
-                      <TableCell className="whitespace-nowrap text-xs text-gray-600">
+                      <TableCell className="whitespace-nowrap text-xs text-gray-600 dark:text-gray-300">
                         <InlineNumberCell
                           value={modelo.kilometros}
                           onSave={(v) =>
@@ -456,7 +456,7 @@ export function ModelosList({
                               )
                             }
                             disabled={isPending}
-                            className="h-7 text-xs rounded border border-transparent bg-transparent hover:border-gray-200 cursor-pointer font-semibold text-[#6B4F7A]"
+                            className="h-7 text-xs rounded border border-transparent bg-transparent hover:border-gray-200 dark:border-neutral-800 cursor-pointer font-semibold text-[#6B4F7A]"
                           >
                             <option value="ARS">$</option>
                             <option value="USD">USD</option>
@@ -488,7 +488,7 @@ export function ModelosList({
                             )
                           }
                           disabled={isPending}
-                          className="h-8 w-full rounded-md border border-gray-200 bg-white px-2 text-xs"
+                          className="h-8 w-full rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-2 text-xs"
                         >
                           <option value="">Sin etiqueta</option>
                           {ETIQUETAS_MODELO.map((e) => (
@@ -511,7 +511,7 @@ export function ModelosList({
                               )
                             }
                             disabled={isPending}
-                            className="h-8 w-full rounded-md border border-gray-200 bg-white px-2 text-xs"
+                            className="h-8 w-full rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-2 text-xs"
                           >
                             <option value="">— Sin proveedor —</option>
                             {proveedores.map((p) => (
@@ -538,7 +538,7 @@ export function ModelosList({
                             className={
                               shownActivo
                                 ? "bg-green-100 text-green-800 hover:bg-green-200 cursor-pointer"
-                                : "bg-gray-100 text-gray-500 hover:bg-gray-200 cursor-pointer"
+                                : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 cursor-pointer"
                             }
                           >
                             {shownActivo ? "Activo" : "Inactivo"}
@@ -610,10 +610,10 @@ export function ModelosList({
       </div>
 
       {/* ===== SECCIÓN: MOTOS VENDIDAS (colapsable) ===== */}
-      <div className="rounded-lg border border-gray-200 bg-white overflow-hidden">
+      <div className="rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden">
         <button
           onClick={() => setVendidasOpen(!vendidasOpen)}
-          className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 transition-colors"
+          className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors"
         >
           <div className="flex items-center gap-3">
             {vendidasOpen ? (
@@ -623,10 +623,10 @@ export function ModelosList({
             )}
             <ShoppingCart className="size-5 text-emerald-600" />
             <div className="text-left">
-              <h2 className="text-sm font-semibold text-gray-900">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
                 Motos vendidas
               </h2>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
                 Histórico de unidades vendidas
               </p>
             </div>
@@ -640,9 +640,9 @@ export function ModelosList({
         </button>
 
         {vendidasOpen && (
-          <div className="border-t border-gray-100 p-5 space-y-4">
+          <div className="border-t border-gray-100 dark:border-neutral-800 p-5 space-y-4">
             {modelosVendidas.length === 0 ? (
-              <p className="text-sm text-gray-500 text-center py-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
                 Todavía no marcaste ninguna moto como vendida.
               </p>
             ) : (
@@ -656,7 +656,7 @@ export function ModelosList({
                     className="pl-9"
                   />
                 </div>
-                <div className="rounded-lg border bg-white overflow-hidden">
+                <div className="rounded-lg border bg-white dark:bg-neutral-900 overflow-hidden">
                   <Table>
                     <TableHeader>
                       <TableRow>
@@ -674,7 +674,7 @@ export function ModelosList({
                         <TableRow>
                           <TableCell
                             colSpan={7}
-                            className="text-center py-6 text-gray-500"
+                            className="text-center py-6 text-gray-500 dark:text-gray-400"
                           >
                             Sin resultados
                           </TableCell>
@@ -695,7 +695,7 @@ export function ModelosList({
                                   className="rounded object-cover h-10 w-10"
                                 />
                               ) : (
-                                <div className="h-10 w-10 rounded bg-gray-100" />
+                                <div className="h-10 w-10 rounded bg-gray-100 dark:bg-neutral-800" />
                               )}
                             </TableCell>
                             <TableCell>
@@ -711,7 +711,7 @@ export function ModelosList({
                                 ? formatPrice(modelo.precio)
                                 : "—"}
                             </TableCell>
-                            <TableCell className="text-xs text-gray-500">
+                            <TableCell className="text-xs text-gray-500 dark:text-gray-400">
                               {modelo.fechaVenta
                                 ? new Date(modelo.fechaVenta).toLocaleDateString(
                                     "es-AR",

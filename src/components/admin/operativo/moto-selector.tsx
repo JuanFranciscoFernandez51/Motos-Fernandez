@@ -56,7 +56,7 @@ export function MotoSelector({
 
   if (selected) {
     return (
-      <div className="rounded-md border border-gray-200 bg-white p-3 flex items-center justify-between">
+      <div className="rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 flex items-center justify-between">
         <div className="flex items-center gap-3">
           {selected.fotos[0] ? (
             <Image
@@ -67,13 +67,13 @@ export function MotoSelector({
               className="size-10 rounded object-cover"
             />
           ) : (
-            <div className="size-10 rounded bg-gray-100 flex items-center justify-center text-gray-300">
+            <div className="size-10 rounded bg-gray-100 dark:bg-neutral-800 flex items-center justify-center text-gray-300">
               <Bike className="size-5" />
             </div>
           )}
           <div>
             <p className="font-medium text-sm">{selected.nombre}</p>
-            <p className="text-xs text-gray-500 font-mono uppercase">
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-mono uppercase">
               {selected.slug}{selected.patente ? ` · ${selected.patente}` : ""}
             </p>
           </div>
@@ -84,7 +84,7 @@ export function MotoSelector({
             onChange("")
             setQuery("")
           }}
-          className="text-xs text-gray-500 hover:text-red-600 px-2 py-1 rounded"
+          className="text-xs text-gray-500 dark:text-gray-400 hover:text-red-600 px-2 py-1 rounded"
         >
           Cambiar
         </button>
@@ -111,7 +111,7 @@ export function MotoSelector({
           <button
             type="button"
             onClick={() => setQuery("")}
-            className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100"
+            className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
           >
             <X className="size-4" />
           </button>
@@ -119,9 +119,9 @@ export function MotoSelector({
       </div>
 
       {open && (
-        <div className="absolute z-40 mt-1 w-full rounded-md border bg-white shadow-lg max-h-80 overflow-y-auto">
+        <div className="absolute z-40 mt-1 w-full rounded-md border bg-white dark:bg-neutral-900 shadow-lg max-h-80 overflow-y-auto">
           {filtered.length === 0 ? (
-            <p className="p-4 text-center text-sm text-gray-500">
+            <p className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
               Sin resultados
             </p>
           ) : (
@@ -136,7 +136,7 @@ export function MotoSelector({
                   setQuery("")
                   setOpen(false)
                 }}
-                className="w-full text-left px-3 py-2 hover:bg-gray-50 border-b border-gray-50 last:border-0 flex items-center justify-between"
+                className="w-full text-left px-3 py-2 hover:bg-gray-50 dark:hover:bg-neutral-900 border-b border-gray-50 last:border-0 flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
                   {m.fotos[0] ? (
@@ -148,13 +148,13 @@ export function MotoSelector({
                       className="size-9 rounded object-cover"
                     />
                   ) : (
-                    <div className="size-9 rounded bg-gray-100 flex items-center justify-center text-gray-300">
+                    <div className="size-9 rounded bg-gray-100 dark:bg-neutral-800 flex items-center justify-center text-gray-300">
                       <Bike className="size-4" />
                     </div>
                   )}
                   <div>
                     <p className="text-sm font-medium">{m.nombre}</p>
-                    <p className="text-xs text-gray-500 font-mono uppercase">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-mono uppercase">
                       {m.slug}{m.patente ? ` · ${m.patente}` : ""}
                     </p>
                   </div>

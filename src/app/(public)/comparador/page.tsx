@@ -51,7 +51,7 @@ export default function ComparadorPage() {
   // Wait for hydration to avoid mismatch
   if (!hydrated) {
     return (
-      <section className="bg-[#F0F0F0] min-h-[60vh] py-12">
+      <section className="bg-[#F0F0F0] dark:bg-neutral-950 min-h-[60vh] py-12">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="animate-pulse text-gray-400">Cargando comparador...</div>
         </div>
@@ -61,17 +61,17 @@ export default function ComparadorPage() {
 
   if (compareItems.length === 0) {
     return (
-      <section className="bg-[#F0F0F0] min-h-[60vh] py-16">
+      <section className="bg-[#F0F0F0] dark:bg-neutral-950 min-h-[60vh] py-16">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-xl bg-white border border-gray-100 p-10 text-center">
+          <div className="rounded-xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 p-10 text-center">
             <Scale className="size-12 text-[#6B4F7A] mx-auto mb-4" />
             <h1
-              className="text-2xl font-bold text-[#1A1A1A]"
+              className="text-2xl font-bold text-[#1A1A1A] dark:text-white"
               style={{ fontFamily: "var(--font-heading)" }}
             >
               Comparador de Modelos
             </h1>
-            <p className="mt-3 text-gray-500">
+            <p className="mt-3 text-gray-500 dark:text-gray-400">
               Agregá modelos al comparador desde el catálogo para verlos lado a lado.
             </p>
             <Link
@@ -89,18 +89,18 @@ export default function ComparadorPage() {
   const cols = compareItems.length
 
   return (
-    <section className="bg-[#F0F0F0] min-h-[60vh] py-10">
+    <section className="bg-[#F0F0F0] dark:bg-neutral-950 min-h-[60vh] py-10">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
             <h1
-              className="text-2xl sm:text-3xl font-bold text-[#1A1A1A]"
+              className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] dark:text-white"
               style={{ fontFamily: "var(--font-heading)" }}
             >
               Comparador de Modelos
             </h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
               {compareItems.length} {compareItems.length === 1 ? "modelo" : "modelos"} seleccionado
               {compareItems.length === 1 ? "" : "s"} (máximo 3)
             </p>
@@ -108,7 +108,7 @@ export default function ComparadorPage() {
           <button
             type="button"
             onClick={clearCompare}
-            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-[#4E4B48] hover:bg-gray-50 hover:border-gray-300 transition-colors self-start"
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4 py-2 text-sm font-medium text-[#4E4B48] dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-neutral-900 hover:border-gray-300 dark:border-neutral-700 transition-colors self-start"
           >
             <Trash2 className="size-4" />
             Limpiar comparación
@@ -116,30 +116,30 @@ export default function ComparadorPage() {
         </div>
 
         {/* Desktop: table layout */}
-        <div className="hidden md:block rounded-xl bg-white border border-gray-100 overflow-hidden">
+        <div className="hidden md:block rounded-xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr>
-                  <th className="w-40 bg-gray-50 border-b border-gray-100 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
+                  <th className="w-40 bg-gray-50 dark:bg-neutral-900 border-b border-gray-100 dark:border-neutral-800 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
                     Modelo
                   </th>
                   {compareItems.map((item) => (
                     <th
                       key={item.id}
-                      className="border-b border-gray-100 p-4 text-center align-top"
+                      className="border-b border-gray-100 dark:border-neutral-800 p-4 text-center align-top"
                       style={{ width: `${(100 - 15) / cols}%` }}
                     >
                       <div className="relative flex flex-col items-center gap-3">
                         <button
                           type="button"
                           onClick={() => removeFromCompare(item.id)}
-                          className="absolute -top-1 -right-1 inline-flex items-center justify-center size-7 rounded-full bg-white border border-gray-200 text-gray-400 hover:text-red-600 hover:border-red-200 transition-colors"
+                          className="absolute -top-1 -right-1 inline-flex items-center justify-center size-7 rounded-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-400 hover:text-red-600 hover:border-red-200 transition-colors"
                           aria-label="Quitar del comparador"
                         >
                           <X className="size-4" />
                         </button>
-                        <div className="relative size-28 rounded-lg bg-gray-100 overflow-hidden">
+                        <div className="relative size-28 rounded-lg bg-gray-100 dark:bg-neutral-800 overflow-hidden">
                           {item.foto ? (
                             <Image
                               src={item.foto}
@@ -161,27 +161,27 @@ export default function ComparadorPage() {
               </thead>
               <tbody className="text-sm">
                 <tr>
-                  <td className="bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
+                  <td className="bg-gray-50 dark:bg-neutral-900 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
                     Marca
                   </td>
                   {compareItems.map((item) => (
-                    <td key={item.id} className="border-t border-gray-50 px-4 py-3 text-center text-[#1A1A1A]">
+                    <td key={item.id} className="border-t border-gray-50 px-4 py-3 text-center text-[#1A1A1A] dark:text-white">
                       {item.marca}
                     </td>
                   ))}
                 </tr>
                 <tr>
-                  <td className="bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
+                  <td className="bg-gray-50 dark:bg-neutral-900 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
                     Nombre
                   </td>
                   {compareItems.map((item) => (
-                    <td key={item.id} className="border-t border-gray-50 px-4 py-3 text-center font-semibold text-[#1A1A1A]">
+                    <td key={item.id} className="border-t border-gray-50 px-4 py-3 text-center font-semibold text-[#1A1A1A] dark:text-white">
                       {item.nombre}
                     </td>
                   ))}
                 </tr>
                 <tr>
-                  <td className="bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
+                  <td className="bg-gray-50 dark:bg-neutral-900 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
                     Condición
                   </td>
                   {compareItems.map((item) => (
@@ -199,39 +199,39 @@ export default function ComparadorPage() {
                   ))}
                 </tr>
                 <tr>
-                  <td className="bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
+                  <td className="bg-gray-50 dark:bg-neutral-900 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
                     Año
                   </td>
                   {compareItems.map((item) => (
-                    <td key={item.id} className="border-t border-gray-50 px-4 py-3 text-center text-[#1A1A1A]">
+                    <td key={item.id} className="border-t border-gray-50 px-4 py-3 text-center text-[#1A1A1A] dark:text-white">
                       {item.anio ?? "—"}
                     </td>
                   ))}
                 </tr>
                 {compareItems.some((i) => i.condicion === "USADA") && (
                   <tr>
-                    <td className="bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
+                    <td className="bg-gray-50 dark:bg-neutral-900 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
                       Kilómetros
                     </td>
                     {compareItems.map((item) => (
-                      <td key={item.id} className="border-t border-gray-50 px-4 py-3 text-center text-[#1A1A1A]">
+                      <td key={item.id} className="border-t border-gray-50 px-4 py-3 text-center text-[#1A1A1A] dark:text-white">
                         {item.condicion === "USADA" ? formatKm(item.kilometros) : "—"}
                       </td>
                     ))}
                   </tr>
                 )}
                 <tr>
-                  <td className="bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
+                  <td className="bg-gray-50 dark:bg-neutral-900 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
                     Cilindrada
                   </td>
                   {compareItems.map((item) => (
-                    <td key={item.id} className="border-t border-gray-50 px-4 py-3 text-center text-[#1A1A1A]">
+                    <td key={item.id} className="border-t border-gray-50 px-4 py-3 text-center text-[#1A1A1A] dark:text-white">
                       {item.cilindrada || "—"}
                     </td>
                   ))}
                 </tr>
                 <tr>
-                  <td className="bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
+                  <td className="bg-gray-50 dark:bg-neutral-900 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
                     Precio
                   </td>
                   {compareItems.map((item) => (
@@ -254,7 +254,7 @@ export default function ComparadorPage() {
                 )}
                 {specKeys.map((key) => (
                   <tr key={key}>
-                    <td className="bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
+                    <td className="bg-gray-50 dark:bg-neutral-900 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
                       {key}
                     </td>
                     {compareItems.map((item) => {
@@ -263,7 +263,7 @@ export default function ComparadorPage() {
                           ? (item.specs as Record<string, unknown>)[key]
                           : undefined
                       return (
-                        <td key={item.id} className="border-t border-gray-50 px-4 py-3 text-center text-[#1A1A1A]">
+                        <td key={item.id} className="border-t border-gray-50 px-4 py-3 text-center text-[#1A1A1A] dark:text-white">
                           {valueToString(val)}
                         </td>
                       )
@@ -273,7 +273,7 @@ export default function ComparadorPage() {
 
                 {/* Acciones */}
                 <tr>
-                  <td className="bg-gray-50 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
+                  <td className="bg-gray-50 dark:bg-neutral-900 px-4 py-3 text-xs font-semibold uppercase tracking-wider text-[#6B4F7A]">
                     Acciones
                   </td>
                   {compareItems.map((item) => (
@@ -297,7 +297,7 @@ export default function ComparadorPage() {
                           )}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center justify-center gap-1 rounded-lg border border-[#25D366] bg-white px-3 py-1.5 text-xs font-semibold text-[#25D366] hover:bg-[#25D366] hover:text-white transition-colors w-full max-w-[160px]"
+                          className="inline-flex items-center justify-center gap-1 rounded-lg border border-[#25D366] bg-white dark:bg-neutral-900 px-3 py-1.5 text-xs font-semibold text-[#25D366] hover:bg-[#25D366] hover:text-white transition-colors w-full max-w-[160px]"
                         >
                           <MessageCircle className="size-3" />
                           WhatsApp
@@ -316,10 +316,10 @@ export default function ComparadorPage() {
           {compareItems.map((item) => (
             <div
               key={item.id}
-              className="rounded-xl bg-white border border-gray-100 overflow-hidden"
+              className="rounded-xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 overflow-hidden"
             >
               <div className="relative">
-                <div className="aspect-[4/3] bg-gray-100 overflow-hidden">
+                <div className="aspect-[4/3] bg-gray-100 dark:bg-neutral-800 overflow-hidden">
                   {item.foto ? (
                     <Image
                       src={item.foto}
@@ -337,7 +337,7 @@ export default function ComparadorPage() {
                 <button
                   type="button"
                   onClick={() => removeFromCompare(item.id)}
-                  className="absolute top-3 right-3 inline-flex items-center justify-center size-8 rounded-full bg-white/90 border border-gray-200 text-gray-600 hover:text-red-600 backdrop-blur-sm"
+                  className="absolute top-3 right-3 inline-flex items-center justify-center size-8 rounded-full bg-white/90 dark:bg-neutral-900/90 border border-gray-200 dark:border-neutral-800 text-gray-600 dark:text-gray-300 hover:text-red-600 backdrop-blur-sm"
                   aria-label="Quitar del comparador"
                 >
                   <X className="size-4" />
@@ -348,7 +348,7 @@ export default function ComparadorPage() {
                   {item.marca}
                 </p>
                 <h3
-                  className="mt-1 text-lg font-bold text-[#1A1A1A]"
+                  className="mt-1 text-lg font-bold text-[#1A1A1A] dark:text-white"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   {item.nombre}
@@ -359,22 +359,22 @@ export default function ComparadorPage() {
 
                 <dl className="mt-4 divide-y divide-gray-100 text-sm">
                   <div className="flex items-center justify-between py-2">
-                    <dt className="text-gray-500">Condición</dt>
-                    <dd className="font-medium text-[#1A1A1A]">{item.condicion}</dd>
+                    <dt className="text-gray-500 dark:text-gray-400">Condición</dt>
+                    <dd className="font-medium text-[#1A1A1A] dark:text-white">{item.condicion}</dd>
                   </div>
                   <div className="flex items-center justify-between py-2">
-                    <dt className="text-gray-500">Año</dt>
-                    <dd className="font-medium text-[#1A1A1A]">{item.anio ?? "—"}</dd>
+                    <dt className="text-gray-500 dark:text-gray-400">Año</dt>
+                    <dd className="font-medium text-[#1A1A1A] dark:text-white">{item.anio ?? "—"}</dd>
                   </div>
                   {item.condicion === "USADA" && (
                     <div className="flex items-center justify-between py-2">
-                      <dt className="text-gray-500">Kilómetros</dt>
-                      <dd className="font-medium text-[#1A1A1A]">{formatKm(item.kilometros)}</dd>
+                      <dt className="text-gray-500 dark:text-gray-400">Kilómetros</dt>
+                      <dd className="font-medium text-[#1A1A1A] dark:text-white">{formatKm(item.kilometros)}</dd>
                     </div>
                   )}
                   <div className="flex items-center justify-between py-2">
-                    <dt className="text-gray-500">Cilindrada</dt>
-                    <dd className="font-medium text-[#1A1A1A]">{item.cilindrada || "—"}</dd>
+                    <dt className="text-gray-500 dark:text-gray-400">Cilindrada</dt>
+                    <dd className="font-medium text-[#1A1A1A] dark:text-white">{item.cilindrada || "—"}</dd>
                   </div>
                   {specKeys.map((key) => {
                     const val =
@@ -383,8 +383,8 @@ export default function ComparadorPage() {
                         : undefined
                     return (
                       <div key={key} className="flex items-start justify-between py-2 gap-3">
-                        <dt className="text-gray-500">{key}</dt>
-                        <dd className="font-medium text-[#1A1A1A] text-right">
+                        <dt className="text-gray-500 dark:text-gray-400">{key}</dt>
+                        <dd className="font-medium text-[#1A1A1A] dark:text-white text-right">
                           {valueToString(val)}
                         </dd>
                       </div>
@@ -411,7 +411,7 @@ export default function ComparadorPage() {
                     )}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#25D366] bg-white px-4 py-2 text-sm font-semibold text-[#25D366] hover:bg-[#25D366] hover:text-white transition-colors"
+                    className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-[#25D366] bg-white dark:bg-neutral-900 px-4 py-2 text-sm font-semibold text-[#25D366] hover:bg-[#25D366] hover:text-white transition-colors"
                   >
                     <MessageCircle className="size-4" />
                     WhatsApp

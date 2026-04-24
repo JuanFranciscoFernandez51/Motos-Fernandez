@@ -73,7 +73,7 @@ export function AddToCartButton({ producto }: AddToCartButtonProps) {
       {/* Talle selector */}
       {hasTalles && (
         <div>
-          <p className="text-sm font-medium text-[#1A1A1A] mb-2">
+          <p className="text-sm font-medium text-[#1A1A1A] dark:text-white mb-2">
             Seleccioná un talle:
           </p>
           <div className="flex flex-wrap gap-2">
@@ -93,7 +93,7 @@ export function AddToCartButton({ producto }: AddToCartButtonProps) {
                   }}
                   className={`flex items-center justify-center rounded-lg border-2 px-4 py-2 text-sm font-medium transition-all ${
                     sinStock
-                      ? "border-gray-200 text-gray-300 line-through cursor-not-allowed"
+                      ? "border-gray-200 dark:border-neutral-800 text-gray-300 line-through cursor-not-allowed"
                       : isSelected
                       ? "border-[#6B4F7A] bg-[#6B4F7A] text-white"
                       : "border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10"

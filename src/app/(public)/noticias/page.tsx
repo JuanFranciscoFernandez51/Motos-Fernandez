@@ -41,7 +41,7 @@ export default async function NoticiasPage() {
         </div>
       </div>
 
-      <section className="py-16 bg-[#F0F0F0] min-h-[50vh]">
+      <section className="py-16 bg-[#F0F0F0] dark:bg-neutral-950 min-h-[50vh]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           {noticias.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-gray-400">
@@ -55,10 +55,10 @@ export default async function NoticiasPage() {
                 <Link
                   key={noticia.id}
                   href={`/noticias/${noticia.slug}`}
-                  className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                  className="group bg-white dark:bg-neutral-900 rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                 >
                   {/* Imagen */}
-                  <div className="relative aspect-video bg-gray-100 overflow-hidden">
+                  <div className="relative aspect-video bg-gray-100 dark:bg-neutral-800 overflow-hidden">
                     {noticia.imagen ? (
                       <Image
                         src={noticia.imagen}
@@ -88,11 +88,11 @@ export default async function NoticiasPage() {
                         year: "numeric",
                       })}
                     </p>
-                    <h2 className="font-bold text-[#1A1A1A] text-lg leading-snug group-hover:text-[#6B4F7A] transition-colors line-clamp-2">
+                    <h2 className="font-bold text-[#1A1A1A] dark:text-white text-lg leading-snug group-hover:text-[#6B4F7A] transition-colors line-clamp-2">
                       {noticia.titulo}
                     </h2>
                     {noticia.resumen && (
-                      <p className="mt-2 text-sm text-gray-500 line-clamp-3">
+                      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 line-clamp-3">
                         {noticia.resumen}
                       </p>
                     )}

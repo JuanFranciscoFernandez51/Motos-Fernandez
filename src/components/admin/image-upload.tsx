@@ -59,19 +59,19 @@ export function ImageUpload({ value, onChange, folder = "productos", className }
           <img
             src={value}
             alt="Preview"
-            className="w-full h-full object-cover rounded-lg border border-gray-200"
+            className="w-full h-full object-cover rounded-lg border border-gray-200 dark:border-neutral-800"
           />
           <button
             type="button"
             onClick={() => onChange("")}
-            className="absolute -top-2 -right-2 bg-white border border-gray-200 rounded-full p-0.5 shadow hover:bg-red-50 hover:border-red-300 transition-colors"
+            className="absolute -top-2 -right-2 bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-full p-0.5 shadow hover:bg-red-50 hover:border-red-300 transition-colors"
           >
-            <X className="h-3.5 w-3.5 text-gray-500 hover:text-red-500" />
+            <X className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400 hover:text-red-500" />
           </button>
         </div>
       ) : (
         <div
-          className="border-2 border-dashed border-gray-200 rounded-lg p-4 hover:border-[#6B4F7A] cursor-pointer transition-colors flex flex-col items-center justify-center gap-1 min-h-[100px]"
+          className="border-2 border-dashed border-gray-200 dark:border-neutral-800 rounded-lg p-4 hover:border-[#6B4F7A] cursor-pointer transition-colors flex flex-col items-center justify-center gap-1 min-h-[100px]"
           onClick={() => inputRef.current?.click()}
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
@@ -81,7 +81,7 @@ export function ImageUpload({ value, onChange, folder = "productos", className }
           ) : (
             <>
               <Upload className="h-6 w-6 text-gray-400" />
-              <span className="text-sm text-gray-500">Subir imagen</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">Subir imagen</span>
               <span className="text-xs text-gray-400">o pegar URL abajo</span>
             </>
           )}

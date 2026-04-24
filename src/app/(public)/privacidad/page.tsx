@@ -184,7 +184,7 @@ const sections = [
           </a>{" "}
           con una copia de tu DNI. Te responderemos dentro de los 10 días corridos, sin costo.
         </p>
-        <p className="mt-2 text-xs text-gray-500">
+        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
           La Agencia de Acceso a la Información Pública (AAIP) es el órgano de control de la Ley 25.326 y podés presentar reclamos ante ella si considerás que tus derechos han sido vulnerados.
         </p>
       </>
@@ -217,7 +217,7 @@ export default function Page() {
   })
 
   return (
-    <div className="bg-[#F0F0F0] min-h-screen">
+    <div className="bg-[#F0F0F0] dark:bg-neutral-950 min-h-screen">
       <div className="bg-[#1A1A1A] py-12">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 text-xs text-[#9B59B6] uppercase tracking-wider font-semibold mb-2">
@@ -237,8 +237,8 @@ export default function Page() {
       </div>
 
       <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-10">
-        <div className="rounded-2xl bg-white p-8 shadow-sm border border-gray-100">
-          <p className="text-sm text-gray-600 leading-relaxed mb-8">
+        <div className="rounded-2xl bg-white dark:bg-neutral-900 p-8 shadow-sm border border-gray-100 dark:border-neutral-800">
+          <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed mb-8">
             En <strong>{BUSINESS.name}</strong> respetamos tu privacidad y nos comprometemos a proteger tus datos personales. Esta política explica cómo recopilamos, usamos y protegemos tu información cuando visitás nuestro sitio web o interactuás con nuestros servicios.
           </p>
 
@@ -246,16 +246,16 @@ export default function Page() {
             {sections.map((section, i) => {
               const Icon = section.icon
               return (
-                <div key={i} className="pb-8 border-b border-gray-100 last:border-b-0 last:pb-0">
+                <div key={i} className="pb-8 border-b border-gray-100 dark:border-neutral-800 last:border-b-0 last:pb-0">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="size-9 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center">
                       <Icon className="size-4 text-[#6B4F7A]" />
                     </div>
-                    <h2 className="text-base font-bold text-[#1A1A1A]">
+                    <h2 className="text-base font-bold text-[#1A1A1A] dark:text-white">
                       {section.title}
                     </h2>
                   </div>
-                  <div className="text-sm text-gray-600 leading-relaxed ml-12">
+                  <div className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed ml-12">
                     {section.content}
                   </div>
                 </div>
