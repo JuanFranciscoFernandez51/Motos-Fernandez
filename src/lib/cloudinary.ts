@@ -1,7 +1,15 @@
 import { v2 as cloudinary } from "cloudinary"
 
+// Fallback entre las dos formas de declarar el cloud_name:
+// - CLOUDINARY_CLOUD_NAME (server-only)
+// - NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME (client + server)
+const CLOUD_NAME =
+  process.env.CLOUDINARY_CLOUD_NAME ||
+  process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
+  "dgtlyzyra" // último recurso: el cloud actual hardcoded
+
 cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  cloud_name: CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 })
