@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useTransition } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -13,7 +13,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Search, X, Pencil, FileText, CheckCircle } from "lucide-react"
+import {
+  Search,
+  X,
+  Pencil,
+  FileText,
+  CheckCircle,
+  Camera,
+  Rocket,
+  Loader2,
+} from "lucide-react"
 import {
   formatDate,
   formatMoney,
@@ -21,6 +30,7 @@ import {
   ESTADO_MANDATO_STYLES,
   ESTADO_MANDATO_LABELS,
 } from "@/lib/admin-helpers"
+import { FotosModal } from "../modelos/fotos-modal"
 
 type MandatoRow = {
   id: string
@@ -36,11 +46,23 @@ type MandatoRow = {
   clienteNombre: string
   clienteDni: string | null
   publicado: boolean
+  fotos: string[]
 }
 
-export function MandatosListFilters({ mandatos }: { mandatos: MandatoRow[] }) {
+export function MandatosListFilters({
+  mandatos,
+  updateFotosMandato,
+  publicarDesdeLista,
+}: {
+  mandatos: MandatoRow[]
+  updateFotosMandato: (id: string, fotos: string[]) => Promise<void>
+  publicarDesdeLista: (id: string) => Promise<void>
+}) {
   const [query, setQuery] = useState("")
   const [estadoFilter, setEstadoFilter] = useState<string>("")
+  const [fotosMandatoId, setFotosMandatoId] = useState<string | null>(null)
+  const [publicandoId, setPublicandoId] = useState<string | null>(null)
+  const [isPending, startTransition] = useTransition()
 
   const counts = useMemo(
     () => ({
@@ -71,6 +93,27 @@ export function MandatosListFilters({ mandatos }: { mandatos: MandatoRow[] }) {
       return hay.includes(q)
     })
   }, [mandatos, query, estadoFilter])
+
+  const handlePublicar = (id: string, nombre: string) => {
+    if (
+      !window.confirm(
+        `¿Publicar "${nombre}" en el catálogo?\n\nSe va a crear un modelo nuevo INACTIVO con los datos del mandato. Después podés activarlo desde Modelos.`
+      )
+    )
+      return
+    setPublicandoId(id)
+    startTransition(async () => {
+      try {
+        await publicarDesdeLista(id)
+      } finally {
+        setPublicandoId(null)
+      }
+    })
+  }
+
+  const fotosMandato = fotosMandatoId
+    ? mandatos.find((m) => m.id === fotosMandatoId)
+    : null
 
   return (
     <div className="space-y-4">
@@ -153,8 +196,8 @@ export function MandatosListFilters({ mandatos }: { mandatos: MandatoRow[] }) {
               <TableHead>Precio</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead>Catálogo</TableHead>
-              <TableHead>Firma</TableHead>
-              <TableHead className="w-28">Acciones</TableHead>
+              <TableHead>Fotos</TableHead>
+              <TableHead className="w-44">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -175,77 +218,125 @@ export function MandatosListFilters({ mandatos }: { mandatos: MandatoRow[] }) {
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map((m) => (
-                <TableRow key={m.id}>
-                  <TableCell className="font-mono text-xs font-semibold text-[#6B4F7A]">
-                    {formatNumero("MV", m.numero)}
-                  </TableCell>
-                  <TableCell>
-                    <p className="font-medium text-sm">
-                      {m.marca} {m.modelo}
-                    </p>
-                    {m.anio && (
-                      <p className="text-xs text-gray-500">{m.anio}</p>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <p className="text-sm">{m.clienteNombre}</p>
-                    {m.clienteDni && (
-                      <p className="text-xs font-mono text-gray-500">
-                        {m.clienteDni}
+              filtered.map((m) => {
+                const pendingThis = publicandoId === m.id
+                return (
+                  <TableRow key={m.id}>
+                    <TableCell className="font-mono text-xs font-semibold text-[#6B4F7A]">
+                      {formatNumero("MV", m.numero)}
+                    </TableCell>
+                    <TableCell>
+                      <p className="font-medium text-sm">
+                        {m.marca} {m.modelo}
                       </p>
-                    )}
-                  </TableCell>
-                  <TableCell className="whitespace-nowrap text-sm font-medium">
-                    {formatMoney(m.precioVenta, m.moneda)}
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className={ESTADO_MANDATO_STYLES[m.estado]}
-                    >
-                      {ESTADO_MANDATO_LABELS[m.estado]}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    {m.publicado ? (
-                      <span className="inline-flex items-center gap-1 text-xs text-green-700">
-                        <CheckCircle className="size-3" /> Publicado
-                      </span>
-                    ) : (
-                      <span className="text-xs text-gray-400">—</span>
-                    )}
-                  </TableCell>
-                  <TableCell className="text-xs text-gray-500">
-                    {formatDate(m.fechaFirma)}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        render={<Link href={`/admin/mandatos/${m.id}`} />}
-                        title="Ver / editar"
+                      {m.anio && (
+                        <p className="text-xs text-gray-500">{m.anio}</p>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <p className="text-sm">{m.clienteNombre}</p>
+                      {m.clienteDni && (
+                        <p className="text-xs font-mono text-gray-500">
+                          {m.clienteDni}
+                        </p>
+                      )}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-sm font-medium">
+                      {formatMoney(m.precioVenta, m.moneda)}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={ESTADO_MANDATO_STYLES[m.estado]}
                       >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <a
-                        href={`/api/pdf/mandato/${m.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center rounded-md h-9 px-2 text-sm hover:bg-gray-100"
-                        title="Generar PDF"
-                      >
-                        <FileText className="h-4 w-4" />
-                      </a>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
+                        {ESTADO_MANDATO_LABELS[m.estado]}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {m.publicado ? (
+                        <span className="inline-flex items-center gap-1 text-xs text-green-700">
+                          <CheckCircle className="size-3" /> Publicado
+                        </span>
+                      ) : (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() =>
+                            handlePublicar(m.id, `${m.marca} ${m.modelo}`)
+                          }
+                          disabled={pendingThis || isPending}
+                          className="h-7 text-xs border-[#6B4F7A]/40 text-[#6B4F7A] hover:bg-[#6B4F7A]/5"
+                        >
+                          {pendingThis ? (
+                            <Loader2 className="size-3 mr-1 animate-spin" />
+                          ) : (
+                            <Rocket className="size-3 mr-1" />
+                          )}
+                          Publicar
+                        </Button>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {m.fotos.length > 0 ? (
+                        <span className="text-xs text-gray-600 font-medium">
+                          {m.fotos.length} foto{m.fotos.length !== 1 ? "s" : ""}
+                        </span>
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-0.5">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setFotosMandatoId(m.id)}
+                          title="Cargar / editar fotos"
+                        >
+                          <Camera className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          render={<Link href={`/admin/mandatos/${m.id}`} />}
+                          title="Ver / editar"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <a
+                          href={`/api/pdf/mandato/${m.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center rounded-md h-9 px-2 text-sm hover:bg-gray-100"
+                          title="Generar PDF"
+                        >
+                          <FileText className="h-4 w-4" />
+                        </a>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )
+              })
             )}
           </TableBody>
         </Table>
       </div>
+
+      {fotosMandato && (
+        <FotosModal
+          open={fotosMandatoId !== null}
+          onClose={() => setFotosMandatoId(null)}
+          modelo={{
+            id: fotosMandato.id,
+            nombre: `${fotosMandato.marca} ${fotosMandato.modelo}${
+              fotosMandato.anio ? ` · ${fotosMandato.anio}` : ""
+            }`,
+            slug: formatNumero("MV", fotosMandato.numero),
+            fotos: fotosMandato.fotos,
+          }}
+          updateFotos={updateFotosMandato}
+        />
+      )}
     </div>
   )
 }

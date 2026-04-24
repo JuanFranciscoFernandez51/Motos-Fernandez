@@ -37,9 +37,13 @@ async function updateMandato(formData: FormData) {
       return v && v.trim() ? new Date(v) : null
     }
 
+    const fotosRaw = get("fotos")
+    const fotos: string[] = fotosRaw ? JSON.parse(fotosRaw) : []
+
     await prisma.mandatoVenta.update({
       where: { id },
       data: {
+        fotos,
         clienteId: get("clienteId"),
         marca: get("marca"),
         modelo: get("modelo"),
@@ -116,7 +120,8 @@ async function publicarEnCatalogo(id: string) {
       clienteNombre: `${mandato.cliente.apellido}, ${mandato.cliente.nombre}`,
       clienteContacto: mandato.cliente.telefono || mandato.cliente.email,
       notasInternas: mandato.observaciones,
-      fotos: ["/images/logo-clasico.png"],
+      // Si el mandato tiene fotos, las usa; sino, placeholder
+      fotos: mandato.fotos.length > 0 ? mandato.fotos : ["/images/logo-clasico.png"],
     },
   })
 
@@ -196,6 +201,7 @@ export default async function EditarMandatoPage({
     fechaVencimiento: toDateInput(mandato.fechaVencimiento),
     estado: mandato.estado,
     observaciones: mandato.observaciones || "",
+    fotos: mandato.fotos,
   }
 
   return (

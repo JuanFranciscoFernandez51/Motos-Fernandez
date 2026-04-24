@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { ArrowLeft, Save, Loader2 } from "lucide-react"
 import { ClienteSelector, type ClienteOption } from "./cliente-selector"
+import { MultiImageUpload } from "@/components/admin/multi-image-upload"
 
 export type MandatoData = {
   id?: string
@@ -38,6 +39,7 @@ export type MandatoData = {
   fechaVencimiento: string
   estado: string
   observaciones: string
+  fotos: string[]
 }
 
 const EMPTY: MandatoData = {
@@ -65,6 +67,7 @@ const EMPTY: MandatoData = {
   fechaVencimiento: "",
   estado: "PENDIENTE",
   observaciones: "",
+  fotos: [],
 }
 
 export function MandatoForm({
@@ -103,7 +106,13 @@ export function MandatoForm({
 
     const formData = new FormData()
     if (initialData?.id) formData.append("id", initialData.id)
-    Object.entries(data).forEach(([k, v]) => formData.append(k, String(v ?? "")))
+    Object.entries(data).forEach(([k, v]) => {
+      if (k === "fotos") {
+        formData.append("fotos", JSON.stringify(data.fotos))
+      } else {
+        formData.append(k, String(v ?? ""))
+      }
+    })
 
     startTransition(async () => {
       const result = await saveAction(formData)
@@ -413,6 +422,24 @@ export function MandatoForm({
               onChange={(e) => set("observaciones", e.target.value)}
               placeholder="Detalles adicionales sobre la moto, condiciones del mandato, etc."
               rows={4}
+            />
+          </CardContent>
+        </Card>
+
+        {/* Fotos */}
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle>Fotos de la moto</CardTitle>
+            <p className="text-xs text-gray-500 mt-1">
+              Cuando publiques al catálogo, estas fotos se pasan automáticamente.
+              Si no subís ninguna, se usa el logo como placeholder.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <MultiImageUpload
+              value={data.fotos}
+              onChange={(fotos) => set("fotos", fotos)}
+              folder="motos-fernandez/mandatos"
             />
           </CardContent>
         </Card>

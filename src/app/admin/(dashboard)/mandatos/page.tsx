@@ -1,27 +1,73 @@
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Plus, Pencil, FileText } from "lucide-react"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
-import {
-  formatDate,
-  formatMoney,
-  formatNumero,
-  nombreCompleto,
-  ESTADO_MANDATO_STYLES,
-  ESTADO_MANDATO_LABELS,
-} from "@/lib/admin-helpers"
+import { Plus } from "lucide-react"
+import { revalidatePath } from "next/cache"
+import { redirect } from "next/navigation"
+import { nombreCompleto } from "@/lib/admin-helpers"
 import { MandatosListFilters } from "./mandatos-filters"
 
 export const dynamic = "force-dynamic"
+
+async function updateFotosMandato(id: string, fotos: string[]) {
+  "use server"
+  await prisma.mandatoVenta.update({
+    where: { id },
+    data: { fotos },
+  })
+  revalidatePath("/admin/mandatos")
+  revalidatePath(`/admin/mandatos/${id}`)
+}
+
+async function publicarDesdeLista(id: string) {
+  "use server"
+  const mandato = await prisma.mandatoVenta.findUnique({
+    where: { id },
+    include: { cliente: true },
+  })
+  if (!mandato || mandato.modeloId) return
+
+  const baseSlug = `${mandato.marca}-${mandato.modelo}-mv${mandato.numero}`
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+
+  const modelo = await prisma.modelo.create({
+    data: {
+      nombre: `${mandato.marca} ${mandato.modelo}`,
+      slug: baseSlug,
+      marca: mandato.marca,
+      categoriaVehiculo: "MOTOCICLETA",
+      condicion: "USADA",
+      anio: mandato.anio,
+      kilometros: mandato.kilometros,
+      cilindrada: mandato.cilindrada,
+      precio: mandato.precioVenta,
+      moneda: mandato.moneda,
+      activo: false,
+      chasis: mandato.chasis,
+      motor: mandato.motor,
+      patente: mandato.patente,
+      clienteNombre: `${mandato.cliente.apellido}, ${mandato.cliente.nombre}`,
+      clienteContacto: mandato.cliente.telefono || mandato.cliente.email,
+      notasInternas: mandato.observaciones,
+      // Si el mandato tiene fotos, las usa; sino, placeholder
+      fotos: mandato.fotos.length > 0 ? mandato.fotos : ["/images/logo-clasico.png"],
+    },
+  })
+
+  await prisma.mandatoVenta.update({
+    where: { id },
+    data: { modeloId: modelo.id, estado: "ACTIVO" },
+  })
+
+  revalidatePath("/admin/mandatos")
+  revalidatePath("/admin/modelos")
+  revalidatePath("/catalogo")
+  redirect(`/admin/modelos/${modelo.id}`)
+}
 
 export default async function MandatosPage() {
   const mandatos = await prisma.mandatoVenta.findMany({
@@ -65,7 +111,10 @@ export default async function MandatosPage() {
           clienteNombre: nombreCompleto(m.cliente),
           clienteDni: m.cliente.dni,
           publicado: !!m.modelo_,
+          fotos: m.fotos,
         }))}
+        updateFotosMandato={updateFotosMandato}
+        publicarDesdeLista={publicarDesdeLista}
       />
     </div>
   )

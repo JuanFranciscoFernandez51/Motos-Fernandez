@@ -520,6 +520,9 @@ model MandatoVenta {
   comisionMonto   Int?      // o monto fijo
   moneda          String    @default("ARS")
 
+  // Fotos de la moto (se reutilizan al publicar en catálogo)
+  fotos           String[]
+
   // Publicación en catálogo (opcional)
   modeloId        String?   @unique
   modelo_         Modelo?   @relation("MandatoModelo", fields: [modeloId], references: [id])

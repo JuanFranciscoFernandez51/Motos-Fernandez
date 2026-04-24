@@ -25,8 +25,12 @@ async function createMandato(formData: FormData) {
     const clienteId = get("clienteId")
     if (!clienteId) return { error: "Falta el cliente" }
 
+    const fotosRaw = get("fotos")
+    const fotos: string[] = fotosRaw ? JSON.parse(fotosRaw) : []
+
     const mandato = await prisma.mandatoVenta.create({
       data: {
+        fotos,
         clienteId,
         marca: get("marca"),
         modelo: get("modelo"),
