@@ -4,7 +4,7 @@ export const BUSINESS = {
   name: "Motos Fernandez",
   legalName: "Motos Fernandez",
   slogan: `+${new Date().getFullYear() - 1985} años de confianza sobre dos ruedas`,
-  description: `Concesionaria multimarca de motocicletas, cuatriciclos, UTVs y motos de agua en Bahía Blanca. Más de ${new Date().getFullYear() - 1985} años de experiencia, financiación propia y servicio técnico.`,
+  description: `Concesionaria multimarca de motocicletas, cuatriciclos, UTVs y motos de agua en Bahía Blanca. Más de ${new Date().getFullYear() - 1985} años de experiencia, financiación propia, servicio técnico y envío propio a todo el país.`,
   address: "Brown 1052, Bahía Blanca, Buenos Aires",
   city: "Bahía Blanca",
   province: "Buenos Aires",

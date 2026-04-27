@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
+import { invalidateNoticias } from "@/lib/cached-queries"
 
 export async function GET(
   request: NextRequest,
@@ -53,6 +54,7 @@ export async function PUT(
       },
     })
 
+    invalidateNoticias(noticia.slug)
     return NextResponse.json(noticia)
   } catch (error) {
     console.error("Error updating noticia:", error)
@@ -75,7 +77,8 @@ export async function DELETE(
   const { id } = await params
 
   try {
-    await prisma.noticia.delete({ where: { id } })
+    const deleted = await prisma.noticia.delete({ where: { id } })
+    invalidateNoticias(deleted.slug)
     return NextResponse.json({ message: "Noticia eliminada" })
   } catch (error) {
     console.error("Error deleting noticia:", error)

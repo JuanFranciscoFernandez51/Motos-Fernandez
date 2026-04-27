@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
+import { invalidateModelos } from "@/lib/cached-queries"
 
 export async function GET(
   request: NextRequest,
@@ -57,6 +58,7 @@ export async function PUT(
       },
     })
 
+    invalidateModelos(modelo.slug)
     return NextResponse.json(modelo)
   } catch (error) {
     console.error("Error updating modelo:", error)
@@ -79,7 +81,8 @@ export async function DELETE(
   const { id } = await params
 
   try {
-    await prisma.modelo.delete({ where: { id } })
+    const deleted = await prisma.modelo.delete({ where: { id } })
+    invalidateModelos(deleted.slug)
     return NextResponse.json({ message: "Modelo eliminado" })
   } catch (error) {
     console.error("Error deleting modelo:", error)

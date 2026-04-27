@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { nombreCompleto } from "@/lib/admin-helpers"
 import { MandatosListFilters } from "./mandatos-filters"
+import { invalidateModelos } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
@@ -66,6 +67,7 @@ async function publicarDesdeLista(id: string) {
   revalidatePath("/admin/mandatos")
   revalidatePath("/admin/modelos")
   revalidatePath("/catalogo")
+  invalidateModelos()
   redirect(`/admin/modelos/${modelo.id}`)
 }
 

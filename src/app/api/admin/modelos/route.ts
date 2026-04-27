@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
+import { invalidateModelos } from "@/lib/cached-queries"
 
 export async function GET() {
   const session = await requireAdmin()
@@ -42,6 +43,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    invalidateModelos(modelo.slug)
     return NextResponse.json(modelo, { status: 201 })
   } catch (error) {
     console.error("Error creating modelo:", error)

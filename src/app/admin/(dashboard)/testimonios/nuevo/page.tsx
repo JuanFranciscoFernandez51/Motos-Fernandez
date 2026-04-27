@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { TestimonioForm } from "@/components/admin/testimonio-form"
+import { invalidateTestimonios } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
@@ -43,6 +44,7 @@ async function createTestimonio(formData: FormData) {
 
     revalidatePath("/admin/testimonios")
     revalidatePath("/")
+    invalidateTestimonios()
     return {}
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Error al crear el testimonio"

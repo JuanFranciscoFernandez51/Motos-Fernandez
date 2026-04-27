@@ -1,13 +1,14 @@
 import Link from "next/link"
 import Image from "next/image"
-import { prisma } from "@/lib/prisma"
-import { BUSINESS, formatPrice, CATEGORIAS_VEHICULO } from "@/lib/constants"
+import { BUSINESS, formatPrice } from "@/lib/constants"
 import { TrackVisita } from "@/components/public/track-visita"
 import {
+  getModelosDestacados,
+  getNoticiasRecientes,
+  getTestimoniosHome,
+} from "@/lib/cached-queries"
+import {
   Bike,
-  Car,
-  Truck,
-  Waves,
   ArrowRight,
   CreditCard,
   Wrench,
@@ -16,80 +17,16 @@ import {
   Calendar,
   ShieldCheck,
   Sparkles,
+  Truck,
 } from "lucide-react"
-
-export const dynamic = "force-dynamic"
-
-// ==================== DATA FETCHING ====================
-
-async function getCategoriasDB() {
-  // Vehicle categories come from the enum, but we fetch models to show counts
-  // Fallback to static list from constants
-  return CATEGORIAS_VEHICULO
-}
-
-async function getDestacados() {
-  try {
-    return await prisma.modelo.findMany({
-      where: { activo: true, vendida: false },
-      orderBy: [{ destacado: "desc" }, { createdAt: "desc" }],
-      take: 10,
-      include: { colores: true },
-    })
-  } catch {
-    return []
-  }
-}
-
-async function getTestimonios() {
-  try {
-    return await prisma.testimonio.findMany({
-      where: { publicado: true },
-      orderBy: [{ destacado: "desc" }, { orden: "asc" }, { createdAt: "desc" }],
-      take: 6,
-    })
-  } catch {
-    return []
-  }
-}
-
-async function getNoticiasRecientes() {
-  try {
-    return await prisma.noticia.findMany({
-      where: { publicado: true },
-      orderBy: { fechaPublicacion: "desc" },
-      take: 3,
-      select: {
-        id: true,
-        titulo: true,
-        slug: true,
-        resumen: true,
-        imagen: true,
-        categoria: true,
-        fechaPublicacion: true,
-      },
-    })
-  } catch {
-    return []
-  }
-}
-
-// ==================== ICONS MAP ====================
-
-const CATEGORY_ICONS: Record<string, React.ReactNode> = {
-  MOTOCICLETA: <Bike className="size-8" />,
-  CUATRICICLO: <Car className="size-8" />,
-  UTV: <Truck className="size-8" />,
-  MOTO_DE_AGUA: <Waves className="size-8" />,
-}
 
 // ==================== PAGE ====================
 
 export default async function HomePage() {
   const [modelos, noticias, testimonios] = await Promise.all([
-    getDestacados(),
+    getModelosDestacados(),
     getNoticiasRecientes(),
-    getTestimonios(),
+    getTestimoniosHome(),
   ])
 
   return (
@@ -97,96 +34,168 @@ export default async function HomePage() {
       <TrackVisita pagina="home" />
       {/* ===== 1. HERO ===== */}
       <section className="relative bg-[#1A1A1A] overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#6B4F7A]/20 via-[#6B4F7A]/5 to-transparent" />
-        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-5" />
-        {/* Decorative circles */}
-        <div className="absolute -top-40 -right-40 size-[600px] rounded-full bg-[#6B4F7A]/10 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 size-[400px] rounded-full bg-[#9B59B6]/5 blur-3xl" />
+        {/* Layered backgrounds */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#6B4F7A]/25 via-[#6B4F7A]/5 to-transparent" />
+        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.06]" />
+        <div className="absolute -top-40 -right-40 size-[600px] rounded-full bg-[#6B4F7A]/15 blur-3xl" />
+        <div className="absolute -bottom-32 -left-20 size-[420px] rounded-full bg-[#9B59B6]/10 blur-3xl" />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 lg:py-14">
-          <div className="max-w-4xl">
-            {/* Logo en hero */}
-            <div className="mb-5">
-              <Image
-                src="/images/logo-clasico-transparente.png"
-                alt={BUSINESS.name}
-                width={711}
-                height={257}
-                className="h-20 w-auto opacity-95"
-                priority
-              />
+        {/* Monograma gigante de fondo (decorativo) */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute -right-12 sm:right-0 top-1/2 -translate-y-1/2 opacity-[0.07] hidden md:block"
+        >
+          <Image
+            src="/images/monograma-blanco-transparente.svg"
+            alt=""
+            width={620}
+            height={620}
+            className="size-[480px] lg:size-[620px]"
+          />
+        </div>
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+          <div className="max-w-3xl">
+            {/* Eyebrow */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#9B59B6]/30 bg-[#9B59B6]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-[#C39BD3]">
+              <span className="size-1.5 rounded-full bg-[#9B59B6] animate-pulse" />
+              Concesionaria multimarca · {BUSINESS.city}
             </div>
-            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white leading-[1.1] font-heading">
-              Tu próxima aventura <span className="text-[#9B59B6]">empieza aquí</span>
+
+            {/* Headline display */}
+            <h1 className="mt-5 font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl leading-[0.95] tracking-[0.01em] text-white">
+              TU PRÓXIMA <span className="text-[#9B59B6]">AVENTURA</span><br />
+              EMPIEZA ACÁ
             </h1>
-            <p className="mt-4 text-base text-gray-400 max-w-2xl font-body leading-relaxed">
-              Más de {BUSINESS.yearsInBusiness} años ayudando a elegir el vehículo perfecto. Visitanos en {BUSINESS.city} y conocé todas las marcas.
+
+            <p className="mt-6 text-base sm:text-lg text-gray-300 max-w-xl font-body leading-relaxed">
+              Más de {BUSINESS.yearsInBusiness} años eligiendo con vos la moto, cuatri o UTV ideal.
+              Las mejores marcas, financiación propia y taller oficial.
             </p>
-            <div className="mt-7 flex flex-wrap gap-4">
+
+            <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 href="/catalogo"
-                className="inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-8 py-4 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors shadow-lg shadow-[#6B4F7A]/30"
+                className="group inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-7 py-4 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-all shadow-lg shadow-[#6B4F7A]/40 hover:shadow-xl hover:shadow-[#6B4F7A]/50 hover:-translate-y-0.5"
               >
                 Ver catálogo
-                <ArrowRight className="size-4" />
+                <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <Link
+                href="/recomendador"
+                className="group inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-7 py-4 text-sm font-semibold text-white hover:bg-white/10 hover:border-white/40 transition-colors backdrop-blur-sm"
+              >
+                <Sparkles className="size-4 text-[#C39BD3]" />
+                Quiz: ¿qué moto te conviene?
               </Link>
               <Link
                 href="/servicio-tecnico"
-                className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 dark:bg-neutral-900/5 px-8 py-4 text-sm font-semibold text-white hover:bg-white/10 dark:hover:bg-neutral-900/10 hover:border-white/40 transition-colors"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-transparent px-7 py-4 text-sm font-semibold text-white/80 hover:text-white hover:border-white/30 transition-colors"
               >
                 <Calendar className="size-4" />
                 Pedir turno
               </Link>
             </div>
 
-            {/* Stats row */}
-            <div className="mt-7 flex flex-wrap gap-10">
+            {/* Stats row con tipografía display */}
+            <div className="mt-10 flex flex-wrap gap-x-10 gap-y-6">
               <div>
-                <p className="text-4xl font-extrabold text-white font-heading">+{BUSINESS.yearsInBusiness}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider">Años</p>
+                <p className="font-display text-5xl text-white leading-none">+{BUSINESS.yearsInBusiness}</p>
+                <p className="text-[10px] text-gray-500 mt-1.5 uppercase tracking-[0.18em] font-semibold">Años</p>
               </div>
-              <div className="w-px bg-white/10 dark:bg-neutral-900/10 self-stretch" />
+              <div className="w-px bg-white/10 self-stretch" />
               <div>
-                <p className="text-4xl font-extrabold text-white font-heading">+50</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider">Marcas</p>
+                <p className="font-display text-5xl text-white leading-none">+50</p>
+                <p className="text-[10px] text-gray-500 mt-1.5 uppercase tracking-[0.18em] font-semibold">Marcas</p>
               </div>
-              <div className="w-px bg-white/10 dark:bg-neutral-900/10 self-stretch" />
+              <div className="w-px bg-white/10 self-stretch" />
               <div>
-                <p className="text-4xl font-extrabold text-white font-heading">#1</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wider">{BUSINESS.city}</p>
+                <p className="font-display text-5xl text-white leading-none">24</p>
+                <p className="text-[10px] text-gray-500 mt-1.5 uppercase tracking-[0.18em] font-semibold">Cuotas</p>
+              </div>
+              <div className="w-px bg-white/10 self-stretch" />
+              <div>
+                <p className="font-display text-5xl text-white leading-none">#1</p>
+                <p className="text-[10px] text-gray-500 mt-1.5 uppercase tracking-[0.18em] font-semibold">{BUSINESS.city}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Trust badges abajo */}
+        <div className="relative border-t border-white/5 bg-black/30 backdrop-blur-sm">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 text-xs sm:text-sm text-gray-300">
+              <div className="flex items-center gap-2.5">
+                <ShieldCheck className="size-4 text-[#C39BD3] shrink-0" />
+                <span>Empresa familiar desde {BUSINESS.yearFounded}</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <CreditCard className="size-4 text-[#C39BD3] shrink-0" />
+                <span>Financiación propia y prendaria</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Wrench className="size-4 text-[#C39BD3] shrink-0" />
+                <span>Taller oficial multimarca</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Package className="size-4 text-[#C39BD3] shrink-0" />
+                <span>Stock permanente · entrega inmediata</span>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <Truck className="size-4 text-[#C39BD3] shrink-0" />
+                <span>Envío propio a todo el país</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ===== 2. CATEGORIAS DE VEHICULOS ===== */}
-      <section className="py-20 bg-white dark:bg-neutral-900">
+      {/* ===== 2. EXPLORÁ MOTOS FERNANDEZ ===== */}
+      <section className="py-16 sm:py-20 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
-              ¿Qué estás buscando?
+            <p className="text-[#8B6F9A] font-semibold text-xs uppercase tracking-[0.2em] mb-3">
+              Explorá
+            </p>
+            <h2 className="font-display text-4xl sm:text-5xl text-[#1A1A1A] dark:text-white tracking-wide">
+              TODO LO QUE HACEMOS
             </h2>
-            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body">
-              Exploramos todo tipo de vehículos para tu estilo de vida
+            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body max-w-xl mx-auto">
+              Venta, financiación, taller, repuestos y mucho más. Todo en un solo lugar.
             </p>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-            {CATEGORIAS_VEHICULO.map((cat) => (
+
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            {[
+              { src: "/images/highlight-motos.png", title: "Motos 0KM y usadas", href: "/catalogo", span: "lg:col-span-2 aspect-[2/1]" },
+              { src: "/images/highlight-ofertas.png", title: "Ofertas y financiación", href: "/financiacion", span: "aspect-square" },
+              { src: "/images/highlight-servicios.png", title: "Servicio técnico", href: "/servicio-tecnico", span: "aspect-square" },
+              { src: "/images/highlight-repuestos.png", title: "Repuestos y accesorios", href: "/tienda", span: "aspect-square" },
+              { src: "/images/highlight-nosotros.png", title: "Nosotros", href: "/nosotros", span: "aspect-square" },
+              { src: "/images/highlight-contacto.png", title: "Contacto y ubicación", href: "/contacto", span: "col-span-2 lg:col-span-3 aspect-[2/1] lg:aspect-[3/1]" },
+            ].map((tile) => (
               <Link
-                key={cat.value}
-                href={`/catalogo?categoria=${cat.value}`}
-                className="group flex flex-col items-center gap-4 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-8 text-center hover:border-[#6B4F7A]/40 hover:shadow-xl hover:shadow-[#6B4F7A]/8 transition-all duration-200"
+                key={tile.href}
+                href={tile.href}
+                className={`group relative overflow-hidden rounded-2xl bg-[#1A1A1A] ${tile.span}`}
               >
-                <div className="flex items-center justify-center size-16 rounded-2xl bg-[#F0F0F0] dark:bg-neutral-950 text-[#4E4B48] dark:text-gray-200 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
-                  {CATEGORY_ICONS[cat.value]}
+                <Image
+                  src={tile.src}
+                  alt={tile.title}
+                  fill
+                  className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 flex items-end justify-between gap-2">
+                  <h3 className="font-display text-lg sm:text-xl text-white tracking-wide leading-tight">
+                    {tile.title}
+                  </h3>
+                  <span className="shrink-0 inline-flex items-center justify-center size-8 rounded-full bg-white/10 backdrop-blur-sm text-white group-hover:bg-[#6B4F7A] group-hover:translate-x-1 transition-all duration-200">
+                    <ArrowRight className="size-4" />
+                  </span>
                 </div>
-                <h3 className="text-sm font-semibold text-[#1A1A1A] dark:text-white font-heading group-hover:text-[#6B4F7A] transition-colors">
-                  {cat.label}
-                </h3>
-                <span className="text-xs text-[#6B4F7A] font-medium opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
-                  Ver modelos <ArrowRight className="size-3" />
-                </span>
               </Link>
             ))}
           </div>
@@ -553,7 +562,7 @@ export default async function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {/* Card 1 */}
             <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
               <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
@@ -607,6 +616,20 @@ export default async function HomePage() {
               <p className="text-sm text-gray-400 font-body leading-relaxed">
                 Más de 50 marcas disponibles. Amplio stock de motos, cuatriciclos, UTVs
                 y motos de agua para entrega inmediata.
+              </p>
+            </div>
+
+            {/* Card 5 - Envío propio */}
+            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
+              <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
+                <Truck className="size-7" />
+              </div>
+              <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-2">
+                Envío propio a todo el país
+              </h3>
+              <p className="text-sm text-gray-400 font-body leading-relaxed">
+                Logística directa, sin intermediarios. Despachamos accesorios,
+                repuestos y motos desde Bahía Blanca a cualquier punto del país.
               </p>
             </div>
           </div>

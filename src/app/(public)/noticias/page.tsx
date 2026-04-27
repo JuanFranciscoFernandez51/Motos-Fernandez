@@ -1,12 +1,10 @@
-export const dynamic = 'force-dynamic'
-
 import Link from "next/link"
 import Image from "next/image"
-import { prisma } from "@/lib/prisma"
 import { BUSINESS } from "@/lib/constants"
 import { Newspaper } from "lucide-react"
 import { TrackVisita } from "@/components/public/track-visita"
 import type { Metadata } from "next"
+import { getNoticiasPublicadas } from "@/lib/cached-queries"
 
 export const metadata: Metadata = {
   title: `Noticias | ${BUSINESS.name}`,
@@ -18,10 +16,7 @@ export const metadata: Metadata = {
 }
 
 export default async function NoticiasPage() {
-  const noticias = await prisma.noticia.findMany({
-    where: { publicado: true },
-    orderBy: { fechaPublicacion: "desc" },
-  })
+  const noticias = await getNoticiasPublicadas()
 
   return (
     <>

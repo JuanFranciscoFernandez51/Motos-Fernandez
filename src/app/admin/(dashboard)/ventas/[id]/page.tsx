@@ -12,6 +12,7 @@ import {
   ESTADO_VENTA_LABELS,
 } from "@/lib/admin-helpers"
 import { FileText, CheckCircle, Trash2, Download, PartyPopper } from "lucide-react"
+import { invalidateModelos } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
@@ -79,6 +80,7 @@ async function updateVenta(formData: FormData) {
     revalidatePath("/admin/ventas")
     revalidatePath("/admin/modelos")
     revalidatePath("/catalogo")
+    if (venta.modeloId) invalidateModelos()
     return {}
   } catch (e: unknown) {
     return { error: e instanceof Error ? e.message : "Error al actualizar" }
@@ -107,6 +109,7 @@ async function marcarConcretada(id: string) {
   revalidatePath(`/admin/ventas/${id}`)
   revalidatePath("/admin/modelos")
   revalidatePath("/catalogo")
+  if (venta.modeloId) invalidateModelos()
 }
 
 async function deleteVenta(id: string) {

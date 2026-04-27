@@ -1,25 +1,16 @@
-import { prisma } from "@/lib/prisma"
 import { TiendaClient } from "./tienda-client"
 import { TrackVisita } from "@/components/public/track-visita"
-
-export const dynamic = "force-dynamic"
+import { getProductosTienda, getCategoriasTienda } from "@/lib/cached-queries"
 
 export const metadata = {
   title: "Tienda | Motos Fernandez",
-  description: "Accesorios, repuestos, indumentaria y cascos para tu moto. Envios a todo el pais.",
+  description: "Accesorios, repuestos, indumentaria y cascos para tu moto. Envío propio a todo el país.",
 }
 
 export default async function TiendaPage() {
   const [productos, categorias] = await Promise.all([
-    prisma.producto.findMany({
-      where: { activo: true },
-      include: { categoria: true },
-      orderBy: { createdAt: "desc" },
-    }),
-    prisma.categoria.findMany({
-      orderBy: { orden: "asc" },
-      include: { _count: { select: { productos: { where: { activo: true } } } } },
-    }),
+    getProductosTienda(),
+    getCategoriasTienda(),
   ])
 
   return (
@@ -35,7 +26,7 @@ export default async function TiendaPage() {
             Tienda de Accesorios
           </h1>
           <p className="mt-3 text-gray-400 max-w-2xl mx-auto">
-            Cascos, indumentaria, repuestos y accesorios para tu moto. Envios a todo el pais.
+            Cascos, indumentaria, repuestos y accesorios para tu moto. Envío propio a todo el país.
           </p>
         </div>
       </section>

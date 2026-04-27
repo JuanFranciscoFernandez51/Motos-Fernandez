@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
+import { invalidateProductos } from "@/lib/cached-queries"
 
 export async function GET(
   request: NextRequest,
@@ -59,6 +60,7 @@ export async function PUT(
       },
     })
 
+    invalidateProductos(producto.slug)
     return NextResponse.json(producto)
   } catch (error) {
     console.error("Error updating producto:", error)
@@ -81,7 +83,8 @@ export async function DELETE(
   const { id } = await params
 
   try {
-    await prisma.producto.delete({ where: { id } })
+    const deleted = await prisma.producto.delete({ where: { id } })
+    invalidateProductos(deleted.slug)
     return NextResponse.json({ message: "Producto eliminado" })
   } catch (error) {
     console.error("Error deleting producto:", error)

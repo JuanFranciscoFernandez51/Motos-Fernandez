@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { VentaForm } from "@/components/admin/operativo/venta-form"
+import { invalidateModelos } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
@@ -68,6 +69,7 @@ async function createVenta(formData: FormData) {
     revalidatePath("/admin/ventas")
     revalidatePath("/admin/modelos")
     revalidatePath("/catalogo")
+    if (venta.modeloId) invalidateModelos()
     return { id: venta.id }
   } catch (e: unknown) {
     return {

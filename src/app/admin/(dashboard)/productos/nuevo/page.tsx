@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { ProductoForm } from "@/components/admin/producto-form"
+import { invalidateProductos } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
@@ -46,6 +47,7 @@ async function createProducto(formData: FormData) {
     })
 
     revalidatePath("/admin/productos")
+    invalidateProductos()
     return {}
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Error al crear el producto"

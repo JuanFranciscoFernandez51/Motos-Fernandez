@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { revalidatePath } from "next/cache"
 import { ModelosList } from "./modelos-list"
+import { invalidateModelos } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
@@ -16,6 +17,7 @@ async function toggleActivo(id: string, activoActual: boolean) {
   revalidatePath("/admin/modelos")
   revalidatePath("/catalogo")
   revalidatePath("/")
+  invalidateModelos()
 }
 
 async function updateEtiqueta(id: string, etiqueta: string | null) {
@@ -26,6 +28,7 @@ async function updateEtiqueta(id: string, etiqueta: string | null) {
   })
   revalidatePath("/admin/modelos")
   revalidatePath("/catalogo")
+  invalidateModelos()
 }
 
 async function updateProveedorModelo(id: string, proveedorId: string | null) {
@@ -73,6 +76,7 @@ async function updateCampoModelo(
   revalidatePath("/admin/modelos")
   revalidatePath("/catalogo")
   revalidatePath("/")
+  invalidateModelos()
 }
 
 async function updateFotos(id: string, fotos: string[]) {
@@ -84,6 +88,7 @@ async function updateFotos(id: string, fotos: string[]) {
   revalidatePath("/admin/modelos")
   revalidatePath("/catalogo")
   revalidatePath("/")
+  invalidateModelos()
 }
 
 async function markVendida(id: string, vendida: boolean) {
@@ -97,6 +102,7 @@ async function markVendida(id: string, vendida: boolean) {
   revalidatePath("/admin/modelos")
   revalidatePath("/catalogo")
   revalidatePath("/")
+  invalidateModelos()
 }
 
 async function deleteModelo(id: string, confirmText: string) {
@@ -119,6 +125,7 @@ async function deleteModelo(id: string, confirmText: string) {
   revalidatePath("/admin/modelos")
   revalidatePath("/catalogo")
   revalidatePath("/")
+  invalidateModelos()
 }
 
 export default async function ModelosPage() {

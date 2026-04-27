@@ -1,18 +1,16 @@
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { prisma } from "@/lib/prisma"
 import { formatPrice, getWhatsAppUrl, BUSINESS, WHATSAPP_MESSAGES } from "@/lib/constants"
 import { ShoppingBag, ArrowLeft, MessageCircle } from "lucide-react"
 import { AddToCartButton } from "./add-to-cart-button"
 import { TrackVisita } from "@/components/public/track-visita"
 import { ShareButton } from "@/components/public/share-button"
-
-export const dynamic = "force-dynamic"
+import { getProductoBySlug, getProductosRelacionados } from "@/lib/cached-queries"
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const producto = await prisma.producto.findUnique({ where: { slug } })
+  const producto = await getProductoBySlug(slug)
   if (!producto) return { title: "Producto no encontrado" }
   return {
     title: `${producto.nombre} | Tienda Motos Fernandez`,
@@ -22,18 +20,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductoDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
-  const producto = await prisma.producto.findUnique({
-    where: { slug },
-    include: { categoria: true },
-  })
+  const producto = await getProductoBySlug(slug)
 
   if (!producto || !producto.activo) notFound()
 
-  const related = await prisma.producto.findMany({
-    where: { categoriaId: producto.categoriaId, activo: true, id: { not: producto.id } },
-    take: 4,
-    include: { categoria: true },
-  })
+  const related = await getProductosRelacionados(producto.categoriaId, producto.id)
 
   const precio = producto.precioOferta || producto.precio
   const talles = producto.talles || []

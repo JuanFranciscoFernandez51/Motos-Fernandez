@@ -15,6 +15,7 @@ import {
 import { Plus, Pencil, Search } from "lucide-react"
 import { revalidatePath } from "next/cache"
 import { ProveedorSelect } from "./proveedor-select"
+import { invalidateProductos } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
@@ -27,6 +28,7 @@ async function toggleProductoActivo(formData: FormData) {
     data: { activo: !activo },
   })
   revalidatePath("/admin/productos")
+  invalidateProductos()
 }
 
 async function updatePrecio(formData: FormData) {
@@ -39,6 +41,7 @@ async function updatePrecio(formData: FormData) {
     data: { precio },
   })
   revalidatePath("/admin/productos")
+  invalidateProductos()
 }
 
 async function updateStock(formData: FormData) {
@@ -51,6 +54,7 @@ async function updateStock(formData: FormData) {
     data: { stock },
   })
   revalidatePath("/admin/productos")
+  invalidateProductos()
 }
 
 async function updateProveedorProducto(

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { ProductoForm } from "@/components/admin/producto-form"
+import { invalidateProductos } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
@@ -49,6 +50,7 @@ async function updateProducto(formData: FormData) {
     })
 
     revalidatePath("/admin/productos")
+    invalidateProductos(slug)
     return {}
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Error al actualizar el producto"

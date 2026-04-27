@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { NoticiaForm } from "@/components/admin/noticia-form"
+import { invalidateNoticias } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
@@ -41,6 +42,7 @@ async function updateNoticia(formData: FormData) {
     revalidatePath("/admin/noticias")
     revalidatePath("/noticias")
     revalidatePath(`/noticias/${slug}`)
+    invalidateNoticias(slug)
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Error al actualizar la noticia"
     return { error: message }

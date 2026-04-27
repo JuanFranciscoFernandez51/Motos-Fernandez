@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
+import { invalidateNoticias } from "@/lib/cached-queries"
 
 export async function GET() {
   const session = await requireAdmin()
@@ -38,6 +39,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    invalidateNoticias(noticia.slug)
     return NextResponse.json(noticia, { status: 201 })
   } catch (error) {
     console.error("Error creating noticia:", error)

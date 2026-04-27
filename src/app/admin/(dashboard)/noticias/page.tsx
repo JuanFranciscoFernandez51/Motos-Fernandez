@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table"
 import { Plus, Pencil, Newspaper } from "lucide-react"
 import { revalidatePath } from "next/cache"
+import { invalidateNoticias } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
@@ -25,6 +26,7 @@ async function togglePublicado(formData: FormData) {
     data: { publicado: !publicado },
   })
   revalidatePath("/admin/noticias")
+  invalidateNoticias()
 }
 
 async function toggleDestacado(formData: FormData) {
@@ -36,6 +38,7 @@ async function toggleDestacado(formData: FormData) {
     data: { destacado: !destacado },
   })
   revalidatePath("/admin/noticias")
+  invalidateNoticias()
 }
 
 export default async function NoticiasPage() {

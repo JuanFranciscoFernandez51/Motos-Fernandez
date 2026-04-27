@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
-import { Montserrat, Poppins, Antonio } from "next/font/google"
+import { Montserrat, Poppins } from "next/font/google"
+import localFont from "next/font/local"
 import Script from "next/script"
 import "./globals.css"
 import { BUSINESS } from "@/lib/constants"
@@ -19,10 +20,9 @@ const poppins = Poppins({
   display: "swap",
 })
 
-const antonio = Antonio({
+const bebasNeue = localFont({
+  src: "../../public/fonts/BebasNeue-Regular.ttf",
   variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["700"],
   display: "swap",
 })
 
@@ -142,7 +142,7 @@ export default function RootLayout({
   return (
     <html
       lang="es-AR"
-      className={`${montserrat.variable} ${poppins.variable} ${antonio.variable} h-full antialiased`}
+      className={`${montserrat.variable} ${poppins.variable} ${bebasNeue.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

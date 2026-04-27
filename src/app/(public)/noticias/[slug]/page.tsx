@@ -1,47 +1,18 @@
-export const dynamic = 'force-dynamic'
-
 import { notFound } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
-import { prisma } from "@/lib/prisma"
 import { BUSINESS } from "@/lib/constants"
 import { ChevronRight, Newspaper, CalendarDays } from "lucide-react"
 import type { Metadata } from "next"
+import { getNoticiaBySlug, getNoticiasRelacionadas } from "@/lib/cached-queries"
 
 interface Props {
   params: Promise<{ slug: string }>
 }
 
-async function getNoticia(slug: string) {
-  try {
-    return await prisma.noticia.findFirst({
-      where: { slug, publicado: true },
-    })
-  } catch {
-    return null
-  }
-}
-
-async function getRelated(categoria: string | null, excludeId: string) {
-  if (!categoria) return []
-  try {
-    return await prisma.noticia.findMany({
-      where: {
-        publicado: true,
-        categoria,
-        id: { not: excludeId },
-      },
-      orderBy: { fechaPublicacion: "desc" },
-      take: 3,
-    })
-  } catch {
-    return []
-  }
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const noticia = await getNoticia(slug)
+  const noticia = await getNoticiaBySlug(slug)
   if (!noticia) return { title: "Noticia no encontrada" }
 
   return {
@@ -61,10 +32,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function NoticiaDetailPage({ params }: Props) {
   const { slug } = await params
-  const noticia = await getNoticia(slug)
+  const noticia = await getNoticiaBySlug(slug)
   if (!noticia) notFound()
 
-  const related = await getRelated(noticia.categoria, noticia.id)
+  const related = await getNoticiasRelacionadas(noticia.categoria, noticia.id)
 
   return (
     <>

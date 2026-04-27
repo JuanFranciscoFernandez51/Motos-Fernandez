@@ -1,9 +1,6 @@
-export const dynamic = 'force-dynamic'
-
 import { notFound } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { prisma } from "@/lib/prisma"
 import { TrackVisita } from "@/components/public/track-visita"
 import { ShareButton } from "@/components/public/share-button"
 import { CalculadoraCuotas } from "@/components/public/calculadora-cuotas"
@@ -17,7 +14,8 @@ import {
   CATEGORIA_VEHICULO_LABELS,
   ETIQUETAS_MAP,
 } from "@/lib/constants"
-import { MessageCircle, ArrowLeft, Bike, CreditCard, ChevronRight } from "lucide-react"
+import { getModeloBySlug, getModelosRelacionados } from "@/lib/cached-queries"
+import { MessageCircle, Bike, CreditCard, ChevronRight } from "lucide-react"
 import type { Metadata } from "next"
 import { ModelGallery } from "./gallery-client"
 
@@ -25,40 +23,9 @@ interface Props {
   params: Promise<{ slug: string }>
 }
 
-async function getModel(slug: string) {
-  try {
-    return await prisma.modelo.findFirst({
-      where: { slug, activo: true, vendida: false },
-      include: { colores: true },
-    })
-  } catch {
-    return null
-  }
-}
-
-async function getRelatedModels(
-  categoriaVehiculo: string,
-  excludeId: string
-) {
-  try {
-    return await prisma.modelo.findMany({
-      where: {
-        activo: true,
-        vendida: false,
-        categoriaVehiculo: categoriaVehiculo as any,
-        id: { not: excludeId },
-      },
-      take: 4,
-      orderBy: { orden: "asc" },
-    })
-  } catch {
-    return []
-  }
-}
-
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const model = await getModel(slug)
+  const model = await getModeloBySlug(slug)
   if (!model) return { title: "Modelo no encontrado" }
 
   return {
@@ -74,10 +41,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ModeloDetailPage({ params }: Props) {
   const { slug } = await params
-  const model = await getModel(slug)
+  const model = await getModeloBySlug(slug)
   if (!model) notFound()
 
-  const related = await getRelatedModels(model.categoriaVehiculo, model.id)
+  const related = await getModelosRelacionados(model.categoriaVehiculo, model.id)
   const specs = (model.specs as Record<string, string>) || {}
   const financiacion = (model.financiacion as Array<{
     plan: string

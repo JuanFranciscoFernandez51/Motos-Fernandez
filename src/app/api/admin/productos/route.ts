@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
+import { invalidateProductos } from "@/lib/cached-queries"
 
 export async function GET() {
   const session = await requireAdmin()
@@ -44,6 +45,7 @@ export async function POST(request: NextRequest) {
       },
     })
 
+    invalidateProductos(producto.slug)
     return NextResponse.json(producto, { status: 201 })
   } catch (error) {
     console.error("Error creating producto:", error)

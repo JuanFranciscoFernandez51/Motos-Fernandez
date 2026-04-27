@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic"
-
 import Link from "next/link"
 import { BUSINESS, getWhatsAppUrl, WHATSAPP_MESSAGES } from "@/lib/constants"
 import { TrackVisita } from "@/components/public/track-visita"

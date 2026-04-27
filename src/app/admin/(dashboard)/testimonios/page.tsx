@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table"
 import { Plus, Pencil, Star, User } from "lucide-react"
 import { revalidatePath } from "next/cache"
+import { invalidateTestimonios } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
@@ -26,6 +27,7 @@ async function toggleTestimonioPublicado(formData: FormData) {
   })
   revalidatePath("/admin/testimonios")
   revalidatePath("/")
+  invalidateTestimonios()
 }
 
 async function toggleTestimonioDestacado(formData: FormData) {
@@ -38,6 +40,7 @@ async function toggleTestimonioDestacado(formData: FormData) {
   })
   revalidatePath("/admin/testimonios")
   revalidatePath("/")
+  invalidateTestimonios()
 }
 
 export default async function TestimoniosPage() {

@@ -12,6 +12,7 @@ import { ComparadorProvider } from "@/components/public/comparador-provider"
 import { WishlistProvider, useWishlist } from "@/components/public/wishlist-provider"
 import { CookieBanner } from "@/components/public/cookie-banner"
 import { NewsletterForm } from "@/components/public/newsletter-form"
+import { PromoBar } from "@/components/public/promo-bar"
 
 const NAV_LINKS = [
   { href: "/catalogo", label: "Catálogo", highlight: true },
@@ -265,7 +266,7 @@ function Footer() {
             &copy; {new Date().getFullYear()} {BUSINESS.name}. Todos los derechos reservados.
           </p>
           <div className="flex items-center gap-4">
-            <Link href="/envios" className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">Envíos</Link>
+            <Link href="/envios" className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">Envío propio a todo el país</Link>
             <Link href="/privacidad" className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">Privacidad</Link>
             <Link href="/terminos" className="text-xs text-gray-500 dark:text-gray-400 hover:text-gray-300 transition-colors">Términos</Link>
           </div>
@@ -298,6 +299,7 @@ export default function PublicLayout({
     <CartProvider>
       <ComparadorProvider>
         <WishlistProvider>
+          <PromoBar />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

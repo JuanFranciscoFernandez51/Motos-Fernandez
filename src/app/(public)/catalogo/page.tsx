@@ -1,13 +1,7 @@
-export const dynamic = 'force-dynamic'
-
-import Link from "next/link"
-import Image from "next/image"
-import { prisma } from "@/lib/prisma"
-import { formatPrice, CATEGORIAS_VEHICULO, CATEGORIA_VEHICULO_LABELS } from "@/lib/constants"
 import { TrackVisita } from "@/components/public/track-visita"
-import { Bike, Search } from "lucide-react"
 import type { Metadata } from "next"
 import { CatalogoClient } from "./catalogo-client"
+import { getModelosCatalogo, getMarcasCatalogo } from "@/lib/cached-queries"
 
 export const metadata: Metadata = {
   title: "Modelos | Catalogo de motos, cuatriciclos, UTV y motos de agua",
@@ -15,34 +9,8 @@ export const metadata: Metadata = {
     "Explora nuestro catalogo completo de motocicletas, cuatriciclos, UTV y motos de agua. Las mejores marcas con financiacion en Bahia Blanca.",
 }
 
-async function getModels() {
-  try {
-    return await prisma.modelo.findMany({
-      where: { activo: true, vendida: false },
-      orderBy: [{ orden: "asc" }, { nombre: "asc" }],
-      include: { colores: true },
-    })
-  } catch {
-    return []
-  }
-}
-
-async function getBrands() {
-  try {
-    const brands = await prisma.modelo.findMany({
-      where: { activo: true, vendida: false },
-      select: { marca: true },
-      distinct: ["marca"],
-      orderBy: { marca: "asc" },
-    })
-    return brands.map((b) => b.marca)
-  } catch {
-    return []
-  }
-}
-
 export default async function ModelosPage() {
-  const [models, brands] = await Promise.all([getModels(), getBrands()])
+  const [models, brands] = await Promise.all([getModelosCatalogo(), getMarcasCatalogo()])
 
   return (
     <>

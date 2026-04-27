@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { ModeloForm } from "@/components/admin/modelo-form"
+import { invalidateModelos } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
@@ -83,6 +84,7 @@ async function updateModelo(formData: FormData) {
     })
 
     revalidatePath("/admin/modelos")
+    invalidateModelos(slug)
     return {}
   } catch (e: unknown) {
     const message = e instanceof Error ? e.message : "Error al actualizar el modelo"
