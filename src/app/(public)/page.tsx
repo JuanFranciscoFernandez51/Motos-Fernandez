@@ -151,56 +151,6 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ===== 2. EXPLORÁ MOTOS FERNANDEZ ===== */}
-      <section className="py-16 sm:py-20 bg-white dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <p className="text-[#8B6F9A] font-semibold text-xs uppercase tracking-[0.2em] mb-3">
-              Explorá
-            </p>
-            <h2 className="font-display text-4xl sm:text-5xl text-[#1A1A1A] dark:text-white tracking-wide">
-              TODO LO QUE HACEMOS
-            </h2>
-            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body max-w-xl mx-auto">
-              Venta, financiación, taller, repuestos y mucho más. Todo en un solo lugar.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            {[
-              { src: "/images/highlight-motos.png", title: "Motos 0KM y usadas", href: "/catalogo", span: "lg:col-span-2 aspect-[2/1]" },
-              { src: "/images/highlight-ofertas.png", title: "Ofertas y financiación", href: "/financiacion", span: "aspect-square" },
-              { src: "/images/highlight-servicios.png", title: "Servicio técnico", href: "/servicio-tecnico", span: "aspect-square" },
-              { src: "/images/highlight-repuestos.png", title: "Repuestos y accesorios", href: "/tienda", span: "aspect-square" },
-              { src: "/images/highlight-nosotros.png", title: "Nosotros", href: "/nosotros", span: "aspect-square" },
-              { src: "/images/highlight-contacto.png", title: "Contacto y ubicación", href: "/contacto", span: "col-span-2 lg:col-span-3 aspect-[2/1] lg:aspect-[3/1]" },
-            ].map((tile) => (
-              <Link
-                key={tile.href}
-                href={tile.href}
-                className={`group relative overflow-hidden rounded-2xl bg-[#1A1A1A] ${tile.span}`}
-              >
-                <Image
-                  src={tile.src}
-                  alt={tile.title}
-                  fill
-                  className="object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
-                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 flex items-end justify-between gap-2">
-                  <h3 className="font-display text-lg sm:text-xl text-white tracking-wide leading-tight">
-                    {tile.title}
-                  </h3>
-                  <span className="shrink-0 inline-flex items-center justify-center size-8 rounded-full bg-white/10 backdrop-blur-sm text-white group-hover:bg-[#6B4F7A] group-hover:translate-x-1 transition-all duration-200">
-                    <ArrowRight className="size-4" />
-                  </span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ===== 3. MODELOS DESTACADOS ===== */}
       <section className="py-14 bg-[#F0F0F0] dark:bg-neutral-950">

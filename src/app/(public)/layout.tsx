@@ -65,7 +65,7 @@ function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#1A1A1A] border-b border-white/5">
+    <nav className="bg-[#1A1A1A] border-b border-white/5">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center">
           {/* Logo - monograma */}
@@ -299,8 +299,10 @@ export default function PublicLayout({
     <CartProvider>
       <ComparadorProvider>
         <WishlistProvider>
-          <PromoBar />
-          <Navbar />
+          <div className="sticky top-0 z-50">
+            <PromoBar />
+            <Navbar />
+          </div>
           <main className="flex-1">{children}</main>
           <Footer />
           <WhatsAppButton />
