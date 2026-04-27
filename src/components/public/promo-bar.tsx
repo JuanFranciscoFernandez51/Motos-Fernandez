@@ -1,10 +1,9 @@
-import { CreditCard, Truck, Sparkles, ShieldCheck, Wrench, Package } from "lucide-react"
+import { CreditCard, Truck, Sparkles, Wrench, Package } from "lucide-react"
 
 const MESSAGES = [
   { icon: Truck, text: "Envío propio a todo el país" },
   { icon: CreditCard, text: "Financiación propia hasta 24 cuotas" },
   { icon: Sparkles, text: "Más de 50 marcas en stock" },
-  { icon: ShieldCheck, text: "Empresa familiar desde 1985" },
   { icon: Wrench, text: "Taller oficial multimarca" },
   { icon: Package, text: "Entrega inmediata" },
 ] as const

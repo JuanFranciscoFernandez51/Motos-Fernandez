@@ -15,7 +15,7 @@ import type { Metadata } from "next"
 
 export const metadata: Metadata = {
   title: "Nosotros | Nuestra historia y valores",
-  description: `Conoce la historia de ${BUSINESS.name}. Mas de ${BUSINESS.yearsInBusiness} anos como empresa familiar en ${BUSINESS.city}, brindando confianza y servicio a miles de clientes.`,
+  description: `Conoce la historia de ${BUSINESS.name}. Mas de ${BUSINESS.yearsInBusiness} anos en ${BUSINESS.city}, brindando confianza y servicio a miles de clientes.`,
 }
 
 const VALUES = [
@@ -91,13 +91,12 @@ export default function NosotrosPage() {
               Desde {BUSINESS.yearFounded}
             </p>
             <h1 className="text-4xl sm:text-5xl font-extrabold text-white font-heading leading-tight">
-              Una empresa familiar con pasion por las motos
+              Pasion por las motos desde {BUSINESS.yearFounded}
             </h1>
             <p className="mt-5 text-lg text-gray-400 font-body leading-relaxed">
               Fundada en {BUSINESS.yearFounded} en el corazon de {BUSINESS.city},{" "}
-              {BUSINESS.name} nacio como un emprendimiento familiar con un
-              objetivo claro: acompanar a cada cliente en la eleccion de su
-              vehiculo ideal.
+              {BUSINESS.name} nacio con un objetivo claro: acompanar a cada
+              cliente en la eleccion de su vehiculo ideal.
             </p>
           </div>
         </div>

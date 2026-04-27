@@ -125,11 +125,7 @@ export default async function HomePage() {
         {/* Trust badges abajo */}
         <div className="relative border-t border-white/5 bg-black/30 backdrop-blur-sm">
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 text-xs sm:text-sm text-gray-300">
-              <div className="flex items-center gap-2.5">
-                <ShieldCheck className="size-4 text-[#C39BD3] shrink-0" />
-                <span>Empresa familiar desde {BUSINESS.yearFounded}</span>
-              </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs sm:text-sm text-gray-300">
               <div className="flex items-center gap-2.5">
                 <CreditCard className="size-4 text-[#C39BD3] shrink-0" />
                 <span>Financiación propia y prendaria</span>
@@ -507,8 +503,8 @@ export default async function HomePage() {
               ¿Por qué elegirnos?
             </h2>
             <p className="mt-3 text-gray-500 dark:text-gray-400 font-body max-w-lg mx-auto">
-              Más de {BUSINESS.yearsInBusiness} años de experiencia nos respaldan. Somos
-              una empresa familiar con raíces en {BUSINESS.city}.
+              Más de {BUSINESS.yearsInBusiness} años de experiencia nos respaldan,
+              con raíces en {BUSINESS.city}.
             </p>
           </div>
 
