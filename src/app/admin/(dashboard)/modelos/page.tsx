@@ -5,6 +5,7 @@ import { Plus } from "lucide-react"
 import { revalidatePath } from "next/cache"
 import { ModelosList } from "./modelos-list"
 import { invalidateModelos } from "@/lib/cached-queries"
+import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -252,11 +253,26 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
         })
       }
 
+      // 4) Si tiene financiación → crear planilla en tesorería
+      await crearFinanciacionDesdeOC(tx, {
+        id: orden.id,
+        clienteId: orden.clienteId,
+        motoDescripcion: orden.motoDescripcion,
+        formaPago: orden.formaPago,
+        cuotas: orden.cuotas,
+        valorCuota: orden.valorCuota,
+        entrega: orden.entrega,
+        precioVenta: orden.precioVenta,
+        moneda: orden.moneda,
+      })
+
       return { ordenId: orden.id, motoRecibidaId }
     })
 
     revalidatePath("/admin/modelos")
     revalidatePath("/admin/ordenes-compra")
+    revalidatePath("/admin/tesoreria")
+    revalidatePath("/admin/tesoreria/financiaciones")
     revalidatePath("/catalogo")
     revalidatePath("/")
     invalidateModelos()

@@ -36,6 +36,32 @@ const styles = StyleSheet.create({
   terms: { marginTop: 18, padding: 10, backgroundColor: "#F8F5FA", fontSize: 8, lineHeight: 1.5 },
   termsTitle: { fontWeight: 700, marginBottom: 4, fontSize: 9, color: "#6B4F7A" },
   termsItem: { marginBottom: 3 },
+  finBox: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: "#EFF6FF",
+    borderLeft: "3px solid #2563EB",
+    borderRadius: 3,
+  },
+  finTitle: {
+    fontSize: 10,
+    fontWeight: 700,
+    color: "#1E40AF",
+    marginBottom: 6,
+  },
+  finRow: { flexDirection: "row", marginBottom: 3 },
+  finLabel: { width: 120, color: "#1E40AF", fontWeight: 700 },
+  finValue: { flex: 1 },
+  finHighlight: {
+    marginTop: 6,
+    padding: 6,
+    backgroundColor: "#DBEAFE",
+    borderRadius: 2,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  finHighlightLabel: { fontWeight: 700, color: "#1E3A8A" },
+  finHighlightValue: { fontWeight: 700, color: "#1E3A8A" },
   signatures: { flexDirection: "row", justifyContent: "space-between", marginTop: 50, gap: 30 },
   signBox: { flex: 1, textAlign: "center", borderTop: "1px solid #1A1A1A", paddingTop: 5 },
   signLabel: { fontSize: 8, fontWeight: 700 },
@@ -242,27 +268,55 @@ export function OCPDF({ data }: { data: OCPDFData }) {
             </View>
           </>
         )}
-        {data.economico.cuotas && (
-          <>
-            <View style={styles.row}>
-              <Text style={styles.label}>Entrega:</Text>
-              <Text style={styles.value}>
-                {money(data.economico.entrega, data.economico.moneda)}
-              </Text>
-            </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Cuotas:</Text>
-              <Text style={styles.value}>
-                {data.economico.cuotas} x{" "}
-                {money(data.economico.valorCuota, data.economico.moneda)}
-              </Text>
-            </View>
-          </>
-        )}
         {data.economico.detallePago && (
           <View style={styles.row}>
             <Text style={styles.label}>Detalle:</Text>
             <Text style={styles.value}>{data.economico.detallePago}</Text>
+          </View>
+        )}
+
+        {/* Sección de financiación destacada (solo si hay cuotas) */}
+        {data.economico.cuotas != null && data.economico.cuotas > 0 && (
+          <View style={styles.finBox}>
+            <Text style={styles.finTitle}>FINANCIACIÓN ACORDADA</Text>
+            {data.economico.entrega != null && data.economico.entrega > 0 && (
+              <View style={styles.finRow}>
+                <Text style={styles.finLabel}>Entrega:</Text>
+                <Text style={styles.finValue}>
+                  {money(data.economico.entrega, data.economico.moneda)}
+                </Text>
+              </View>
+            )}
+            <View style={styles.finRow}>
+              <Text style={styles.finLabel}>Cantidad de cuotas:</Text>
+              <Text style={styles.finValue}>{data.economico.cuotas}</Text>
+            </View>
+            <View style={styles.finRow}>
+              <Text style={styles.finLabel}>Valor por cuota:</Text>
+              <Text style={styles.finValue}>
+                {money(data.economico.valorCuota, data.economico.moneda)}
+              </Text>
+            </View>
+            {data.economico.valorCuota != null && (
+              <View style={styles.finHighlight}>
+                <Text style={styles.finHighlightLabel}>
+                  Total financiado ({data.economico.cuotas} cuotas):
+                </Text>
+                <Text style={styles.finHighlightValue}>
+                  {money(
+                    (data.economico.valorCuota || 0) * (data.economico.cuotas || 0),
+                    data.economico.moneda
+                  )}
+                </Text>
+              </View>
+            )}
+            <Text
+              style={{ fontSize: 7, color: "#1E40AF", marginTop: 6, fontStyle: "italic" }}
+            >
+              El comprador se compromete al pago en término de las cuotas pactadas. El plan
+              detallado y los vencimientos quedan registrados en la planilla de tesorería de
+              la concesionaria.
+            </Text>
           </View>
         )}
 
@@ -292,9 +346,20 @@ export function OCPDF({ data }: { data: OCPDFData }) {
             4. La seña entregada forma parte del precio total. El saldo deberá
             abonarse en los términos acordados.
           </Text>
+          {data.economico.cuotas != null && data.economico.cuotas > 0 && (
+            <Text style={styles.termsItem}>
+              5. El saldo financiado se abonará en {data.economico.cuotas} cuota
+              {data.economico.cuotas === 1 ? "" : "s"} de{" "}
+              {money(data.economico.valorCuota, data.economico.moneda)} cada una. La
+              falta de pago de cualquier cuota faculta al vendedor a exigir el saldo
+              total y/o resolver este boleto, sin perjuicio de las acciones legales
+              correspondientes.
+            </Text>
+          )}
           <Text style={styles.termsItem}>
-            5. Cualquier controversia se someterá a los tribunales ordinarios
-            de la ciudad de Bahía Blanca, con renuncia a cualquier otro fuero.
+            {data.economico.cuotas != null && data.economico.cuotas > 0 ? "6" : "5"}.
+            Cualquier controversia se someterá a los tribunales ordinarios de la
+            ciudad de Bahía Blanca, con renuncia a cualquier otro fuero.
           </Text>
         </View>
 

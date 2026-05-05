@@ -489,6 +489,86 @@ model Proveedor {
   @@index([activo])
 }
 
+// ==================== TESORERÍA - FINANCIACIONES ====================
+
+model FinanciacionOC {
+  id              String   @id @default(cuid())
+  numero          Int      @unique @default(autoincrement())  // FIN-0001
+
+  // Vínculos
+  ordenCompraId   String?  @unique
+  ordenCompra     OrdenCompra? @relation(fields: [ordenCompraId], references: [id], onDelete: SetNull)
+  clienteId       String
+  cliente         Cliente  @relation(fields: [clienteId], references: [id])
+
+  // Descripción/info
+  descripcion     String?  // ej: "Honda XR150L 2025" — snapshot en caso de que se borre la OC
+  origen          String   @default("OC_AUTOMATICA")  // OC_AUTOMATICA | MANUAL
+
+  // Datos económicos
+  montoTotal      Int      // monto a financiar (capital)
+  entrega         Int      @default(0)
+  cantidadCuotas  Int
+  valorCuota      Int
+  moneda          String   @default("ARS")
+
+  // Fechas
+  fechaInicio     DateTime @default(now())
+  diaVencimiento  Int      @default(10)  // día del mes que vence cada cuota
+  fechaFin        DateTime?  // cuándo termina (calculada)
+
+  // Estado
+  estado          EstadoFinanciacion @default(ACTIVA)
+
+  // Cuotas relacionadas
+  cuotas          CuotaFinanciacion[]
+
+  observaciones   String?  @db.Text
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([clienteId])
+  @@index([estado])
+  @@index([fechaInicio])
+}
+
+model CuotaFinanciacion {
+  id              String   @id @default(cuid())
+  numero          Int      // 1, 2, 3...
+  financiacionId  String
+  financiacion    FinanciacionOC @relation(fields: [financiacionId], references: [id], onDelete: Cascade)
+
+  monto           Int
+  fechaVencimiento DateTime
+  fechaPago       DateTime?
+  estado          EstadoCuota @default(PENDIENTE)
+  metodoPago      String?  // "Efectivo", "Transferencia", "Tarjeta", etc.
+  comprobante     String?  // URL o nº de comprobante
+  observaciones   String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([financiacionId, numero])
+  @@index([fechaVencimiento])
+  @@index([estado])
+}
+
+enum EstadoFinanciacion {
+  ACTIVA
+  COMPLETADA
+  ATRASADA
+  CANCELADA
+}
+
+enum EstadoCuota {
+  PENDIENTE
+  PAGADA
+  ATRASADA
+  CANCELADA
+}
+
 // ==================== CLIENTES (CRM OPERATIVO) ====================
 
 model Cliente {
@@ -516,6 +596,7 @@ model Cliente {
   mandatos        MandatoVenta[]
   ordenesCompra   OrdenCompra[]
   motosEntregadas Modelo[]      @relation("ClienteEntregaModelo")
+  financiaciones  FinanciacionOC[]
   ordenesTrabajo  OrdenTrabajo[]
 
   createdAt DateTime @default(now())
@@ -641,6 +722,9 @@ model OrdenCompra {
 
   // Relación inversa: motos en stock que entraron por esta OC (parte de pago)
   motosOrigen     Modelo[] @relation("OCOrigenModelo")
+
+  // Financiación vinculada (si la OC tiene cuotas)
+  financiacion    FinanciacionOC?
 
   observaciones   String?   @db.Text
 

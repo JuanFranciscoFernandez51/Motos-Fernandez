@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { OCForm } from "@/components/admin/operativo/oc-form"
 import { invalidateModelos } from "@/lib/cached-queries"
+import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -18,56 +19,63 @@ async function createOrdenCompra(formData: FormData) {
       return v && v.trim() ? new Date(v) : new Date()
     }
 
-    const orden = await prisma.ordenCompra.create({
-      data: {
-        clienteId: get("clienteId"),
-        modeloId: get("modeloId") || null,
-        motoDescripcion: get("motoDescripcion"),
-        motoChasis: get("motoChasis") || null,
-        motoMotor: get("motoMotor") || null,
-        motoPatente: get("motoPatente") || null,
-        motoAnio: num("motoAnio"),
-        motoKilometros: num("motoKilometros"),
-        precioVenta: num("precioVenta") ?? 0,
-        moneda: get("moneda") || "ARS",
-        formaPago: get("formaPago") || null,
-        sena: num("sena"),
-        saldo: num("saldo"),
-        detallePago: get("detallePago") || null,
-        permutaDescripcion: get("permutaDescripcion") || null,
-        permutaValor: num("permutaValor"),
-        cuotas: num("cuotas"),
-        valorCuota: num("valorCuota"),
-        entrega: num("entrega"),
-        fecha: date("fecha"),
-        estado: (get("estado") || "BORRADOR") as
-          | "BORRADOR"
-          | "RESERVADA"
-          | "CONCRETADA"
-          | "CANCELADA",
-        observaciones: get("observaciones") || null,
-      },
-    })
+    const orden = await prisma.$transaction(async (tx) => {
+      const orden = await tx.ordenCompra.create({
+        data: {
+          clienteId: get("clienteId"),
+          modeloId: get("modeloId") || null,
+          motoDescripcion: get("motoDescripcion"),
+          motoChasis: get("motoChasis") || null,
+          motoMotor: get("motoMotor") || null,
+          motoPatente: get("motoPatente") || null,
+          motoAnio: num("motoAnio"),
+          motoKilometros: num("motoKilometros"),
+          precioVenta: num("precioVenta") ?? 0,
+          moneda: get("moneda") || "ARS",
+          formaPago: get("formaPago") || null,
+          sena: num("sena"),
+          saldo: num("saldo"),
+          detallePago: get("detallePago") || null,
+          permutaDescripcion: get("permutaDescripcion") || null,
+          permutaValor: num("permutaValor"),
+          cuotas: num("cuotas"),
+          valorCuota: num("valorCuota"),
+          entrega: num("entrega"),
+          fecha: date("fecha"),
+          estado: (get("estado") || "BORRADOR") as
+            | "BORRADOR"
+            | "RESERVADA"
+            | "CONCRETADA"
+            | "CANCELADA",
+          observaciones: get("observaciones") || null,
+        },
+      })
 
-    // Side effects según estado
-    if (orden.modeloId) {
-      if (orden.estado === "CONCRETADA") {
-        // Moto entregada → marcar vendida y sacar del catálogo público
-        await prisma.modelo.update({
-          where: { id: orden.modeloId },
-          data: { vendida: true, fechaVenta: orden.fecha, activo: false },
-        })
-      } else if (orden.estado === "RESERVADA") {
-        // Moto con seña → marcar etiqueta RESERVADA (sigue visible en catálogo)
-        await prisma.modelo.update({
-          where: { id: orden.modeloId },
-          data: { etiqueta: "RESERVADA" },
-        })
+      // Side effects según estado
+      if (orden.modeloId) {
+        if (orden.estado === "CONCRETADA") {
+          await tx.modelo.update({
+            where: { id: orden.modeloId },
+            data: { vendida: true, fechaVenta: orden.fecha, activo: false },
+          })
+        } else if (orden.estado === "RESERVADA") {
+          await tx.modelo.update({
+            where: { id: orden.modeloId },
+            data: { etiqueta: "RESERVADA" },
+          })
+        }
       }
-    }
+
+      // Auto-crear financiación si corresponde
+      await crearFinanciacionDesdeOC(tx, orden)
+
+      return orden
+    })
 
     revalidatePath("/admin/ordenes-compra")
     revalidatePath("/admin/modelos")
+    revalidatePath("/admin/tesoreria")
+    revalidatePath("/admin/tesoreria/financiaciones")
     revalidatePath("/catalogo")
     if (orden.modeloId) invalidateModelos()
     return { id: orden.id }

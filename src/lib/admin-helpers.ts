@@ -91,3 +91,41 @@ export const ESTADO_OT_LABELS: Record<string, string> = {
   ENTREGADA: "Entregada",
   CANCELADA: "Cancelada",
 }
+
+export const ESTADO_FINANCIACION_STYLES: Record<string, string> = {
+  ACTIVA: "bg-blue-100 text-blue-800",
+  COMPLETADA: "bg-green-100 text-green-800",
+  ATRASADA: "bg-red-100 text-red-800",
+  CANCELADA: "bg-gray-100 text-gray-600",
+}
+
+export const ESTADO_FINANCIACION_LABELS: Record<string, string> = {
+  ACTIVA: "Activa",
+  COMPLETADA: "Completada",
+  ATRASADA: "Atrasada",
+  CANCELADA: "Cancelada",
+}
+
+export const ESTADO_CUOTA_STYLES: Record<string, string> = {
+  PENDIENTE: "bg-yellow-100 text-yellow-800",
+  PAGADA: "bg-green-100 text-green-800",
+  ATRASADA: "bg-red-100 text-red-800",
+  CANCELADA: "bg-gray-100 text-gray-600",
+}
+
+export const ESTADO_CUOTA_LABELS: Record<string, string> = {
+  PENDIENTE: "Pendiente",
+  PAGADA: "Pagada",
+  ATRASADA: "Atrasada",
+  CANCELADA: "Cancelada",
+}
+
+// Días entre dos fechas (positivo = venc futuro, negativo = atrasada)
+export function diasHasta(fecha: Date | string): number {
+  const target = typeof fecha === "string" ? new Date(fecha) : fecha
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const t = new Date(target)
+  t.setHours(0, 0, 0, 0)
+  return Math.floor((t.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
+}

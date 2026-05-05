@@ -32,6 +32,7 @@ import {
   Tag,
   ListChecks,
   Truck as TruckIcon,
+  Wallet,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -56,28 +57,19 @@ const isGroup = (e: NavEntry): e is NavGroup => "items" in e
 const navEntries: NavEntry[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
 
-  // Operativo — grupos nuevos
+  // Operaciones diarias del negocio
   {
-    id: "gestion",
-    label: "Gestión",
+    id: "operaciones",
+    label: "Operaciones",
     icon: ListChecks,
     items: [
       { href: "/admin/clientes", label: "Clientes", icon: UserCircle },
-      { href: "/admin/mandatos", label: "Mandatos de venta", icon: FileText },
       { href: "/admin/ordenes-compra", label: "Órdenes de compra", icon: Receipt },
+      { href: "/admin/mandatos", label: "Mandatos de venta", icon: FileText },
       { href: "/admin/proveedores", label: "Proveedores", icon: TruckIcon },
     ],
   },
-  {
-    id: "taller",
-    label: "Taller",
-    icon: Wrench,
-    items: [
-      { href: "/admin/taller", label: "Órdenes de trabajo", icon: FileText },
-      { href: "/admin/taller/tipos-servicio", label: "Tipos de servicio", icon: Tag },
-      { href: "/admin/turnos", label: "Turnos", icon: CalendarClock },
-    ],
-  },
+  // Catálogo y stock
   {
     id: "catalogo",
     label: "Catálogo",
@@ -88,6 +80,28 @@ const navEntries: NavEntry[] = [
       { href: "/admin/pedidos", label: "Pedidos online", icon: Package },
     ],
   },
+  // Tesorería: cobranzas, financiaciones
+  {
+    id: "tesoreria",
+    label: "Tesorería",
+    icon: Wallet,
+    items: [
+      { href: "/admin/tesoreria", label: "Resumen", icon: LayoutDashboard },
+      { href: "/admin/tesoreria/financiaciones", label: "Financiaciones", icon: CreditCard },
+    ],
+  },
+  // Taller
+  {
+    id: "taller",
+    label: "Taller",
+    icon: Wrench,
+    items: [
+      { href: "/admin/taller", label: "Órdenes de trabajo", icon: FileText },
+      { href: "/admin/taller/tipos-servicio", label: "Tipos de servicio", icon: Tag },
+      { href: "/admin/turnos", label: "Turnos", icon: CalendarClock },
+    ],
+  },
+  // Marketing y comunicación
   {
     id: "marketing",
     label: "Marketing",
@@ -119,11 +133,13 @@ function NavLink({
   nested?: boolean
 }) {
   const pathname = usePathname()
-  const isActive =
-    item.href === "/admin"
-      ? pathname === "/admin"
-      : pathname === item.href ||
-        (pathname.startsWith(item.href + "/") && item.href !== "/admin")
+  // Para "Resumen" (paths que terminan en raíz de un grupo, ej /admin/tesoreria),
+  // requerir match exacto para no activarse con sub-rutas.
+  const isExactOnly = item.href === "/admin" || item.href === "/admin/tesoreria"
+  const isActive = isExactOnly
+    ? pathname === item.href
+    : pathname === item.href ||
+      (pathname.startsWith(item.href + "/") && item.href !== "/admin")
 
   return (
     <Link
