@@ -1,11 +1,11 @@
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { VentaForm } from "@/components/admin/operativo/venta-form"
+import { OCForm } from "@/components/admin/operativo/oc-form"
 import { invalidateModelos } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
-async function createVenta(formData: FormData) {
+async function createOrdenCompra(formData: FormData) {
   "use server"
   try {
     const get = (k: string) => (formData.get(k) as string) || ""
@@ -18,7 +18,7 @@ async function createVenta(formData: FormData) {
       return v && v.trim() ? new Date(v) : new Date()
     }
 
-    const venta = await prisma.ventaMoto.create({
+    const orden = await prisma.ordenCompra.create({
       data: {
         clienteId: get("clienteId"),
         modeloId: get("modeloId") || null,
@@ -50,35 +50,35 @@ async function createVenta(formData: FormData) {
     })
 
     // Side effects según estado
-    if (venta.modeloId) {
-      if (venta.estado === "CONCRETADA") {
+    if (orden.modeloId) {
+      if (orden.estado === "CONCRETADA") {
         // Moto entregada → marcar vendida y sacar del catálogo público
         await prisma.modelo.update({
-          where: { id: venta.modeloId },
-          data: { vendida: true, fechaVenta: venta.fecha, activo: false },
+          where: { id: orden.modeloId },
+          data: { vendida: true, fechaVenta: orden.fecha, activo: false },
         })
-      } else if (venta.estado === "RESERVADA") {
+      } else if (orden.estado === "RESERVADA") {
         // Moto con seña → marcar etiqueta RESERVADA (sigue visible en catálogo)
         await prisma.modelo.update({
-          where: { id: venta.modeloId },
+          where: { id: orden.modeloId },
           data: { etiqueta: "RESERVADA" },
         })
       }
     }
 
-    revalidatePath("/admin/ventas")
+    revalidatePath("/admin/ordenes-compra")
     revalidatePath("/admin/modelos")
     revalidatePath("/catalogo")
-    if (venta.modeloId) invalidateModelos()
-    return { id: venta.id }
+    if (orden.modeloId) invalidateModelos()
+    return { id: orden.id }
   } catch (e: unknown) {
     return {
-      error: e instanceof Error ? e.message : "Error al crear venta",
+      error: e instanceof Error ? e.message : "Error al crear orden de compra",
     }
   }
 }
 
-export default async function NuevaVentaPage() {
+export default async function NuevaOrdenCompraPage() {
   const [clientes, modelos] = await Promise.all([
     prisma.cliente.findMany({
       orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
@@ -111,5 +111,5 @@ export default async function NuevaVentaPage() {
       },
     }),
   ])
-  return <VentaForm clientes={clientes} modelos={modelos} saveAction={createVenta} />
+  return <OCForm clientes={clientes} modelos={modelos} saveAction={createOrdenCompra} />
 }

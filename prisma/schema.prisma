@@ -60,6 +60,14 @@ model Modelo {
   proveedorId       String?
   proveedor         Proveedor?        @relation(fields: [proveedorId], references: [id])
 
+  // Origen de la unidad (trazabilidad de stock)
+  origen            String?           @default("STOCK_PROPIO")  // STOCK_PROPIO | PARTE_DE_PAGO | MANDATO
+  // Si vino por parte de pago: cliente que la entregó + OC en la que ingresó
+  clienteEntregaId    String?
+  clienteEntrega      Cliente?        @relation("ClienteEntregaModelo", fields: [clienteEntregaId], references: [id])
+  ordenCompraOrigenId String?
+  ordenCompraOrigen   OrdenCompra?    @relation("OCOrigenModelo", fields: [ordenCompraOrigenId], references: [id])
+
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
 
@@ -67,7 +75,8 @@ model Modelo {
   turnos Turno[]
   // Relaciones admin operativo
   mandato        MandatoVenta?  @relation("MandatoModelo")
-  ventas         VentaMoto[]
+  ordenesCompra  OrdenCompra[]
+  ocComoMotoRecibida OrdenCompra[] @relation("MotoRecibidaOC")
   ordenesTrabajo OrdenTrabajo[]
 }
 
@@ -505,7 +514,8 @@ model Cliente {
   notasInternas   String?  @db.Text
   // Relaciones
   mandatos        MandatoVenta[]
-  ventas          VentaMoto[]
+  ordenesCompra   OrdenCompra[]
+  motosEntregadas Modelo[]      @relation("ClienteEntregaModelo")
   ordenesTrabajo  OrdenTrabajo[]
 
   createdAt DateTime @default(now())
@@ -561,9 +571,9 @@ model MandatoVenta {
   modeloId        String?   @unique
   modelo_         Modelo?   @relation("MandatoModelo", fields: [modeloId], references: [id])
 
-  // Venta finalizada
-  ventaId         String?   @unique
-  venta           VentaMoto? @relation(fields: [ventaId], references: [id])
+  // Orden de compra (venta concretada de la moto en consignación)
+  ordenCompraId   String?   @unique
+  ordenCompra     OrdenCompra? @relation(fields: [ordenCompraId], references: [id])
 
   observaciones   String?   @db.Text
 
@@ -582,11 +592,11 @@ enum EstadoMandato {
   VENCIDO         // pasó fecha vencimiento
 }
 
-// ==================== VENTAS DE MOTOS ====================
+// ==================== ÓRDENES DE COMPRA (VENTAS DE MOTOS) ====================
 
-model VentaMoto {
+model OrdenCompra {
   id              String    @id @default(cuid())
-  numero          Int       @unique @default(autoincrement())  // V-0001, V-0002...
+  numero          Int       @unique @default(autoincrement())  // OC-0001, OC-0002...
   fecha           DateTime  @default(now())
   estado          EstadoVenta @default(BORRADOR)
 
@@ -617,6 +627,9 @@ model VentaMoto {
   // Permuta (si aplica)
   permutaDescripcion String?
   permutaValor       Int?
+  // Si la permuta se subió al stock como moto usada → linkeo
+  motoRecibidaId  String?
+  motoRecibida    Modelo? @relation("MotoRecibidaOC", fields: [motoRecibidaId], references: [id])
 
   // Financiación (si aplica)
   cuotas          Int?
@@ -625,6 +638,9 @@ model VentaMoto {
 
   // Mandato relacionado (si salió de una consignación)
   mandato         MandatoVenta?
+
+  // Relación inversa: motos en stock que entraron por esta OC (parte de pago)
+  motosOrigen     Modelo[] @relation("OCOrigenModelo")
 
   observaciones   String?   @db.Text
 
@@ -635,6 +651,7 @@ model VentaMoto {
   @@index([modeloId])
   @@index([estado])
   @@index([fecha])
+  @@map("VentaMoto")
 }
 
 enum EstadoVenta {

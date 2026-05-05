@@ -1,22 +1,21 @@
 import { notFound, redirect } from "next/navigation"
-import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { VentaForm } from "@/components/admin/operativo/venta-form"
+import { OCForm } from "@/components/admin/operativo/oc-form"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
   formatNumero,
-  ESTADO_VENTA_STYLES,
-  ESTADO_VENTA_LABELS,
+  ESTADO_OC_STYLES,
+  ESTADO_OC_LABELS,
 } from "@/lib/admin-helpers"
 import { FileText, CheckCircle, Trash2, Download, PartyPopper } from "lucide-react"
 import { invalidateModelos } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
-async function updateVenta(formData: FormData) {
+async function updateOrden(formData: FormData) {
   "use server"
   try {
     const id = formData.get("id") as string
@@ -30,7 +29,7 @@ async function updateVenta(formData: FormData) {
       return v && v.trim() ? new Date(v) : new Date()
     }
 
-    const venta = await prisma.ventaMoto.update({
+    const orden = await prisma.ordenCompra.update({
       where: { id },
       data: {
         clienteId: get("clienteId"),
@@ -63,24 +62,24 @@ async function updateVenta(formData: FormData) {
     })
 
     // Side effects según estado actualizado
-    if (venta.modeloId) {
-      if (venta.estado === "CONCRETADA") {
+    if (orden.modeloId) {
+      if (orden.estado === "CONCRETADA") {
         await prisma.modelo.update({
-          where: { id: venta.modeloId },
-          data: { vendida: true, fechaVenta: venta.fecha, activo: false },
+          where: { id: orden.modeloId },
+          data: { vendida: true, fechaVenta: orden.fecha, activo: false },
         })
-      } else if (venta.estado === "RESERVADA") {
+      } else if (orden.estado === "RESERVADA") {
         await prisma.modelo.update({
-          where: { id: venta.modeloId },
+          where: { id: orden.modeloId },
           data: { etiqueta: "RESERVADA" },
         })
       }
     }
 
-    revalidatePath("/admin/ventas")
+    revalidatePath("/admin/ordenes-compra")
     revalidatePath("/admin/modelos")
     revalidatePath("/catalogo")
-    if (venta.modeloId) invalidateModelos()
+    if (orden.modeloId) invalidateModelos()
     return {}
   } catch (e: unknown) {
     return { error: e instanceof Error ? e.message : "Error al actualizar" }
@@ -89,37 +88,37 @@ async function updateVenta(formData: FormData) {
 
 async function marcarConcretada(id: string) {
   "use server"
-  const venta = await prisma.ventaMoto.findUnique({ where: { id } })
-  if (!venta) return
+  const orden = await prisma.ordenCompra.findUnique({ where: { id } })
+  if (!orden) return
 
-  await prisma.ventaMoto.update({
+  await prisma.ordenCompra.update({
     where: { id },
     data: { estado: "CONCRETADA" },
   })
 
   // Si hay moto del catálogo, marcarla como vendida
-  if (venta.modeloId) {
+  if (orden.modeloId) {
     await prisma.modelo.update({
-      where: { id: venta.modeloId },
+      where: { id: orden.modeloId },
       data: { vendida: true, fechaVenta: new Date(), activo: false },
     })
   }
 
-  revalidatePath("/admin/ventas")
-  revalidatePath(`/admin/ventas/${id}`)
+  revalidatePath("/admin/ordenes-compra")
+  revalidatePath(`/admin/ordenes-compra/${id}`)
   revalidatePath("/admin/modelos")
   revalidatePath("/catalogo")
-  if (venta.modeloId) invalidateModelos()
+  if (orden.modeloId) invalidateModelos()
 }
 
-async function deleteVenta(id: string) {
+async function deleteOrden(id: string) {
   "use server"
-  await prisma.ventaMoto.delete({ where: { id } })
-  revalidatePath("/admin/ventas")
-  redirect("/admin/ventas")
+  await prisma.ordenCompra.delete({ where: { id } })
+  revalidatePath("/admin/ordenes-compra")
+  redirect("/admin/ordenes-compra")
 }
 
-export default async function EditarVentaPage({
+export default async function EditarOrdenCompraPage({
   params,
   searchParams,
 }: {
@@ -130,8 +129,8 @@ export default async function EditarVentaPage({
   const { recien } = await searchParams
   const esReciente = recien === "1"
 
-  const [venta, clientes, modelos] = await Promise.all([
-    prisma.ventaMoto.findUnique({ where: { id } }),
+  const [orden, clientes, modelos] = await Promise.all([
+    prisma.ordenCompra.findUnique({ where: { id } }),
     prisma.cliente.findMany({
       orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
       select: {
@@ -164,34 +163,34 @@ export default async function EditarVentaPage({
     }),
   ])
 
-  if (!venta) notFound()
+  if (!orden) notFound()
 
   const toDateInput = (d: Date | null) => (d ? d.toISOString().split("T")[0] : "")
 
   const initialData = {
-    id: venta.id,
-    clienteId: venta.clienteId,
-    modeloId: venta.modeloId || "",
-    motoDescripcion: venta.motoDescripcion,
-    motoChasis: venta.motoChasis || "",
-    motoMotor: venta.motoMotor || "",
-    motoPatente: venta.motoPatente || "",
-    motoAnio: venta.motoAnio != null ? String(venta.motoAnio) : "",
-    motoKilometros: venta.motoKilometros != null ? String(venta.motoKilometros) : "",
-    precioVenta: String(venta.precioVenta),
-    moneda: venta.moneda,
-    formaPago: venta.formaPago || "Contado",
-    sena: venta.sena != null ? String(venta.sena) : "",
-    saldo: venta.saldo != null ? String(venta.saldo) : "",
-    detallePago: venta.detallePago || "",
-    permutaDescripcion: venta.permutaDescripcion || "",
-    permutaValor: venta.permutaValor != null ? String(venta.permutaValor) : "",
-    cuotas: venta.cuotas != null ? String(venta.cuotas) : "",
-    valorCuota: venta.valorCuota != null ? String(venta.valorCuota) : "",
-    entrega: venta.entrega != null ? String(venta.entrega) : "",
-    fecha: toDateInput(venta.fecha),
-    estado: venta.estado,
-    observaciones: venta.observaciones || "",
+    id: orden.id,
+    clienteId: orden.clienteId,
+    modeloId: orden.modeloId || "",
+    motoDescripcion: orden.motoDescripcion,
+    motoChasis: orden.motoChasis || "",
+    motoMotor: orden.motoMotor || "",
+    motoPatente: orden.motoPatente || "",
+    motoAnio: orden.motoAnio != null ? String(orden.motoAnio) : "",
+    motoKilometros: orden.motoKilometros != null ? String(orden.motoKilometros) : "",
+    precioVenta: String(orden.precioVenta),
+    moneda: orden.moneda,
+    formaPago: orden.formaPago || "Contado",
+    sena: orden.sena != null ? String(orden.sena) : "",
+    saldo: orden.saldo != null ? String(orden.saldo) : "",
+    detallePago: orden.detallePago || "",
+    permutaDescripcion: orden.permutaDescripcion || "",
+    permutaValor: orden.permutaValor != null ? String(orden.permutaValor) : "",
+    cuotas: orden.cuotas != null ? String(orden.cuotas) : "",
+    valorCuota: orden.valorCuota != null ? String(orden.valorCuota) : "",
+    entrega: orden.entrega != null ? String(orden.entrega) : "",
+    fecha: toDateInput(orden.fecha),
+    estado: orden.estado,
+    observaciones: orden.observaciones || "",
   }
 
   return (
@@ -204,7 +203,7 @@ export default async function EditarVentaPage({
             </div>
             <div>
               <p className="font-bold text-green-900">
-                ¡Venta registrada con éxito!
+                ¡Orden de compra registrada con éxito!
               </p>
               <p className="text-sm text-green-800 dark:text-green-300/80 mt-0.5">
                 Descargá el boleto de compra-venta para firmarlo con el cliente.
@@ -212,7 +211,7 @@ export default async function EditarVentaPage({
             </div>
           </div>
           <a
-            href={`/api/pdf/venta/${venta.id}`}
+            href={`/api/pdf/orden-compra/${orden.id}`}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-lg bg-green-600 px-5 py-3 text-sm font-semibold text-white hover:bg-green-700 shadow-md"
@@ -227,26 +226,26 @@ export default async function EditarVentaPage({
         <CardContent className="p-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div>
-              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Venta</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Orden de compra</p>
               <p className="font-mono text-lg font-bold text-[#6B4F7A]">
-                {formatNumero("V", venta.numero)}
+                {formatNumero("OC", orden.numero)}
               </p>
             </div>
-            <Badge variant="secondary" className={ESTADO_VENTA_STYLES[venta.estado]}>
-              {ESTADO_VENTA_LABELS[venta.estado]}
+            <Badge variant="secondary" className={ESTADO_OC_STYLES[orden.estado]}>
+              {ESTADO_OC_LABELS[orden.estado]}
             </Badge>
           </div>
           <div className="flex items-center gap-2">
             <a
-              href={`/api/pdf/venta/${venta.id}`}
+              href={`/api/pdf/orden-compra/${orden.id}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-neutral-900"
             >
               <FileText className="size-4" /> Boleto compra-venta
             </a>
-            {venta.estado !== "CONCRETADA" && venta.estado !== "CANCELADA" && (
-              <form action={marcarConcretada.bind(null, venta.id)}>
+            {orden.estado !== "CONCRETADA" && orden.estado !== "CANCELADA" && (
+              <form action={marcarConcretada.bind(null, orden.id)}>
                 <Button
                   type="submit"
                   className="bg-green-600 hover:bg-green-700 text-white"
@@ -256,7 +255,7 @@ export default async function EditarVentaPage({
                 </Button>
               </form>
             )}
-            <form action={deleteVenta.bind(null, venta.id)}>
+            <form action={deleteOrden.bind(null, orden.id)}>
               <Button
                 type="submit"
                 variant="ghost"
@@ -270,11 +269,11 @@ export default async function EditarVentaPage({
         </CardContent>
       </Card>
 
-      <VentaForm
+      <OCForm
         initialData={initialData}
         clientes={clientes}
         modelos={modelos}
-        saveAction={updateVenta}
+        saveAction={updateOrden}
       />
     </div>
   )

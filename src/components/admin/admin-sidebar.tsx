@@ -64,7 +64,7 @@ const navEntries: NavEntry[] = [
     items: [
       { href: "/admin/clientes", label: "Clientes", icon: UserCircle },
       { href: "/admin/mandatos", label: "Mandatos de venta", icon: FileText },
-      { href: "/admin/ventas", label: "Ventas", icon: Receipt },
+      { href: "/admin/ordenes-compra", label: "Órdenes de compra", icon: Receipt },
       { href: "/admin/proveedores", label: "Proveedores", icon: TruckIcon },
     ],
   },

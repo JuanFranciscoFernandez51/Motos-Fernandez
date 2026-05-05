@@ -26,7 +26,7 @@ type Cliente = {
   createdAt: Date
   _count: {
     mandatos: number
-    ventas: number
+    ordenesCompra: number
     ordenesTrabajo: number
   }
 }
@@ -133,9 +133,9 @@ export function ClientesList({ clientes }: { clientes: Cliente[] }) {
                           {c._count.mandatos} mand.
                         </span>
                       )}
-                      {c._count.ventas > 0 && (
-                        <span className="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded" title="Compras">
-                          {c._count.ventas} vtas.
+                      {c._count.ordenesCompra > 0 && (
+                        <span className="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded" title="Órdenes de compra">
+                          {c._count.ordenesCompra} OC
                         </span>
                       )}
                       {c._count.ordenesTrabajo > 0 && (
@@ -144,7 +144,7 @@ export function ClientesList({ clientes }: { clientes: Cliente[] }) {
                         </span>
                       )}
                       {c._count.mandatos === 0 &&
-                        c._count.ventas === 0 &&
+                        c._count.ordenesCompra === 0 &&
                         c._count.ordenesTrabajo === 0 && (
                           <span className="text-xs text-gray-400">—</span>
                         )}

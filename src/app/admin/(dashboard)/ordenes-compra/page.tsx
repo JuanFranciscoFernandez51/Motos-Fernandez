@@ -2,13 +2,13 @@ import Link from "next/link"
 import { prisma } from "@/lib/prisma"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
-import { VentasList } from "./ventas-list"
+import { OCList } from "./oc-list"
 import { nombreCompleto } from "@/lib/admin-helpers"
 
 export const dynamic = "force-dynamic"
 
-export default async function VentasPage() {
-  const ventas = await prisma.ventaMoto.findMany({
+export default async function OrdenesCompraPage() {
+  const ordenes = await prisma.ordenCompra.findMany({
     orderBy: { createdAt: "desc" },
     include: {
       cliente: { select: { nombre: true, apellido: true, dni: true } },
@@ -19,32 +19,32 @@ export default async function VentasPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Ventas</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Órdenes de compra</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Historial de ventas concretadas, reservas con seña y borradores.
           </p>
         </div>
         <Button
-          render={<Link href="/admin/ventas/nueva" />}
+          render={<Link href="/admin/ordenes-compra/nueva" />}
           className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Nueva venta
+          Nueva OC
         </Button>
       </div>
 
-      <VentasList
-        ventas={ventas.map((v) => ({
-          id: v.id,
-          numero: v.numero,
-          estado: v.estado,
-          motoDescripcion: v.motoDescripcion,
-          precioVenta: v.precioVenta,
-          moneda: v.moneda,
-          formaPago: v.formaPago,
-          fecha: v.fecha,
-          clienteNombre: nombreCompleto(v.cliente),
-          clienteDni: v.cliente.dni,
+      <OCList
+        ordenes={ordenes.map((o) => ({
+          id: o.id,
+          numero: o.numero,
+          estado: o.estado,
+          motoDescripcion: o.motoDescripcion,
+          precioVenta: o.precioVenta,
+          moneda: o.moneda,
+          formaPago: o.formaPago,
+          fecha: o.fecha,
+          clienteNombre: nombreCompleto(o.cliente),
+          clienteDni: o.cliente.dni,
         }))}
       />
     </div>

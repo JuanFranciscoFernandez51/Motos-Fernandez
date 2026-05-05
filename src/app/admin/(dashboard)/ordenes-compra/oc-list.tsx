@@ -18,8 +18,8 @@ import {
   formatDate,
   formatMoney,
   formatNumero,
-  ESTADO_VENTA_STYLES,
-  ESTADO_VENTA_LABELS,
+  ESTADO_OC_STYLES,
+  ESTADO_OC_LABELS,
 } from "@/lib/admin-helpers"
 
 type Row = {
@@ -35,37 +35,37 @@ type Row = {
   clienteDni: string | null
 }
 
-export function VentasList({ ventas }: { ventas: Row[] }) {
+export function OCList({ ordenes }: { ordenes: Row[] }) {
   const [query, setQuery] = useState("")
   const [estadoFilter, setEstadoFilter] = useState("")
 
   const counts = useMemo(
     () => ({
-      total: ventas.length,
-      BORRADOR: ventas.filter((v) => v.estado === "BORRADOR").length,
-      RESERVADA: ventas.filter((v) => v.estado === "RESERVADA").length,
-      CONCRETADA: ventas.filter((v) => v.estado === "CONCRETADA").length,
+      total: ordenes.length,
+      BORRADOR: ordenes.filter((o) => o.estado === "BORRADOR").length,
+      RESERVADA: ordenes.filter((o) => o.estado === "RESERVADA").length,
+      CONCRETADA: ordenes.filter((o) => o.estado === "CONCRETADA").length,
     }),
-    [ventas]
+    [ordenes]
   )
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return ventas.filter((v) => {
-      if (estadoFilter && v.estado !== estadoFilter) return false
+    return ordenes.filter((o) => {
+      if (estadoFilter && o.estado !== estadoFilter) return false
       if (!q) return true
       const hay = [
-        formatNumero("V", v.numero),
-        v.motoDescripcion,
-        v.clienteNombre,
-        v.clienteDni,
+        formatNumero("OC", o.numero),
+        o.motoDescripcion,
+        o.clienteNombre,
+        o.clienteDni,
       ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
       return hay.includes(q)
     })
-  }, [ventas, query, estadoFilter])
+  }, [ordenes, query, estadoFilter])
 
   return (
     <div className="space-y-4">
@@ -141,10 +141,10 @@ export function VentasList({ ventas }: { ventas: Row[] }) {
             {filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center py-12 text-gray-500 dark:text-gray-400">
-                  {ventas.length === 0 ? (
+                  {ordenes.length === 0 ? (
                     <div className="space-y-2">
                       <Receipt className="size-10 mx-auto text-gray-300" />
-                      <p>Todavía no registraste ninguna venta.</p>
+                      <p>Todavía no registraste ninguna orden de compra.</p>
                     </div>
                   ) : (
                     "Sin resultados"
@@ -152,33 +152,33 @@ export function VentasList({ ventas }: { ventas: Row[] }) {
                 </TableCell>
               </TableRow>
             ) : (
-              filtered.map((v) => (
-                <TableRow key={v.id}>
+              filtered.map((o) => (
+                <TableRow key={o.id}>
                   <TableCell className="font-mono text-xs font-semibold text-[#6B4F7A]">
-                    {formatNumero("V", v.numero)}
+                    {formatNumero("OC", o.numero)}
                   </TableCell>
-                  <TableCell className="text-sm font-medium">{v.motoDescripcion}</TableCell>
+                  <TableCell className="text-sm font-medium">{o.motoDescripcion}</TableCell>
                   <TableCell>
-                    <p className="text-sm">{v.clienteNombre}</p>
-                    {v.clienteDni && <p className="text-xs font-mono text-gray-500 dark:text-gray-400">{v.clienteDni}</p>}
+                    <p className="text-sm">{o.clienteNombre}</p>
+                    {o.clienteDni && <p className="text-xs font-mono text-gray-500 dark:text-gray-400">{o.clienteDni}</p>}
                   </TableCell>
                   <TableCell className="whitespace-nowrap text-sm font-medium">
-                    {formatMoney(v.precioVenta, v.moneda)}
+                    {formatMoney(o.precioVenta, o.moneda)}
                   </TableCell>
-                  <TableCell className="text-xs text-gray-600 dark:text-gray-300">{v.formaPago || "—"}</TableCell>
+                  <TableCell className="text-xs text-gray-600 dark:text-gray-300">{o.formaPago || "—"}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className={ESTADO_VENTA_STYLES[v.estado]}>
-                      {ESTADO_VENTA_LABELS[v.estado]}
+                    <Badge variant="secondary" className={ESTADO_OC_STYLES[o.estado]}>
+                      {ESTADO_OC_LABELS[o.estado]}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-xs text-gray-500 dark:text-gray-400">{formatDate(v.fecha)}</TableCell>
+                  <TableCell className="text-xs text-gray-500 dark:text-gray-400">{formatDate(o.fecha)}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="sm" render={<Link href={`/admin/ventas/${v.id}`} />} title="Editar">
+                      <Button variant="ghost" size="sm" render={<Link href={`/admin/ordenes-compra/${o.id}`} />} title="Editar">
                         <Pencil className="h-4 w-4" />
                       </Button>
                       <a
-                        href={`/api/pdf/venta/${v.id}`}
+                        href={`/api/pdf/orden-compra/${o.id}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center justify-center rounded-md h-9 px-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-800"

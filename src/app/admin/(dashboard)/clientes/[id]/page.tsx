@@ -11,12 +11,12 @@ import {
   formatNumero,
   ESTADO_MANDATO_STYLES,
   ESTADO_MANDATO_LABELS,
-  ESTADO_VENTA_STYLES,
-  ESTADO_VENTA_LABELS,
+  ESTADO_OC_STYLES,
+  ESTADO_OC_LABELS,
   ESTADO_OT_STYLES,
   ESTADO_OT_LABELS,
 } from "@/lib/admin-helpers"
-import { FileText, Receipt, Wrench } from "lucide-react"
+import { FileText, Receipt, Wrench, Bike } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -75,8 +75,25 @@ export default async function EditarClientePage({
         orderBy: { createdAt: "desc" },
         include: { modelo_: { select: { slug: true } } },
       },
-      ventas: {
+      ordenesCompra: {
         orderBy: { createdAt: "desc" },
+      },
+      motosEntregadas: {
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          slug: true,
+          nombre: true,
+          marca: true,
+          anio: true,
+          kilometros: true,
+          precio: true,
+          moneda: true,
+          activo: true,
+          vendida: true,
+          fotos: true,
+          ordenCompraOrigenId: true,
+        },
       },
       ordenesTrabajo: {
         orderBy: { createdAt: "desc" },
@@ -108,7 +125,7 @@ export default async function EditarClientePage({
       <ClienteForm initialData={initialData} saveAction={updateCliente} />
 
       {/* Histórico del cliente */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
         {/* Mandatos */}
         <Card>
           <CardHeader className="pb-3">
@@ -154,40 +171,96 @@ export default async function EditarClientePage({
           </CardContent>
         </Card>
 
-        {/* Ventas */}
+        {/* Órdenes de compra */}
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
               <Receipt className="size-4 text-blue-600" />
-              Compras ({cliente.ventas.length})
+              Compras ({cliente.ordenesCompra.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {cliente.ventas.length === 0 ? (
+            {cliente.ordenesCompra.length === 0 ? (
               <p className="text-sm text-gray-400">Sin compras</p>
             ) : (
               <ul className="space-y-2">
-                {cliente.ventas.map((v) => (
-                  <li key={v.id} className="text-sm">
+                {cliente.ordenesCompra.map((o) => (
+                  <li key={o.id} className="text-sm">
                     <Link
-                      href={`/admin/ventas/${v.id}`}
+                      href={`/admin/ordenes-compra/${o.id}`}
                       className="flex items-center justify-between hover:bg-gray-50 dark:hover:bg-neutral-900 rounded p-2 -m-2"
                     >
                       <div>
                         <p className="font-mono text-xs text-gray-500 dark:text-gray-400">
-                          {formatNumero("V", v.numero)}
+                          {formatNumero("OC", o.numero)}
                         </p>
-                        <p className="font-medium">{v.motoDescripcion}</p>
+                        <p className="font-medium">{o.motoDescripcion}</p>
                         <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {formatMoney(v.precioVenta, v.moneda)} ·{" "}
-                          {formatDate(v.fecha)}
+                          {formatMoney(o.precioVenta, o.moneda)} ·{" "}
+                          {formatDate(o.fecha)}
                         </p>
                       </div>
                       <Badge
                         variant="secondary"
-                        className={ESTADO_VENTA_STYLES[v.estado]}
+                        className={ESTADO_OC_STYLES[o.estado]}
                       >
-                        {ESTADO_VENTA_LABELS[v.estado]}
+                        {ESTADO_OC_LABELS[o.estado]}
+                      </Badge>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Motos entregadas en parte de pago */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Bike className="size-4 text-emerald-600 dark:text-emerald-300" />
+              Motos entregadas ({cliente.motosEntregadas.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {cliente.motosEntregadas.length === 0 ? (
+              <p className="text-sm text-gray-400">Sin motos entregadas en parte de pago</p>
+            ) : (
+              <ul className="space-y-2">
+                {cliente.motosEntregadas.map((m) => (
+                  <li key={m.id} className="text-sm">
+                    <Link
+                      href={`/admin/modelos/${m.id}`}
+                      className="flex items-center justify-between hover:bg-gray-50 dark:hover:bg-neutral-900 rounded p-2 -m-2"
+                    >
+                      <div>
+                        <p className="font-mono text-xs text-gray-500 dark:text-gray-400 uppercase">
+                          {m.slug}
+                        </p>
+                        <p className="font-medium">
+                          {m.marca} {m.nombre}
+                        </p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {[
+                            m.anio,
+                            m.kilometros ? `${m.kilometros.toLocaleString("es-AR")} km` : null,
+                            m.precio ? formatMoney(m.precio, m.moneda) : null,
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </p>
+                      </div>
+                      <Badge
+                        variant="secondary"
+                        className={
+                          m.vendida
+                            ? "bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-300"
+                            : m.activo
+                              ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300"
+                              : "bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300"
+                        }
+                      >
+                        {m.vendida ? "Vendida" : m.activo ? "Activa" : "Pendiente"}
                       </Badge>
                     </Link>
                   </li>

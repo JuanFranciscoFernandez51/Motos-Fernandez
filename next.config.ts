@@ -17,6 +17,10 @@ const nextConfig: NextConfig = {
     return [
       { source: "/modelos", destination: "/catalogo", permanent: true },
       { source: "/modelos/:slug*", destination: "/catalogo/:slug*", permanent: true },
+      // Renombre Ventas → Órdenes de compra (mantener bookmarks viejos)
+      { source: "/admin/ventas", destination: "/admin/ordenes-compra", permanent: true },
+      { source: "/admin/ventas/:rest*", destination: "/admin/ordenes-compra/:rest*", permanent: true },
+      { source: "/api/pdf/venta/:id", destination: "/api/pdf/orden-compra/:id", permanent: true },
     ]
   },
   async headers() {

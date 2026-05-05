@@ -56,14 +56,14 @@ export const ESTADO_MANDATO_LABELS: Record<string, string> = {
   VENCIDO: "Vencido",
 }
 
-export const ESTADO_VENTA_STYLES: Record<string, string> = {
+export const ESTADO_OC_STYLES: Record<string, string> = {
   BORRADOR: "bg-yellow-100 text-yellow-800",
   RESERVADA: "bg-blue-100 text-blue-800",
   CONCRETADA: "bg-green-100 text-green-800",
   CANCELADA: "bg-gray-100 text-gray-600",
 }
 
-export const ESTADO_VENTA_LABELS: Record<string, string> = {
+export const ESTADO_OC_LABELS: Record<string, string> = {
   BORRADOR: "Borrador",
   RESERVADA: "Reservada",
   CONCRETADA: "Concretada",

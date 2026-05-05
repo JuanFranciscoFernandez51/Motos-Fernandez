@@ -105,6 +105,169 @@ async function markVendida(id: string, vendida: boolean) {
   invalidateModelos()
 }
 
+// Server action: crear OC desde el catálogo (con cliente, parte de pago, etc.)
+type CrearOCDesdeModeloInput = {
+  modeloId: string
+  clienteId: string
+  precioVenta: number
+  moneda: string
+  formaPago: string
+  sena: number | null
+  saldo: number | null
+  detallePago: string | null
+  estado: "BORRADOR" | "RESERVADA" | "CONCRETADA"
+  observaciones: string | null
+  // Permuta / parte de pago
+  permutaDescripcion: string | null
+  permutaValor: number | null
+  subirPermutaAStock: boolean
+  permutaMarca: string | null
+  permutaModelo: string | null
+  permutaAnio: number | null
+  permutaKm: number | null
+  permutaPatente: string | null
+  permutaChasis: string | null
+  permutaMotor: string | null
+  // Financiación
+  cuotas: number | null
+  valorCuota: number | null
+  entrega: number | null
+}
+
+async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
+  "use server"
+  try {
+    // Buscar la moto a vender para snapshot
+    const modelo = await prisma.modelo.findUnique({
+      where: { id: input.modeloId },
+      select: {
+        id: true,
+        nombre: true,
+        marca: true,
+        anio: true,
+        kilometros: true,
+        chasis: true,
+        motor: true,
+        patente: true,
+      },
+    })
+    if (!modelo) return { error: "Moto no encontrada" }
+
+    const motoDescripcion = `${modelo.marca} ${modelo.nombre}${modelo.anio ? ` ${modelo.anio}` : ""}`
+
+    // Transaction: todo o nada
+    const result = await prisma.$transaction(async (tx) => {
+      // 1) Crear la OC
+      const orden = await tx.ordenCompra.create({
+        data: {
+          clienteId: input.clienteId,
+          modeloId: input.modeloId,
+          motoDescripcion,
+          motoChasis: modelo.chasis,
+          motoMotor: modelo.motor,
+          motoPatente: modelo.patente,
+          motoAnio: modelo.anio,
+          motoKilometros: modelo.kilometros,
+          precioVenta: input.precioVenta,
+          moneda: input.moneda,
+          formaPago: input.formaPago,
+          sena: input.sena,
+          saldo: input.saldo,
+          detallePago: input.detallePago,
+          permutaDescripcion: input.permutaDescripcion,
+          permutaValor: input.permutaValor,
+          cuotas: input.cuotas,
+          valorCuota: input.valorCuota,
+          entrega: input.entrega,
+          estado: input.estado,
+          observaciones: input.observaciones,
+          fecha: new Date(),
+        },
+      })
+
+      // 2) Si hay parte de pago + se sube a stock → crear nuevo Modelo
+      let motoRecibidaId: string | null = null
+      if (
+        input.subirPermutaAStock &&
+        input.permutaMarca &&
+        input.permutaModelo
+      ) {
+        // Generar slug único: "marca-modelo-timestamp"
+        const baseSlug = `${input.permutaMarca}-${input.permutaModelo}${input.permutaAnio ? `-${input.permutaAnio}` : ""}`
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/^-|-$/g, "")
+        const slug = `${baseSlug}-${Date.now().toString(36)}`
+
+        // Foto placeholder (logo) si no hay foto
+        const placeholderFoto = "/images/logo-clasico.png"
+
+        const motoRecibida = await tx.modelo.create({
+          data: {
+            nombre: input.permutaModelo,
+            slug,
+            marca: input.permutaMarca,
+            condicion: "USADA",
+            anio: input.permutaAnio,
+            kilometros: input.permutaKm,
+            patente: input.permutaPatente,
+            chasis: input.permutaChasis,
+            motor: input.permutaMotor,
+            precio: input.permutaValor,
+            moneda: input.moneda,
+            // Inactiva por default — Francisco la activa cuando suba fotos buenas
+            activo: false,
+            fotos: [placeholderFoto],
+            // Trazabilidad
+            origen: "PARTE_DE_PAGO",
+            clienteEntregaId: input.clienteId,
+            ordenCompraOrigenId: orden.id,
+            // Etiqueta para que se vea que falta info
+            etiqueta: null,
+          },
+        })
+        motoRecibidaId = motoRecibida.id
+
+        // Linkear desde la OC
+        await tx.ordenCompra.update({
+          where: { id: orden.id },
+          data: { motoRecibidaId: motoRecibida.id },
+        })
+      }
+
+      // 3) Side effects sobre la moto vendida según estado
+      if (input.estado === "CONCRETADA") {
+        await tx.modelo.update({
+          where: { id: input.modeloId },
+          data: {
+            vendida: true,
+            fechaVenta: new Date(),
+            activo: false,
+          },
+        })
+      } else if (input.estado === "RESERVADA") {
+        await tx.modelo.update({
+          where: { id: input.modeloId },
+          data: { etiqueta: "RESERVADA" },
+        })
+      }
+
+      return { ordenId: orden.id, motoRecibidaId }
+    })
+
+    revalidatePath("/admin/modelos")
+    revalidatePath("/admin/ordenes-compra")
+    revalidatePath("/catalogo")
+    revalidatePath("/")
+    invalidateModelos()
+    return result
+  } catch (e: unknown) {
+    return {
+      error: e instanceof Error ? e.message : "Error al crear orden de compra",
+    }
+  }
+}
+
 async function deleteModelo(id: string, confirmText: string) {
   "use server"
   const modelo = await prisma.modelo.findUnique({
@@ -129,7 +292,7 @@ async function deleteModelo(id: string, confirmText: string) {
 }
 
 export default async function ModelosPage() {
-  const [modelos, proveedores] = await Promise.all([
+  const [modelos, proveedores, clientes] = await Promise.all([
     prisma.modelo.findMany({
       orderBy: [{ slug: "asc" }],
       select: {
@@ -151,12 +314,25 @@ export default async function ModelosPage() {
         fechaVenta: true,
         etiqueta: true,
         proveedorId: true,
+        origen: true,
+        clienteEntregaId: true,
       },
     }),
     prisma.proveedor.findMany({
       where: { activo: true },
       orderBy: { nombre: "asc" },
       select: { id: true, nombre: true },
+    }),
+    prisma.cliente.findMany({
+      orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
+      select: {
+        id: true,
+        nombre: true,
+        apellido: true,
+        dni: true,
+        telefono: true,
+        email: true,
+      },
     }),
   ])
 
@@ -181,12 +357,14 @@ export default async function ModelosPage() {
       <ModelosList
         modelos={modelos}
         proveedores={proveedores}
+        clientes={clientes}
         toggleActivo={toggleActivo}
         updateFotos={updateFotos}
         updateEtiqueta={updateEtiqueta}
         updateCampoModelo={updateCampoModelo}
         updateProveedorModelo={updateProveedorModelo}
         markVendida={markVendida}
+        crearOCDesdeModelo={crearOCDesdeModelo}
         deleteModelo={deleteModelo}
       />
     </div>

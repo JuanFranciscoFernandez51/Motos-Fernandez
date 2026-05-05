@@ -21,7 +21,7 @@ export default async function ClientesPage() {
       _count: {
         select: {
           mandatos: true,
-          ventas: true,
+          ordenesCompra: true,
           ordenesTrabajo: true,
         },
       },

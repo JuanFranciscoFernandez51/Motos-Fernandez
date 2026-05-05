@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
   },
 })
 
-type VentaPDFData = {
+type OCPDFData = {
   numero: number
   fecha: Date
   logoSrc: string | Buffer
@@ -99,8 +99,8 @@ const money = (n: number | null | undefined, moneda = "ARS") =>
 const dateStr = (d: Date | null | undefined) =>
   !d ? "—" : new Date(d).toLocaleDateString("es-AR")
 
-export function VentaPDF({ data }: { data: VentaPDFData }) {
-  const numeroFormateado = `V-${String(data.numero).padStart(4, "0")}`
+export function OCPDF({ data }: { data: OCPDFData }) {
+  const numeroFormateado = `OC-${String(data.numero).padStart(4, "0")}`
 
   return (
     <Document title={`Boleto Compra-Venta ${numeroFormateado}`}>

@@ -12,7 +12,7 @@ import { ArrowLeft, Save, Loader2 } from "lucide-react"
 import { ClienteSelector, type ClienteOption } from "./cliente-selector"
 import { MotoSelector, type ModeloOption } from "./moto-selector"
 
-export type VentaData = {
+export type OCData = {
   id?: string
   clienteId: string
   modeloId: string
@@ -38,7 +38,7 @@ export type VentaData = {
   observaciones: string
 }
 
-const EMPTY: VentaData = {
+const EMPTY: OCData = {
   clienteId: "",
   modeloId: "",
   motoDescripcion: "",
@@ -63,23 +63,23 @@ const EMPTY: VentaData = {
   observaciones: "",
 }
 
-export function VentaForm({
+export function OCForm({
   initialData,
   clientes,
   modelos,
   saveAction,
 }: {
-  initialData?: Partial<VentaData> & { id?: string }
+  initialData?: Partial<OCData> & { id?: string }
   clientes: ClienteOption[]
   modelos: ModeloOption[]
   saveAction: (data: FormData) => Promise<{ error?: string; id?: string }>
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
-  const [data, setData] = useState<VentaData>({ ...EMPTY, ...initialData })
+  const [data, setData] = useState<OCData>({ ...EMPTY, ...initialData })
   const [error, setError] = useState("")
 
-  const set = <K extends keyof VentaData>(key: K, value: VentaData[K]) => {
+  const set = <K extends keyof OCData>(key: K, value: OCData[K]) => {
     setData((prev) => ({ ...prev, [key]: value }))
   }
 
@@ -125,13 +125,13 @@ export function VentaForm({
         setError(result.error)
       } else {
         if (result?.id) {
-          // Si es nueva venta (no había id inicial) → agregar ?recien=1 para mostrar banner con PDF
+          // Si es nueva OC (no había id inicial) → agregar ?recien=1 para mostrar banner con PDF
           const esNueva = !initialData?.id
           router.push(
-            `/admin/ventas/${result.id}${esNueva ? "?recien=1" : ""}`
+            `/admin/ordenes-compra/${result.id}${esNueva ? "?recien=1" : ""}`
           )
         } else {
-          router.push("/admin/ventas")
+          router.push("/admin/ordenes-compra")
         }
         router.refresh()
       }
@@ -142,11 +142,11 @@ export function VentaForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" render={<Link href="/admin/ventas" />}>
+          <Button variant="ghost" size="icon" render={<Link href="/admin/ordenes-compra" />}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-            {initialData?.id ? "Editar venta" : "Nueva venta"}
+            {initialData?.id ? "Editar OC" : "Nueva OC"}
           </h1>
         </div>
         <Button type="submit" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]" disabled={isPending}>

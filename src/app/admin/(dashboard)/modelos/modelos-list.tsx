@@ -35,6 +35,8 @@ import {
   InlineNumberCell,
   InlineSelectCell,
 } from "@/components/admin/inline-cell"
+import { OCDrawer } from "@/components/admin/operativo/oc-drawer"
+import type { ClienteOption } from "@/components/admin/operativo/cliente-selector"
 
 type Modelo = {
   id: string
@@ -55,6 +57,23 @@ type Modelo = {
   fechaVenta: Date | null
   etiqueta: string | null
   proveedorId: string | null
+  origen: string | null
+  clienteEntregaId: string | null
+}
+
+// Detecta si una moto recibida en parte de pago está incompleta (sin foto real, sin precio, etc.)
+function faltaInfoPartePago(m: Modelo): string | null {
+  if (m.origen !== "PARTE_DE_PAGO") return null
+  const faltantes: string[] = []
+  const tienePlaceholderOSinFoto =
+    m.fotos.length === 0 ||
+    (m.fotos.length === 1 && m.fotos[0] === PLACEHOLDER)
+  if (tienePlaceholderOSinFoto) faltantes.push("fotos")
+  if (m.precio == null) faltantes.push("precio")
+  if (!m.kilometros) faltantes.push("km")
+  if (!m.anio) faltantes.push("año")
+  if (faltantes.length === 0) return null
+  return `Falta: ${faltantes.join(", ")}`
 }
 
 type ProveedorOpt = { id: string; nombre: string }
@@ -66,16 +85,19 @@ type Filter = "todas" | "activas" | "inactivas" | "sin-foto" | "con-placeholder"
 export function ModelosList({
   modelos,
   proveedores,
+  clientes,
   toggleActivo,
   updateFotos,
   updateEtiqueta,
   updateCampoModelo,
   updateProveedorModelo,
   markVendida,
+  crearOCDesdeModelo,
   deleteModelo,
 }: {
   modelos: Modelo[]
   proveedores: ProveedorOpt[]
+  clientes: ClienteOption[]
   toggleActivo: (id: string, activoActual: boolean) => Promise<void>
   updateFotos: (id: string, fotos: string[]) => Promise<void>
   updateEtiqueta: (id: string, etiqueta: string | null) => Promise<void>
@@ -86,6 +108,13 @@ export function ModelosList({
   ) => Promise<void>
   updateProveedorModelo: (id: string, proveedorId: string | null) => Promise<void>
   markVendida: (id: string, vendida: boolean) => Promise<void>
+  crearOCDesdeModelo: (input: Parameters<
+    NonNullable<React.ComponentProps<typeof OCDrawer>["crearOCDesdeModelo"]>
+  >[0]) => Promise<{
+    error?: string
+    ordenId?: string
+    motoRecibidaId?: string | null
+  }>
   deleteModelo: (id: string, confirmText: string) => Promise<void>
 }) {
   const [query, setQuery] = useState("")
@@ -96,6 +125,7 @@ export function ModelosList({
   const [deleteModeloId, setDeleteModeloId] = useState<string | null>(null)
   const [vendidasOpen, setVendidasOpen] = useState(false)
   const [queryVendidas, setQueryVendidas] = useState("")
+  const [ocDrawerModeloId, setOCDrawerModeloId] = useState<string | null>(null)
 
   // Separamos activas (no vendidas) y vendidas
   const modelosActivas = useMemo(
@@ -179,17 +209,24 @@ export function ModelosList({
     })
   }
 
-  const handleMarkVendida = (id: string, vendida: boolean) => {
+  // Abrir drawer "Generar OC" para vender desde el catálogo
+  const handleAbrirOCDrawer = (id: string) => {
+    setOCDrawerModeloId(id)
+  }
+
+  // Solo se usa para "Devolver al catálogo" desde la sección Motos vendidas
+  const handleDevolverACatalogo = (id: string) => {
     const modelo = modelos.find((m) => m.id === id)
     if (!modelo) return
-    const confirmMsg = vendida
-      ? `¿Marcar "${modelo.nombre}" como VENDIDA?\n\nVa a desaparecer del catálogo público y quedar archivada en "Motos vendidas".`
-      : `¿Devolver "${modelo.nombre}" al catálogo (dejar de estar vendida)?`
-    if (!window.confirm(confirmMsg)) return
+    if (!window.confirm(`¿Devolver "${modelo.nombre}" al catálogo (dejar de estar vendida)?`)) return
     startTransition(async () => {
-      await markVendida(id, vendida)
+      await markVendida(id, false)
     })
   }
+
+  const ocDrawerModelo = ocDrawerModeloId
+    ? modelos.find((m) => m.id === ocDrawerModeloId) ?? null
+    : null
 
   const deleteModelo_ = modelos.find((m) => m.id === deleteModeloId) ?? null
 
@@ -380,14 +417,37 @@ export function ModelosList({
                             </span>
                           }
                         />
-                        <p className="text-xs text-gray-400 mt-0.5 px-1">
-                          {[modelo.cilindrada, modelo.anio]
-                            .filter(Boolean)
-                            .join(" · ") ||
-                            CATEGORIA_VEHICULO_LABELS[
-                              modelo.categoriaVehiculo as keyof typeof CATEGORIA_VEHICULO_LABELS
-                            ]}
-                        </p>
+                        <div className="flex items-center gap-1.5 mt-0.5 px-1 flex-wrap">
+                          <p className="text-xs text-gray-400">
+                            {[modelo.cilindrada, modelo.anio]
+                              .filter(Boolean)
+                              .join(" · ") ||
+                              CATEGORIA_VEHICULO_LABELS[
+                                modelo.categoriaVehiculo as keyof typeof CATEGORIA_VEHICULO_LABELS
+                              ]}
+                          </p>
+                          {modelo.origen === "PARTE_DE_PAGO" && (
+                            <Badge
+                              variant="secondary"
+                              className="text-[9px] py-0 px-1.5 bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300"
+                              title="Esta moto ingresó como parte de pago"
+                            >
+                              🔄 Parte de pago
+                            </Badge>
+                          )}
+                          {(() => {
+                            const falta = faltaInfoPartePago(modelo)
+                            return falta ? (
+                              <Badge
+                                variant="secondary"
+                                className="text-[9px] py-0 px-1.5 bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300 animate-pulse"
+                                title={falta}
+                              >
+                                ⚠️ {falta}
+                              </Badge>
+                            ) : null
+                          })()}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <InlineTextCell
@@ -581,10 +641,8 @@ export function ModelosList({
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() =>
-                              handleMarkVendida(modelo.id, true)
-                            }
-                            title="Marcar como vendida"
+                            onClick={() => handleAbrirOCDrawer(modelo.id)}
+                            title="Generar Orden de Compra (vender)"
                             className="text-emerald-600 hover:text-emerald-700 dark:text-emerald-300 hover:bg-emerald-50 dark:bg-emerald-950/30"
                           >
                             <ShoppingCart className="h-4 w-4" />
@@ -741,7 +799,7 @@ export function ModelosList({
                                   variant="ghost"
                                   size="sm"
                                   onClick={() =>
-                                    handleMarkVendida(modelo.id, false)
+                                    handleDevolverACatalogo(modelo.id)
                                   }
                                   title="Devolver al catálogo"
                                 >
@@ -788,6 +846,29 @@ export function ModelosList({
         onClose={() => setDeleteModeloId(null)}
         modelo={deleteModelo_}
         deleteModelo={deleteModelo}
+      />
+
+      <OCDrawer
+        open={ocDrawerModelo !== null}
+        onClose={() => setOCDrawerModeloId(null)}
+        modelo={
+          ocDrawerModelo
+            ? {
+                id: ocDrawerModelo.id,
+                nombre: ocDrawerModelo.nombre,
+                marca: ocDrawerModelo.marca,
+                anio: ocDrawerModelo.anio,
+                kilometros: ocDrawerModelo.kilometros,
+                precio: ocDrawerModelo.precio,
+                moneda: ocDrawerModelo.moneda,
+                fotos: ocDrawerModelo.fotos,
+                patente: null,
+              }
+            : null
+        }
+        clientes={clientes}
+        markVendida={markVendida}
+        crearOCDesdeModelo={crearOCDesdeModelo}
       />
     </div>
   )
