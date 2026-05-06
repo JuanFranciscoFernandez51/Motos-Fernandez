@@ -187,10 +187,10 @@ export function CatalogoClient({
         <div className="flex flex-wrap justify-center gap-2">
           <button
             onClick={() => setCategoria("TODAS")}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+            className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${
               categoria === "TODAS"
-                ? "bg-[#6B4F7A] text-white"
-                : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
+                ? "bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] text-white shadow-violeta-soft"
+                : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 border border-gray-100 dark:border-neutral-800 hover:border-[#6B4F7A]/30"
             }`}
           >
             Todas
@@ -199,10 +199,10 @@ export function CatalogoClient({
             <button
               key={cat.value}
               onClick={() => setCategoria(cat.value)}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+              className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${
                 categoria === cat.value
-                  ? "bg-[#6B4F7A] text-white"
-                  : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
+                  ? "bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] text-white shadow-violeta-soft"
+                  : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 border border-gray-100 dark:border-neutral-800 hover:border-[#6B4F7A]/30"
               }`}
             >
               {cat.label}
@@ -220,14 +220,14 @@ export function CatalogoClient({
             <button
               key={opt.value}
               onClick={() => setCondicion(opt.value)}
-              className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+              className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${
                 condicion === opt.value
                   ? opt.value === "0KM"
-                    ? "bg-emerald-600 text-white"
+                    ? "bg-emerald-600 text-white shadow"
                     : opt.value === "USADA"
-                    ? "bg-orange-500 text-white"
-                    : "bg-[#6B4F7A] text-white"
-                  : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
+                    ? "bg-orange-500 text-white shadow"
+                    : "bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] text-white shadow-violeta-soft"
+                  : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 border border-gray-100 dark:border-neutral-800 hover:border-[#6B4F7A]/30"
               }`}
             >
               {opt.label}

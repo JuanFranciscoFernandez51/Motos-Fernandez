@@ -161,37 +161,37 @@ export default function ConsignaPage() {
       </section>
 
       {/* ===== CÓMO FUNCIONA ===== */}
-      <section className="py-20 bg-white dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 sm:py-24 bg-white dark:bg-neutral-900 overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <p className="text-[#8B6F9A] font-semibold text-sm uppercase tracking-widest mb-3">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
               Simple y transparente
             </p>
-            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
+            <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
               ¿Cómo funciona?
             </h2>
-            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body max-w-lg mx-auto">
+            <p className="mt-4 text-gray-500 dark:text-gray-400 max-w-lg mx-auto">
               Tres pasos para que tu moto encuentre nuevo dueño sin que tengas que mover un dedo.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
             {PASOS.map((paso, idx) => (
-              <div key={idx} className="relative flex flex-col items-center text-center">
+              <div key={idx} className="group relative flex flex-col items-center text-center">
                 {/* Conector entre pasos */}
                 {idx < PASOS.length - 1 && (
-                  <div className="hidden md:block absolute top-10 left-[calc(50%+3rem)] right-[calc(-50%+3rem)] h-px bg-gradient-to-r from-[#6B4F7A]/40 to-transparent" />
+                  <div className="hidden md:block absolute top-9 left-[calc(50%+3rem)] right-[calc(-50%+3rem)] h-px bg-gradient-to-r from-[#6B4F7A]/40 to-transparent" />
                 )}
-                <div className="relative flex items-center justify-center size-20 rounded-full bg-[#6B4F7A] text-white mb-5 shadow-lg shadow-[#6B4F7A]/30">
-                  <paso.icon className="size-9" />
-                  <span className="absolute -top-2 -right-2 flex items-center justify-center size-7 rounded-full bg-[#9B59B6] text-xs font-extrabold text-white border-2 border-white">
+                <div className="relative flex items-center justify-center size-18 rounded-2xl bg-gradient-to-br from-[#3D2649] to-[#6B4F7A] text-white mb-5 shadow-violeta-glow group-hover:scale-105 transition-transform p-4">
+                  <paso.icon className="size-7" />
+                  <span className="absolute -top-2 -right-2 flex items-center justify-center size-7 rounded-full bg-white text-[11px] font-extrabold text-[#6B4F7A] border-2 border-[#6B4F7A] shadow">
                     {idx + 1}
                   </span>
                 </div>
-                <h3 className="text-xl font-bold text-[#1A1A1A] dark:text-white font-heading mb-3">
+                <h3 className="font-heading text-xl font-bold text-[#1A1A1A] dark:text-white mb-3">
                   {paso.titulo}
                 </h3>
-                <p className="text-gray-500 dark:text-gray-400 font-body leading-relaxed text-sm">
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                   {paso.descripcion}
                 </p>
               </div>
@@ -201,13 +201,16 @@ export default function ConsignaPage() {
       </section>
 
       {/* ===== BENEFICIOS ===== */}
-      <section className="py-20 bg-[#F0F0F0] dark:bg-neutral-950">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 sm:py-24 bg-[#F8F5FA] dark:bg-neutral-950 overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+              Beneficios
+            </p>
+            <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
               ¿Por qué dejar tu moto con nosotros?
             </h2>
-            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body max-w-lg mx-auto">
+            <p className="mt-4 text-gray-500 dark:text-gray-400 max-w-lg mx-auto">
               Más de {BUSINESS.yearsInBusiness} años vendiendo motos nos dan la experiencia para
               hacer la mejor transacción.
             </p>
@@ -215,18 +218,20 @@ export default function ConsignaPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {BENEFICIOS.map((b, idx) => (
-              <div
+              <article
                 key={idx}
-                className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200"
+                className="group h-full flex flex-col items-center text-center p-7 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
-                  <b.icon className="size-7" />
+                <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-gradient-to-br group-hover:from-[#3D2649] group-hover:to-[#6B4F7A] group-hover:text-white transition-all duration-300">
+                  <b.icon className="size-6" />
                 </div>
-                <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-2">
+                <h3 className="font-heading text-base font-bold text-[#1A1A1A] dark:text-white mb-2">
                   {b.titulo}
                 </h3>
-                <p className="text-sm text-gray-400 font-body leading-relaxed">{b.descripcion}</p>
-              </div>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                  {b.descripcion}
+                </p>
+              </article>
             ))}
           </div>
         </div>

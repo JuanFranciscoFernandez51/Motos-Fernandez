@@ -97,51 +97,57 @@ export default function ServicioTecnicoPage() {
       </section>
 
       {/* Features */}
-      <section className="py-16 bg-white dark:bg-neutral-900">
+      <section className="py-16 sm:py-20 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 mb-16">
             {[
               {
                 icon: Shield,
                 title: "Personal capacitado",
-                desc: "Mecanicos formados por las principales marcas",
+                desc: "Mecánicos formados por las principales marcas",
               },
               {
                 icon: Wrench,
                 title: "Herramientas profesionales",
-                desc: "Equipamiento de ultima generacion",
+                desc: "Equipamiento de última generación",
               },
               {
                 icon: Clock,
-                title: "Turnos rapidos",
-                desc: "Coordinamos segun tu disponibilidad",
+                title: "Turnos rápidos",
+                desc: "Coordinamos según tu disponibilidad",
               },
               {
                 icon: Star,
-                title: "Garantia",
-                desc: "Todos los trabajos con garantia",
+                title: "Garantía",
+                desc: "Todos los trabajos con garantía",
               },
             ].map((f) => (
-              <div key={f.title} className="text-center">
-                <div className="flex items-center justify-center size-12 rounded-full bg-[#6B4F7A]/10 text-[#6B4F7A] mx-auto mb-3">
+              <article
+                key={f.title}
+                className="group h-full text-center p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-premium-md transition-all duration-300 hover:-translate-y-0.5"
+              >
+                <div className="flex items-center justify-center size-12 rounded-xl bg-[#6B4F7A]/10 text-[#6B4F7A] mx-auto mb-3 group-hover:bg-[#6B4F7A] group-hover:text-white transition-colors">
                   <f.icon className="size-5" />
                 </div>
-                <h3 className="text-sm font-bold text-[#1A1A1A] dark:text-white font-heading">
+                <h3 className="font-heading text-sm font-bold text-[#1A1A1A] dark:text-white">
                   {f.title}
                 </h3>
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 font-body">{f.desc}</p>
-              </div>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{f.desc}</p>
+              </article>
             ))}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
             {/* Form */}
             <div className="lg:col-span-3">
-              <h2 className="text-xl font-bold text-[#1A1A1A] dark:text-white font-heading mb-1">
-                Saca turno online
+              <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-2">
+                Reservá tu lugar
+              </p>
+              <h2 className="font-heading text-3xl font-bold text-[#1A1A1A] dark:text-white mb-2">
+                Sacá turno online
               </h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-body mb-6">
-                Completa el formulario y te contactamos para confirmar.
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-7">
+                Completá el formulario y te contactamos para confirmar.
               </p>
 
               {status === "success" ? (

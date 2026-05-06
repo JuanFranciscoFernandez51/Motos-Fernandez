@@ -110,58 +110,66 @@ export default function NosotrosPage() {
       </section>
 
       {/* Values */}
-      <section className="py-20 bg-white dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
+      <section className="relative py-20 sm:py-24 bg-white dark:bg-neutral-900 overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+              Lo que nos define
+            </p>
+            <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
               Nuestros valores
             </h2>
-            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body">
-              Los pilares que guian cada decision
+            <p className="mt-4 text-gray-500 dark:text-gray-400 max-w-lg mx-auto">
+              Los pilares que guían cada decisión
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {VALUES.map((v) => (
-              <div
+              <article
                 key={v.title}
-                className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 hover:border-[#6B4F7A]/20 hover:shadow-sm transition-all"
+                className="group h-full relative flex flex-col p-7 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="flex items-center justify-center size-12 rounded-full bg-[#6B4F7A]/10 text-[#6B4F7A] mb-4">
+                <div className="flex items-center justify-center size-12 rounded-xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-colors">
                   <v.icon className="size-5" />
                 </div>
-                <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading">
+                <h3 className="font-heading text-lg font-bold text-[#1A1A1A] dark:text-white mb-2">
                   {v.title}
                 </h3>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 leading-relaxed font-body">
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                   {v.desc}
                 </p>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
       {/* Timeline */}
-      <section className="py-20 bg-[#F0F0F0] dark:bg-neutral-950">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading text-center mb-12">
-            Nuestra historia
-          </h2>
+      <section className="relative py-20 sm:py-24 bg-[#F8F5FA] dark:bg-neutral-950 overflow-hidden">
+        <div className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+              Nuestra trayectoria
+            </p>
+            <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
+              Nuestra historia
+            </h2>
+          </div>
           <div className="relative">
             {/* Vertical line */}
-            <div className="absolute left-6 top-0 bottom-0 w-px bg-[#6B4F7A]/20" />
+            <div className="absolute left-7 top-0 bottom-0 w-px bg-gradient-to-b from-[#6B4F7A]/30 via-[#6B4F7A]/20 to-transparent" />
 
-            <div className="space-y-10">
+            <div className="space-y-8">
               {TIMELINE.map((item) => (
-                <div key={item.year} className="relative flex gap-6">
-                  <div className="relative z-10 flex items-center justify-center size-12 rounded-full bg-[#6B4F7A] text-white text-xs font-bold shrink-0">
+                <div key={item.year} className="relative flex gap-6 items-start">
+                  <div className="relative z-10 flex items-center justify-center size-14 rounded-2xl bg-gradient-to-br from-[#3D2649] to-[#6B4F7A] text-white text-xs font-bold shrink-0 shadow-violeta-soft">
                     {item.year}
                   </div>
-                  <div className="pt-1">
-                    <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading">
+                  <div className="pt-2 flex-1 rounded-xl bg-white dark:bg-neutral-900 p-5 shadow-premium-sm">
+                    <h3 className="font-heading text-base font-bold text-[#1A1A1A] dark:text-white">
                       {item.title}
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500 dark:text-gray-400 font-body">
+                    <p className="mt-1.5 text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                       {item.desc}
                     </p>
                   </div>
@@ -173,56 +181,61 @@ export default function NosotrosPage() {
       </section>
 
       {/* Location */}
-      <section className="py-20 bg-white dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 sm:py-24 bg-white dark:bg-neutral-900 overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <MapPin className="size-8 text-[#6B4F7A] mb-4" />
-              <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
-                Donde encontrarnos
-              </h2>
-              <p className="mt-4 text-gray-500 dark:text-gray-400 font-body leading-relaxed">
-                Estamos en {BUSINESS.address}. Visitanos de lunes a viernes
-                o los sabados por la manana.
+              <div className="inline-flex items-center justify-center size-12 rounded-xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5">
+                <MapPin className="size-6" />
+              </div>
+              <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+                Visitanos
               </p>
-              <div className="mt-6 space-y-2">
+              <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
+                Dónde encontrarnos
+              </h2>
+              <p className="mt-5 text-gray-500 dark:text-gray-400 leading-relaxed">
+                Estamos en {BUSINESS.address}. Visitanos de lunes a viernes
+                o los sábados por la mañana.
+              </p>
+              <div className="mt-7 space-y-2.5 rounded-2xl bg-[#F8F5FA] dark:bg-neutral-950 p-5 border border-gray-100 dark:border-neutral-800">
                 <p className="text-sm text-[#1A1A1A] dark:text-white">
-                  <span className="font-semibold">Direccion:</span>{" "}
+                  <span className="font-bold text-[10px] uppercase tracking-wider text-[#6B4F7A] block mb-0.5">Dirección</span>
                   {BUSINESS.address}
                 </p>
                 <p className="text-sm text-[#1A1A1A] dark:text-white">
-                  <span className="font-semibold">Telefono:</span>{" "}
+                  <span className="font-bold text-[10px] uppercase tracking-wider text-[#6B4F7A] block mb-0.5">Teléfono</span>
                   {BUSINESS.whatsappDisplay}
                 </p>
                 <p className="text-sm text-[#1A1A1A] dark:text-white">
-                  <span className="font-semibold">Email:</span>{" "}
+                  <span className="font-bold text-[10px] uppercase tracking-wider text-[#6B4F7A] block mb-0.5">Email</span>
                   {BUSINESS.email}
                 </p>
               </div>
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-7 flex flex-wrap gap-3">
                 <a
                   href={BUSINESS.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-6 py-3 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
                 >
-                  <MapPin className="size-4" />
-                  Ver en Google Maps
+                  <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+                  <MapPin className="relative size-4" />
+                  <span className="relative">Ver en Google Maps</span>
                 </a>
                 <Link
                   href="/contacto"
-                  className="inline-flex items-center gap-2 rounded-lg border border-[#6B4F7A] px-5 py-2.5 text-sm font-semibold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white dark:bg-neutral-900 px-6 py-3 text-sm font-bold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 hover:border-[#6B4F7A]/60 transition-colors"
                 >
                   Contactanos
                   <ArrowRight className="size-4" />
                 </Link>
               </div>
             </div>
-            <div className="aspect-[4/3] rounded-xl bg-[#F0F0F0] dark:bg-neutral-950 overflow-hidden">
-              {/* Map placeholder */}
+            <div className="aspect-[4/3] rounded-2xl bg-[#F8F5FA] dark:bg-neutral-950 overflow-hidden shadow-premium-sm border border-gray-100 dark:border-neutral-800">
               <div className="flex items-center justify-center h-full">
                 <div className="text-center">
-                  <MapPin className="size-12 text-gray-300 mx-auto mb-2" />
+                  <MapPin className="size-12 text-[#6B4F7A]/30 mx-auto mb-2" />
                   <p className="text-sm text-gray-400">{BUSINESS.address}</p>
                 </div>
               </div>

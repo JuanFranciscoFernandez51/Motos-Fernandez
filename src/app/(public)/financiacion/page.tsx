@@ -104,24 +104,29 @@ export default function FinanciacionPage() {
       </section>
 
       {/* Benefits */}
-      <section className="py-20 bg-white dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
-              Por que financiar con nosotros?
+      <section className="relative py-20 sm:py-24 bg-white dark:bg-neutral-900 overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+              Beneficios
+            </p>
+            <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
+              ¿Por qué financiar con nosotros?
             </h2>
-            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body">
-              Mas de {BUSINESS.yearsInBusiness} anos nos respaldan
+            <p className="mt-4 text-gray-500 dark:text-gray-400 max-w-lg mx-auto">
+              Más de {BUSINESS.yearsInBusiness} años nos respaldan
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {BENEFICIOS.map((b) => (
               <div
                 key={b}
-                className="flex items-center gap-3 rounded-xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 hover:border-[#6B4F7A]/20 transition-colors"
+                className="group flex items-center gap-4 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 hover:border-[#6B4F7A]/30 hover:shadow-premium-md transition-all duration-300"
               >
-                <CheckCircle className="size-5 text-[#6B4F7A] shrink-0" />
-                <span className="text-sm font-medium text-[#1A1A1A] dark:text-white">{b}</span>
+                <div className="flex items-center justify-center size-11 rounded-xl bg-[#6B4F7A]/10 text-[#6B4F7A] shrink-0 group-hover:bg-[#6B4F7A] group-hover:text-white transition-colors">
+                  <CheckCircle className="size-5" />
+                </div>
+                <span className="text-sm font-bold text-[#1A1A1A] dark:text-white">{b}</span>
               </div>
             ))}
           </div>
@@ -129,69 +134,79 @@ export default function FinanciacionPage() {
       </section>
 
       {/* How it works */}
-      <section className="py-20 bg-[#F0F0F0] dark:bg-neutral-950">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading text-center mb-12">
-            Como funciona?
-          </h2>
+      <section className="relative py-20 sm:py-24 bg-[#F8F5FA] dark:bg-neutral-950 overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-14">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+              Tres pasos simples
+            </p>
+            <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
+              ¿Cómo funciona?
+            </h2>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
               {
                 step: "01",
-                title: "Elegi tu modelo",
-                desc: "Navega nuestro catalogo y elegi la moto que mas te gusta.",
+                title: "Elegí tu modelo",
+                desc: "Navegá nuestro catálogo y elegí la moto que más te gusta.",
               },
               {
                 step: "02",
-                title: "Consulta el plan",
+                title: "Consultá el plan",
                 desc: "Contactanos por WhatsApp o acercate al local. Te asesoramos sin compromiso.",
               },
               {
                 step: "03",
-                title: "Retira tu moto",
-                desc: "Con la aprobacion confirmada, tu moto esta lista para retirar.",
+                title: "Retirá tu moto",
+                desc: "Con la aprobación confirmada, tu moto está lista para retirar.",
               },
             ].map((item) => (
-              <div
+              <article
                 key={item.step}
-                className="relative rounded-xl bg-white dark:bg-neutral-900 p-8 text-center"
+                className="group relative rounded-2xl bg-white dark:bg-neutral-900 p-8 text-center border border-gray-100 dark:border-neutral-800 hover:border-[#6B4F7A]/30 hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden"
               >
-                <span className="text-5xl font-extrabold text-[#6B4F7A]/10 font-heading">
+                <span className="block font-display text-7xl font-bold text-[#6B4F7A]/10 leading-none mb-2">
                   {item.step}
                 </span>
-                <h3 className="mt-2 text-lg font-bold text-[#1A1A1A] dark:text-white font-heading">
+                <h3 className="font-heading text-xl font-bold text-[#1A1A1A] dark:text-white">
                   {item.title}
                 </h3>
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 font-body">
+                <p className="mt-3 text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
                   {item.desc}
                 </p>
-              </div>
+              </article>
             ))}
           </div>
         </div>
       </section>
 
       {/* FAQ */}
-      <section className="py-20 bg-white dark:bg-neutral-900">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 sm:py-24 bg-white dark:bg-neutral-900 overflow-hidden">
+        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <HelpCircle className="size-8 text-[#6B4F7A] mx-auto mb-4" />
-            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
+            <div className="inline-flex items-center justify-center size-12 rounded-xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-4">
+              <HelpCircle className="size-6" />
+            </div>
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+              Resolvé tus dudas
+            </p>
+            <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
               Preguntas frecuentes
             </h2>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {FAQ.map((item, i) => (
               <details
                 key={i}
-                className="group rounded-xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden"
+                className="group rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden hover:border-[#6B4F7A]/30 transition-colors"
               >
-                <summary className="flex items-center justify-between cursor-pointer p-5 text-sm font-semibold text-[#1A1A1A] dark:text-white hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors">
-                  {item.q}
-                  <ChevronDown className="size-4 text-gray-400 group-open:rotate-180 transition-transform" />
+                <summary className="flex items-center justify-between cursor-pointer p-5 text-sm font-bold text-[#1A1A1A] dark:text-white hover:bg-[#F8F5FA] dark:hover:bg-neutral-900 transition-colors">
+                  <span>{item.q}</span>
+                  <ChevronDown className="size-4 text-[#6B4F7A] group-open:rotate-180 transition-transform shrink-0 ml-3" />
                 </summary>
-                <div className="px-5 pb-5">
-                  <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed font-body">
+                <div className="px-5 pb-5 border-t border-gray-100 dark:border-neutral-800 pt-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
                     {item.a}
                   </p>
                 </div>
@@ -202,30 +217,38 @@ export default function FinanciacionPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 bg-[#1A1A1A]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white font-heading">
-            Listo para financiar tu moto?
+      <section className="relative py-20 sm:py-24 bg-gradient-to-br from-[#0E0B12] via-[#15121A] to-[#1A1325] overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.06]" />
+        <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
+        <Watermark position="center" size="2xl" opacity="subtle" />
+
+        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+          <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#C8C8D0] mb-3">
+            Tu próximo paso
+          </p>
+          <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight text-balance">
+            ¿Listo para financiar tu moto?
           </h2>
-          <p className="mt-4 text-gray-400 max-w-lg mx-auto font-body">
+          <p className="mt-6 text-base sm:text-lg text-gray-400 max-w-xl mx-auto leading-relaxed">
             Contactanos y te armamos un plan a tu medida. Sin compromiso.
           </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <div className="mt-9 flex flex-wrap justify-center gap-4">
             <a
               href={getWhatsAppUrl(WHATSAPP_MESSAGES.general)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#25D366] px-7 py-3.5 text-sm font-semibold text-white hover:bg-[#20BD5A] transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#25D366] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#20BD5A] transition-colors shadow-lg"
             >
               <MessageCircle className="size-5" />
               WhatsApp
             </a>
             <Link
               href="/catalogo"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-7 py-3.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-7 py-3.5 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
             >
-              Ver catalogo
-              <ArrowRight className="size-4" />
+              <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <span className="relative">Ver catálogo</span>
+              <ArrowRight className="relative size-4" />
             </Link>
           </div>
         </div>
