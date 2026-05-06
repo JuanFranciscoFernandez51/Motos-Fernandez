@@ -607,6 +607,9 @@ model Cliente {
   ocupacion       String?
   // Notas internas
   notasInternas   String?  @db.Text
+  // Documentos digitales del cliente (DNI, CUIT, comprobantes, etc.)
+  // Estructura: [{ id, nombre, categoria, url, publicId, mimeType, tamano, notas, uploadedAt }]
+  documentos      Json?
   // Relaciones
   mandatos        MandatoVenta[]
   ordenesCompra   OrdenCompra[]

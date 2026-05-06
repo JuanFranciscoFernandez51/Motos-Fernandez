@@ -17,6 +17,10 @@ import {
   ESTADO_OT_LABELS,
 } from "@/lib/admin-helpers"
 import { FileText, Receipt, Wrench, Bike } from "lucide-react"
+import {
+  ClienteDocumentos,
+  type ClienteDocumento,
+} from "@/components/admin/operativo/cliente-documentos"
 
 export const dynamic = "force-dynamic"
 
@@ -120,9 +124,17 @@ export default async function EditarClientePage({
     notasInternas: cliente.notasInternas || "",
   }
 
+  // Documentos del cliente
+  const documentos: ClienteDocumento[] = Array.isArray(cliente.documentos)
+    ? (cliente.documentos as unknown as ClienteDocumento[])
+    : []
+
   return (
     <div className="space-y-6">
       <ClienteForm initialData={initialData} saveAction={updateCliente} />
+
+      {/* Carpeta de documentos digitales */}
+      <ClienteDocumentos clienteId={cliente.id} documentosIniciales={documentos} />
 
       {/* Histórico del cliente */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-6">
