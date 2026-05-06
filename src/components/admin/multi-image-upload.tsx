@@ -121,6 +121,76 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
     useSensor(KeyboardSensor)
   )
 
+  /**
+   * Comprime/redimensiona la imagen en el navegador antes de subirla.
+   * - Vercel rechaza requests >4.5MB en serverless, asi que algunas fotos
+   *   pesadas (HDR del iPhone, panoramicas) fallan con "error de conexion"
+   *   antes de llegar al servidor. Comprimir client-side lo evita.
+   * - Tambien acelera la subida desde redes lentas y reduce uso de Cloudinary.
+   * - Si la foto es chica o no se puede procesar (ej HEIC en Chrome), se
+   *   sube tal cual.
+   */
+  const compressInBrowser = async (file: File): Promise<File> => {
+    // Si ya es chica (<1.5MB) y es JPEG/PNG/WebP, no hace falta comprimir
+    if (file.size < 1.5 * 1024 * 1024 && /^image\/(jpeg|png|webp)$/i.test(file.type)) {
+      return file
+    }
+    // HEIC/HEIF de iPhone no se puede dibujar en canvas en navegadores
+    // distintos a Safari. Mejor avisar y subir tal cual (Cloudinary lo acepta).
+    if (/heic|heif/i.test(file.type) || /\.hei[cf]$/i.test(file.name)) {
+      return file
+    }
+
+    try {
+      const dataUrl: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = reject
+        reader.readAsDataURL(file)
+      })
+
+      const img: HTMLImageElement = await new Promise((resolve, reject) => {
+        const i = new Image()
+        i.onload = () => resolve(i)
+        i.onerror = reject
+        i.src = dataUrl
+      })
+
+      const MAX = 2400
+      let { width, height } = img
+      if (width > MAX || height > MAX) {
+        if (width >= height) {
+          height = Math.round((height * MAX) / width)
+          width = MAX
+        } else {
+          width = Math.round((width * MAX) / height)
+          height = MAX
+        }
+      }
+
+      const canvas = document.createElement("canvas")
+      canvas.width = width
+      canvas.height = height
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return file
+      ctx.drawImage(img, 0, 0, width, height)
+
+      const blob: Blob | null = await new Promise((resolve) => {
+        canvas.toBlob((b) => resolve(b), "image/jpeg", 0.85)
+      })
+      if (!blob) return file
+
+      // Si quedo mas grande que el original (raro), usar el original
+      if (blob.size >= file.size) return file
+
+      const baseName = file.name.replace(/\.[^.]+$/, "")
+      return new File([blob], `${baseName}.jpg`, { type: "image/jpeg" })
+    } catch {
+      // Si algo falla en la compresion, intentar subir el original
+      return file
+    }
+  }
+
   const uploadFiles = async (files: File[]) => {
     if (files.length === 0) return
     setError("")
@@ -128,31 +198,51 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
     setProgress({ current: 0, total: files.length })
 
     const uploaded: string[] = []
+    const errores: string[] = []
     let done = 0
 
-    for (const file of files) {
+    for (const original of files) {
       try {
+        // Hard cap: evitar subidas absurdas (>20MB) que igual van a fallar
+        if (original.size > 20 * 1024 * 1024) {
+          errores.push(`${original.name}: la foto pesa más de 20MB`)
+          continue
+        }
+
+        // Comprime/redimensiona en el navegador antes de mandar al server
+        const file = await compressInBrowser(original)
+
         const formData = new FormData()
         formData.append("file", file)
         formData.append("folder", folder)
         // "preserve": conserva el ratio original (4:3 del iPhone, vertical, etc.)
-        // y limita el lado mayor a 2000px. El recorte fino se hace despues con
-        // el botón Crop si hace falta. Antes era "auto" (cuadrado 1000x1000),
-        // pero perdía los píxeles fuera del cuadrado para siempre.
+        // y limita el lado mayor a 2000px (fallback al server-side por las dudas).
         formData.append("cropMode", "preserve")
 
         const res = await fetch("/api/admin/upload", {
           method: "POST",
           body: formData,
         })
-        const data = await res.json()
+
+        // Si el server respondio pero no es JSON valido, manejarlo prolijamente
+        let data: { url?: string; error?: string } = {}
+        try {
+          data = await res.json()
+        } catch {
+          errores.push(
+            `${original.name}: respuesta inválida del servidor (HTTP ${res.status})`
+          )
+          continue
+        }
+
         if (!res.ok || data.error) {
-          setError(data.error || `Error al subir ${file.name}`)
-        } else {
+          errores.push(`${original.name}: ${data.error || `HTTP ${res.status}`}`)
+        } else if (data.url) {
           uploaded.push(data.url)
         }
-      } catch {
-        setError(`Error de conexión al subir ${file.name}`)
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : "Sin detalle"
+        errores.push(`${original.name}: error de conexión (${msg})`)
       } finally {
         done++
         setProgress({ current: done, total: files.length })
@@ -161,6 +251,9 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
 
     if (uploaded.length > 0) {
       onChange([...value, ...uploaded])
+    }
+    if (errores.length > 0) {
+      setError(errores.join(" · "))
     }
     setUploading(false)
     setTimeout(() => setProgress({ current: 0, total: 0 }), 500)
