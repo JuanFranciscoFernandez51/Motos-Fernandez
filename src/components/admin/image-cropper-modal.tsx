@@ -113,11 +113,17 @@ export function ImageCropperModal({
   if (!open) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-      <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl w-full max-w-2xl flex flex-col">
+    <div
+      className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-2 sm:p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl w-full max-w-2xl max-h-[95vh] flex flex-col overflow-hidden"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b">
-          <h3 className="font-semibold text-lg">Recortar imagen</h3>
+        <div className="flex items-center justify-between px-5 py-3 sm:py-4 border-b border-gray-100 dark:border-neutral-800 shrink-0">
+          <h3 className="font-semibold text-base sm:text-lg">Recortar imagen</h3>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 dark:text-gray-300 transition-colors"
@@ -127,23 +133,32 @@ export function ImageCropperModal({
           </button>
         </div>
 
-        {/* Cropper */}
-        <div className="relative w-full h-[400px] bg-gray-900">
+        {/* Cropper — flex-1 para adaptarse al alto disponible.
+            touch-none + overscroll-none evita que el browser robe el gesto
+            (scroll/zoom de página) y deja que react-easy-crop maneje el drag. */}
+        <div
+          className="relative w-full flex-1 min-h-[260px] sm:min-h-[380px] bg-gray-900 touch-none overscroll-none"
+          style={{ touchAction: "none" }}
+        >
           <Cropper
             image={sourceUrl}
             crop={crop}
             zoom={zoom}
             aspect={1}
+            minZoom={1}
+            maxZoom={3}
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}
+            objectFit="contain"
+            showGrid
           />
         </div>
 
         {/* Controls */}
-        <div className="px-5 py-4 space-y-3 border-t">
+        <div className="px-5 py-3 space-y-2 border-t border-gray-100 dark:border-neutral-800 shrink-0">
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Zoom</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider shrink-0">Zoom</span>
             <input
               type="range"
               value={zoom}
@@ -151,17 +166,17 @@ export function ImageCropperModal({
               max={3}
               step={0.05}
               onChange={(e) => setZoom(Number(e.target.value))}
-              className="flex-1"
+              className="flex-1 accent-[#6B4F7A]"
             />
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
-            Arrastrá la imagen para reposicionar y usá el zoom para ajustar el encuadre.
+          <p className="text-[11px] text-gray-500 dark:text-gray-400">
+            Arrastrá con un dedo para reposicionar · Pellizcá o usá el slider para zoom
           </p>
           {error && <p className="text-sm text-red-500">{error}</p>}
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-5 py-4 border-t bg-gray-50 dark:bg-neutral-900">
+        <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-gray-100 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 shrink-0">
           <Button variant="outline" onClick={onClose} disabled={saving}>
             Cancelar
           </Button>
