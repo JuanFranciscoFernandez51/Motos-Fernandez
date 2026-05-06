@@ -27,6 +27,7 @@ import { CookieBanner } from "@/components/public/cookie-banner"
 import { NewsletterForm } from "@/components/public/newsletter-form"
 import { PromoBar } from "@/components/public/promo-bar"
 import { MobileBottomBar } from "@/components/public/mobile-bottom-bar"
+import { WelcomePopup } from "@/components/public/welcome-popup"
 
 const NAV_LINKS = [
   { href: "/catalogo", label: "Catálogo", highlight: true },
@@ -558,6 +559,7 @@ export default function PublicLayout({
           <MobileBottomBar />
           <Chatbot />
           <CookieBanner />
+          <WelcomePopup />
         </WishlistProvider>
       </ComparadorProvider>
     </CartProvider>

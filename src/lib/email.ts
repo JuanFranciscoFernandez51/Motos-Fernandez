@@ -398,6 +398,77 @@ export async function sendNewsletterWelcome(email: string, nombre?: string) {
   })
 }
 
+// ==================== BIENVENIDA + CUPON ====================
+
+interface BienvenidaCuponData {
+  nombre: string
+  email: string
+  codigo: string
+  porcentaje: number
+}
+
+export async function sendBienvenidaCupon(data: BienvenidaCuponData) {
+  const html = `
+    <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif; background: #ffffff;">
+      <div style="background: linear-gradient(135deg, #3D2649 0%, #6B4F7A 100%); padding: 30px 20px; text-align: center;">
+        <h1 style="color: white; margin: 0; font-size: 26px; letter-spacing: 1px;">¡BIENVENIDO!</h1>
+        <p style="color: #e9d8f4; margin: 8px 0 0; font-size: 14px;">${BUSINESS.name}</p>
+      </div>
+      <div style="padding: 32px 24px; color: #1a1a1a; font-size: 15px; line-height: 1.6;">
+        <h2 style="margin: 0 0 14px; color: #3D2649; font-size: 22px;">¡Hola ${escapeHtml(data.nombre)}!</h2>
+        <p style="margin: 0 0 18px;">
+          Gracias por sumarte a la familia ${BUSINESS.name}. Te damos la bienvenida con un
+          <strong style="color: #6B4F7A;">${data.porcentaje}% de descuento</strong> en
+          <strong>tienda online</strong> y <strong>servicios de taller</strong>.
+        </p>
+
+        <!-- Cupón visual -->
+        <div style="margin: 28px 0; padding: 24px; background: linear-gradient(135deg, #F8F5FA 0%, #EFEAF2 100%); border: 2px dashed #6B4F7A; border-radius: 12px; text-align: center;">
+          <p style="margin: 0 0 8px; font-size: 11px; font-weight: bold; color: #6B4F7A; letter-spacing: 2px; text-transform: uppercase;">
+            Tu código de descuento
+          </p>
+          <p style="margin: 6px 0; font-size: 32px; font-weight: bold; color: #3D2649; letter-spacing: 3px; font-family: 'Courier New', monospace;">
+            ${data.codigo}
+          </p>
+          <p style="margin: 8px 0 0; font-size: 13px; color: #6B4F7A; font-weight: bold;">
+            ${data.porcentaje}% OFF · Válido por 30 días
+          </p>
+        </div>
+
+        <p style="margin: 20px 0 12px; font-size: 14px;">
+          <strong>¿Cómo usarlo?</strong>
+        </p>
+        <ul style="margin: 0 0 22px; padding-left: 20px; color: #444;">
+          <li style="margin-bottom: 6px;">Ingresá a nuestra tienda y elegí lo que quieras</li>
+          <li style="margin-bottom: 6px;">En el checkout, pegá el código <strong>${data.codigo}</strong></li>
+          <li style="margin-bottom: 6px;">Para servicios de taller, mostrá este email al pedir turno</li>
+        </ul>
+
+        <div style="text-align: center; margin: 28px 0 16px;">
+          <a href="https://motosfernandez.com.ar/tienda"
+             style="display: inline-block; background: linear-gradient(135deg, #3D2649 0%, #6B4F7A 100%); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 10px; font-weight: bold; font-size: 15px; letter-spacing: 0.5px;">
+            Ir a la tienda
+          </a>
+        </div>
+
+        <p style="margin: 24px 0 0; color: #888; font-size: 12px; text-align: center; font-style: italic;">
+          Cualquier consulta, escribinos por WhatsApp:
+          <a href="${getWhatsAppUrl("Hola! Tengo una consulta sobre el cupón de bienvenida.")}" style="color: #6B4F7A; font-weight: bold;">${BUSINESS.whatsappDisplay}</a>
+        </p>
+      </div>
+      <div style="background: #0E0B12; color: #999; padding: 16px; text-align: center; font-size: 11px;">
+        <p style="margin: 0;">${BUSINESS.name} &middot; ${BUSINESS.address}</p>
+      </div>
+    </div>
+  `
+
+  return sendEmail({
+    to: data.email,
+    subject: `¡Tu ${data.porcentaje}% de descuento en ${BUSINESS.name}!`,
+    html,
+  })
+}
+
 export async function sendTurnoConfirmation(data: TurnoEmailData) {
   const html = `
     <div style="max-width: 600px; margin: 0 auto; font-family: Arial, sans-serif;">

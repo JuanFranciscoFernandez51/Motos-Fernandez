@@ -700,14 +700,30 @@ export default async function AdminDashboardPage() {
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {ciudades.map((c) => (
-                    <div key={c.ciudad} className="flex items-center justify-between">
-                      <span className="text-sm text-gray-700 dark:text-gray-300">{c.ciudad}</span>
-                      <Badge variant="secondary" className="text-xs bg-purple-50 dark:bg-purple-950/30 text-[#6B4F7A]">
-                        {c._count.ciudad} visita{c._count.ciudad !== 1 ? "s" : ""}
-                      </Badge>
-                    </div>
-                  ))}
+                  {ciudades.map((c) => {
+                    // Decodificar ciudades guardadas con encoding raro (ej: "Bah%C3%ADa%20Blanca")
+                    let nombreCiudad = c.ciudad ?? "—"
+                    try {
+                      // Si tiene % es URL-encoded → decodificar
+                      if (nombreCiudad.includes("%")) {
+                        nombreCiudad = decodeURIComponent(nombreCiudad)
+                      }
+                      // Si tiene & sin punto y coma (no es entity), reemplazar por espacio
+                      if (/&(?!\w+;)/.test(nombreCiudad)) {
+                        nombreCiudad = nombreCiudad.replace(/&/g, " ")
+                      }
+                    } catch {
+                      // mantener el valor crudo
+                    }
+                    return (
+                      <div key={c.ciudad} className="flex items-center justify-between">
+                        <span className="text-sm text-gray-700 dark:text-gray-300">{nombreCiudad}</span>
+                        <Badge variant="secondary" className="text-xs bg-purple-50 dark:bg-purple-950/30 text-[#6B4F7A]">
+                          {c._count.ciudad} visita{c._count.ciudad !== 1 ? "s" : ""}
+                        </Badge>
+                      </div>
+                    )
+                  })}
                 </div>
               )}
             </CardContent>

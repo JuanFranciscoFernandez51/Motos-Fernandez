@@ -42,7 +42,19 @@ export async function POST(req: NextRequest) {
 
     visitaCache.set(rateLimitKey, now)
 
-    const ciudad = req.headers.get("x-vercel-ip-city") ?? null
+    // Vercel manda x-vercel-ip-city URL-encoded: "Bah%C3%ADa%20Blanca"
+    // Lo decodificamos para guardarlo legible: "Bahía Blanca"
+    const ciudadRaw = req.headers.get("x-vercel-ip-city")
+    let ciudad: string | null = null
+    if (ciudadRaw) {
+      try {
+        ciudad = decodeURIComponent(ciudadRaw)
+      } catch {
+        // Si la decodificación falla, dejamos el valor crudo
+        ciudad = ciudadRaw
+      }
+    }
+
     const userAgent = req.headers.get("user-agent") ?? ""
     const device = detectDevice(userAgent)
 
