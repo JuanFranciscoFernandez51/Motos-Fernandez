@@ -27,9 +27,12 @@ export type MandatoData = {
   patente: string
   tieneTitulo: boolean
   tituloANombreCliente: boolean
+  tieneTarjetaVerde: boolean
   tienePrenda: boolean
   detallePrenda: string
-  verificacionTecnica: boolean
+  tieneVTV: boolean
+  tieneManual: boolean
+  tieneSegundaLlave: boolean
   precioVenta: string
   precioMinimo: string
   comisionPorc: string
@@ -55,9 +58,12 @@ const EMPTY: MandatoData = {
   patente: "",
   tieneTitulo: true,
   tituloANombreCliente: true,
+  tieneTarjetaVerde: false,
   tienePrenda: false,
   detallePrenda: "",
-  verificacionTecnica: false,
+  tieneVTV: false,
+  tieneManual: false,
+  tieneSegundaLlave: false,
   precioVenta: "",
   precioMinimo: "",
   comisionPorc: "10",
@@ -326,44 +332,72 @@ export function MandatoForm({
           <CardHeader>
             <CardTitle>Documentación</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-3">
             <div className="flex items-center justify-between">
-              <Label className="text-sm">Tiene título</Label>
+              <Label className="text-sm">Título</Label>
               <Switch
                 checked={data.tieneTitulo}
                 onCheckedChange={(v) => set("tieneTitulo", v)}
               />
             </div>
+            {data.tieneTitulo && (
+              <div className="flex items-center justify-between pl-3 -mt-1 border-l-2 border-[#6B4F7A]/20">
+                <Label className="text-xs text-gray-500 dark:text-gray-400">
+                  ¿A nombre del cliente?
+                </Label>
+                <Switch
+                  checked={data.tituloANombreCliente}
+                  onCheckedChange={(v) => set("tituloANombreCliente", v)}
+                />
+              </div>
+            )}
             <div className="flex items-center justify-between">
-              <Label className="text-sm">Título a nombre del cliente</Label>
+              <Label className="text-sm">Tarjeta verde</Label>
               <Switch
-                checked={data.tituloANombreCliente}
-                onCheckedChange={(v) => set("tituloANombreCliente", v)}
+                checked={data.tieneTarjetaVerde}
+                onCheckedChange={(v) => set("tieneTarjetaVerde", v)}
               />
             </div>
             <div className="flex items-center justify-between">
-              <Label className="text-sm">Tiene prenda</Label>
+              <Label className="text-sm">Prenda</Label>
               <Switch
                 checked={data.tienePrenda}
                 onCheckedChange={(v) => set("tienePrenda", v)}
               />
             </div>
             {data.tienePrenda && (
-              <div>
-                <Label htmlFor="detallePrenda">Detalle prenda</Label>
+              <div className="pl-3 -mt-1 border-l-2 border-[#6B4F7A]/20">
+                <Label htmlFor="detallePrenda" className="text-xs text-gray-500 dark:text-gray-400">
+                  Detalle de la prenda
+                </Label>
                 <Input
                   id="detallePrenda"
                   value={data.detallePrenda}
                   onChange={(e) => set("detallePrenda", e.target.value)}
                   placeholder="Entidad, cuotas restantes..."
+                  className="mt-1 h-9 text-sm"
                 />
               </div>
             )}
             <div className="flex items-center justify-between">
               <Label className="text-sm">VTV vigente</Label>
               <Switch
-                checked={data.verificacionTecnica}
-                onCheckedChange={(v) => set("verificacionTecnica", v)}
+                checked={data.tieneVTV}
+                onCheckedChange={(v) => set("tieneVTV", v)}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">Manual</Label>
+              <Switch
+                checked={data.tieneManual}
+                onCheckedChange={(v) => set("tieneManual", v)}
+              />
+            </div>
+            <div className="flex items-center justify-between">
+              <Label className="text-sm">2da llave</Label>
+              <Switch
+                checked={data.tieneSegundaLlave}
+                onCheckedChange={(v) => set("tieneSegundaLlave", v)}
               />
             </div>
           </CardContent>

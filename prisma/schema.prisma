@@ -638,9 +638,13 @@ model MandatoVenta {
   // Documentación
   tieneTitulo              Boolean @default(false)
   tituloANombreCliente     Boolean @default(false)
+  tieneTarjetaVerde        Boolean @default(false)
   tienePrenda              Boolean @default(false)
   detallePrenda            String?
-  verificacionTecnica      Boolean @default(false)
+  tieneVTV                 Boolean @default(false)  // VTV vigente
+  verificacionTecnica      Boolean @default(false)  // legacy — mantenido por compat
+  tieneManual              Boolean @default(false)
+  tieneSegundaLlave        Boolean @default(false)
 
   // Económico
   precioVenta     Int       // precio acordado con el dueño
