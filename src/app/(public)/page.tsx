@@ -63,7 +63,7 @@ export default async function HomePage() {
           className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-32 bg-gradient-to-b from-transparent via-[#C8C8D0]/40 to-transparent"
         />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-16">
           <div className="max-w-4xl">
             {/* Eyebrow premium */}
             <AnimatedSection animation="fade" delay={100}>
@@ -77,21 +77,21 @@ export default async function HomePage() {
 
             {/* Headline display sobrio y moderno */}
             <AnimatedSection animation="fade-up" delay={200}>
-              <h1 className="mt-7 text-white text-balance">
-                <span className="block font-display text-6xl sm:text-7xl lg:text-8xl xl:text-9xl leading-[0.9] tracking-tight">
+              <h1 className="mt-5 text-white text-balance">
+                <span className="block font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl leading-[0.9] tracking-tight">
                   TU PRÓXIMA
                 </span>
-                <span className="block font-display text-6xl sm:text-7xl lg:text-8xl xl:text-9xl mt-1 leading-[0.9] tracking-tight text-[#C8C8D0]">
+                <span className="block font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl mt-1 leading-[0.9] tracking-tight text-[#C8C8D0]">
                   AVENTURA
                 </span>
-                <span className="block font-heading text-2xl sm:text-3xl lg:text-4xl mt-4 font-light text-gray-300">
+                <span className="block font-heading text-xl sm:text-2xl lg:text-3xl mt-3 font-light text-gray-300">
                   empieza acá.
                 </span>
               </h1>
             </AnimatedSection>
 
             <AnimatedSection animation="fade-up" delay={400}>
-              <p className="mt-8 text-base sm:text-lg lg:text-xl text-gray-300/90 max-w-2xl leading-relaxed">
+              <p className="mt-6 text-base sm:text-lg text-gray-300/90 max-w-2xl leading-relaxed">
                 Más de{" "}
                 <span className="text-[#C8C8D0] font-semibold">
                   {BUSINESS.yearsInBusiness} años
@@ -102,7 +102,7 @@ export default async function HomePage() {
             </AnimatedSection>
 
             <AnimatedSection animation="fade-up" delay={550}>
-              <div className="mt-10 flex flex-wrap gap-3">
+              <div className="mt-7 flex flex-wrap gap-3">
                 {/* CTA principal — dorado premium */}
                 <Link
                   href="/catalogo"
@@ -137,9 +137,9 @@ export default async function HomePage() {
 
             {/* Stats con tipografía premium */}
             <AnimatedSection animation="fade-up" delay={700}>
-              <div className="mt-14 flex flex-wrap gap-x-10 sm:gap-x-14 gap-y-6">
+              <div className="mt-9 flex flex-wrap gap-x-10 sm:gap-x-14 gap-y-6">
                 <div>
-                  <p className="font-heading text-5xl sm:text-6xl text-white leading-none">
+                  <p className="font-heading text-4xl sm:text-5xl text-white leading-none">
                     +{BUSINESS.yearsInBusiness}
                   </p>
                   <p className="text-[10px] text-[#C8C8D0] mt-2 uppercase tracking-[0.22em] font-bold">
@@ -148,7 +148,7 @@ export default async function HomePage() {
                 </div>
                 <div className="w-px bg-gradient-to-b from-transparent via-white/10 to-transparent self-stretch" />
                 <div>
-                  <p className="font-heading text-5xl sm:text-6xl text-white leading-none">
+                  <p className="font-heading text-4xl sm:text-5xl text-white leading-none">
                     +50
                   </p>
                   <p className="text-[10px] text-[#C8C8D0] mt-2 uppercase tracking-[0.22em] font-bold">
@@ -157,7 +157,7 @@ export default async function HomePage() {
                 </div>
                 <div className="w-px bg-gradient-to-b from-transparent via-white/10 to-transparent self-stretch" />
                 <div>
-                  <p className="font-heading text-5xl sm:text-6xl text-white leading-none">
+                  <p className="font-heading text-4xl sm:text-5xl text-white leading-none">
                     24
                   </p>
                   <p className="text-[10px] text-[#C8C8D0] mt-2 uppercase tracking-[0.22em] font-bold">
@@ -166,7 +166,7 @@ export default async function HomePage() {
                 </div>
                 <div className="w-px bg-gradient-to-b from-transparent via-white/10 to-transparent self-stretch" />
                 <div>
-                  <p className="font-heading text-5xl sm:text-6xl text-white leading-none">
+                  <p className="font-heading text-4xl sm:text-5xl text-white leading-none">
                     #1
                   </p>
                   <p className="text-[10px] text-[#C8C8D0] mt-2 uppercase tracking-[0.22em] font-bold">
