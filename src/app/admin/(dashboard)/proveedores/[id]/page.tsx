@@ -1,11 +1,20 @@
 import { notFound, redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
+import { Prisma } from "@prisma/client"
 import { ProveedorForm, type Contacto } from "@/components/admin/operativo/proveedor-form"
 import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
 
 export const dynamic = "force-dynamic"
+
+type ContactoInput = {
+  id?: string
+  nombre?: string
+  rol?: string
+  telefono?: string
+  email?: string
+}
 
 async function updateProveedor(formData: FormData) {
   "use server"
@@ -14,13 +23,13 @@ async function updateProveedor(formData: FormData) {
     const get = (k: string) => (formData.get(k) as string) || ""
 
     // Parsear contactos
-    let contactos: unknown = null
+    let contactos: ContactoInput[] | null = null
     const contactosRaw = get("contactos")
     if (contactosRaw) {
       try {
         const parsed = JSON.parse(contactosRaw)
         if (Array.isArray(parsed) && parsed.length > 0) {
-          contactos = parsed
+          contactos = parsed as ContactoInput[]
         }
       } catch {
         // ignorar
@@ -30,8 +39,8 @@ async function updateProveedor(formData: FormData) {
     // Compatibilidad: usar primer contacto como principal legacy
     let contactoPrincipal: string | null = null
     let telefonoPrincipal: string | null = null
-    if (contactos && Array.isArray(contactos) && contactos.length > 0) {
-      const primero = contactos[0] as { nombre?: string; rol?: string; telefono?: string }
+    if (contactos && contactos.length > 0) {
+      const primero = contactos[0]
       if (primero?.nombre) {
         contactoPrincipal = primero.rol
           ? `${primero.nombre} (${primero.rol})`
@@ -54,13 +63,16 @@ async function updateProveedor(formData: FormData) {
         sitio: get("sitio") || null,
         notas: get("notas") || null,
         activo: get("activo") === "true",
-        contactos: (contactos ?? null) as never,
+        contactos: contactos
+          ? (contactos as unknown as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
       },
     })
     revalidatePath("/admin/proveedores")
     revalidatePath(`/admin/proveedores/${id}`)
     return {}
   } catch (e: unknown) {
+    console.error("Error actualizando proveedor:", e)
     return {
       error: e instanceof Error ? e.message : "Error al actualizar",
     }

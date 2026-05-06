@@ -1,8 +1,17 @@
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
+import { Prisma } from "@prisma/client"
 import { ProveedorForm } from "@/components/admin/operativo/proveedor-form"
 
 export const dynamic = "force-dynamic"
+
+type ContactoInput = {
+  id?: string
+  nombre?: string
+  rol?: string
+  telefono?: string
+  email?: string
+}
 
 async function createProveedor(formData: FormData) {
   "use server"
@@ -10,24 +19,24 @@ async function createProveedor(formData: FormData) {
     const get = (k: string) => (formData.get(k) as string) || ""
 
     // Parsear contactos del JSON
-    let contactos: unknown = null
+    let contactos: ContactoInput[] | null = null
     const contactosRaw = get("contactos")
     if (contactosRaw) {
       try {
         const parsed = JSON.parse(contactosRaw)
         if (Array.isArray(parsed) && parsed.length > 0) {
-          contactos = parsed
+          contactos = parsed as ContactoInput[]
         }
       } catch {
         // Ignorar JSON inválido
       }
     }
 
-    // Compatibilidad: si hay contactos, usar el primero como "contacto principal" legacy
+    // Compatibilidad: usar primer contacto como principal legacy
     let contactoPrincipal: string | null = null
     let telefonoPrincipal: string | null = null
-    if (contactos && Array.isArray(contactos) && contactos.length > 0) {
-      const primero = contactos[0] as { nombre?: string; rol?: string; telefono?: string }
+    if (contactos && contactos.length > 0) {
+      const primero = contactos[0]
       if (primero?.nombre) {
         contactoPrincipal = primero.rol
           ? `${primero.nombre} (${primero.rol})`
@@ -49,12 +58,15 @@ async function createProveedor(formData: FormData) {
         sitio: get("sitio") || null,
         notas: get("notas") || null,
         activo: get("activo") === "true",
-        contactos: contactos as never,
+        contactos: contactos
+          ? (contactos as unknown as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
       },
     })
     revalidatePath("/admin/proveedores")
     return { id: proveedor.id }
   } catch (e: unknown) {
+    console.error("Error creando proveedor:", e)
     return {
       error: e instanceof Error ? e.message : "Error al crear proveedor",
     }
