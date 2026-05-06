@@ -211,7 +211,7 @@ export default async function HomePage() {
       </section>
 
       {/* ==================== MARQUEE DE MARCAS ==================== */}
-      <MarqueeBrands variant="violeta" speed="normal" />
+      <MarqueeBrands speed="normal" />
 
       {/* ==================== MODELOS DESTACADOS ==================== */}
       <section className="relative py-20 sm:py-24 bg-[#F8F5FA] dark:bg-neutral-950 overflow-hidden">
