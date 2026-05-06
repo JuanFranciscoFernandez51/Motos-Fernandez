@@ -1,17 +1,21 @@
 import { v2 as cloudinary } from "cloudinary"
 
+// Limpia la env var de espacios/tabs invisibles que a veces se cuelan al copy-paste
+const cleanEnv = (v: string | undefined): string | undefined =>
+  v ? v.trim().replace(/[\s\t\n\r]/g, "") || undefined : undefined
+
 // Fallback entre las dos formas de declarar el cloud_name:
 // - CLOUDINARY_CLOUD_NAME (server-only)
 // - NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME (client + server)
 const CLOUD_NAME =
-  process.env.CLOUDINARY_CLOUD_NAME ||
-  process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ||
+  cleanEnv(process.env.CLOUDINARY_CLOUD_NAME) ||
+  cleanEnv(process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME) ||
   "dgtlyzyra" // último recurso: el cloud actual hardcoded
 
 cloudinary.config({
   cloud_name: CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+  api_key: cleanEnv(process.env.CLOUDINARY_API_KEY),
+  api_secret: cleanEnv(process.env.CLOUDINARY_API_SECRET),
 })
 
 export async function uploadImage(
