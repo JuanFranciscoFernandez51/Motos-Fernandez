@@ -4,20 +4,20 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import Link from "next/link"
-import { ShoppingBag, Tag, X, ArrowLeft, CreditCard } from "lucide-react"
+import { ShoppingBag, ArrowLeft, CreditCard } from "lucide-react"
 import { useCart } from "@/lib/cart-context"
 import { formatPrice } from "@/lib/constants"
-
-interface CuponInfo {
-  codigo: string
-  porcentaje: number
-  montoMaximo?: number | null
-  montoMinimo?: number | null
-  descripcion?: string | null
-}
+import { CuponInput } from "@/components/public/cupon-input"
 
 export default function CheckoutPage() {
-  const { items, totalPrice, clearCart } = useCart()
+  const {
+    items,
+    totalPrice,
+    clearCart,
+    cupon,
+    descuento,
+    totalConDescuento,
+  } = useCart()
   const router = useRouter()
 
   const [form, setForm] = useState({
@@ -28,67 +28,13 @@ export default function CheckoutPage() {
     dni: "",
   })
 
-  const [cuponInput, setCuponInput] = useState("")
-  const [cupon, setCupon] = useState<CuponInfo | null>(null)
-  const [cuponError, setCuponError] = useState("")
-  const [cuponLoading, setCuponLoading] = useState(false)
-
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  // Calculate discount
-  const calcDescuento = () => {
-    if (!cupon) return 0
-    let descuento = Math.floor((totalPrice * cupon.porcentaje) / 100)
-    if (cupon.montoMaximo && descuento > cupon.montoMaximo) {
-      descuento = cupon.montoMaximo
-    }
-    return descuento
-  }
-
-  const descuento = calcDescuento()
-  const totalFinal = totalPrice - descuento
+  const totalFinal = totalConDescuento
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }))
-  }
-
-  const handleAplicarCupon = async () => {
-    if (!cuponInput.trim()) return
-    setCuponLoading(true)
-    setCuponError("")
-    try {
-      const res = await fetch("/api/public/cupones", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ codigo: cuponInput.trim().toUpperCase() }),
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        setCuponError(data.error || "Cupón inválido")
-        setCupon(null)
-      } else {
-        if (data.montoMinimo && totalPrice < data.montoMinimo) {
-          setCuponError(
-            `El pedido mínimo para este cupón es ${formatPrice(data.montoMinimo)}`
-          )
-          setCupon(null)
-        } else {
-          setCupon(data)
-          setCuponError("")
-        }
-      }
-    } catch {
-      setCuponError("Error al verificar el cupón")
-    } finally {
-      setCuponLoading(false)
-    }
-  }
-
-  const handleRemoveCupon = () => {
-    setCupon(null)
-    setCuponInput("")
-    setCuponError("")
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -261,54 +207,7 @@ export default function CheckoutPage() {
                 <h2 className="text-lg font-bold text-[#1A1A1A] dark:text-white mb-4">
                   Cupón de descuento
                 </h2>
-                {cupon ? (
-                  <div className="flex items-center justify-between rounded-lg border border-green-200 dark:border-green-900/40 bg-green-50 dark:bg-green-950/30 px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <Tag className="size-4 text-green-600 dark:text-green-300" />
-                      <span className="text-sm font-semibold text-green-700 dark:text-green-300">
-                        {cupon.codigo}
-                      </span>
-                      <span className="text-sm text-green-600 dark:text-green-300">
-                        — {cupon.porcentaje}% off
-                        {cupon.montoMaximo
-                          ? ` (máx. ${formatPrice(cupon.montoMaximo)})`
-                          : ""}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={handleRemoveCupon}
-                      className="rounded-md p-1 text-green-600 dark:text-green-300 hover:bg-green-100 dark:bg-green-900/40 transition-colors"
-                      aria-label="Quitar cupón"
-                    >
-                      <X className="size-4" />
-                    </button>
-                  </div>
-                ) : (
-                  <div>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={cuponInput}
-                        onChange={(e) => setCuponInput(e.target.value.toUpperCase())}
-                        placeholder="CÓDIGO DE CUPÓN"
-                        className="flex-1 rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 uppercase focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
-                        onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAplicarCupon())}
-                      />
-                      <button
-                        type="button"
-                        onClick={handleAplicarCupon}
-                        disabled={cuponLoading || !cuponInput.trim()}
-                        className="rounded-lg bg-[#6B4F7A] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] disabled:opacity-50 transition-colors"
-                      >
-                        {cuponLoading ? "..." : "Aplicar"}
-                      </button>
-                    </div>
-                    {cuponError && (
-                      <p className="mt-2 text-sm text-red-500">{cuponError}</p>
-                    )}
-                  </div>
-                )}
+                <CuponInput contexto="TIENDA" />
               </div>
             </div>
 
@@ -363,9 +262,9 @@ export default function CheckoutPage() {
                     <span>Subtotal</span>
                     <span>{formatPrice(totalPrice)}</span>
                   </div>
-                  {descuento > 0 && (
+                  {cupon && descuento > 0 && (
                     <div className="flex justify-between text-sm text-green-600 dark:text-green-300">
-                      <span>Descuento ({cupon?.porcentaje}%)</span>
+                      <span>Descuento ({cupon.codigo} · {cupon.porcentaje}%)</span>
                       <span>-{formatPrice(descuento)}</span>
                     </div>
                   )}

@@ -14,6 +14,15 @@ export interface CartItem {
   categoriaId: string
 }
 
+export interface CuponAplicado {
+  codigo: string
+  porcentaje: number
+  montoMaximo: number | null
+  montoMinimo: number | null
+  descripcion: string | null
+  aplicaA: string[]
+}
+
 interface CartContextType {
   items: CartItem[]
   addItem: (item: Omit<CartItem, "cantidad">) => void
@@ -22,14 +31,22 @@ interface CartContextType {
   clearCart: () => void
   totalItems: number
   totalPrice: number
+  // Cupón aplicado en el carrito (persiste entre páginas)
+  cupon: CuponAplicado | null
+  aplicarCupon: (cupon: CuponAplicado) => void
+  quitarCupon: () => void
+  descuento: number
+  totalConDescuento: number
 }
 
 const CartContext = createContext<CartContextType | null>(null)
 
 const STORAGE_KEY = "mf-cart"
+const CUPON_STORAGE_KEY = "mf-cart-cupon"
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
+  const [cupon, setCupon] = useState<CuponAplicado | null>(null)
   const [hydrated, setHydrated] = useState(false)
 
   // Load from localStorage on mount
@@ -39,13 +56,17 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       if (stored) {
         setItems(JSON.parse(stored))
       }
+      const storedCupon = localStorage.getItem(CUPON_STORAGE_KEY)
+      if (storedCupon) {
+        setCupon(JSON.parse(storedCupon))
+      }
     } catch {
       // ignore parse errors
     }
     setHydrated(true)
   }, [])
 
-  // Persist to localStorage whenever items change (after hydration)
+  // Persist items
   useEffect(() => {
     if (!hydrated) return
     try {
@@ -54,6 +75,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       // ignore storage errors
     }
   }, [items, hydrated])
+
+  // Persist cupón
+  useEffect(() => {
+    if (!hydrated) return
+    try {
+      if (cupon) {
+        localStorage.setItem(CUPON_STORAGE_KEY, JSON.stringify(cupon))
+      } else {
+        localStorage.removeItem(CUPON_STORAGE_KEY)
+      }
+    } catch {
+      // ignore
+    }
+  }, [cupon, hydrated])
 
   const addItem = useCallback((item: Omit<CartItem, "cantidad">) => {
     setItems((prev) => {
@@ -96,6 +131,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const clearCart = useCallback(() => {
     setItems([])
+    setCupon(null)
+  }, [])
+
+  const aplicarCupon = useCallback((c: CuponAplicado) => {
+    setCupon(c)
+  }, [])
+
+  const quitarCupon = useCallback(() => {
+    setCupon(null)
   }, [])
 
   const totalItems = items.reduce((sum, i) => sum + i.cantidad, 0)
@@ -103,6 +147,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     (sum, i) => sum + (i.precioOferta ?? i.precio) * i.cantidad,
     0
   )
+
+  // Calcular descuento
+  let descuento = 0
+  if (cupon && totalPrice > 0) {
+    if (!cupon.montoMinimo || totalPrice >= cupon.montoMinimo) {
+      descuento = Math.floor((totalPrice * cupon.porcentaje) / 100)
+      if (cupon.montoMaximo && descuento > cupon.montoMaximo) {
+        descuento = cupon.montoMaximo
+      }
+    }
+  }
+  const totalConDescuento = Math.max(0, totalPrice - descuento)
 
   return (
     <CartContext.Provider
@@ -114,6 +170,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         clearCart,
         totalItems,
         totalPrice,
+        cupon,
+        aplicarCupon,
+        quitarCupon,
+        descuento,
+        totalConDescuento,
       }}
     >
       {children}

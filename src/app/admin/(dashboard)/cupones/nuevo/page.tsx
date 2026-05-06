@@ -19,6 +19,14 @@ async function createCupon(formData: FormData) {
   const fechaInicioStr = formData.get("fechaInicio") as string
   const fechaFinStr = formData.get("fechaFin") as string
   const activo = formData.get("activo") === "on"
+  // Categorías donde aplica el cupón (checkboxes)
+  const aplicaTienda = formData.get("aplicaTienda") === "on"
+  const aplicaServicios = formData.get("aplicaServicios") === "on"
+  const aplicaA: string[] = []
+  if (aplicaTienda) aplicaA.push("TIENDA")
+  if (aplicaServicios) aplicaA.push("SERVICIOS")
+  // Si no marca nada, default solo TIENDA (NUNCA motos)
+  if (aplicaA.length === 0) aplicaA.push("TIENDA")
 
   try {
     await prisma.cupon.create({
@@ -32,6 +40,7 @@ async function createCupon(formData: FormData) {
         fechaInicio: fechaInicioStr ? new Date(fechaInicioStr) : new Date(),
         fechaFin: fechaFinStr ? new Date(fechaFinStr) : null,
         activo,
+        aplicaA,
       },
     })
   } catch (e: unknown) {
@@ -244,6 +253,51 @@ export default async function NuevoCuponPage({
               />
               <p className="mt-1 text-xs text-gray-400">Dejá vacío para que no expire.</p>
             </div>
+          </div>
+        </div>
+
+        <hr className="border-gray-100 dark:border-neutral-800" />
+
+        {/* Aplica a */}
+        <div>
+          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+            ¿Dónde aplica?
+          </p>
+          <p className="text-xs text-gray-400 mb-3">
+            Las motos NUNCA aceptan cupones. Marcá donde sí aplica.
+          </p>
+          <div className="space-y-2">
+            <label className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 cursor-pointer hover:border-[#6B4F7A]/40 transition-colors">
+              <input
+                type="checkbox"
+                name="aplicaTienda"
+                defaultChecked
+                className="size-4 accent-[#6B4F7A]"
+              />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  Tienda online
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Productos, accesorios, indumentaria, repuestos
+                </p>
+              </div>
+            </label>
+            <label className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 cursor-pointer hover:border-[#6B4F7A]/40 transition-colors">
+              <input
+                type="checkbox"
+                name="aplicaServicios"
+                className="size-4 accent-[#6B4F7A]"
+              />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  Servicios de taller
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Mano de obra, services, reparaciones
+                </p>
+              </div>
+            </label>
           </div>
         </div>
 

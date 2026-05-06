@@ -47,20 +47,22 @@ export async function POST(req: NextRequest) {
       where: { codigo: CODIGO_CUPON },
       create: {
         codigo: CODIGO_CUPON,
-        descripcion: "Cupón de bienvenida — 10% off en tienda y servicios",
+        descripcion: "Cupón de bienvenida — 10% off en tienda y servicios (NO aplica a motos)",
         porcentaje: PORCENTAJE,
         montoMinimo: null,
         montoMaximo: null,
         usosMaximos: null, // ilimitado
         activo: true,
         fechaInicio: new Date(),
+        aplicaA: ["TIENDA", "SERVICIOS"],
         // No le ponemos fechaFin: queremos que el cupón quede activo de forma
         // permanente (el descuento es para todos los nuevos suscriptores).
         // El "30 días" es una sugerencia visual en el email, no se enforza.
       },
       update: {
-        // Si ya existe, lo dejamos como está (no pisamos)
+        // Si ya existe, asegurar que aplica a TIENDA + SERVICIOS y está activo
         activo: true,
+        aplicaA: ["TIENDA", "SERVICIOS"],
       },
     })
 

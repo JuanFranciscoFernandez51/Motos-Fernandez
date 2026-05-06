@@ -91,7 +91,44 @@ export async function POST(request: NextRequest) {
       (sum, i) => sum + (i.precioOferta ?? i.precio) * i.cantidad,
       0
     )
-    const total = subtotal - descuento
+
+    // Re-validar el cupón en el server (anti-tampering: el descuento del cliente
+    // se ignora, calculamos uno nuevo basado en el cupón real de la DB).
+    let descuentoFinal = 0
+    let cuponCodigoFinal: string | null = null
+    if (cuponCodigo) {
+      const cupon = await prisma.cupon.findUnique({
+        where: { codigo: cuponCodigo.toUpperCase() },
+      })
+      const now = new Date()
+      const aplicaA = cupon?.aplicaA && cupon.aplicaA.length > 0 ? cupon.aplicaA : ["TIENDA"]
+      const cuponValido =
+        cupon &&
+        cupon.activo &&
+        cupon.fechaInicio <= now &&
+        (!cupon.fechaFin || cupon.fechaFin >= now) &&
+        (!cupon.usosMaximos || cupon.usosActuales < cupon.usosMaximos) &&
+        (!cupon.montoMinimo || subtotal >= cupon.montoMinimo) &&
+        aplicaA.includes("TIENDA") // Pedidos online son siempre TIENDA
+      if (cuponValido && cupon) {
+        let dto = Math.floor((subtotal * cupon.porcentaje) / 100)
+        if (cupon.montoMaximo && dto > cupon.montoMaximo) dto = cupon.montoMaximo
+        descuentoFinal = dto
+        cuponCodigoFinal = cupon.codigo
+        // Sumar uso al cupón (best-effort, no rompemos si falla)
+        prisma.cupon
+          .update({
+            where: { id: cupon.id },
+            data: { usosActuales: { increment: 1 } },
+          })
+          .catch(() => {})
+      }
+    }
+    // Si el descuento del cliente difiere del recalculado, usamos el server.
+    // (mantenemos var "descuento" para no romper el resto del flujo)
+    const _descuentoCliente = descuento
+    void _descuentoCliente
+    const total = subtotal - descuentoFinal
 
     // Create order in DB first to get the ID
     const pedido = await prisma.pedido.create({
@@ -101,11 +138,11 @@ export async function POST(request: NextRequest) {
         email,
         telefono,
         subtotal,
-        descuento,
+        descuento: descuentoFinal,
         total,
         estado: "NUEVO",
         estadoPago: "PENDIENTE",
-        cuponCodigo: cuponCodigo || null,
+        cuponCodigo: cuponCodigoFinal,
         items: {
           create: items.map((item) => ({
             cantidad: item.cantidad,

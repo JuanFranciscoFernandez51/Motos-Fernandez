@@ -5,6 +5,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const codigo = body.codigo?.toUpperCase()
+    // Contexto donde se valida el cupón. Por default "TIENDA" (carrito de productos online).
+    // Otros valores posibles: "SERVICIOS"
+    const contexto: string = body.contexto || "TIENDA"
 
     if (!codigo) {
       return NextResponse.json(
@@ -54,6 +57,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validar que el cupón aplique al contexto solicitado
+    const aplicaA = cupon.aplicaA && cupon.aplicaA.length > 0 ? cupon.aplicaA : ["TIENDA"]
+    if (!aplicaA.includes(contexto)) {
+      const lugares = aplicaA
+        .map((a) => (a === "TIENDA" ? "tienda" : a === "SERVICIOS" ? "servicios" : a.toLowerCase()))
+        .join(" y ")
+      return NextResponse.json(
+        { error: `Este cupón solo aplica en ${lugares}.` },
+        { status: 400 }
+      )
+    }
+
     return NextResponse.json({
       valid: true,
       codigo: cupon.codigo,
@@ -61,6 +76,7 @@ export async function POST(request: NextRequest) {
       montoMaximo: cupon.montoMaximo,
       montoMinimo: cupon.montoMinimo,
       descripcion: cupon.descripcion,
+      aplicaA,
     })
   } catch (error) {
     console.error("Error validating cupon:", error)

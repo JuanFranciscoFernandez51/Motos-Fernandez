@@ -8,9 +8,19 @@ import { useCart } from "@/lib/cart-context"
 import { formatPrice } from "@/lib/constants"
 import { trackViewContent, trackInitiateCheckout } from "@/lib/pixel-events"
 import { TrackVisita } from "@/components/public/track-visita"
+import { CuponInput } from "@/components/public/cupon-input"
 
 export default function CarritoPage() {
-  const { items, removeItem, updateQuantity, totalItems, totalPrice } = useCart()
+  const {
+    items,
+    removeItem,
+    updateQuantity,
+    totalItems,
+    totalPrice,
+    cupon,
+    descuento,
+    totalConDescuento,
+  } = useCart()
 
   useEffect(() => {
     if (items.length > 0) {
@@ -181,16 +191,44 @@ export default function CarritoPage() {
                   })}
                 </div>
 
-                <div className="flex items-center justify-between mb-6">
-                  <span className="text-base font-semibold text-[#1A1A1A] dark:text-white">Total</span>
-                  <span className="text-xl font-bold text-[#6B4F7A]">
-                    {formatPrice(totalPrice)}
+                {/* Cupón de descuento */}
+                <div className="mb-4">
+                  <CuponInput contexto="TIENDA" />
+                </div>
+
+                {/* Subtotal y descuento (solo si hay cupón aplicado) */}
+                {cupon && descuento > 0 && (
+                  <div className="space-y-1.5 mb-3 text-sm">
+                    <div className="flex items-center justify-between text-gray-500 dark:text-gray-400">
+                      <span>Subtotal</span>
+                      <span>{formatPrice(totalPrice)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-emerald-700 dark:text-emerald-300 font-medium">
+                      <span>Descuento ({cupon.codigo})</span>
+                      <span>-{formatPrice(descuento)}</span>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between mb-6 pt-2 border-t border-gray-100 dark:border-neutral-800">
+                  <span className="text-base font-semibold text-[#1A1A1A] dark:text-white">
+                    Total
                   </span>
+                  <div className="text-right">
+                    {cupon && descuento > 0 && (
+                      <p className="text-xs text-gray-400 line-through">
+                        {formatPrice(totalPrice)}
+                      </p>
+                    )}
+                    <span className="text-xl font-bold text-[#6B4F7A]">
+                      {formatPrice(totalConDescuento)}
+                    </span>
+                  </div>
                 </div>
 
                 <Link
                   href="/checkout"
-                  onClick={() => trackInitiateCheckout(totalPrice)}
+                  onClick={() => trackInitiateCheckout(totalConDescuento)}
                   className="flex items-center justify-center gap-2 w-full rounded-lg bg-[#6B4F7A] px-6 py-3.5 text-base font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
                 >
                   Ir al checkout
