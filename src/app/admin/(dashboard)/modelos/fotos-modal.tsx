@@ -59,14 +59,15 @@ export function FotosModal({ open, onClose, modelo, updateFotos }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-black/60 p-4 pt-10 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-2 sm:p-4"
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-3xl rounded-xl bg-white dark:bg-neutral-900 shadow-2xl"
+        className="relative w-full max-w-3xl max-h-[95vh] flex flex-col rounded-xl bg-white dark:bg-neutral-900 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between border-b border-gray-100 dark:border-neutral-800 px-5 py-4">
+        {/* Header fijo */}
+        <div className="flex items-center justify-between border-b border-gray-100 dark:border-neutral-800 px-5 py-4 shrink-0">
           <div>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               Fotos — {modelo.nombre}
@@ -97,7 +98,8 @@ export function FotosModal({ open, onClose, modelo, updateFotos }: Props) {
           </div>
         </div>
 
-        <div className="p-5">
+        {/* Body scrolleable */}
+        <div className="flex-1 overflow-y-auto p-5 min-h-0">
           <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
             Arrastrá las fotos para subir. La primera se usa como portada.
             Los cambios se guardan automáticamente.
@@ -109,7 +111,8 @@ export function FotosModal({ open, onClose, modelo, updateFotos }: Props) {
           />
         </div>
 
-        <div className="flex items-center justify-between border-t border-gray-100 dark:border-neutral-800 px-5 py-3 bg-gray-50 dark:bg-neutral-900 rounded-b-xl">
+        {/* Footer fijo */}
+        <div className="flex items-center justify-between border-t border-gray-100 dark:border-neutral-800 px-5 py-3 bg-gray-50 dark:bg-neutral-900 rounded-b-xl shrink-0">
           <p className="text-xs text-gray-500 dark:text-gray-400">
             {fotos.length} foto{fotos.length !== 1 ? "s" : ""}
           </p>

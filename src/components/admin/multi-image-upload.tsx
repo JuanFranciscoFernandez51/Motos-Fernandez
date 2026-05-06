@@ -7,6 +7,8 @@ import {
   closestCenter,
   KeyboardSensor,
   PointerSensor,
+  TouchSensor,
+  MouseSensor,
   useSensor,
   useSensors,
   DragEndEvent,
@@ -59,29 +61,30 @@ function SortableItem({ id, url, index, onRemove, onCrop }: SortableItemProps) {
         </span>
       )}
 
-      {/* Drag handle */}
+      {/* Drag handle — siempre visible (en mobile no hay hover) */}
       <button
         type="button"
         {...attributes}
         {...listeners}
-        className="absolute top-1.5 right-1.5 size-7 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur flex items-center justify-center shadow opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing"
-        aria-label="Reordenar"
+        className="absolute top-1.5 right-1.5 size-8 sm:size-7 rounded-full bg-white/95 dark:bg-neutral-900/95 backdrop-blur flex items-center justify-center shadow-md cursor-grab active:cursor-grabbing touch-none sm:opacity-70 sm:group-hover:opacity-100 transition-opacity"
+        aria-label="Mantené apretado y arrastrá para reordenar"
+        title="Mantené apretado y arrastrá para reordenar"
       >
-        <GripVertical className="size-3.5 text-gray-700 dark:text-gray-300" />
+        <GripVertical className="size-4 sm:size-3.5 text-gray-700 dark:text-gray-300" />
       </button>
 
-      {/* Action buttons */}
-      <div className="absolute bottom-1.5 right-1.5 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* Action buttons — siempre visibles en mobile, con hover en desktop */}
+      <div className="absolute bottom-1.5 right-1.5 flex gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
         <button
           type="button"
           onClick={(e) => {
             e.stopPropagation()
             onCrop()
           }}
-          className="size-7 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur flex items-center justify-center shadow hover:bg-blue-50 dark:bg-blue-950/30"
+          className="size-8 sm:size-7 rounded-full bg-white/95 dark:bg-neutral-900/95 backdrop-blur flex items-center justify-center shadow-md hover:bg-blue-50 dark:bg-blue-950/30"
           aria-label="Recortar"
         >
-          <Crop className="size-3.5 text-blue-600" />
+          <Crop className="size-4 sm:size-3.5 text-blue-600" />
         </button>
         <button
           type="button"
@@ -89,10 +92,10 @@ function SortableItem({ id, url, index, onRemove, onCrop }: SortableItemProps) {
             e.stopPropagation()
             onRemove()
           }}
-          className="size-7 rounded-full bg-white/90 dark:bg-neutral-900/90 backdrop-blur flex items-center justify-center shadow hover:bg-red-50 dark:bg-red-950/30"
+          className="size-8 sm:size-7 rounded-full bg-white/95 dark:bg-neutral-900/95 backdrop-blur flex items-center justify-center shadow-md hover:bg-red-50 dark:bg-red-950/30"
           aria-label="Eliminar"
         >
-          <X className="size-3.5 text-red-600" />
+          <X className="size-4 sm:size-3.5 text-red-600" />
         </button>
       </div>
     </div>
@@ -107,7 +110,13 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
   const [cropperIndex, setCropperIndex] = useState<number | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  // Sensores: en desktop arrastra con el mouse al instante; en mobile se
+  // requiere mantener apretado 200ms para distinguir drag de scroll.
   const sensors = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 200, tolerance: 8 },
+    }),
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
     useSensor(KeyboardSensor)
   )
