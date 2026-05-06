@@ -20,9 +20,17 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
+    // Detectar HEIC/HEIF: si llegó tal cual del iPhone (porque heic2any
+    // del cliente no pudo convertirlo), forzamos conversión a JPG para que
+    // se pueda ver en navegadores no-Safari.
+    const isHeic =
+      /heic|heif/i.test(file.type) ||
+      /\.hei[cf]$/i.test(file.name)
+
     const { url, publicId } = await uploadImage(buffer, {
       folder: `motos-fernandez/${folder}`,
       cropMode,
+      format: isHeic ? "jpg" : undefined,
     })
 
     return NextResponse.json({ url, publicId })

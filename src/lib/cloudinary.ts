@@ -24,6 +24,7 @@ export async function uploadImage(
     folder?: string
     transformation?: Record<string, unknown>[]
     cropMode?: "auto" | "none" | "preserve"
+    format?: string
   }
 ) {
   const folder = options?.folder || "motos-fernandez"
@@ -51,11 +52,13 @@ export async function uploadImage(
   }
 
   return new Promise<{ url: string; publicId: string }>((resolve, reject) => {
-    const uploadOptions = {
+    const uploadOptions: Record<string, unknown> = {
       folder,
       resource_type: "image" as const,
       transformation,
     }
+    // Forzar formato de salida (ej: convertir HEIC -> JPG durante upload).
+    if (options?.format) uploadOptions.format = options.format
 
     if (typeof file === "string") {
       cloudinary.uploader.upload(file, uploadOptions, (error, result) => {

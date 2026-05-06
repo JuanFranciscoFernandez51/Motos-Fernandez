@@ -139,14 +139,13 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
     let working: Blob = file
     let workingName = file.name
 
-    // HEIC/HEIF (formato del iPhone): convertir a JPEG primero porque
-    // Canvas no puede dibujarlo en navegadores no-Safari.
+    // HEIC/HEIF (formato del iPhone): intentar convertir a JPEG en el browser
+    // primero (mejor compresion). Si falla, igual lo subimos directo a
+    // Cloudinary que lo convierte server-side (con format: jpg).
     const isHeic =
       /heic|heif/i.test(file.type) || /\.hei[cf]$/i.test(file.name)
     if (isHeic) {
       try {
-        // Dynamic import para no inflar el bundle de los users que no
-        // usan HEIC. heic2any pesa ~200KB.
         const { default: heic2any } = await import("heic2any")
         const converted = await heic2any({
           blob: file,
@@ -155,11 +154,11 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
         })
         working = Array.isArray(converted) ? converted[0] : converted
         workingName = file.name.replace(/\.hei[cf]$/i, ".jpg")
-      } catch {
-        // Si falla la conversion, no hay forma de subir HEIC: avisar
-        throw new Error(
-          "No se pudo convertir HEIC. Cambiá el formato a JPG en Configuración del iPhone (Cámara → Formatos → Más compatible)."
-        )
+      } catch (e) {
+        // heic2any fallo. Subimos el HEIC tal cual: como vamos directo a
+        // Cloudinary (no via Vercel) ya no hay limite de 4.5MB.
+        console.warn(`[upload] heic2any fallo en ${file.name}:`, e)
+        return file
       }
     }
 
@@ -228,42 +227,59 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
 
     for (const original of files) {
       try {
-        // Hard cap: evitar subidas absurdas (>20MB) que igual van a fallar
-        if (original.size > 20 * 1024 * 1024) {
-          errores.push(`${original.name}: la foto pesa más de 20MB`)
+        // Hard cap: evitar subidas absurdas (>50MB)
+        if (original.size > 50 * 1024 * 1024) {
+          errores.push(`${original.name}: la foto pesa más de 50MB`)
           continue
         }
 
-        // Comprime/redimensiona en el navegador antes de mandar al server
+        // Comprime/redimensiona en el navegador (mejor calidad y mas rapido)
         const file = await compressInBrowser(original)
+        const isHeic =
+          /heic|heif/i.test(file.type) || /\.hei[cf]$/i.test(file.name)
 
-        const formData = new FormData()
-        formData.append("file", file)
-        formData.append("folder", folder)
-        // "preserve": conserva el ratio original (4:3 del iPhone, vertical, etc.)
-        // y limita el lado mayor a 2000px (fallback al server-side por las dudas).
-        formData.append("cropMode", "preserve")
-
-        const res = await fetch("/api/admin/upload", {
+        // 1) Pedir firma al server (no enviamos el archivo todavia)
+        const signRes = await fetch("/api/admin/upload-sign", {
           method: "POST",
-          body: formData,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            folder,
+            cropMode: "preserve",
+            // Si el archivo sigue siendo HEIC (heic2any fallo), forzar
+            // conversion a JPG en Cloudinary para que se vea en cualquier browser
+            format: isHeic ? "jpg" : undefined,
+          }),
         })
-
-        // Si el server respondio pero no es JSON valido, manejarlo prolijamente
-        let data: { url?: string; error?: string } = {}
-        try {
-          data = await res.json()
-        } catch {
-          errores.push(
-            `${original.name}: respuesta inválida del servidor (HTTP ${res.status})`
-          )
+        if (!signRes.ok) {
+          const err = await signRes.json().catch(() => ({}))
+          errores.push(`${original.name}: ${err.error || "no se pudo firmar el upload"}`)
           continue
         }
+        const sign = await signRes.json()
 
-        if (!res.ok || data.error) {
-          errores.push(`${original.name}: ${data.error || `HTTP ${res.status}`}`)
-        } else if (data.url) {
-          uploaded.push(data.url)
+        // 2) Subir DIRECTO a Cloudinary (bypassing Vercel: sin limite de 4.5MB)
+        const cloudFormData = new FormData()
+        cloudFormData.append("file", file)
+        cloudFormData.append("api_key", sign.apiKey)
+        cloudFormData.append("timestamp", String(sign.timestamp))
+        cloudFormData.append("signature", sign.signature)
+        cloudFormData.append("folder", sign.folder)
+        if (sign.transformation) cloudFormData.append("transformation", sign.transformation)
+        if (sign.format) cloudFormData.append("format", sign.format)
+
+        const cloudRes = await fetch(
+          `https://api.cloudinary.com/v1_1/${sign.cloudName}/image/upload`,
+          { method: "POST", body: cloudFormData }
+        )
+        const cloudData = await cloudRes.json().catch(() => ({}))
+        if (!cloudRes.ok || cloudData.error) {
+          const errMsg =
+            cloudData?.error?.message || cloudData?.error || `HTTP ${cloudRes.status}`
+          errores.push(`${original.name}: ${errMsg}`)
+        } else if (cloudData.secure_url) {
+          uploaded.push(cloudData.secure_url)
+        } else {
+          errores.push(`${original.name}: respuesta sin URL de Cloudinary`)
         }
       } catch (e) {
         const msg = e instanceof Error ? e.message : "error de conexión"
