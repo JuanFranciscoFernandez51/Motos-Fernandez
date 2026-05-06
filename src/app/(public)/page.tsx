@@ -10,6 +10,7 @@ import {
 import { AnimatedSection } from "@/components/public/ui/animated-section"
 import { MarqueeBrands } from "@/components/public/ui/marquee-brands"
 import { Watermark } from "@/components/public/ui/watermark"
+import { FloatingLogo } from "@/components/public/ui/floating-logo"
 import { GoldDivider } from "@/components/public/ui/gold-divider"
 import { SectionEyebrow } from "@/components/public/ui/section-eyebrow"
 import {
@@ -53,8 +54,8 @@ export default async function HomePage() {
         <div className="absolute -bottom-32 -left-20 size-[420px] rounded-full bg-[#9B59B6]/10 blur-3xl pointer-events-none" />
         <div className="absolute top-1/3 left-1/2 size-[300px] rounded-full bg-[#C8C8D0]/[0.06] blur-3xl pointer-events-none" />
 
-        {/* Marca de agua del monograma */}
-        <Watermark position="right" size="2xl" opacity="soft" className="hidden md:block" />
+        {/* Logo clásico flotante con animación premium */}
+        <FloatingLogo position="right" size="2xl" opacity="soft" className="hidden md:block" />
 
         {/* Línea dorada decorativa */}
         <div
