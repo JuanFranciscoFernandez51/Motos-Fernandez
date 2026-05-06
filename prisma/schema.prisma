@@ -487,6 +487,14 @@ model Proveedor {
   // Estructura: [{ id, nombre, rol, telefono, email }]
   contactos     Json?
 
+  // Cuentas bancarias múltiples
+  // Estructura: [{ id, banco, tipo, numero, cbu, alias, titular, moneda }]
+  cuentasBancarias Json?
+
+  // Lista de precios manual (filas tipo tabla)
+  // Estructura: [{ id, concepto, precio, moneda, notas }]
+  listaPrecios  Json?
+
   modelos       Modelo[]
   productos     Producto[]
 

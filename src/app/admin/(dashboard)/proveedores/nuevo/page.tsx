@@ -13,24 +13,25 @@ type ContactoInput = {
   email?: string
 }
 
+function parseJsonArray(raw: string): unknown[] | null {
+  if (!raw) return null
+  try {
+    const parsed = JSON.parse(raw)
+    if (Array.isArray(parsed) && parsed.length > 0) return parsed
+  } catch {
+    // ignore
+  }
+  return null
+}
+
 async function createProveedor(formData: FormData) {
   "use server"
   try {
     const get = (k: string) => (formData.get(k) as string) || ""
 
-    // Parsear contactos del JSON
-    let contactos: ContactoInput[] | null = null
-    const contactosRaw = get("contactos")
-    if (contactosRaw) {
-      try {
-        const parsed = JSON.parse(contactosRaw)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          contactos = parsed as ContactoInput[]
-        }
-      } catch {
-        // Ignorar JSON inválido
-      }
-    }
+    const contactos = parseJsonArray(get("contactos")) as ContactoInput[] | null
+    const cuentasBancarias = parseJsonArray(get("cuentasBancarias"))
+    const listaPrecios = parseJsonArray(get("listaPrecios"))
 
     // Compatibilidad: usar primer contacto como principal legacy
     let contactoPrincipal: string | null = null
@@ -60,6 +61,12 @@ async function createProveedor(formData: FormData) {
         activo: get("activo") === "true",
         contactos: contactos
           ? (contactos as unknown as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
+        cuentasBancarias: cuentasBancarias
+          ? (cuentasBancarias as unknown as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
+        listaPrecios: listaPrecios
+          ? (listaPrecios as unknown as Prisma.InputJsonValue)
           : Prisma.JsonNull,
       },
     })

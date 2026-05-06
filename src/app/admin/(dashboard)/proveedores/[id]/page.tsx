@@ -2,7 +2,12 @@ import { notFound, redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { Prisma } from "@prisma/client"
-import { ProveedorForm, type Contacto } from "@/components/admin/operativo/proveedor-form"
+import {
+  ProveedorForm,
+  type Contacto,
+  type CuentaBancaria,
+  type ItemLista,
+} from "@/components/admin/operativo/proveedor-form"
 import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
 
@@ -16,25 +21,26 @@ type ContactoInput = {
   email?: string
 }
 
+function parseJsonArray(raw: string): unknown[] | null {
+  if (!raw) return null
+  try {
+    const parsed = JSON.parse(raw)
+    if (Array.isArray(parsed) && parsed.length > 0) return parsed
+  } catch {
+    // ignore
+  }
+  return null
+}
+
 async function updateProveedor(formData: FormData) {
   "use server"
   try {
     const id = formData.get("id") as string
     const get = (k: string) => (formData.get(k) as string) || ""
 
-    // Parsear contactos
-    let contactos: ContactoInput[] | null = null
-    const contactosRaw = get("contactos")
-    if (contactosRaw) {
-      try {
-        const parsed = JSON.parse(contactosRaw)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          contactos = parsed as ContactoInput[]
-        }
-      } catch {
-        // ignorar
-      }
-    }
+    const contactos = parseJsonArray(get("contactos")) as ContactoInput[] | null
+    const cuentasBancarias = parseJsonArray(get("cuentasBancarias"))
+    const listaPrecios = parseJsonArray(get("listaPrecios"))
 
     // Compatibilidad: usar primer contacto como principal legacy
     let contactoPrincipal: string | null = null
@@ -65,6 +71,12 @@ async function updateProveedor(formData: FormData) {
         activo: get("activo") === "true",
         contactos: contactos
           ? (contactos as unknown as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
+        cuentasBancarias: cuentasBancarias
+          ? (cuentasBancarias as unknown as Prisma.InputJsonValue)
+          : Prisma.JsonNull,
+        listaPrecios: listaPrecios
+          ? (listaPrecios as unknown as Prisma.InputJsonValue)
           : Prisma.JsonNull,
       },
     })
@@ -134,6 +146,37 @@ export default async function EditarProveedorPage({
     ]
   }
 
+  // Cuentas bancarias
+  let cuentasIniciales: CuentaBancaria[] = []
+  if (Array.isArray(proveedor.cuentasBancarias)) {
+    cuentasIniciales = (
+      proveedor.cuentasBancarias as unknown as CuentaBancaria[]
+    ).map((c, i) => ({
+      id: c.id || `b-existing-${i}`,
+      banco: c.banco || "",
+      tipo: c.tipo || "CA",
+      numero: c.numero || "",
+      cbu: c.cbu || "",
+      alias: c.alias || "",
+      titular: c.titular || "",
+      moneda: c.moneda || "ARS",
+    }))
+  }
+
+  // Lista de precios
+  let listaIniciales: ItemLista[] = []
+  if (Array.isArray(proveedor.listaPrecios)) {
+    listaIniciales = (proveedor.listaPrecios as unknown as ItemLista[]).map(
+      (item, i) => ({
+        id: item.id || `p-existing-${i}`,
+        concepto: item.concepto || "",
+        precio: item.precio != null ? String(item.precio) : "",
+        moneda: item.moneda || "ARS",
+        notas: item.notas || "",
+      })
+    )
+  }
+
   const initialData = {
     id: proveedor.id,
     nombre: proveedor.nombre,
@@ -146,6 +189,8 @@ export default async function EditarProveedorPage({
     notas: proveedor.notas || "",
     activo: proveedor.activo,
     contactos: contactosIniciales,
+    cuentasBancarias: cuentasIniciales,
+    listaPrecios: listaIniciales,
   }
 
   return (
