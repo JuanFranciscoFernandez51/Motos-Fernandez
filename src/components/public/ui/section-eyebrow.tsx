@@ -1,0 +1,43 @@
+/**
+ * Eyebrow ornamental para encabezar secciones premium.
+ * Pequeño detalle dorado + texto en mayúsculas con tracking ancho.
+ */
+export function SectionEyebrow({
+  children,
+  centered = false,
+  variant = "default",
+  className = "",
+}: {
+  children: React.ReactNode
+  centered?: boolean
+  variant?: "default" | "gold" | "white"
+  className?: string
+}) {
+  const colorClass =
+    variant === "gold"
+      ? "text-[#C9A55C]"
+      : variant === "white"
+        ? "text-white/70"
+        : "text-[#8B6F9A]"
+
+  const dotClass =
+    variant === "gold"
+      ? "bg-[#C9A55C]"
+      : variant === "white"
+        ? "bg-white/60"
+        : "bg-[#8B6F9A]"
+
+  return (
+    <div
+      className={`flex items-center gap-3 ${centered ? "justify-center" : ""} ${className}`}
+    >
+      <span className={`h-px w-8 sm:w-10 ${dotClass}/50`} />
+      <p
+        className={`font-semibold text-[10px] sm:text-xs uppercase tracking-[0.22em] ${colorClass}`}
+      >
+        {children}
+      </p>
+      <span className={`h-px w-8 sm:w-10 ${dotClass}/50`} />
+    </div>
+  )
+}

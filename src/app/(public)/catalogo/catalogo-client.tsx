@@ -442,17 +442,22 @@ export function CatalogoClient({
           {filtered.map((model) => (
             <article
               key={model.id}
-              className="group relative rounded-xl bg-white dark:bg-neutral-900 overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all"
+              className="group relative rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-500 hover:-translate-y-1"
             >
+              {/* Borde dorado sutil en hover */}
+              <div
+                aria-hidden
+                className="absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-[#C9A55C]/40 transition-all duration-500 pointer-events-none z-[1]"
+              />
               {/* Link principal — envuelve imagen + info */}
               <Link href={`/catalogo/${model.slug}`} className="block">
-                <div className="relative aspect-[4/3] bg-gray-100 dark:bg-neutral-800 overflow-hidden">
+                <div className="relative aspect-[4/3] bg-gradient-to-br from-[#F8F5FA] to-[#EFEAF2] dark:from-neutral-800 dark:to-neutral-900 overflow-hidden">
                   {model.fotos[0] ? (
                     <Image
                       src={model.fotos[0]}
                       alt={model.nombre}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                     />
                   ) : (
@@ -460,29 +465,29 @@ export function CatalogoClient({
                       <Bike className="size-12" />
                     </div>
                   )}
+                  {/* Overlay gradient bottom */}
+                  <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
                   {/* Chips arriba a la izquierda (no clickeables) */}
                   <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5 pointer-events-none">
-                    <span className="rounded-md bg-[#1A1A1A]/80 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                    <span className="rounded-md bg-[#0E0B12]/80 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
                       {CATEGORIA_VEHICULO_LABELS[model.categoriaVehiculo] || model.categoriaVehiculo}
                     </span>
                     {model.etiqueta && ETIQUETAS_MAP[model.etiqueta] && (
-                      <span className={`rounded-md px-2.5 py-1 text-[10px] font-bold text-white shadow ${ETIQUETAS_MAP[model.etiqueta].color}`}>
+                      <span className={`rounded-md px-2.5 py-1 text-[10px] font-bold text-white shadow-lg ${ETIQUETAS_MAP[model.etiqueta].color}`}>
                         {ETIQUETAS_MAP[model.etiqueta].label.toUpperCase()}
                       </span>
                     )}
                   </div>
                 </div>
                 <div className="p-5">
-                  <p className="text-xs font-medium text-[#8B6F9A] uppercase tracking-wider">
+                  <p className="text-[10px] font-bold text-[#C9A55C] uppercase tracking-[0.18em]">
                     {model.marca}
                   </p>
-                  <h3
-                    className="mt-1 text-lg font-bold text-[#1A1A1A] dark:text-white"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
+                  <h3 className="mt-1 font-serif text-xl font-semibold text-[#1A1A1A] dark:text-white leading-tight">
                     {model.nombre}
                   </h3>
-                  <p className="text-xs text-gray-400 mt-0.5">
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                     {(model.condicion || "0KM") === "USADA" ? (
                       <>
                         {model.anio && <span>{model.anio}</span>}
@@ -501,16 +506,16 @@ export function CatalogoClient({
                       </>
                     )}
                   </p>
-                  <div className="mt-3 flex items-center justify-between">
-                    <p className="text-lg font-bold text-[#6B4F7A]">
+                  <div className="mt-4 pt-4 border-t border-gray-100 dark:border-neutral-800 flex items-center justify-between">
+                    <p className="text-lg font-bold text-[#6B4F7A] dark:text-[#C39BD3]">
                       {model.precio
                         ? (model.moneda || "ARS") === "USD"
                           ? `USD ${model.precio.toLocaleString("es-AR")}`
                           : formatPrice(model.precio)
                         : "Consultar"}
                     </p>
-                    <span className="text-xs font-medium text-[#6B4F7A] group-hover:text-[#9B59B6] transition-colors">
-                      Ver detalle &rarr;
+                    <span className="text-xs font-bold text-[#C9A55C] group-hover:gap-2 inline-flex items-center gap-1 transition-all">
+                      Ver detalle <span className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
                     </span>
                   </div>
                 </div>

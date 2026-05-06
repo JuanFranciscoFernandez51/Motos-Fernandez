@@ -11,6 +11,9 @@ import {
 } from "lucide-react"
 import type { Metadata } from "next"
 import { SimuladorFinanciacion } from "@/components/public/simulador-financiacion"
+import { Watermark } from "@/components/public/ui/watermark"
+import { GoldDivider } from "@/components/public/ui/gold-divider"
+import { SectionEyebrow } from "@/components/public/ui/section-eyebrow"
 
 export const metadata: Metadata = {
   title: "Financiacion | Planes a medida para tu moto",
@@ -54,27 +57,40 @@ export default function FinanciacionPage() {
   return (
     <>
       <TrackVisita pagina="financiacion" />
-      {/* Hero */}
-      <section className="relative bg-gradient-to-br from-[#6B4F7A] to-[#9B59B6] py-20 overflow-hidden">
-        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-10" />
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          <CreditCard className="size-12 text-white/80 mx-auto mb-6" />
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-white font-heading">
-            Financiamos tu moto
+
+      {/* Hero premium */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325] py-16 sm:py-20 lg:py-24">
+        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
+        <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
+        <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C9A55C]/[0.08] blur-3xl pointer-events-none" />
+        <Watermark position="right" size="xl" opacity="subtle" className="hidden md:block" />
+
+        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+          <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-[#C9A55C]/10 backdrop-blur-sm mb-6 ring-1 ring-[#C9A55C]/30">
+            <CreditCard className="size-8 text-[#C9A55C]" />
+          </div>
+          <SectionEyebrow centered variant="gold">
+            Hasta 24 cuotas
+          </SectionEyebrow>
+          <h1 className="mt-5 font-serif text-5xl sm:text-6xl lg:text-7xl text-white text-balance leading-tight">
+            Financiamos <em className="text-[#C9A55C]">tu moto</em>
           </h1>
-          <p className="mt-4 text-lg text-white/80 max-w-xl mx-auto font-body">
-            Planes a medida con entrega inmediata. La cuota mas baja del mercado
-            y asesoramiento personalizado.
+          <GoldDivider variant="ornament" className="mt-7" />
+          <p className="mt-7 text-base sm:text-lg text-gray-300 max-w-xl mx-auto leading-relaxed">
+            Planes a medida con entrega inmediata. La cuota más baja del mercado y
+            asesoramiento personalizado.
           </p>
-          <div className="mt-8">
+          <div className="mt-9">
             <a
               href={getWhatsAppUrl(WHATSAPP_MESSAGES.general)}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-7 py-3.5 text-sm font-bold text-[#0E0B12] shadow-champagne-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
             >
-              <MessageCircle className="size-5" />
-              Consultar por WhatsApp
+              <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <MessageCircle className="relative size-5" />
+              <span className="relative">Consultar por WhatsApp</span>
             </a>
           </div>
         </div>

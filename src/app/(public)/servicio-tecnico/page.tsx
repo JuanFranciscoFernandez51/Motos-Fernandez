@@ -69,16 +69,27 @@ export default function ServicioTecnicoPage() {
   return (
     <>
       <TrackVisita pagina="servicio-tecnico" />
-      {/* Hero */}
-      <section className="bg-[#1A1A1A] py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+      {/* Hero premium */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325] py-16 sm:py-20">
+        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
+        <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
+        <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C9A55C]/[0.06] blur-3xl pointer-events-none" />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <Wrench className="size-10 text-[#8B6F9A] mb-4" />
-            <h1 className="text-3xl sm:text-4xl font-bold text-white font-heading">
-              Servicio Tecnico
+            <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-[#C9A55C]/10 ring-1 ring-[#C9A55C]/30 backdrop-blur-sm mb-5">
+              <Wrench className="size-7 text-[#C9A55C]" />
+            </div>
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#C9A55C] mb-3">
+              Taller oficial
+            </p>
+            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
+              Servicio <em className="text-[#C9A55C]">técnico</em>
             </h1>
-            <p className="mt-3 text-gray-400 font-body max-w-xl">
-              Taller propio con mecanicos especializados. Saca turno online y
+            <p className="mt-5 text-base sm:text-lg text-gray-300 max-w-xl leading-relaxed">
+              Taller propio con mecánicos especializados. Sacá turno online y
               dejamos tu moto como nueva.
             </p>
           </div>

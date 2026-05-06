@@ -7,6 +7,11 @@ import {
   getNoticiasRecientes,
   getTestimoniosHome,
 } from "@/lib/cached-queries"
+import { AnimatedSection } from "@/components/public/ui/animated-section"
+import { MarqueeBrands } from "@/components/public/ui/marquee-brands"
+import { Watermark } from "@/components/public/ui/watermark"
+import { GoldDivider } from "@/components/public/ui/gold-divider"
+import { SectionEyebrow } from "@/components/public/ui/section-eyebrow"
 import {
   Bike,
   ArrowRight,
@@ -18,6 +23,7 @@ import {
   ShieldCheck,
   Sparkles,
   Truck,
+  Quote,
 } from "lucide-react"
 
 // ==================== PAGE ====================
@@ -32,114 +38,168 @@ export default async function HomePage() {
   return (
     <>
       <TrackVisita pagina="home" />
-      {/* ===== 1. HERO ===== */}
-      <section className="relative bg-[#1A1A1A] overflow-hidden">
-        {/* Layered backgrounds */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#6B4F7A]/25 via-[#6B4F7A]/5 to-transparent" />
-        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.06]" />
-        <div className="absolute -top-40 -right-40 size-[600px] rounded-full bg-[#6B4F7A]/15 blur-3xl" />
-        <div className="absolute -bottom-32 -left-20 size-[420px] rounded-full bg-[#9B59B6]/10 blur-3xl" />
 
-        {/* Monograma gigante de fondo (decorativo) */}
+      {/* ==================== HERO ==================== */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325]">
+        {/* Layered backgrounds */}
+        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
+        <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
+
+        {/* Glows decorativos */}
+        <div className="absolute -top-48 -right-48 size-[700px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-32 -left-20 size-[420px] rounded-full bg-[#9B59B6]/10 blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 left-1/2 size-[300px] rounded-full bg-[#C9A55C]/[0.06] blur-3xl pointer-events-none" />
+
+        {/* Marca de agua del monograma */}
+        <Watermark position="right" size="2xl" opacity="soft" className="hidden md:block" />
+
+        {/* Línea dorada decorativa */}
         <div
           aria-hidden
-          className="pointer-events-none absolute -right-12 sm:right-0 top-1/2 -translate-y-1/2 opacity-[0.07] hidden md:block"
-        >
-          <Image
-            src="/images/monograma-blanco-transparente.svg"
-            alt=""
-            width={620}
-            height={620}
-            className="size-[480px] lg:size-[620px]"
-          />
-        </div>
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-32 bg-gradient-to-b from-transparent via-[#C9A55C]/40 to-transparent"
+        />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
-          <div className="max-w-3xl">
-            {/* Eyebrow */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#9B59B6]/30 bg-[#9B59B6]/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-[#C39BD3]">
-              <span className="size-1.5 rounded-full bg-[#9B59B6] animate-pulse" />
-              Concesionaria multimarca · {BUSINESS.city}
-            </div>
-
-            {/* Headline display */}
-            <h1 className="mt-5 font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl leading-[0.95] tracking-[0.01em] text-white">
-              TU PRÓXIMA <span className="text-[#9B59B6]">AVENTURA</span><br />
-              EMPIEZA ACÁ
-            </h1>
-
-            <p className="mt-6 text-base sm:text-lg text-gray-300 max-w-xl font-body leading-relaxed">
-              Más de {BUSINESS.yearsInBusiness} años eligiendo con vos la moto, cuatri o UTV ideal.
-              Las mejores marcas, financiación propia y taller oficial.
-            </p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href="/catalogo"
-                className="group inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-7 py-4 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-all shadow-lg shadow-[#6B4F7A]/40 hover:shadow-xl hover:shadow-[#6B4F7A]/50 hover:-translate-y-0.5"
-              >
-                Ver catálogo
-                <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
-              </Link>
-              <Link
-                href="/recomendador"
-                className="group inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-7 py-4 text-sm font-semibold text-white hover:bg-white/10 hover:border-white/40 transition-colors backdrop-blur-sm"
-              >
-                <Sparkles className="size-4 text-[#C39BD3]" />
-                Quiz: ¿qué moto te conviene?
-              </Link>
-              <Link
-                href="/servicio-tecnico"
-                className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-transparent px-7 py-4 text-sm font-semibold text-white/80 hover:text-white hover:border-white/30 transition-colors"
-              >
-                <Calendar className="size-4" />
-                Pedir turno
-              </Link>
-            </div>
-
-            {/* Stats row con tipografía display */}
-            <div className="mt-10 flex flex-wrap gap-x-10 gap-y-6">
-              <div>
-                <p className="font-display text-5xl text-white leading-none">+{BUSINESS.yearsInBusiness}</p>
-                <p className="text-[10px] text-gray-500 mt-1.5 uppercase tracking-[0.18em] font-semibold">Años</p>
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28">
+          <div className="max-w-4xl">
+            {/* Eyebrow premium */}
+            <AnimatedSection animation="fade" delay={100}>
+              <div className="inline-flex items-center gap-2.5 rounded-full border border-[#C9A55C]/30 bg-[#C9A55C]/[0.08] px-4 py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.22em] text-[#C9A55C] backdrop-blur-sm">
+                <span className="size-1.5 rounded-full bg-[#C9A55C] animate-pulse" />
+                Concesionaria multimarca · {BUSINESS.city}
+                <span className="size-1.5 rounded-full bg-[#C9A55C]/50" />
+                Desde {BUSINESS.yearFounded}
               </div>
-              <div className="w-px bg-white/10 self-stretch" />
-              <div>
-                <p className="font-display text-5xl text-white leading-none">+50</p>
-                <p className="text-[10px] text-gray-500 mt-1.5 uppercase tracking-[0.18em] font-semibold">Marcas</p>
+            </AnimatedSection>
+
+            {/* Headline display - tipografía premium serif */}
+            <AnimatedSection animation="fade-up" delay={200}>
+              <h1 className="mt-6 text-display text-white text-balance">
+                <span className="block font-serif text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-light italic text-[#C9A55C]/90">
+                  Tu próxima
+                </span>
+                <span className="block font-display text-7xl sm:text-8xl lg:text-9xl xl:text-[10rem] mt-1 leading-[0.85]">
+                  AVENTURA
+                </span>
+                <span className="block font-serif text-3xl sm:text-4xl lg:text-5xl mt-3 italic font-light text-gray-300">
+                  empieza acá.
+                </span>
+              </h1>
+            </AnimatedSection>
+
+            <AnimatedSection animation="fade-up" delay={400}>
+              <p className="mt-8 text-base sm:text-lg lg:text-xl text-gray-300/90 max-w-2xl leading-relaxed">
+                Más de{" "}
+                <span className="text-[#C9A55C] font-semibold">
+                  {BUSINESS.yearsInBusiness} años
+                </span>{" "}
+                eligiendo con vos la moto, cuatri o UTV ideal. Las mejores marcas,
+                financiación propia y taller oficial.
+              </p>
+            </AnimatedSection>
+
+            <AnimatedSection animation="fade-up" delay={550}>
+              <div className="mt-10 flex flex-wrap gap-3">
+                {/* CTA principal — dorado premium */}
+                <Link
+                  href="/catalogo"
+                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-7 sm:px-8 py-4 text-sm font-bold text-[#0E0B12] shadow-champagne-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                >
+                  {/* Shine effect on hover */}
+                  <span
+                    className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                    aria-hidden
+                  />
+                  <span className="relative">Ver catálogo</span>
+                  <ArrowRight className="relative size-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+
+                <Link
+                  href="/recomendador"
+                  className="group inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-7 py-4 text-sm font-semibold text-white hover:bg-white/[0.08] hover:border-white/30 transition-all backdrop-blur-sm"
+                >
+                  <Sparkles className="size-4 text-[#C9A55C]" />
+                  Quiz: ¿qué moto te conviene?
+                </Link>
+
+                <Link
+                  href="/servicio-tecnico"
+                  className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-transparent px-7 py-4 text-sm font-semibold text-white/70 hover:text-white hover:border-white/30 transition-colors"
+                >
+                  <Calendar className="size-4" />
+                  Pedir turno
+                </Link>
               </div>
-              <div className="w-px bg-white/10 self-stretch" />
-              <div>
-                <p className="font-display text-5xl text-white leading-none">24</p>
-                <p className="text-[10px] text-gray-500 mt-1.5 uppercase tracking-[0.18em] font-semibold">Cuotas</p>
+            </AnimatedSection>
+
+            {/* Stats con tipografía premium */}
+            <AnimatedSection animation="fade-up" delay={700}>
+              <div className="mt-14 flex flex-wrap gap-x-10 sm:gap-x-14 gap-y-6">
+                <div>
+                  <p className="font-serif text-5xl sm:text-6xl text-white leading-none italic">
+                    +{BUSINESS.yearsInBusiness}
+                  </p>
+                  <p className="text-[10px] text-[#C9A55C] mt-2 uppercase tracking-[0.22em] font-bold">
+                    Años
+                  </p>
+                </div>
+                <div className="w-px bg-gradient-to-b from-transparent via-white/10 to-transparent self-stretch" />
+                <div>
+                  <p className="font-serif text-5xl sm:text-6xl text-white leading-none italic">
+                    +50
+                  </p>
+                  <p className="text-[10px] text-[#C9A55C] mt-2 uppercase tracking-[0.22em] font-bold">
+                    Marcas
+                  </p>
+                </div>
+                <div className="w-px bg-gradient-to-b from-transparent via-white/10 to-transparent self-stretch" />
+                <div>
+                  <p className="font-serif text-5xl sm:text-6xl text-white leading-none italic">
+                    24
+                  </p>
+                  <p className="text-[10px] text-[#C9A55C] mt-2 uppercase tracking-[0.22em] font-bold">
+                    Cuotas
+                  </p>
+                </div>
+                <div className="w-px bg-gradient-to-b from-transparent via-white/10 to-transparent self-stretch" />
+                <div>
+                  <p className="font-serif text-5xl sm:text-6xl text-white leading-none italic">
+                    #1
+                  </p>
+                  <p className="text-[10px] text-[#C9A55C] mt-2 uppercase tracking-[0.22em] font-bold">
+                    {BUSINESS.city}
+                  </p>
+                </div>
               </div>
-              <div className="w-px bg-white/10 self-stretch" />
-              <div>
-                <p className="font-display text-5xl text-white leading-none">#1</p>
-                <p className="text-[10px] text-gray-500 mt-1.5 uppercase tracking-[0.18em] font-semibold">{BUSINESS.city}</p>
-              </div>
-            </div>
+            </AnimatedSection>
           </div>
         </div>
 
-        {/* Trust badges abajo */}
-        <div className="relative border-t border-white/5 bg-black/30 backdrop-blur-sm">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4">
+        {/* Trust badges abajo - glass premium */}
+        <div className="relative border-t border-white/[0.06] bg-[#0A0810]/80 backdrop-blur-md">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs sm:text-sm text-gray-300">
               <div className="flex items-center gap-2.5">
-                <CreditCard className="size-4 text-[#C39BD3] shrink-0" />
-                <span>Financiación propia y prendaria</span>
+                <span className="flex items-center justify-center size-7 rounded-md bg-[#C9A55C]/10 text-[#C9A55C] shrink-0">
+                  <CreditCard className="size-3.5" />
+                </span>
+                <span>Financiación propia</span>
               </div>
               <div className="flex items-center gap-2.5">
-                <Wrench className="size-4 text-[#C39BD3] shrink-0" />
+                <span className="flex items-center justify-center size-7 rounded-md bg-[#C9A55C]/10 text-[#C9A55C] shrink-0">
+                  <Wrench className="size-3.5" />
+                </span>
                 <span>Taller oficial multimarca</span>
               </div>
               <div className="flex items-center gap-2.5">
-                <Package className="size-4 text-[#C39BD3] shrink-0" />
-                <span>Stock permanente · entrega inmediata</span>
+                <span className="flex items-center justify-center size-7 rounded-md bg-[#C9A55C]/10 text-[#C9A55C] shrink-0">
+                  <Package className="size-3.5" />
+                </span>
+                <span>Stock · entrega inmediata</span>
               </div>
               <div className="flex items-center gap-2.5">
-                <Truck className="size-4 text-[#C39BD3] shrink-0" />
+                <span className="flex items-center justify-center size-7 rounded-md bg-[#C9A55C]/10 text-[#C9A55C] shrink-0">
+                  <Truck className="size-3.5" />
+                </span>
                 <span>Envío propio a todo el país</span>
               </div>
             </div>
@@ -147,112 +207,136 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ==================== MARQUEE DE MARCAS ==================== */}
+      <MarqueeBrands variant="violeta" speed="normal" />
 
-      {/* ===== 3. MODELOS DESTACADOS ===== */}
-      <section className="py-14 bg-[#F0F0F0] dark:bg-neutral-950">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
-                Modelos destacados
+      {/* ==================== MODELOS DESTACADOS ==================== */}
+      <section className="relative py-20 sm:py-24 bg-[#F8F5FA] dark:bg-neutral-950 overflow-hidden">
+        {/* Watermark */}
+        <Watermark position="bottom-right" size="lg" opacity="subtle" className="hidden lg:block" />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <AnimatedSection animation="fade-up">
+            <div className="text-center mb-14">
+              <SectionEyebrow centered>Catálogo destacado</SectionEyebrow>
+              <h2 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white text-balance leading-tight">
+                Modelos que <em className="text-[#6B4F7A]">enamoran</em>
               </h2>
-              <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 font-body">
-                Los más elegidos por nuestros clientes
+              <p className="mt-4 text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
+                Una selección curada de los modelos más elegidos por nuestros clientes.
               </p>
+              <GoldDivider variant="ornament" className="mt-8" />
             </div>
-            <Link
-              href="/catalogo"
-              className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-[#6B4F7A] hover:text-[#9B59B6] transition-colors"
-            >
-              Ver todos
-              <ArrowRight className="size-4" />
-            </Link>
-          </div>
+          </AnimatedSection>
 
           {modelos.length > 0 ? (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                {modelos.map((model) => (
-                  <Link
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">
+                {modelos.map((model, idx) => (
+                  <AnimatedSection
                     key={model.id}
-                    href={`/catalogo/${model.slug}`}
-                    className="group rounded-xl bg-white dark:bg-neutral-900 overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all duration-200"
+                    animation="fade-up"
+                    delay={idx * 80}
                   >
-                    <div className="relative aspect-square bg-gray-100 dark:bg-neutral-800 overflow-hidden">
-                      {model.fotos[0] ? (
-                        <Image
-                          src={model.fotos[0]}
-                          alt={model.nombre}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                        />
-                      ) : (
-                        <div className="flex items-center justify-center h-full text-gray-200">
-                          <Bike className="size-10" />
-                        </div>
-                      )}
-                      {model.destacado && (
-                        <div className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-[#6B4F7A] px-2 py-0.5 text-[10px] font-bold text-white shadow">
-                          <Star className="size-2.5 fill-current" />
-                          Destacado
-                        </div>
-                      )}
-                      <span className={`absolute top-2 right-2 rounded-md px-2 py-0.5 text-[10px] font-bold shadow ${
-                        (model.condicion || "0KM") === "0KM"
-                          ? "bg-emerald-500 text-white"
-                          : "bg-orange-500 text-white"
-                      }`}>
-                        {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
-                      </span>
-                    </div>
-                    <div className="p-3">
-                      <p className="text-[10px] font-semibold text-[#8B6F9A] uppercase tracking-wider truncate">
-                        {model.marca}
-                      </p>
-                      <h3 className="mt-0.5 text-sm font-bold text-[#1A1A1A] dark:text-white font-heading truncate">
-                        {model.nombre}
-                      </h3>
-                      <p className="text-[10px] text-gray-400 truncate">
-                        {(model.condicion || "0KM") === "USADA" ? (
-                          <>
-                            {model.anio && <span>{model.anio}</span>}
-                            {model.kilometros != null && (
-                              <span>{model.anio ? " · " : ""}{model.kilometros.toLocaleString("es-AR")} km</span>
-                            )}
-                          </>
+                    <Link
+                      href={`/catalogo/${model.slug}`}
+                      className="group relative flex flex-col h-full rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-500 hover:-translate-y-1"
+                    >
+                      {/* Borde gradient en hover */}
+                      <div
+                        aria-hidden
+                        className="absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-[#C9A55C]/40 transition-all duration-500 pointer-events-none"
+                      />
+                      <div className="relative aspect-square bg-gradient-to-br from-[#F8F5FA] to-[#EFEAF2] dark:from-neutral-800 dark:to-neutral-900 overflow-hidden">
+                        {model.fotos[0] ? (
+                          <Image
+                            src={model.fotos[0]}
+                            alt={model.nombre}
+                            fill
+                            className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                          />
                         ) : (
-                          <>
-                            <span>{model.anio || new Date().getFullYear()}</span>
-                            <span> · 0 km</span>
-                          </>
+                          <div className="flex items-center justify-center h-full text-gray-200">
+                            <Bike className="size-10" />
+                          </div>
                         )}
-                      </p>
-                      <p className="mt-2 text-sm font-bold text-[#6B4F7A]">
-                        {model.precio
-                          ? (model.moneda || "ARS") === "USD"
-                            ? `USD ${model.precio.toLocaleString("es-AR")}`
-                            : formatPrice(model.precio)
-                          : "Consultar"}
-                      </p>
-                    </div>
-                  </Link>
+                        {/* Overlay gradient bottom */}
+                        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                        {model.destacado && (
+                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1 rounded-full bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-2.5 py-1 text-[10px] font-bold text-[#0E0B12] shadow-lg">
+                            <Star className="size-2.5 fill-current" />
+                            Destacado
+                          </div>
+                        )}
+                        <span
+                          className={`absolute top-2.5 right-2.5 rounded-md px-2 py-0.5 text-[10px] font-bold shadow ${
+                            (model.condicion || "0KM") === "0KM"
+                              ? "bg-emerald-500 text-white"
+                              : "bg-orange-500 text-white"
+                          }`}
+                        >
+                          {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
+                        </span>
+                      </div>
+                      <div className="p-3.5 sm:p-4">
+                        <p className="text-[10px] font-bold text-[#C9A55C] uppercase tracking-[0.15em] truncate">
+                          {model.marca}
+                        </p>
+                        <h3 className="mt-1 font-serif text-base sm:text-lg font-semibold text-[#1A1A1A] dark:text-white truncate leading-tight">
+                          {model.nombre}
+                        </h3>
+                        <p className="text-[11px] text-gray-400 truncate mt-0.5">
+                          {(model.condicion || "0KM") === "USADA" ? (
+                            <>
+                              {model.anio && <span>{model.anio}</span>}
+                              {model.kilometros != null && (
+                                <span>
+                                  {model.anio ? " · " : ""}
+                                  {model.kilometros.toLocaleString("es-AR")} km
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <span>{model.anio || new Date().getFullYear()}</span>
+                              <span> · 0 km</span>
+                            </>
+                          )}
+                        </p>
+                        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-neutral-800 flex items-center justify-between">
+                          <p className="text-base font-bold text-[#6B4F7A] dark:text-[#C39BD3]">
+                            {model.precio
+                              ? (model.moneda || "ARS") === "USD"
+                                ? `USD ${model.precio.toLocaleString("es-AR")}`
+                                : formatPrice(model.precio)
+                              : "Consultar"}
+                          </p>
+                          <ArrowRight className="size-3.5 text-[#6B4F7A]/40 group-hover:text-[#C9A55C] group-hover:translate-x-0.5 transition-all" />
+                        </div>
+                      </div>
+                    </Link>
+                  </AnimatedSection>
                 ))}
               </div>
-              <div className="mt-10 text-center sm:hidden">
-                <Link
-                  href="/catalogo"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#6B4F7A] hover:text-[#9B59B6] transition-colors"
-                >
-                  Ver todos los modelos
-                  <ArrowRight className="size-4" />
-                </Link>
-              </div>
+
+              <AnimatedSection animation="fade-up">
+                <div className="mt-12 text-center">
+                  <Link
+                    href="/catalogo"
+                    className="group inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-bold text-[#6B4F7A] hover:bg-[#6B4F7A] hover:text-white hover:border-[#6B4F7A] transition-all shadow-premium-sm hover:shadow-premium-md"
+                  >
+                    Ver catálogo completo
+                    <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
+              </AnimatedSection>
             </>
           ) : (
             <div className="text-center py-16 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800">
               <Bike className="size-12 mx-auto text-gray-200 mb-4" />
-              <p className="text-gray-400 font-body">
+              <p className="text-gray-400">
                 Próximamente cargamos nuestro catálogo de modelos.
               </p>
               <Link
@@ -267,129 +351,151 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ===== QUIZ RECOMENDADOR CTA ===== */}
-      <section className="relative py-16 bg-white dark:bg-neutral-900 overflow-hidden">
+      {/* ==================== QUIZ RECOMENDADOR CTA ==================== */}
+      <section className="relative py-20 bg-white dark:bg-neutral-900 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#6B4F7A] via-[#7B5A8A] to-[#9B59B6] p-8 sm:p-12 shadow-xl">
-            <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-10" />
-            <div className="absolute -top-16 -right-16 size-64 rounded-full bg-white/10 dark:bg-neutral-900/10 blur-3xl" />
-            <div className="absolute -bottom-20 -left-20 size-72 rounded-full bg-white/5 dark:bg-neutral-900/5 blur-3xl" />
+          <AnimatedSection animation="scale">
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#4A3556] via-[#6B4F7A] to-[#8B6F9A] p-8 sm:p-12 lg:p-16 shadow-premium-xl">
+              {/* Patterns and glows */}
+              <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.08]" />
+              <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
+              <div className="absolute -top-16 -right-16 size-64 rounded-full bg-[#C9A55C]/15 blur-3xl" />
+              <div className="absolute -bottom-20 -left-20 size-72 rounded-full bg-white/5 blur-3xl" />
 
-            <div className="relative flex flex-col lg:flex-row items-center justify-between gap-8">
-              <div className="flex-1 text-center lg:text-left max-w-2xl">
-                <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-white/15 dark:bg-neutral-900/15 backdrop-blur-sm mb-5">
-                  <Sparkles className="size-7 text-white" />
+              {/* Marca de agua */}
+              <Watermark position="bottom-right" size="xl" opacity="subtle" />
+
+              {/* Línea dorada */}
+              <div
+                aria-hidden
+                className="absolute top-0 inset-x-12 h-px bg-gradient-to-r from-transparent via-[#C9A55C]/60 to-transparent"
+              />
+
+              <div className="relative flex flex-col lg:flex-row items-center justify-between gap-8">
+                <div className="flex-1 text-center lg:text-left max-w-2xl">
+                  <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-[#C9A55C]/15 backdrop-blur-sm mb-6 ring-1 ring-[#C9A55C]/30">
+                    <Sparkles className="size-8 text-[#C9A55C]" />
+                  </div>
+                  <SectionEyebrow variant="gold" className="mb-4">
+                    Quiz interactivo con IA
+                  </SectionEyebrow>
+                  <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
+                    ¿No sabés qué <em className="text-[#C9A55C]">moto</em> te conviene?
+                  </h2>
+                  <p className="mt-5 text-base sm:text-lg text-white/85 leading-relaxed max-w-xl">
+                    Hacé el quiz interactivo y te recomendamos{" "}
+                    <span className="font-semibold text-[#C9A55C]">3 motos ideales</span>{" "}
+                    según tu uso, experiencia y presupuesto.
+                  </p>
                 </div>
-                <p className="text-white/70 font-semibold text-xs uppercase tracking-widest mb-2">
-                  Quiz interactivo con IA
-                </p>
-                <h2 className="text-3xl sm:text-4xl font-bold text-white font-heading leading-tight">
-                  ¿No sabés qué moto te conviene?
-                </h2>
-                <p className="mt-4 text-base sm:text-lg text-white/85 font-body leading-relaxed">
-                  Hacé el quiz interactivo y te recomendamos{" "}
-                  <span className="font-semibold text-white">3 motos ideales</span>{" "}
-                  para vos, según tu uso, experiencia y presupuesto.
-                </p>
-              </div>
 
-              <div className="shrink-0">
-                <Link
-                  href="/recomendador"
-                  className="group inline-flex items-center gap-3 rounded-2xl bg-white dark:bg-neutral-900 px-8 py-4 text-base font-bold text-[#6B4F7A] hover:bg-gray-50 dark:hover:bg-neutral-900 transition-all shadow-lg hover:shadow-xl hover:scale-105"
-                >
-                  Hacer quiz
-                  <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
-                </Link>
+                <div className="shrink-0">
+                  <Link
+                    href="/recomendador"
+                    className="group inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-8 py-4 text-base font-bold text-[#0E0B12] shadow-champagne-glow hover:shadow-2xl transition-all hover:scale-105"
+                  >
+                    Hacer quiz
+                    <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
               </div>
             </div>
-          </div>
+          </AnimatedSection>
         </div>
       </section>
 
-      {/* ===== TESTIMONIOS ===== */}
+      {/* ==================== TESTIMONIOS ==================== */}
       {testimonios.length > 0 && (
-        <section className="py-20 bg-white dark:bg-neutral-900">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <p className="text-[#8B6F9A] font-semibold text-sm uppercase tracking-widest mb-3">
-                Testimonios
-              </p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] dark:text-white font-heading">
-                Lo que dicen nuestros clientes
-              </h2>
-              <p className="mt-3 text-gray-500 dark:text-gray-400 font-body max-w-lg mx-auto">
-                Historias reales de quienes ya eligieron {BUSINESS.name}.
-              </p>
-            </div>
+        <section className="relative py-20 sm:py-24 bg-gradient-to-b from-white to-[#F8F5FA] dark:from-neutral-900 dark:to-neutral-950 overflow-hidden">
+          <Watermark position="left" size="xl" opacity="subtle" className="hidden lg:block" />
+
+          <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <AnimatedSection animation="fade-up">
+              <div className="text-center mb-14">
+                <SectionEyebrow centered>Testimonios reales</SectionEyebrow>
+                <h2 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white text-balance leading-tight">
+                  Lo que dicen <em className="text-[#6B4F7A]">nuestros clientes</em>
+                </h2>
+                <GoldDivider variant="ornament" className="mt-8" />
+              </div>
+            </AnimatedSection>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {testimonios.map((t) => {
+              {testimonios.map((t, idx) => {
                 const contenido =
-                  t.contenido.length > 150
-                    ? t.contenido.slice(0, 150).trimEnd() + "..."
+                  t.contenido.length > 180
+                    ? t.contenido.slice(0, 180).trimEnd() + "..."
                     : t.contenido
                 return (
-                  <div
+                  <AnimatedSection
                     key={t.id}
-                    className="group flex flex-col rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 shadow-sm hover:shadow-lg hover:shadow-[#6B4F7A]/5 hover:border-[#6B4F7A]/20 transition-all duration-200"
+                    animation="fade-up"
+                    delay={idx * 100}
                   >
-                    {/* Estrellas */}
-                    <div className="flex items-center gap-0.5 mb-3">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star
-                          key={i}
-                          className={
-                            i < t.rating
-                              ? "size-4 fill-yellow-400 text-yellow-400"
-                              : "size-4 text-gray-200"
-                          }
-                        />
-                      ))}
-                    </div>
+                    <article className="group relative h-full flex flex-col rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-7 shadow-premium-sm hover:shadow-premium-lg hover:border-[#C9A55C]/30 transition-all duration-300 overflow-hidden">
+                      {/* Quote decoration */}
+                      <Quote
+                        className="absolute -top-1 -right-1 size-20 text-[#C9A55C]/[0.06] group-hover:text-[#C9A55C]/[0.10] transition-colors"
+                        aria-hidden
+                      />
 
-                    {/* Contenido */}
-                    <p className="text-sm text-gray-600 dark:text-gray-300 font-body leading-relaxed flex-1">
-                      &ldquo;{contenido}&rdquo;
-                    </p>
+                      {/* Estrellas */}
+                      <div className="relative flex items-center gap-0.5 mb-4">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <Star
+                            key={i}
+                            className={
+                              i < t.rating
+                                ? "size-4 fill-[#C9A55C] text-[#C9A55C]"
+                                : "size-4 text-gray-200 dark:text-neutral-700"
+                            }
+                          />
+                        ))}
+                      </div>
 
-                    {/* Cliente */}
-                    <div className="mt-5 flex items-center gap-3 pt-4 border-t border-gray-100 dark:border-neutral-800">
-                      {t.foto ? (
-                        <Image
-                          src={t.foto}
-                          alt={t.nombre}
-                          width={44}
-                          height={44}
-                          className="size-11 rounded-full object-cover shrink-0"
-                        />
-                      ) : (
-                        <div className="size-11 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center text-[#6B4F7A] font-bold text-sm shrink-0">
-                          {t.nombre
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .toUpperCase()
-                            .slice(0, 2)}
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-[#1A1A1A] dark:text-white font-heading truncate">
-                          {t.nombre}
-                        </p>
-                        {t.ubicacion && (
-                          <p className="text-xs text-gray-400 truncate">
-                            {t.ubicacion}
+                      {/* Contenido */}
+                      <p className="relative text-[15px] text-gray-700 dark:text-gray-200 leading-relaxed flex-1 font-serif italic">
+                        &ldquo;{contenido}&rdquo;
+                      </p>
+
+                      {/* Cliente */}
+                      <div className="relative mt-6 flex items-center gap-3 pt-5 border-t border-gray-100 dark:border-neutral-800">
+                        {t.foto ? (
+                          <Image
+                            src={t.foto}
+                            alt={t.nombre}
+                            width={48}
+                            height={48}
+                            className="size-12 rounded-full object-cover shrink-0 ring-2 ring-[#C9A55C]/20"
+                          />
+                        ) : (
+                          <div className="size-12 rounded-full bg-gradient-to-br from-[#6B4F7A] to-[#8B6F9A] flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-[#C9A55C]/20">
+                            {t.nombre
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              .toUpperCase()
+                              .slice(0, 2)}
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-[#1A1A1A] dark:text-white truncate">
+                            {t.nombre}
                           </p>
+                          {t.ubicacion && (
+                            <p className="text-xs text-gray-400 truncate">
+                              {t.ubicacion}
+                            </p>
+                          )}
+                        </div>
+                        {t.modelo && (
+                          <span className="shrink-0 inline-flex items-center rounded-full border border-[#C9A55C]/30 bg-[#C9A55C]/5 px-2.5 py-1 text-[10px] font-bold text-[#C9A55C] uppercase tracking-wide">
+                            {t.modelo}
+                          </span>
                         )}
                       </div>
-                      {t.modelo && (
-                        <span className="shrink-0 inline-flex items-center rounded-full bg-[#6B4F7A]/10 px-2.5 py-1 text-[10px] font-semibold text-[#6B4F7A] uppercase tracking-wide">
-                          {t.modelo}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                    </article>
+                  </AnimatedSection>
                 )
               })}
             </div>
@@ -397,268 +503,293 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* ===== 4. FINANCIACION PREVIEW ===== */}
-      <section className="relative py-20 bg-gradient-to-r from-[#6B4F7A] to-[#9B59B6] overflow-hidden">
+      {/* ==================== FINANCIACION PREVIEW ==================== */}
+      <section className="relative py-20 sm:py-24 overflow-hidden bg-gradient-to-br from-[#0E0B12] via-[#1A1325] to-[#2A1E3A]">
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-10" />
-        <div className="absolute -top-20 -right-20 size-80 rounded-full bg-white/5 dark:bg-neutral-900/5 blur-3xl" />
+        <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
+        <div className="absolute -top-20 -right-20 size-80 rounded-full bg-[#C9A55C]/10 blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 size-80 rounded-full bg-[#6B4F7A]/20 blur-3xl" />
+
+        <Watermark position="right" size="2xl" opacity="subtle" />
+
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
-            <div className="text-center lg:text-left max-w-xl">
-              <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-white/15 dark:bg-neutral-900/15 mb-6">
-                <CreditCard className="size-7 text-white" />
+          <AnimatedSection animation="fade-up">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+              <div className="text-center lg:text-left max-w-xl">
+                <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-[#C9A55C]/10 backdrop-blur-sm mb-6 ring-1 ring-[#C9A55C]/30">
+                  <CreditCard className="size-8 text-[#C9A55C]" />
+                </div>
+                <SectionEyebrow variant="gold">Financiación a tu medida</SectionEyebrow>
+                <h2 className="mt-4 font-serif text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
+                  Financiamos <em className="text-[#C9A55C]">tu moto</em>
+                </h2>
+                <p className="mt-5 text-base sm:text-lg text-white/80 leading-relaxed">
+                  Planes a medida. Financiación propia, con banco o tarjeta. Entregá lo
+                  mínimo y lleváte tu vehículo hoy.
+                </p>
+                <GoldDivider variant="thin" className="my-6 max-w-xs mx-auto lg:mx-0" />
+                <p className="text-sm text-white/60 italic">
+                  Hasta 24 cuotas con planes adaptados a tu presupuesto.
+                </p>
               </div>
-              <h2 className="text-3xl sm:text-4xl font-bold text-white font-heading">
-                Financiamos tu moto
-              </h2>
-              <p className="mt-4 text-lg text-white/80 font-body leading-relaxed">
-                Planes de financiación a medida. Financiación propia, con banco o
-                tarjeta. Entregá lo mínimo y lleváte tu vehículo hoy.
-              </p>
+              <div className="flex flex-col sm:flex-row gap-4 shrink-0">
+                <Link
+                  href="/financiacion"
+                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-7 py-4 text-sm font-bold text-[#0E0B12] shadow-champagne-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                >
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                  />
+                  <span className="relative">Ver planes</span>
+                  <ArrowRight className="relative size-4" />
+                </Link>
+                <Link
+                  href="/contacto"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/[0.05] backdrop-blur-sm px-7 py-4 text-sm font-semibold text-white hover:bg-white/[0.10] hover:border-white/40 transition-colors"
+                >
+                  Hablar con asesor
+                </Link>
+              </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-4 shrink-0">
-              <Link
-                href="/financiacion"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors shadow-lg"
-              >
-                Ver planes de financiación
-                <ArrowRight className="size-4" />
-              </Link>
-              <Link
-                href="/contacto"
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/40 bg-white/10 dark:bg-neutral-900/10 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/20 dark:hover:bg-neutral-900/20 transition-colors"
-              >
-                Hablar con un asesor
-              </Link>
-            </div>
-          </div>
+          </AnimatedSection>
         </div>
       </section>
 
-      {/* ===== 5. CONSIGNA DE MOTOS ===== */}
-      <section className="py-20 bg-[#F8F5FA] dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
-            {/* Texto */}
-            <div className="flex-1 text-center lg:text-left">
-              <p className="text-[#8B6F9A] font-semibold text-sm uppercase tracking-widest mb-3">
-                Servicio exclusivo
-              </p>
-              <h2 className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] dark:text-white font-heading mb-5">
-                ¿Querés vender tu moto?
+      {/* ==================== CONSIGNA ==================== */}
+      <section className="relative py-20 sm:py-24 bg-[#F8F5FA] dark:bg-neutral-900 overflow-hidden">
+        <Watermark position="bottom-left" size="lg" opacity="subtle" className="hidden lg:block" />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+            <AnimatedSection animation="slide-right" className="flex-1 text-center lg:text-left">
+              <SectionEyebrow>Servicio exclusivo</SectionEyebrow>
+              <h2 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white leading-tight text-balance">
+                ¿Querés vender <em className="text-[#6B4F7A]">tu moto</em>?
               </h2>
-              <p className="text-gray-500 dark:text-gray-400 font-body leading-relaxed max-w-lg mx-auto lg:mx-0">
-                Dejala en nuestro local y nosotros nos encargamos de todo. La exhibimos, la
-                publicamos en todos nuestros canales y te avisamos cuando se vende. Vos fijás el
-                precio, nosotros ponemos la vidriera y cobramos solo una comisión al cerrar.
+              <p className="mt-5 text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg mx-auto lg:mx-0 text-base sm:text-lg">
+                Dejala en nuestro local y nosotros nos encargamos de todo. La exhibimos,
+                la publicamos en todos nuestros canales y te avisamos cuando se vende.
               </p>
-              <div className="mt-8 flex flex-wrap gap-4 justify-center lg:justify-start">
+              <p className="mt-3 text-sm text-gray-500 dark:text-gray-400 italic font-serif max-w-lg mx-auto lg:mx-0">
+                Vos fijás el precio. Nosotros ponemos la vidriera. Cobramos solo al cerrar.
+              </p>
+              <GoldDivider variant="thin" className="my-7 max-w-xs mx-auto lg:mx-0" />
+              <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
                 <Link
                   href="/consigna"
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-7 py-3.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors shadow-lg shadow-[#6B4F7A]/20"
+                  className="group inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#8B6F9A] transition-colors shadow-violeta-glow hover:shadow-2xl"
                 >
                   Conocer más
-                  <ArrowRight className="size-4" />
+                  <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <a
                   href={`https://wa.me/5492915788671?text=${encodeURIComponent("Hola! Quiero consultar sobre el servicio de consigna de motos.")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 hover:border-[#6B4F7A]/60 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-bold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 hover:border-[#6B4F7A]/60 transition-colors"
                 >
                   Consultar por WhatsApp
                 </a>
               </div>
-            </div>
+            </AnimatedSection>
 
-            {/* Cards de beneficios mini -->*/}
-            <div className="flex-1 grid grid-cols-2 gap-4 w-full max-w-md">
+            <AnimatedSection animation="slide-left" className="flex-1 grid grid-cols-2 gap-4 w-full max-w-md">
               {[
                 { icon: "🏍️", titulo: "Tasación gratis", desc: "Sin compromiso" },
                 { icon: "📱", titulo: "Máxima exposición", desc: "Web + redes + local" },
                 { icon: "💰", titulo: "Precio justo", desc: "Vos lo fijás" },
-                { icon: "✅", titulo: "Sin costos fijos", desc: "Comisión solo al vender" },
+                { icon: "✅", titulo: "Sin costos fijos", desc: "Comisión al vender" },
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="rounded-2xl border border-[#6B4F7A]/15 bg-white dark:bg-neutral-900 p-5 hover:border-[#6B4F7A]/35 hover:shadow-md transition-all duration-200"
+                  className="group relative rounded-2xl border border-[#6B4F7A]/15 bg-white dark:bg-neutral-900 p-5 hover:border-[#C9A55C]/40 hover:shadow-premium-md transition-all duration-300 overflow-hidden"
                 >
-                  <div className="text-2xl mb-2">{item.icon}</div>
-                  <h3 className="text-sm font-bold text-[#1A1A1A] dark:text-white font-heading">{item.titulo}</h3>
+                  {/* Corner accent */}
+                  <span
+                    aria-hidden
+                    className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-bl from-[#C9A55C]/0 via-[#C9A55C]/0 to-transparent group-hover:from-[#C9A55C]/30 transition-all"
+                  />
+                  <div className="text-3xl mb-2.5">{item.icon}</div>
+                  <h3 className="text-sm font-bold text-[#1A1A1A] dark:text-white">
+                    {item.titulo}
+                  </h3>
                   <p className="text-xs text-gray-400 mt-0.5">{item.desc}</p>
                 </div>
               ))}
-            </div>
+            </AnimatedSection>
           </div>
         </div>
       </section>
 
-      {/* ===== 6. POR QUE ELEGIRNOS ===== */}
-      <section className="py-20 bg-white dark:bg-neutral-900">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-14">
-            <p className="text-[#8B6F9A] font-semibold text-sm uppercase tracking-widest mb-3">
-              Desde {BUSINESS.yearFounded}
-            </p>
-            <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
-              ¿Por qué elegirnos?
-            </h2>
-            <p className="mt-3 text-gray-500 dark:text-gray-400 font-body max-w-lg mx-auto">
-              Más de {BUSINESS.yearsInBusiness} años de experiencia nos respaldan,
-              con raíces en {BUSINESS.city}.
-            </p>
-          </div>
+      {/* ==================== POR QUE ELEGIRNOS ==================== */}
+      <section className="relative py-20 sm:py-24 bg-white dark:bg-neutral-900 overflow-hidden">
+        <Watermark position="top-right" size="lg" opacity="subtle" className="hidden lg:block" />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <AnimatedSection animation="fade-up">
+            <div className="text-center mb-16">
+              <SectionEyebrow centered>Desde {BUSINESS.yearFounded}</SectionEyebrow>
+              <h2 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white text-balance leading-tight">
+                ¿Por qué <em className="text-[#6B4F7A]">elegirnos</em>?
+              </h2>
+              <p className="mt-4 text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
+                Más de {BUSINESS.yearsInBusiness} años de experiencia nos respaldan, con
+                raíces en {BUSINESS.city}.
+              </p>
+              <GoldDivider variant="ornament" className="mt-8" />
+            </div>
+          </AnimatedSection>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-            {/* Card 1 */}
-            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
-              <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
-                <ShieldCheck className="size-7" />
-              </div>
-              <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-2">
-                {BUSINESS.yearsInBusiness} años de experiencia
-              </h3>
-              <p className="text-sm text-gray-400 font-body leading-relaxed">
-                Desde {BUSINESS.yearFounded} ayudamos a miles de clientes a encontrar su
-                vehículo ideal con asesoramiento personalizado.
-              </p>
-            </div>
+            {[
+              {
+                icon: ShieldCheck,
+                title: `${BUSINESS.yearsInBusiness} años de experiencia`,
+                desc: `Desde ${BUSINESS.yearFounded} ayudamos a miles de clientes a encontrar su vehículo ideal con asesoramiento personalizado.`,
+              },
+              {
+                icon: CreditCard,
+                title: "Financiación propia",
+                desc: "Planes flexibles sin necesidad de banco. Financiación propia, tarjeta o acuerdo con entidades financieras.",
+              },
+              {
+                icon: Wrench,
+                title: "Servicio técnico",
+                desc: "Taller oficial con técnicos especializados. Service, reparaciones y repuestos originales para todas las marcas.",
+              },
+              {
+                icon: Package,
+                title: "Stock permanente",
+                desc: "Más de 50 marcas disponibles. Amplio stock de motos, cuatriciclos, UTVs y motos de agua para entrega inmediata.",
+              },
+              {
+                icon: Truck,
+                title: "Envío a todo el país",
+                desc: "Logística directa, sin intermediarios. Despachamos accesorios, repuestos y motos desde Bahía Blanca a cualquier punto del país.",
+              },
+            ].map((card, idx) => (
+              <AnimatedSection key={idx} animation="fade-up" delay={idx * 100}>
+                <article className="group h-full relative flex flex-col items-center text-center p-7 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#C9A55C]/40 hover:shadow-premium-lg transition-all duration-300 overflow-hidden">
+                  {/* Esquinas decorativas dorada */}
+                  <span
+                    aria-hidden
+                    className="absolute top-0 left-0 w-6 h-px bg-gradient-to-r from-[#C9A55C] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                  <span
+                    aria-hidden
+                    className="absolute top-0 left-0 w-px h-6 bg-gradient-to-b from-[#C9A55C] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                  <span
+                    aria-hidden
+                    className="absolute bottom-0 right-0 w-6 h-px bg-gradient-to-l from-[#C9A55C] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
+                  <span
+                    aria-hidden
+                    className="absolute bottom-0 right-0 w-px h-6 bg-gradient-to-t from-[#C9A55C] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                  />
 
-            {/* Card 2 */}
-            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
-              <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
-                <CreditCard className="size-7" />
-              </div>
-              <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-2">
-                Financiación propia
-              </h3>
-              <p className="text-sm text-gray-400 font-body leading-relaxed">
-                Planes flexibles sin necesidad de banco. Financiación propia, tarjeta o
-                acuerdo con entidades financieras.
-              </p>
-            </div>
-
-            {/* Card 3 */}
-            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
-              <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
-                <Wrench className="size-7" />
-              </div>
-              <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-2">
-                Servicio técnico
-              </h3>
-              <p className="text-sm text-gray-400 font-body leading-relaxed">
-                Taller oficial con técnicos especializados. Service, reparaciones y
-                repuestos originales para todas las marcas.
-              </p>
-            </div>
-
-            {/* Card 4 */}
-            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
-              <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
-                <Package className="size-7" />
-              </div>
-              <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-2">
-                Stock permanente
-              </h3>
-              <p className="text-sm text-gray-400 font-body leading-relaxed">
-                Más de 50 marcas disponibles. Amplio stock de motos, cuatriciclos, UTVs
-                y motos de agua para entrega inmediata.
-              </p>
-            </div>
-
-            {/* Card 5 - Envío propio */}
-            <div className="group flex flex-col items-center text-center p-8 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-lg hover:shadow-[#6B4F7A]/5 transition-all duration-200">
-              <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-all duration-200">
-                <Truck className="size-7" />
-              </div>
-              <h3 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-2">
-                Envío propio a todo el país
-              </h3>
-              <p className="text-sm text-gray-400 font-body leading-relaxed">
-                Logística directa, sin intermediarios. Despachamos accesorios,
-                repuestos y motos desde Bahía Blanca a cualquier punto del país.
-              </p>
-            </div>
+                  <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] dark:text-[#C39BD3] mb-5 group-hover:bg-gradient-to-br group-hover:from-[#6B4F7A] group-hover:to-[#8B6F9A] group-hover:text-white transition-all duration-300 group-hover:scale-110">
+                    <card.icon className="size-7" />
+                  </div>
+                  <h3 className="font-serif text-lg font-semibold text-[#1A1A1A] dark:text-white mb-2 leading-tight">
+                    {card.title}
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+                    {card.desc}
+                  </p>
+                </article>
+              </AnimatedSection>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* ===== 7. NOTICIAS RECIENTES ===== */}
-      <section className="py-20 bg-[#F0F0F0] dark:bg-neutral-950">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-end justify-between mb-12">
-            <div>
-              <h2 className="text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
-                Noticias recientes
-              </h2>
-              <p className="mt-3 text-gray-500 dark:text-gray-400 font-body">
-                Novedades, lanzamientos y consejos del mundo moto
-              </p>
+      {/* ==================== NOTICIAS ==================== */}
+      <section className="relative py-20 sm:py-24 bg-[#F8F5FA] dark:bg-neutral-950 overflow-hidden">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <AnimatedSection animation="fade-up">
+            <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
+              <div>
+                <SectionEyebrow>Blog</SectionEyebrow>
+                <h2 className="mt-4 font-serif text-4xl sm:text-5xl text-[#1A1A1A] dark:text-white leading-tight">
+                  Noticias <em className="text-[#6B4F7A]">recientes</em>
+                </h2>
+                <p className="mt-2 text-gray-500 dark:text-gray-400">
+                  Novedades, lanzamientos y consejos del mundo moto
+                </p>
+              </div>
+              <Link
+                href="/noticias"
+                className="hidden sm:inline-flex items-center gap-1.5 text-sm font-bold text-[#6B4F7A] hover:text-[#C9A55C] transition-colors"
+              >
+                Ver todas
+                <ArrowRight className="size-4" />
+              </Link>
             </div>
-            <Link
-              href="/noticias"
-              className="hidden sm:inline-flex items-center gap-1.5 text-sm font-semibold text-[#6B4F7A] hover:text-[#9B59B6] transition-colors"
-            >
-              Ver todas
-              <ArrowRight className="size-4" />
-            </Link>
-          </div>
+          </AnimatedSection>
 
           {noticias.length > 0 ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {noticias.map((noticia) => (
-                  <Link
+                {noticias.map((noticia, idx) => (
+                  <AnimatedSection
                     key={noticia.id}
-                    href={`/noticias/${noticia.slug}`}
-                    className="group rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden hover:shadow-xl hover:shadow-black/8 transition-all duration-200"
+                    animation="fade-up"
+                    delay={idx * 100}
                   >
-                    <div className="relative aspect-video bg-gray-100 dark:bg-neutral-800 overflow-hidden">
-                      {noticia.imagen ? (
-                        <Image
-                          src={noticia.imagen}
-                          alt={noticia.titulo}
-                          fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        />
-                      ) : (
-                        <div className="flex items-center justify-center h-full bg-gradient-to-br from-[#6B4F7A]/10 to-[#9B59B6]/10">
-                          <span className="text-[#6B4F7A]/30 font-heading font-bold text-2xl">MF</span>
-                        </div>
-                      )}
-                      {noticia.categoria && (
-                        <div className="absolute top-3 left-3 rounded-full bg-[#6B4F7A] px-3 py-1 text-[11px] font-bold text-white uppercase tracking-wide">
-                          {noticia.categoria}
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-5">
-                      <p className="text-xs text-gray-400 mb-2">
-                        {new Date(noticia.fechaPublicacion).toLocaleDateString("es-AR", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </p>
-                      <h3 className="font-bold text-[#1A1A1A] dark:text-white font-heading leading-snug line-clamp-2 group-hover:text-[#6B4F7A] transition-colors">
-                        {noticia.titulo}
-                      </h3>
-                      {noticia.resumen && (
-                        <p className="mt-2 text-sm text-gray-400 font-body line-clamp-2 leading-relaxed">
-                          {noticia.resumen}
+                    <Link
+                      href={`/noticias/${noticia.slug}`}
+                      className="group h-full flex flex-col rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
+                    >
+                      <div className="relative aspect-video bg-gradient-to-br from-[#F8F5FA] to-[#EFEAF2] dark:from-neutral-800 dark:to-neutral-900 overflow-hidden">
+                        {noticia.imagen ? (
+                          <Image
+                            src={noticia.imagen}
+                            alt={noticia.titulo}
+                            fill
+                            className="object-cover group-hover:scale-110 transition-transform duration-700"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center h-full bg-gradient-to-br from-[#6B4F7A]/10 to-[#9B59B6]/10">
+                            <span className="font-serif text-3xl text-[#6B4F7A]/40">MF</span>
+                          </div>
+                        )}
+                        {noticia.categoria && (
+                          <div className="absolute top-3 left-3 rounded-full bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-3 py-1 text-[10px] font-bold text-[#0E0B12] uppercase tracking-wide shadow-lg">
+                            {noticia.categoria}
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-6 flex-1 flex flex-col">
+                        <p className="text-xs text-gray-400 mb-2 font-semibold">
+                          {new Date(noticia.fechaPublicacion).toLocaleDateString("es-AR", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          })}
                         </p>
-                      )}
-                      <span className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-[#6B4F7A] group-hover:gap-2 transition-all">
-                        Leer más <ArrowRight className="size-3" />
-                      </span>
-                    </div>
-                  </Link>
+                        <h3 className="font-serif text-lg font-semibold text-[#1A1A1A] dark:text-white leading-snug line-clamp-2 group-hover:text-[#6B4F7A] transition-colors">
+                          {noticia.titulo}
+                        </h3>
+                        {noticia.resumen && (
+                          <p className="mt-3 text-sm text-gray-500 dark:text-gray-400 line-clamp-2 leading-relaxed">
+                            {noticia.resumen}
+                          </p>
+                        )}
+                        <span className="mt-auto pt-4 inline-flex items-center gap-1 text-xs font-bold text-[#C9A55C] group-hover:gap-2 transition-all">
+                          Leer más <ArrowRight className="size-3" />
+                        </span>
+                      </div>
+                    </Link>
+                  </AnimatedSection>
                 ))}
               </div>
-              <div className="mt-8 text-center sm:hidden">
+              <div className="mt-10 text-center sm:hidden">
                 <Link
                   href="/noticias"
-                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#6B4F7A] hover:text-[#9B59B6] transition-colors"
+                  className="inline-flex items-center gap-1.5 text-sm font-bold text-[#6B4F7A] hover:text-[#C9A55C] transition-colors"
                 >
                   Ver todas las noticias
                   <ArrowRight className="size-4" />
@@ -667,7 +798,7 @@ export default async function HomePage() {
             </>
           ) : (
             <div className="text-center py-16 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800">
-              <p className="text-gray-400 font-body">
+              <p className="text-gray-400">
                 Próximamente publicamos nuestras primeras noticias.
               </p>
               <Link
@@ -681,30 +812,44 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ===== CONTACT CTA ===== */}
-      <section className="py-20 bg-[#1A1A1A]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white font-heading">
-            ¿Listo para dar el siguiente paso?
-          </h2>
-          <p className="mt-4 text-gray-400 max-w-lg mx-auto font-body">
-            Visitanos en {BUSINESS.address} o contactanos por WhatsApp. Estamos para ayudarte.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Link
-              href="/contacto"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-7 py-3.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors shadow-lg shadow-[#6B4F7A]/30"
-            >
-              Contactanos
-            </Link>
-            <Link
-              href="/servicio-tecnico"
-              className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 dark:bg-neutral-900/5 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/10 dark:hover:bg-neutral-900/10 transition-colors"
-            >
-              <Calendar className="size-4" />
-              Sacar turno
-            </Link>
-          </div>
+      {/* ==================== CONTACT CTA FINAL ==================== */}
+      <section className="relative py-20 sm:py-24 bg-gradient-to-br from-[#0E0B12] via-[#15121A] to-[#1A1325] overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.06]" />
+        <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
+        <Watermark position="center" size="2xl" opacity="subtle" />
+
+        <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
+          <AnimatedSection animation="fade-up">
+            <SectionEyebrow centered variant="gold">Tu próximo paso</SectionEyebrow>
+            <h2 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl text-white text-balance leading-tight">
+              ¿Listo para dar el <em className="text-[#C9A55C]">siguiente paso</em>?
+            </h2>
+            <GoldDivider variant="ornament" className="mt-8" />
+            <p className="mt-8 text-lg text-gray-400 max-w-xl mx-auto leading-relaxed">
+              Visitanos en {BUSINESS.address} o contactanos por WhatsApp. Estamos para
+              ayudarte.
+            </p>
+            <div className="mt-10 flex flex-wrap justify-center gap-4">
+              <Link
+                href="/contacto"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-8 py-4 text-sm font-bold text-[#0E0B12] shadow-champagne-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+              >
+                <span
+                  aria-hidden
+                  className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                />
+                <span className="relative">Contactanos</span>
+                <ArrowRight className="relative size-4" />
+              </Link>
+              <Link
+                href="/servicio-tecnico"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/[0.05] backdrop-blur-sm px-8 py-4 text-sm font-bold text-white hover:bg-white/[0.10] hover:border-white/40 transition-colors"
+              >
+                <Calendar className="size-4" />
+                Sacar turno
+              </Link>
+            </div>
+          </AnimatedSection>
         </div>
       </section>
     </>

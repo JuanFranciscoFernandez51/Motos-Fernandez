@@ -75,28 +75,34 @@ export default function UbicacionPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Hero */}
-      <section className="bg-[#1A1A1A] py-12 sm:py-14">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 text-xs text-[#9B59B6] uppercase tracking-wider font-semibold mb-3">
+      {/* Hero premium */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325] py-14 sm:py-18">
+        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
+        <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
+        <div className="absolute -top-32 -right-32 size-[400px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 size-[320px] rounded-full bg-[#C9A55C]/[0.06] blur-3xl pointer-events-none" />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2 text-xs text-[#C9A55C] uppercase tracking-[0.22em] font-bold mb-3">
             <MapPin className="size-4" />
             Ubicación
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-white font-heading">
-            Visitanos en {BUSINESS.city}
+          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
+            Visitanos en <em className="text-[#C9A55C]">{BUSINESS.city}</em>
           </h1>
-          <p className="mt-3 text-gray-400 font-body max-w-2xl">
+          <p className="mt-5 text-base sm:text-lg text-gray-300 max-w-2xl leading-relaxed">
             Estamos en <span className="text-white font-medium">{BUSINESS.address}</span>. Más de {BUSINESS.yearsInBusiness} años atendiendo a motociclistas. Te esperamos en el local con todas las marcas y atención personalizada.
           </p>
-          <div className="mt-6 flex flex-wrap gap-3">
+          <div className="mt-7 flex flex-wrap gap-3">
             <a
               href={directionsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-6 py-3 text-sm font-bold text-[#0E0B12] shadow-champagne-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
             >
-              <Navigation className="size-4" />
-              Cómo llegar
+              <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+              <Navigation className="relative size-4" />
+              <span className="relative">Cómo llegar</span>
             </a>
             <a
               href={getWhatsAppUrl(WHATSAPP_MESSAGES.general)}

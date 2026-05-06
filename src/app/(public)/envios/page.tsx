@@ -8,21 +8,26 @@ export const metadata = {
 
 export default function Page() {
   return (
-    <div className="bg-[#F0F0F0] dark:bg-neutral-950 min-h-screen">
-      <div className="bg-[#1A1A1A] py-10">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="text-[#C39BD3] font-semibold text-xs uppercase tracking-[0.2em] mb-2">
+    <div className="bg-[#F8F5FA] dark:bg-neutral-950 min-h-screen">
+      {/* Hero premium */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325] py-14 sm:py-16">
+        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
+        <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
+        <div className="absolute -top-32 -right-32 size-[400px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#C9A55C] mb-3">
             Logística propia
           </p>
-          <h1 className="font-display text-4xl sm:text-5xl text-white tracking-wide">
-            ENVÍO PROPIO A TODO EL PAÍS
+          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
+            Envío propio <em className="text-[#C9A55C]">a todo el país</em>
           </h1>
-          <p className="mt-3 text-gray-300 max-w-2xl">
+          <p className="mt-5 text-base sm:text-lg text-gray-300 max-w-2xl">
             Sin intermediarios: nosotros nos encargamos de que tu pedido llegue
             en tiempo y forma a cualquier punto del país.
           </p>
         </div>
-      </div>
+      </section>
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
         <div className="rounded-xl bg-white dark:bg-neutral-900 p-8 shadow-sm">
           <div

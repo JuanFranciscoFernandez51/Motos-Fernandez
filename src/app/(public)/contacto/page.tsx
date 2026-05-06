@@ -49,16 +49,27 @@ export default function ContactoPage() {
   return (
     <>
       <TrackVisita pagina="contacto" />
-      {/* Hero */}
-      <section className="bg-[#1A1A1A] py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-white font-heading">
-            Contacto
-          </h1>
-          <p className="mt-3 text-gray-400 font-body max-w-xl">
-            Estamos para ayudarte. Completa el formulario o contactanos
-            directamente por WhatsApp.
-          </p>
+
+      {/* Hero premium */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325] py-16 sm:py-20">
+        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
+        <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
+        <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C9A55C]/[0.06] blur-3xl pointer-events-none" />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#C9A55C] mb-3">
+              Estamos para ayudarte
+            </p>
+            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
+              Hablemos
+            </h1>
+            <p className="mt-5 text-base sm:text-lg text-gray-300 max-w-xl leading-relaxed">
+              Completá el formulario o contactanos directamente por WhatsApp.
+              Te respondemos en el día.
+            </p>
+          </div>
         </div>
       </section>
 

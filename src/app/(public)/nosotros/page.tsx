@@ -83,20 +83,27 @@ export default function NosotrosPage() {
   return (
     <>
       <TrackVisita pagina="nosotros" />
-      {/* Hero */}
-      <section className="bg-[#1A1A1A] py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl">
-            <p className="text-[#8B6F9A] font-semibold text-sm uppercase tracking-widest mb-3">
+
+      {/* Hero premium */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325] py-20 sm:py-24">
+        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
+        <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
+        <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C9A55C]/[0.06] blur-3xl pointer-events-none" />
+
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#C9A55C] mb-4">
               Desde {BUSINESS.yearFounded}
             </p>
-            <h1 className="text-4xl sm:text-5xl font-extrabold text-white font-heading leading-tight">
-              Pasion por las motos desde {BUSINESS.yearFounded}
+            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl text-white leading-[1.05] text-balance">
+              Pasión por las motos desde{" "}
+              <em className="text-[#C9A55C]">{BUSINESS.yearFounded}</em>
             </h1>
-            <p className="mt-5 text-lg text-gray-400 font-body leading-relaxed">
-              Fundada en {BUSINESS.yearFounded} en el corazon de {BUSINESS.city},{" "}
-              {BUSINESS.name} nacio con un objetivo claro: acompanar a cada
-              cliente en la eleccion de su vehiculo ideal.
+            <p className="mt-7 text-base sm:text-lg text-gray-300 leading-relaxed font-serif italic">
+              Fundada en {BUSINESS.yearFounded} en el corazón de {BUSINESS.city},{" "}
+              {BUSINESS.name} nació con un objetivo claro: acompañar a cada
+              cliente en la elección de su vehículo ideal.
             </p>
           </div>
         </div>
