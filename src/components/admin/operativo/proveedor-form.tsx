@@ -8,35 +8,63 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, Save, Loader2 } from "lucide-react"
+import { ArrowLeft, Save, Loader2, Plus, Trash2, UserPlus } from "lucide-react"
+
+export type Contacto = {
+  id: string
+  nombre: string
+  rol: string
+  telefono: string
+  email: string
+}
 
 export type ProveedorData = {
   id?: string
   nombre: string
-  contacto: string
-  telefono: string
-  email: string
   cuit: string
-  direccion: string
-  ciudad: string
   rubro: string
   sitio: string
+  email: string
+  direccion: string
+  ciudad: string
   notas: string
   activo: boolean
+  contactos: Contacto[]
 }
 
 const EMPTY: ProveedorData = {
   nombre: "",
-  contacto: "",
-  telefono: "",
-  email: "",
   cuit: "",
-  direccion: "",
-  ciudad: "",
   rubro: "",
   sitio: "",
+  email: "",
+  direccion: "",
+  ciudad: "",
   notas: "",
   activo: true,
+  contactos: [],
+}
+
+const ROLES_SUGERIDOS = [
+  "Comercial",
+  "Administración",
+  "Vendedor",
+  "Atención al cliente",
+  "Posventa",
+  "Garantía",
+  "Logística",
+  "Repuestos",
+  "Otro",
+]
+
+function newContacto(): Contacto {
+  return {
+    id: `c-${Math.random().toString(36).slice(2, 9)}`,
+    nombre: "",
+    rol: "",
+    telefono: "",
+    email: "",
+  }
 }
 
 export function ProveedorForm({
@@ -48,13 +76,34 @@ export function ProveedorForm({
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
-  const [data, setData] = useState<ProveedorData>({ ...EMPTY, ...initialData })
+  const [data, setData] = useState<ProveedorData>({
+    ...EMPTY,
+    ...initialData,
+    contactos: initialData?.contactos ?? [],
+  })
   const [error, setError] = useState("")
 
   const set = <K extends keyof ProveedorData>(
     key: K,
     value: ProveedorData[K]
   ) => setData((prev) => ({ ...prev, [key]: value }))
+
+  const addContacto = () =>
+    setData((p) => ({ ...p, contactos: [...p.contactos, newContacto()] }))
+
+  const removeContacto = (id: string) =>
+    setData((p) => ({
+      ...p,
+      contactos: p.contactos.filter((c) => c.id !== id),
+    }))
+
+  const updateContacto = (id: string, field: keyof Contacto, value: string) =>
+    setData((p) => ({
+      ...p,
+      contactos: p.contactos.map((c) =>
+        c.id === id ? { ...c, [field]: value } : c
+      ),
+    }))
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -65,9 +114,22 @@ export function ProveedorForm({
     }
     const formData = new FormData()
     if (initialData?.id) formData.append("id", initialData.id)
-    Object.entries(data).forEach(([k, v]) =>
-      formData.append(k, String(v ?? ""))
+    // Campos simples
+    formData.append("nombre", data.nombre)
+    formData.append("cuit", data.cuit)
+    formData.append("rubro", data.rubro)
+    formData.append("sitio", data.sitio)
+    formData.append("email", data.email)
+    formData.append("direccion", data.direccion)
+    formData.append("ciudad", data.ciudad)
+    formData.append("notas", data.notas)
+    formData.append("activo", String(data.activo))
+    // Contactos como JSON, filtrando los vacíos
+    const contactosLimpios = data.contactos.filter(
+      (c) => c.nombre.trim() || c.telefono.trim() || c.email.trim()
     )
+    formData.append("contactos", JSON.stringify(contactosLimpios))
+
     startTransition(async () => {
       const result = await saveAction(formData)
       if (result?.error) setError(result.error)
@@ -114,9 +176,10 @@ export function ProveedorForm({
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Columna izquierda — Info del proveedor */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Datos del proveedor</CardTitle>
+            <CardTitle>Información del proveedor</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -148,12 +211,13 @@ export function ProveedorForm({
                 />
               </div>
               <div>
-                <Label htmlFor="contacto">Persona de contacto</Label>
+                <Label htmlFor="email">Email general</Label>
                 <Input
-                  id="contacto"
-                  value={data.contacto}
-                  onChange={(e) => set("contacto", e.target.value)}
-                  placeholder="Ej: Juan García (comercial)"
+                  id="email"
+                  type="email"
+                  value={data.email}
+                  onChange={(e) => set("email", e.target.value)}
+                  placeholder="info@proveedor.com.ar"
                 />
               </div>
               <div>
@@ -165,49 +229,27 @@ export function ProveedorForm({
                   placeholder="https://..."
                 />
               </div>
+              <div className="md:col-span-2">
+                <Label htmlFor="direccion">Dirección</Label>
+                <Input
+                  id="direccion"
+                  value={data.direccion}
+                  onChange={(e) => set("direccion", e.target.value)}
+                  placeholder="Av. Siempreviva 742"
+                />
+              </div>
+              <div className="md:col-span-2">
+                <Label htmlFor="ciudad">Ciudad</Label>
+                <Input
+                  id="ciudad"
+                  value={data.ciudad}
+                  onChange={(e) => set("ciudad", e.target.value)}
+                  placeholder="Bahía Blanca"
+                />
+              </div>
             </div>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Contacto</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="telefono">Teléfono</Label>
-              <Input
-                id="telefono"
-                value={data.telefono}
-                onChange={(e) => set("telefono", e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={data.email}
-                onChange={(e) => set("email", e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="direccion">Dirección</Label>
-              <Input
-                id="direccion"
-                value={data.direccion}
-                onChange={(e) => set("direccion", e.target.value)}
-              />
-            </div>
-            <div>
-              <Label htmlFor="ciudad">Ciudad</Label>
-              <Input
-                id="ciudad"
-                value={data.ciudad}
-                onChange={(e) => set("ciudad", e.target.value)}
-              />
-            </div>
-            <label className="flex items-center gap-2 text-sm">
+            <label className="flex items-center gap-2 text-sm pt-2">
               <input
                 type="checkbox"
                 checked={data.activo}
@@ -219,6 +261,132 @@ export function ProveedorForm({
           </CardContent>
         </Card>
 
+        {/* Columna derecha — Contactos */}
+        <Card className="lg:col-span-1">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <UserPlus className="size-5 text-[#6B4F7A]" />
+              Contactos
+            </CardTitle>
+            <button
+              type="button"
+              onClick={addContacto}
+              className="inline-flex items-center gap-1 rounded-md bg-[#6B4F7A] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+            >
+              <Plus className="size-3.5" />
+              Agregar
+            </button>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {data.contactos.length === 0 && (
+              <div className="rounded-lg border border-dashed border-gray-200 dark:border-neutral-800 p-6 text-center">
+                <UserPlus className="size-8 mx-auto text-gray-300 dark:text-gray-600 mb-2" />
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                  Sin contactos cargados.
+                </p>
+                <button
+                  type="button"
+                  onClick={addContacto}
+                  className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A]"
+                >
+                  <Plus className="size-3.5" />
+                  Agregar primer contacto
+                </button>
+              </div>
+            )}
+
+            {data.contactos.map((c, idx) => (
+              <div
+                key={c.id}
+                className="rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-900/50 p-3 space-y-2"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B4F7A]">
+                    Contacto #{idx + 1}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeContacto(c.id)}
+                    className="text-red-500 hover:text-red-700 dark:text-red-300 transition-colors"
+                    title="Eliminar contacto"
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </div>
+                <div>
+                  <Label htmlFor={`nombre-${c.id}`} className="text-xs">
+                    Nombre
+                  </Label>
+                  <Input
+                    id={`nombre-${c.id}`}
+                    value={c.nombre}
+                    onChange={(e) => updateContacto(c.id, "nombre", e.target.value)}
+                    placeholder="Juan García"
+                    className="h-9 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`rol-${c.id}`} className="text-xs">
+                    Rol / Sector
+                  </Label>
+                  <Input
+                    id={`rol-${c.id}`}
+                    value={c.rol}
+                    onChange={(e) => updateContacto(c.id, "rol", e.target.value)}
+                    placeholder="Ej: Administración"
+                    list={`roles-${c.id}`}
+                    className="h-9 text-sm"
+                  />
+                  <datalist id={`roles-${c.id}`}>
+                    {ROLES_SUGERIDOS.map((r) => (
+                      <option key={r} value={r} />
+                    ))}
+                  </datalist>
+                </div>
+                <div>
+                  <Label htmlFor={`tel-${c.id}`} className="text-xs">
+                    Teléfono / Celular
+                  </Label>
+                  <Input
+                    id={`tel-${c.id}`}
+                    value={c.telefono}
+                    onChange={(e) =>
+                      updateContacto(c.id, "telefono", e.target.value)
+                    }
+                    placeholder="291 123-4567"
+                    className="h-9 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor={`email-${c.id}`} className="text-xs">
+                    Email (opcional)
+                  </Label>
+                  <Input
+                    id={`email-${c.id}`}
+                    type="email"
+                    value={c.email}
+                    onChange={(e) => updateContacto(c.id, "email", e.target.value)}
+                    placeholder="juan@proveedor.com"
+                    className="h-9 text-sm"
+                  />
+                </div>
+              </div>
+            ))}
+
+            {data.contactos.length > 0 && (
+              <button
+                type="button"
+                onClick={addContacto}
+                className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-dashed border-[#6B4F7A]/40 bg-[#6B4F7A]/5 hover:bg-[#6B4F7A]/10 px-3 py-2 text-xs font-semibold text-[#6B4F7A] transition-colors"
+              >
+                <Plus className="size-3.5" />
+                Agregar otro contacto
+              </button>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Notas - ancho completo abajo */}
         <Card className="lg:col-span-3">
           <CardHeader>
             <CardTitle>Notas</CardTitle>

@@ -8,11 +8,39 @@ async function createProveedor(formData: FormData) {
   "use server"
   try {
     const get = (k: string) => (formData.get(k) as string) || ""
+
+    // Parsear contactos del JSON
+    let contactos: unknown = null
+    const contactosRaw = get("contactos")
+    if (contactosRaw) {
+      try {
+        const parsed = JSON.parse(contactosRaw)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          contactos = parsed
+        }
+      } catch {
+        // Ignorar JSON inválido
+      }
+    }
+
+    // Compatibilidad: si hay contactos, usar el primero como "contacto principal" legacy
+    let contactoPrincipal: string | null = null
+    let telefonoPrincipal: string | null = null
+    if (contactos && Array.isArray(contactos) && contactos.length > 0) {
+      const primero = contactos[0] as { nombre?: string; rol?: string; telefono?: string }
+      if (primero?.nombre) {
+        contactoPrincipal = primero.rol
+          ? `${primero.nombre} (${primero.rol})`
+          : primero.nombre
+      }
+      if (primero?.telefono) telefonoPrincipal = primero.telefono
+    }
+
     const proveedor = await prisma.proveedor.create({
       data: {
         nombre: get("nombre"),
-        contacto: get("contacto") || null,
-        telefono: get("telefono") || null,
+        contacto: contactoPrincipal,
+        telefono: telefonoPrincipal,
         email: get("email") || null,
         cuit: get("cuit") || null,
         direccion: get("direccion") || null,
@@ -21,6 +49,7 @@ async function createProveedor(formData: FormData) {
         sitio: get("sitio") || null,
         notas: get("notas") || null,
         activo: get("activo") === "true",
+        contactos: contactos as never,
       },
     })
     revalidatePath("/admin/proveedores")

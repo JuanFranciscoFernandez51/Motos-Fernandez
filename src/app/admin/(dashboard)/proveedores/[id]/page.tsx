@@ -1,7 +1,7 @@
 import { notFound, redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
-import { ProveedorForm } from "@/components/admin/operativo/proveedor-form"
+import { ProveedorForm, type Contacto } from "@/components/admin/operativo/proveedor-form"
 import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
 
@@ -12,12 +12,40 @@ async function updateProveedor(formData: FormData) {
   try {
     const id = formData.get("id") as string
     const get = (k: string) => (formData.get(k) as string) || ""
+
+    // Parsear contactos
+    let contactos: unknown = null
+    const contactosRaw = get("contactos")
+    if (contactosRaw) {
+      try {
+        const parsed = JSON.parse(contactosRaw)
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          contactos = parsed
+        }
+      } catch {
+        // ignorar
+      }
+    }
+
+    // Compatibilidad: usar primer contacto como principal legacy
+    let contactoPrincipal: string | null = null
+    let telefonoPrincipal: string | null = null
+    if (contactos && Array.isArray(contactos) && contactos.length > 0) {
+      const primero = contactos[0] as { nombre?: string; rol?: string; telefono?: string }
+      if (primero?.nombre) {
+        contactoPrincipal = primero.rol
+          ? `${primero.nombre} (${primero.rol})`
+          : primero.nombre
+      }
+      if (primero?.telefono) telefonoPrincipal = primero.telefono
+    }
+
     await prisma.proveedor.update({
       where: { id },
       data: {
         nombre: get("nombre"),
-        contacto: get("contacto") || null,
-        telefono: get("telefono") || null,
+        contacto: contactoPrincipal,
+        telefono: telefonoPrincipal,
         email: get("email") || null,
         cuit: get("cuit") || null,
         direccion: get("direccion") || null,
@@ -26,9 +54,11 @@ async function updateProveedor(formData: FormData) {
         sitio: get("sitio") || null,
         notas: get("notas") || null,
         activo: get("activo") === "true",
+        contactos: (contactos ?? null) as never,
       },
     })
     revalidatePath("/admin/proveedores")
+    revalidatePath(`/admin/proveedores/${id}`)
     return {}
   } catch (e: unknown) {
     return {
@@ -39,7 +69,6 @@ async function updateProveedor(formData: FormData) {
 
 async function deleteProveedor(id: string) {
   "use server"
-  // Desasocia de modelos y productos, luego elimina
   await prisma.modelo.updateMany({
     where: { proveedorId: id },
     data: { proveedorId: null },
@@ -68,19 +97,43 @@ export default async function EditarProveedorPage({
   })
   if (!proveedor) notFound()
 
+  // Migrar contactos: si hay datos en formato JSON, usarlos.
+  // Si no, intentar derivar uno desde los campos legacy (contacto + telefono).
+  let contactosIniciales: Contacto[] = []
+  if (Array.isArray(proveedor.contactos)) {
+    contactosIniciales = (proveedor.contactos as unknown as Contacto[]).map(
+      (c, i) => ({
+        id: c.id || `c-existing-${i}`,
+        nombre: c.nombre || "",
+        rol: c.rol || "",
+        telefono: c.telefono || "",
+        email: c.email || "",
+      })
+    )
+  } else if (proveedor.contacto || proveedor.telefono) {
+    contactosIniciales = [
+      {
+        id: "c-legacy-0",
+        nombre: proveedor.contacto || "",
+        rol: "",
+        telefono: proveedor.telefono || "",
+        email: "",
+      },
+    ]
+  }
+
   const initialData = {
     id: proveedor.id,
     nombre: proveedor.nombre,
-    contacto: proveedor.contacto || "",
-    telefono: proveedor.telefono || "",
-    email: proveedor.email || "",
     cuit: proveedor.cuit || "",
-    direccion: proveedor.direccion || "",
-    ciudad: proveedor.ciudad || "",
     rubro: proveedor.rubro || "",
     sitio: proveedor.sitio || "",
+    email: proveedor.email || "",
+    direccion: proveedor.direccion || "",
+    ciudad: proveedor.ciudad || "",
     notas: proveedor.notas || "",
     activo: proveedor.activo,
+    contactos: contactosIniciales,
   }
 
   return (

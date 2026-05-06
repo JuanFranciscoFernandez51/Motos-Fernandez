@@ -469,9 +469,9 @@ model Conversion {
 model Proveedor {
   id            String    @id @default(cuid())
   nombre        String    // razón social o nombre del proveedor
-  contacto      String?   // persona de contacto
-  telefono      String?
-  email         String?
+  contacto      String?   // persona de contacto (legacy / contacto principal)
+  telefono      String?   // teléfono principal (legacy)
+  email         String?   // email general del proveedor
   cuit          String?
   direccion     String?
   ciudad        String?
@@ -479,6 +479,10 @@ model Proveedor {
   sitio         String?   // sitio web o URL
   notas         String?   @db.Text
   activo        Boolean   @default(true)
+
+  // Contactos múltiples — administración, vendedores, posventa, etc.
+  // Estructura: [{ id, nombre, rol, telefono, email }]
+  contactos     Json?
 
   modelos       Modelo[]
   productos     Producto[]
