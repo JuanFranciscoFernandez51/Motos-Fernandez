@@ -2,7 +2,8 @@ import Image from "next/image"
 
 /**
  * Logo flotante con animación suave (sube/baja + respira) para usar como
- * decoración premium en el hero. Reemplaza al monograma estático.
+ * decoración premium en el hero. Usa el wordmark horizontal "MOTOS FERNANDEZ"
+ * con efecto cromado/plateado y borde negro.
  */
 export function FloatingLogo({
   size = "lg",
@@ -15,29 +16,30 @@ export function FloatingLogo({
   className?: string
   position?: "right" | "left" | "center"
 }) {
-  const sizeClass =
+  // Wordmark horizontal (~ratio 1.4:1) — width-based para mantener proporcion
+  const widthClass =
     size === "md"
-      ? "size-64 lg:size-80"
+      ? "w-72 lg:w-96"
       : size === "lg"
-        ? "size-80 lg:size-[420px]"
+        ? "w-96 lg:w-[520px]"
         : size === "xl"
-          ? "size-96 lg:size-[520px]"
-          : "size-[420px] lg:size-[640px]"
+          ? "w-[480px] lg:w-[640px]"
+          : "w-[560px] lg:w-[760px]"
 
   const opacityClass =
     opacity === "subtle"
-      ? "opacity-[0.06]"
+      ? "opacity-[0.18]"
       : opacity === "soft"
-        ? "opacity-[0.10]"
+        ? "opacity-[0.32]"
         : opacity === "medium"
-          ? "opacity-[0.16]"
-          : "opacity-[0.22]"
+          ? "opacity-[0.55]"
+          : "opacity-[0.85]"
 
   const positionClass =
     position === "left"
-      ? "-left-12 sm:-left-8"
+      ? "-left-16 sm:-left-12"
       : position === "right"
-        ? "-right-12 sm:-right-8"
+        ? "-right-16 sm:-right-12"
         : "left-1/2 -translate-x-1/2"
 
   return (
@@ -48,21 +50,21 @@ export function FloatingLogo({
       {/* Glow violeta detrás para profundidad */}
       <div
         aria-hidden
-        className="absolute inset-0 rounded-full blur-3xl bg-[#6B4F7A]/20 scale-75 animate-pulse"
+        className="absolute inset-0 rounded-full blur-3xl bg-[#6B4F7A]/30 scale-75 animate-pulse"
         style={{ animationDuration: "6s" }}
       />
 
       {/* Logo con animación de flotación suave */}
       <div
         className={`relative ${opacityClass} animate-float-logo`}
-        style={{ filter: "drop-shadow(0 8px 24px rgba(107, 79, 122, 0.25))" }}
+        style={{ filter: "drop-shadow(0 10px 28px rgba(0, 0, 0, 0.45))" }}
       >
         <Image
-          src="/images/monograma-blanco-transparente.svg"
+          src="/images/motos-fernandez-wordmark.png"
           alt=""
-          width={640}
-          height={640}
-          className={`${sizeClass} object-contain select-none`}
+          width={1024}
+          height={724}
+          className={`${widthClass} h-auto object-contain select-none`}
           priority={false}
         />
       </div>

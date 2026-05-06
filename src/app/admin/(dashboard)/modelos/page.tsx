@@ -193,12 +193,21 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
         input.permutaMarca &&
         input.permutaModelo
       ) {
-        // Generar slug único: "marca-modelo-timestamp"
-        const baseSlug = `${input.permutaMarca}-${input.permutaModelo}${input.permutaAnio ? `-${input.permutaAnio}` : ""}`
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-|-$/g, "")
-        const slug = `${baseSlug}-${Date.now().toString(36)}`
+        // Generar slug secuencial mf-XXXX continuando el ultimo que haya en
+        // el catalogo. Ejemplo: si el ultimo es mf-0023, el nuevo es mf-0024.
+        // Si no hay ninguno con ese formato, empieza en mf-0001.
+        const ultimosMF = await tx.modelo.findMany({
+          where: { slug: { startsWith: "mf-" } },
+          select: { slug: true },
+        })
+        const numeros = ultimosMF
+          .map((m) => {
+            const match = m.slug.match(/^mf-(\d+)$/i)
+            return match ? parseInt(match[1], 10) : 0
+          })
+          .filter((n) => n > 0)
+        const proximo = numeros.length > 0 ? Math.max(...numeros) + 1 : 1
+        const slug = `mf-${String(proximo).padStart(4, "0")}`
 
         // Foto placeholder (logo) si no hay foto
         const placeholderFoto = "/images/logo-clasico.png"
