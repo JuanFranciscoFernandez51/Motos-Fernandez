@@ -58,13 +58,12 @@ export function FloatingLogo({
         style={{ filter: "drop-shadow(0 8px 24px rgba(107, 79, 122, 0.25))" }}
       >
         <Image
-          src="/images/logo-clasico-blanco.png"
+          src="/images/monograma-blanco-transparente.svg"
           alt=""
           width={640}
           height={640}
           className={`${sizeClass} object-contain select-none`}
           priority={false}
-          unoptimized
         />
       </div>
     </div>
