@@ -35,6 +35,34 @@ export const getModelosDestacados = unstable_cache(
   { tags: [CACHE_TAGS.modelos], revalidate: ONE_HOUR }
 )
 
+/**
+ * Para el home: trae las destacadas como fijas (primera fila) y un set
+ * más amplio de motos para rotar en la segunda fila.
+ */
+export const getModelosHome = unstable_cache(
+  async () => {
+    try {
+      const [destacadas, rotativas] = await Promise.all([
+        prisma.modelo.findMany({
+          where: { activo: true, vendida: false, destacado: true },
+          orderBy: [{ orden: "asc" }, { createdAt: "desc" }],
+          take: 5,
+        }),
+        prisma.modelo.findMany({
+          where: { activo: true, vendida: false, destacado: false },
+          orderBy: [{ orden: "asc" }, { createdAt: "desc" }],
+          take: 30,
+        }),
+      ])
+      return { destacadas, rotativas }
+    } catch {
+      return { destacadas: [], rotativas: [] }
+    }
+  },
+  ["modelos-home"],
+  { tags: [CACHE_TAGS.modelos], revalidate: ONE_HOUR }
+)
+
 export const getModelosCatalogo = unstable_cache(
   async () => {
     try {

@@ -3,10 +3,11 @@ import Image from "next/image"
 import { BUSINESS, formatPrice } from "@/lib/constants"
 import { TrackVisita } from "@/components/public/track-visita"
 import {
-  getModelosDestacados,
+  getModelosHome,
   getNoticiasRecientes,
   getTestimoniosHome,
 } from "@/lib/cached-queries"
+import { ModelosHomeGrid } from "@/components/public/modelos-home-grid"
 import { AnimatedSection } from "@/components/public/ui/animated-section"
 import { MarqueeBrands } from "@/components/public/ui/marquee-brands"
 import { Watermark } from "@/components/public/ui/watermark"
@@ -33,11 +34,14 @@ import {
 // ==================== PAGE ====================
 
 export default async function HomePage() {
-  const [modelos, noticias, testimonios] = await Promise.all([
-    getModelosDestacados(),
+  const [modelosHome, noticias, testimonios] = await Promise.all([
+    getModelosHome(),
     getNoticiasRecientes(),
     getTestimoniosHome(),
   ])
+  const { destacadas, rotativas } = modelosHome
+  // Para chequeos de empty state
+  const totalModelos = destacadas.length + rotativas.length
 
   return (
     <>
@@ -233,96 +237,36 @@ export default async function HomePage() {
             </div>
           </AnimatedSection>
 
-          {modelos.length > 0 ? (
+          {totalModelos > 0 ? (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">
-                {modelos.map((model, idx) => (
-                  <AnimatedSection
-                    key={model.id}
-                    animation="fade-up"
-                    delay={idx * 80}
-                  >
-                    <Link
-                      href={`/catalogo/${model.slug}`}
-                      className="group relative flex flex-col h-full rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
-                    >
-                      <div className="relative aspect-[4/3] bg-gradient-to-br from-[#F8F5FA] to-[#EFEAF2] dark:from-neutral-800 dark:to-neutral-900 overflow-hidden">
-                        {model.fotos[0] ? (
-                          <Image
-                            src={model.fotos[0]}
-                            alt={model.nombre}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                          />
-                        ) : (
-                          <div className="flex items-center justify-center h-full text-gray-200">
-                            <Bike className="size-10" />
-                          </div>
-                        )}
-
-                        {/* Badges */}
-                        {model.destacado && (
-                          <div className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-[#0E0B12]/85 backdrop-blur-sm px-2.5 py-1 text-[10px] font-bold text-white">
-                            <Star className="size-2.5 fill-[#C8C8D0] text-[#C8C8D0]" />
-                            Destacado
-                          </div>
-                        )}
-                        <span
-                          className={`absolute top-3 right-3 rounded-md px-2 py-0.5 text-[10px] font-bold ${
-                            (model.condicion || "0KM") === "0KM"
-                              ? "bg-emerald-500 text-white"
-                              : "bg-orange-500 text-white"
-                          }`}
-                        >
-                          {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
-                        </span>
-                      </div>
-                      <div className="p-5">
-                        <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-[0.18em]">
-                          {model.marca}
-                        </p>
-                        <h3 className="mt-1 font-heading text-base font-bold text-[#1A1A1A] dark:text-white truncate">
-                          {model.nombre}
-                        </h3>
-                        <p className="text-xs text-gray-400 mt-1">
-                          {(model.condicion || "0KM") === "USADA" ? (
-                            <>
-                              {model.anio && <span>{model.anio}</span>}
-                              {model.kilometros != null && (
-                                <span>
-                                  {model.anio ? " · " : ""}
-                                  {model.kilometros.toLocaleString("es-AR")} km
-                                </span>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              <span>{model.anio || new Date().getFullYear()}</span>
-                              <span> · 0 km</span>
-                            </>
-                          )}
-                        </p>
-                        <div className="mt-4 flex items-end justify-between">
-                          <div>
-                            <p className="text-[10px] text-gray-400 uppercase tracking-wide font-semibold">
-                              Precio
-                            </p>
-                            <p className="text-lg font-bold text-[#3D2649] dark:text-[#C39BD3] leading-tight">
-                              {model.precio
-                                ? (model.moneda || "ARS") === "USD"
-                                  ? `USD ${model.precio.toLocaleString("es-AR")}`
-                                  : formatPrice(model.precio)
-                                : "Consultar"}
-                            </p>
-                          </div>
-                          <ArrowRight className="size-4 text-[#6B4F7A] group-hover:translate-x-1 transition-transform" />
-                        </div>
-                      </div>
-                    </Link>
-                  </AnimatedSection>
-                ))}
-              </div>
+              <ModelosHomeGrid
+                destacadas={destacadas.map((m) => ({
+                  id: m.id,
+                  slug: m.slug,
+                  nombre: m.nombre,
+                  marca: m.marca,
+                  anio: m.anio,
+                  kilometros: m.kilometros,
+                  condicion: m.condicion || "0KM",
+                  precio: m.precio,
+                  moneda: m.moneda,
+                  fotos: m.fotos,
+                  destacado: m.destacado,
+                }))}
+                rotativas={rotativas.map((m) => ({
+                  id: m.id,
+                  slug: m.slug,
+                  nombre: m.nombre,
+                  marca: m.marca,
+                  anio: m.anio,
+                  kilometros: m.kilometros,
+                  condicion: m.condicion || "0KM",
+                  precio: m.precio,
+                  moneda: m.moneda,
+                  fotos: m.fotos,
+                  destacado: m.destacado,
+                }))}
+              />
 
               <AnimatedSection animation="fade-up">
                 <div className="mt-12 text-center">
