@@ -135,10 +135,32 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
     if (file.size < 1.5 * 1024 * 1024 && /^image\/(jpeg|png|webp)$/i.test(file.type)) {
       return file
     }
-    // HEIC/HEIF de iPhone no se puede dibujar en canvas en navegadores
-    // distintos a Safari. Mejor avisar y subir tal cual (Cloudinary lo acepta).
-    if (/heic|heif/i.test(file.type) || /\.hei[cf]$/i.test(file.name)) {
-      return file
+
+    let working: Blob = file
+    let workingName = file.name
+
+    // HEIC/HEIF (formato del iPhone): convertir a JPEG primero porque
+    // Canvas no puede dibujarlo en navegadores no-Safari.
+    const isHeic =
+      /heic|heif/i.test(file.type) || /\.hei[cf]$/i.test(file.name)
+    if (isHeic) {
+      try {
+        // Dynamic import para no inflar el bundle de los users que no
+        // usan HEIC. heic2any pesa ~200KB.
+        const { default: heic2any } = await import("heic2any")
+        const converted = await heic2any({
+          blob: file,
+          toType: "image/jpeg",
+          quality: 0.9,
+        })
+        working = Array.isArray(converted) ? converted[0] : converted
+        workingName = file.name.replace(/\.hei[cf]$/i, ".jpg")
+      } catch {
+        // Si falla la conversion, no hay forma de subir HEIC: avisar
+        throw new Error(
+          "No se pudo convertir HEIC. Cambiá el formato a JPG en Configuración del iPhone (Cámara → Formatos → Más compatible)."
+        )
+      }
     }
 
     try {
@@ -146,7 +168,7 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
         const reader = new FileReader()
         reader.onload = () => resolve(reader.result as string)
         reader.onerror = reject
-        reader.readAsDataURL(file)
+        reader.readAsDataURL(working)
       })
 
       const img: HTMLImageElement = await new Promise((resolve, reject) => {
@@ -172,22 +194,25 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
       canvas.width = width
       canvas.height = height
       const ctx = canvas.getContext("2d")
-      if (!ctx) return file
+      if (!ctx) return new File([working], workingName, { type: "image/jpeg" })
       ctx.drawImage(img, 0, 0, width, height)
 
       const blob: Blob | null = await new Promise((resolve) => {
         canvas.toBlob((b) => resolve(b), "image/jpeg", 0.85)
       })
-      if (!blob) return file
+      if (!blob) return new File([working], workingName, { type: "image/jpeg" })
 
-      // Si quedo mas grande que el original (raro), usar el original
-      if (blob.size >= file.size) return file
+      // Si quedó mas grande que el original (raro, salvo HEIC convertido), usar el más chico
+      if (!isHeic && blob.size >= file.size) return file
 
-      const baseName = file.name.replace(/\.[^.]+$/, "")
+      const baseName = workingName.replace(/\.[^.]+$/, "")
       return new File([blob], `${baseName}.jpg`, { type: "image/jpeg" })
-    } catch {
-      // Si algo falla en la compresion, intentar subir el original
-      return file
+    } catch (e) {
+      // Si era HEIC y ya estaba convertido, devolver el JPEG convertido sin comprimir
+      if (isHeic) {
+        return new File([working], workingName, { type: "image/jpeg" })
+      }
+      throw e
     }
   }
 
@@ -241,8 +266,8 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
           uploaded.push(data.url)
         }
       } catch (e) {
-        const msg = e instanceof Error ? e.message : "Sin detalle"
-        errores.push(`${original.name}: error de conexión (${msg})`)
+        const msg = e instanceof Error ? e.message : "error de conexión"
+        errores.push(`${original.name}: ${msg}`)
       } finally {
         done++
         setProgress({ current: done, total: files.length })
