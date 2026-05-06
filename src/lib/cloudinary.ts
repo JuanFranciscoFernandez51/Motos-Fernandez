@@ -23,17 +23,31 @@ export async function uploadImage(
   options?: {
     folder?: string
     transformation?: Record<string, unknown>[]
-    cropMode?: "auto" | "none"
+    cropMode?: "auto" | "none" | "preserve"
   }
 ) {
   const folder = options?.folder || "motos-fernandez"
 
-  // Si cropMode === "auto", aplicamos recorte cuadrado 1:1 detectando el sujeto
+  // Modos:
+  // - "auto": recorta a cuadrado 1000x1000 detectando el sujeto. Pierde la
+  //   foto original y solo deja el cuadrado. NO USAR para fotos que se van
+  //   a recortar despues, porque el cropper no puede recuperar lo perdido.
+  // - "preserve" (recomendado): NO recorta, solo limita el lado mayor a
+  //   2000px y comprime con calidad auto. Conserva ratio original (4:3 del
+  //   iPhone, etc.) y permite re-recortar despues sin perdida.
+  // - "none": sube tal cual, sin transformaciones. Para casos especiales
+  //   (cropper que ya recorta antes de subir).
   let transformation = options?.transformation
-  if (!transformation && options?.cropMode === "auto") {
-    transformation = [
-      { width: 1000, height: 1000, crop: "fill", gravity: "auto" },
-    ]
+  if (!transformation) {
+    if (options?.cropMode === "auto") {
+      transformation = [
+        { width: 1000, height: 1000, crop: "fill", gravity: "auto" },
+      ]
+    } else if (options?.cropMode === "preserve") {
+      transformation = [
+        { width: 2000, height: 2000, crop: "limit", quality: "auto:good" },
+      ]
+    }
   }
 
   return new Promise<{ url: string; publicId: string }>((resolve, reject) => {

@@ -135,7 +135,11 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
         const formData = new FormData()
         formData.append("file", file)
         formData.append("folder", folder)
-        formData.append("cropMode", "auto") // recorte automático cuadrado al subir
+        // "preserve": conserva el ratio original (4:3 del iPhone, vertical, etc.)
+        // y limita el lado mayor a 2000px. El recorte fino se hace despues con
+        // el botón Crop si hace falta. Antes era "auto" (cuadrado 1000x1000),
+        // pero perdía los píxeles fuera del cuadrado para siempre.
+        formData.append("cropMode", "preserve")
 
         const res = await fetch("/api/admin/upload", {
           method: "POST",
@@ -232,7 +236,7 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
               Arrastrá fotos acá o hacé click para seleccionar
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Podés subir varias a la vez · Se recortan automáticamente en cuadrado
+              Podés subir varias a la vez · Se conservan en su tamaño original (max 2000px)
             </p>
           </>
         )}

@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import Cropper from "react-easy-crop"
 import { Button } from "@/components/ui/button"
-import { Loader2, X } from "lucide-react"
+import { Loader2, X, Square, RectangleHorizontal, RectangleVertical, Image as ImageIcon } from "lucide-react"
 
 interface Area {
   x: number
@@ -22,7 +22,6 @@ interface ImageCropperModalProps {
 
 async function getCroppedBlob(imageUrl: string, area: Area): Promise<Blob> {
   // Cargar la imagen original (sin transformaciones de Cloudinary)
-  // Si la URL ya tiene transformaciones, usar la versión original removiendo el segmento c_fill,...
   const cleanUrl = imageUrl.replace(/\/upload\/[^/]*\//, "/upload/")
 
   const image = await new Promise<HTMLImageElement>((resolve, reject) => {
@@ -51,12 +50,30 @@ async function getCroppedBlob(imageUrl: string, area: Area): Promise<Blob> {
   )
 
   return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => {
-      if (blob) resolve(blob)
-      else reject(new Error("No se pudo generar el recorte"))
-    }, "image/jpeg", 0.92)
+    canvas.toBlob(
+      (blob) => {
+        if (blob) resolve(blob)
+        else reject(new Error("No se pudo generar el recorte"))
+      },
+      "image/jpeg",
+      0.92
+    )
   })
 }
+
+type AspectPreset = {
+  key: string
+  label: string
+  ratio: number | "natural"
+  Icon: typeof Square
+}
+
+const PRESETS: AspectPreset[] = [
+  { key: "natural", label: "Original", ratio: "natural", Icon: ImageIcon },
+  { key: "1-1", label: "Cuadrada", ratio: 1, Icon: Square },
+  { key: "4-3", label: "Apaisada", ratio: 4 / 3, Icon: RectangleHorizontal },
+  { key: "3-4", label: "Vertical", ratio: 3 / 4, Icon: RectangleVertical },
+]
 
 export function ImageCropperModal({
   open,
@@ -70,10 +87,26 @@ export function ImageCropperModal({
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
+  const [presetKey, setPresetKey] = useState<string>("natural")
+  const [naturalRatio, setNaturalRatio] = useState<number | null>(null)
 
-  // Usar la URL original sin la transformación auto-fit para que el cropper trabaje
-  // sobre la imagen completa
+  // URL original sin transformaciones de Cloudinary
   const sourceUrl = imageUrl.replace(/\/upload\/[^/]*c_fill[^/]*\//, "/upload/")
+
+  // Detectar el ratio natural de la imagen al cargar
+  useEffect(() => {
+    if (!open) return
+    const img = new Image()
+    img.crossOrigin = "anonymous"
+    img.onload = () => setNaturalRatio(img.width / img.height)
+    img.src = sourceUrl
+  }, [open, sourceUrl])
+
+  // Reset crop/zoom cuando cambia el preset (para evitar áreas inválidas)
+  useEffect(() => {
+    setCrop({ x: 0, y: 0 })
+    setZoom(1)
+  }, [presetKey])
 
   const onCropComplete = useCallback((_: Area, areaPixels: Area) => {
     setCroppedAreaPixels(areaPixels)
@@ -112,6 +145,13 @@ export function ImageCropperModal({
 
   if (!open) return null
 
+  // Aspect efectivo del cropper
+  const activePreset = PRESETS.find((p) => p.key === presetKey) ?? PRESETS[0]
+  const aspect: number =
+    activePreset.ratio === "natural"
+      ? naturalRatio ?? 1
+      : activePreset.ratio
+
   return (
     <div
       className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-2 sm:p-4"
@@ -133,21 +173,44 @@ export function ImageCropperModal({
           </button>
         </div>
 
+        {/* Selector de aspect ratio */}
+        <div className="flex flex-wrap gap-1.5 px-5 py-2.5 border-b border-gray-100 dark:border-neutral-800 shrink-0 bg-gray-50 dark:bg-neutral-950">
+          {PRESETS.map((p) => {
+            const isActive = p.key === presetKey
+            const Icon = p.Icon
+            const isNatural = p.ratio === "natural"
+            return (
+              <button
+                key={p.key}
+                type="button"
+                onClick={() => setPresetKey(p.key)}
+                disabled={isNatural && naturalRatio === null}
+                className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
+                  isActive
+                    ? "bg-[#6B4F7A] text-white"
+                    : "bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-800"
+                } disabled:opacity-50`}
+              >
+                <Icon className="size-3.5" />
+                {p.label}
+              </button>
+            )
+          })}
+        </div>
+
         {/* Cropper — flex-1 para adaptarse al alto disponible.
-            touch-none + overscroll-none evita que el browser robe el gesto
-            (scroll/zoom de página) y deja que react-easy-crop maneje el drag.
-            objectFit="cover": la foto siempre LLENA el cuadrado de recorte
-            (sin bandas negras) y se puede arrastrar para elegir qué parte
-            mantener. Subí el zoom para tener libertad en ambas direcciones. */}
+            objectFit="cover": la foto siempre llena el área de recorte sin
+            bandas negras. Si elegís "Original", el aspect = ratio natural
+            de la foto, así que zoom=1 muestra la foto completa sin recortar. */}
         <div
-          className="relative w-full flex-1 min-h-[300px] sm:min-h-[420px] bg-gray-900 touch-none overscroll-none"
+          className="relative w-full flex-1 min-h-[280px] sm:min-h-[400px] bg-gray-900 touch-none overscroll-none"
           style={{ touchAction: "none" }}
         >
           <Cropper
             image={sourceUrl}
             crop={crop}
             zoom={zoom}
-            aspect={1}
+            aspect={aspect}
             minZoom={1}
             maxZoom={5}
             onCropChange={setCrop}
@@ -162,7 +225,9 @@ export function ImageCropperModal({
         {/* Controls */}
         <div className="px-5 py-3 space-y-2 border-t border-gray-100 dark:border-neutral-800 shrink-0">
           <div className="flex items-center gap-3">
-            <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider shrink-0">Zoom</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider shrink-0">
+              Zoom
+            </span>
             <input
               type="range"
               value={zoom}
@@ -177,7 +242,7 @@ export function ImageCropperModal({
             </span>
           </div>
           <p className="text-[11px] text-gray-500 dark:text-gray-400">
-            Arrastrá la foto con el mouse o un dedo para mover el encuadre · Subí el zoom si necesitás más libertad para mover hacia arriba/abajo
+            <span className="font-semibold text-gray-700 dark:text-gray-200">Original</span> conserva la foto completa sin recortar · Cambiá la forma o subí el zoom para encuadrar
           </p>
           {error && <p className="text-sm text-red-500">{error}</p>}
         </div>

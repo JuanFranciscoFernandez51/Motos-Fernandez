@@ -8,7 +8,10 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const file = formData.get("file") as File | null
     const folder = (formData.get("folder") as string) || "productos"
-    const cropMode = ((formData.get("cropMode") as string) || "auto") as "auto" | "none"
+    const cropMode = ((formData.get("cropMode") as string) || "preserve") as
+      | "auto"
+      | "none"
+      | "preserve"
 
     if (!file) {
       return NextResponse.json({ error: "No se envio archivo" }, { status: 400 })
