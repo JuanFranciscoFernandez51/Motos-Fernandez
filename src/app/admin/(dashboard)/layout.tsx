@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
+import { AdminFloatingAssistant } from "@/components/admin/admin-floating-assistant"
 
 export default async function AdminDashboardLayout({
   children,
@@ -25,6 +26,9 @@ export default async function AdminDashboardLayout({
       <main className="lg:pl-64 transition-all duration-200">
         <div className="p-4 md:p-6 lg:p-8">{children}</div>
       </main>
+
+      {/* Botón flotante del Asistente IA — visible en todas las páginas del admin */}
+      <AdminFloatingAssistant />
     </div>
   )
 }

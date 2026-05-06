@@ -2,14 +2,26 @@ import Anthropic from "@anthropic-ai/sdk"
 import { requireAdmin } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
 
-const SYSTEM_PROMPT = `Sos el asistente de gestión del panel de administración de Motos Fernandez.
+const SYSTEM_PROMPT = `Sos el asistente de gestión del panel de administración de Motos Fernandez (concesionaria de motos en Bahía Blanca).
 Tenés acceso a la base de datos en tiempo real a través de tools.
-Respondé de forma concisa, directa y útil. Usá formato claro con números cuando sea relevante.
-Si necesitás datos actualizados, usá las tools disponibles antes de responder.
-Cuando muestres listas, usá bullet points o numeración.
-Respondé siempre en español argentino informal.`
+
+Capacidades:
+- LECTURA: get_stats, get_pedidos, get_leads, get_turnos, get_productos_stock_bajo, get_ventas_resumen
+- PROPUESTAS DE CREACIÓN (no crean directo, hacen una preview que el admin debe confirmar):
+  - proponer_crear_cliente: cuando te pasen un DNI, factura, o datos de un cliente
+  - proponer_crear_proveedor: cuando te pasen datos de un proveedor (nombre, CUIT, contacto, cuenta bancaria, etc.)
+  - proponer_crear_modelo: cuando te pasen una factura/documento de una moto nueva o usada para subir al stock
+
+REGLAS IMPORTANTES:
+- Si te mandan una imagen (foto de DNI, factura, remito, ticket), analizala con cuidado y extraé los datos relevantes.
+- Para crear cualquier cosa, SIEMPRE usá una tool de "proponer_crear_*" — NUNCA inventes datos.
+- Si los datos están incompletos, igual proponé la creación con lo que tengas (el admin completa lo que falta antes de confirmar).
+- Después de proponer una creación, NO confirmes ni asumas que se creó. Esperá la confirmación del usuario.
+- Respondé siempre en español argentino informal, conciso y directo.
+- Cuando muestres listas, usá bullet points o numeración.`
 
 const tools: Anthropic.Tool[] = [
+  // ============ LECTURA ============
   {
     name: "get_stats",
     description:
@@ -47,17 +59,14 @@ const tools: Anthropic.Tool[] = [
   {
     name: "get_leads",
     description:
-      "Obtiene leads del CRM con nombre, fuente de origen y temperatura. Puede filtrar por temperatura o etapa.",
+      "Obtiene leads del CRM con nombre, fuente de origen y temperatura.",
     input_schema: {
       type: "object",
       properties: {
-        limite: {
-          type: "number",
-          description: "Cantidad de leads a traer. Por defecto 10.",
-        },
+        limite: { type: "number", description: "Cantidad. Por defecto 10." },
         temperatura: {
           type: "string",
-          description: "Filtrar por temperatura: FRIO, TIBIO, CALIENTE. Opcional.",
+          description: "Filtrar: FRIO, TIBIO, CALIENTE. Opcional.",
         },
       },
       required: [],
@@ -65,57 +74,153 @@ const tools: Anthropic.Tool[] = [
   },
   {
     name: "get_turnos",
-    description:
-      "Obtiene los turnos de servicio con nombre del cliente, modelo, tipo de servicio y estado.",
+    description: "Obtiene turnos de servicio.",
     input_schema: {
       type: "object",
       properties: {
-        limite: {
-          type: "number",
-          description: "Cantidad de turnos a traer. Por defecto 10.",
-        },
+        limite: { type: "number" },
         estado: {
           type: "string",
-          description:
-            "Filtrar por estado: PENDIENTE, CONFIRMADO, COMPLETADO, CANCELADO. Opcional.",
+          description: "PENDIENTE | CONFIRMADO | COMPLETADO | CANCELADO",
         },
-        proximos: {
-          type: "boolean",
-          description:
-            "Si es true, solo trae turnos con fecha confirmada en el futuro.",
-        },
+        proximos: { type: "boolean" },
       },
       required: [],
     },
   },
   {
     name: "get_productos_stock_bajo",
-    description: "Obtiene los productos de la tienda con stock menor o igual a 5.",
+    description: "Productos con stock <= 5.",
     input_schema: {
       type: "object",
       properties: {
-        limite_stock: {
-          type: "number",
-          description: "Stock máximo a considerar como bajo. Por defecto 5.",
-        },
+        limite_stock: { type: "number", description: "Por defecto 5." },
       },
       required: [],
     },
   },
   {
     name: "get_ventas_resumen",
-    description:
-      "Obtiene un resumen de ventas: total recaudado en el período, cantidad de pedidos pagados, ticket promedio.",
+    description: "Resumen de ventas: total recaudado, pedidos pagados, ticket promedio.",
     input_schema: {
       type: "object",
       properties: {
         periodo: {
           type: "string",
-          description:
-            "Período a consultar: 'hoy', 'semana', 'mes'. Por defecto 'mes'.",
+          description: "'hoy', 'semana', 'mes'. Por defecto 'mes'.",
         },
       },
       required: [],
+    },
+  },
+  // ============ PROPUESTAS DE CREACIÓN ============
+  {
+    name: "proponer_crear_cliente",
+    description:
+      "Propone crear un nuevo cliente. NO crea directamente — solo arma una preview con los datos extraídos para que el admin confirme. Usar cuando el admin te pase un DNI, datos personales, o información de un cliente nuevo.",
+    input_schema: {
+      type: "object",
+      properties: {
+        nombre: { type: "string", description: "Nombre/s de pila" },
+        apellido: { type: "string", description: "Apellido/s" },
+        dni: { type: "string", description: "DNI sin puntos. Solo dígitos." },
+        cuit: { type: "string", description: "CUIT con guiones (formato 20-12345678-9)" },
+        email: { type: "string" },
+        telefono: { type: "string" },
+        direccion: { type: "string" },
+        ciudad: { type: "string", description: "Default: Bahía Blanca" },
+        provincia: { type: "string" },
+        codigoPostal: { type: "string" },
+        fechaNacimiento: {
+          type: "string",
+          description: "ISO date YYYY-MM-DD",
+        },
+        ocupacion: { type: "string" },
+        notasInternas: {
+          type: "string",
+          description:
+            "Notas internas (ej: 'Datos extraídos de DNI', 'Cargado desde factura X')",
+        },
+      },
+      required: ["nombre", "apellido"],
+    },
+  },
+  {
+    name: "proponer_crear_proveedor",
+    description:
+      "Propone crear un nuevo proveedor. NO crea directamente. Usar cuando te pasen razón social, CUIT, datos de contacto, datos de cuenta bancaria de un proveedor nuevo.",
+    input_schema: {
+      type: "object",
+      properties: {
+        nombre: { type: "string", description: "Razón social o nombre comercial" },
+        cuit: { type: "string" },
+        rubro: { type: "string", description: "Ej: Motos 0km, Repuestos, Cascos" },
+        email: { type: "string" },
+        sitio: { type: "string" },
+        direccion: { type: "string" },
+        ciudad: { type: "string" },
+        notas: { type: "string" },
+        contactos: {
+          type: "array",
+          description: "Lista de contactos del proveedor",
+          items: {
+            type: "object",
+            properties: {
+              nombre: { type: "string" },
+              rol: { type: "string", description: "Ej: Comercial, Administración, Vendedor" },
+              telefono: { type: "string" },
+              email: { type: "string" },
+            },
+          },
+        },
+        cuentasBancarias: {
+          type: "array",
+          description: "Lista de cuentas bancarias",
+          items: {
+            type: "object",
+            properties: {
+              banco: { type: "string" },
+              tipo: { type: "string", description: "CA | CC | VIRTUAL" },
+              numero: { type: "string" },
+              cbu: { type: "string", description: "22 dígitos sin espacios" },
+              alias: { type: "string" },
+              titular: { type: "string" },
+              moneda: { type: "string", description: "ARS | USD" },
+            },
+          },
+        },
+      },
+      required: ["nombre"],
+    },
+  },
+  {
+    name: "proponer_crear_modelo",
+    description:
+      "Propone crear un nuevo modelo de moto/cuatri/UTV en el catálogo. NO crea directamente. Usar cuando te pasen una factura de compra o datos de una unidad nueva o usada para subir al stock.",
+    input_schema: {
+      type: "object",
+      properties: {
+        marca: { type: "string", description: "Honda, Yamaha, Suzuki, etc." },
+        nombre: { type: "string", description: "Nombre del modelo (ej: XR150L, MT-03)" },
+        categoriaVehiculo: {
+          type: "string",
+          description: "MOTOCICLETA | CUATRICICLO | UTV | MOTO_DE_AGUA. Default: MOTOCICLETA",
+        },
+        condicion: {
+          type: "string",
+          description: "0KM | USADA. Default: 0KM",
+        },
+        anio: { type: "number" },
+        kilometros: { type: "number", description: "Solo para usadas" },
+        cilindrada: { type: "string", description: "Ej: 150cc, 250cc" },
+        precio: { type: "number" },
+        moneda: { type: "string", description: "ARS | USD. Default: ARS" },
+        chasis: { type: "string", description: "Nº de chasis" },
+        motor: { type: "string", description: "Nº de motor" },
+        patente: { type: "string", description: "Solo si usada y patentada" },
+        observaciones: { type: "string" },
+      },
+      required: ["marca", "nombre"],
     },
   },
 ]
@@ -129,7 +234,6 @@ function getStartOfPeriod(periodo: string): Date {
     d.setDate(d.getDate() - 7)
     return d
   }
-  // mes
   const d = new Date(now)
   d.setDate(1)
   return d
@@ -138,6 +242,18 @@ function getStartOfPeriod(periodo: string): Date {
 async function executeTool(name: string, input: Record<string, unknown>) {
   const hoy = new Date()
   hoy.setHours(0, 0, 0, 0)
+
+  // ============ TOOLS DE PROPUESTA ============
+  // Estas no crean nada — solo devuelven el payload para que el frontend
+  // muestre una preview de confirmación.
+  if (name.startsWith("proponer_crear_")) {
+    const entidad = name.replace("proponer_crear_", "")
+    return {
+      __preview__: true,
+      entidad, // "cliente" | "proveedor" | "modelo"
+      datos: input,
+    }
+  }
 
   switch (name) {
     case "get_stats": {
@@ -164,11 +280,9 @@ async function executeTool(name: string, input: Record<string, unknown>) {
       const limite = (input.limite as number) || 10
       const soloHoy = input.solo_hoy as boolean | undefined
       const estado = input.estado as string | undefined
-
       const where: Record<string, unknown> = {}
       if (soloHoy) where.createdAt = { gte: hoy }
       if (estado) where.estado = estado
-
       const pedidos = await prisma.pedido.findMany({
         take: limite,
         where,
@@ -180,7 +294,6 @@ async function executeTool(name: string, input: Record<string, unknown>) {
           total: true,
           estado: true,
           estadoPago: true,
-          ciudad: true,
           createdAt: true,
         },
       })
@@ -191,13 +304,7 @@ async function executeTool(name: string, input: Record<string, unknown>) {
           total: `$${p.total.toLocaleString("es-AR")}`,
           estado: p.estado,
           estado_pago: p.estadoPago,
-          ciudad: p.ciudad || "—",
-          fecha: p.createdAt.toLocaleDateString("es-AR", {
-            day: "2-digit",
-            month: "2-digit",
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
+          fecha: p.createdAt.toLocaleDateString("es-AR"),
         })),
         total_mostrados: pedidos.length,
       }
@@ -206,10 +313,8 @@ async function executeTool(name: string, input: Record<string, unknown>) {
     case "get_leads": {
       const limite = (input.limite as number) || 10
       const temperatura = input.temperatura as string | undefined
-
       const where: Record<string, unknown> = {}
       if (temperatura) where.temperatura = temperatura
-
       const leads = await prisma.lead.findMany({
         take: limite,
         where,
@@ -227,18 +332,15 @@ async function executeTool(name: string, input: Record<string, unknown>) {
       })
       return {
         leads: leads.map((l) => ({
-          nombre: `${l.nombre}${l.apellido ? " " + l.apellido : ""}`,
+          cliente: `${l.nombre} ${l.apellido || ""}`.trim(),
           telefono: l.telefono || "—",
           origen: l.origen,
           temperatura: l.temperatura,
           etapa: l.etapa,
-          modelo_interes: l.modeloInteres || null,
-          fecha: l.createdAt.toLocaleDateString("es-AR", {
-            day: "2-digit",
-            month: "2-digit",
-          }),
+          interes: l.modeloInteres || "—",
+          fecha: l.createdAt.toLocaleDateString("es-AR"),
         })),
-        total_mostrados: leads.length,
+        total: leads.length,
       }
     }
 
@@ -246,95 +348,93 @@ async function executeTool(name: string, input: Record<string, unknown>) {
       const limite = (input.limite as number) || 10
       const estado = input.estado as string | undefined
       const proximos = input.proximos as boolean | undefined
-
       const where: Record<string, unknown> = {}
       if (estado) where.estado = estado
-      if (proximos) {
-        where.fechaConfirmada = { gte: new Date() }
-      }
-
+      if (proximos) where.fechaConfirmada = { gte: new Date() }
       const turnos = await prisma.turno.findMany({
         take: limite,
         where,
-        orderBy: proximos ? { fechaConfirmada: "asc" } : { createdAt: "desc" },
-        include: { modelo: { select: { nombre: true } } },
+        orderBy: { createdAt: "desc" },
+        select: {
+          nombre: true,
+          telefono: true,
+          modeloMoto: true,
+          tipoServicio: true,
+          fechaConfirmada: true,
+          estado: true,
+        },
       })
       return {
         turnos: turnos.map((t) => ({
-          nombre: t.nombre,
+          cliente: t.nombre,
           telefono: t.telefono,
-          modelo: t.modelo?.nombre || t.modeloMoto || "—",
-          tipo_servicio: t.tipoServicio,
+          moto: t.modeloMoto || "—",
+          servicio: t.tipoServicio,
+          fecha: t.fechaConfirmada
+            ? t.fechaConfirmada.toLocaleDateString("es-AR")
+            : "Sin fecha",
           estado: t.estado,
-          fecha_confirmada: t.fechaConfirmada
-            ? t.fechaConfirmada.toLocaleDateString("es-AR", {
-                day: "2-digit",
-                month: "2-digit",
-                year: "2-digit",
-              })
-            : "Sin confirmar",
-          solicitud: t.createdAt.toLocaleDateString("es-AR", {
-            day: "2-digit",
-            month: "2-digit",
-          }),
         })),
-        total_mostrados: turnos.length,
       }
     }
 
     case "get_productos_stock_bajo": {
-      const limiteStock = (input.limite_stock as number) || 5
+      const limite = (input.limite_stock as number) || 5
       const productos = await prisma.producto.findMany({
-        where: { stock: { lte: limiteStock }, activo: true },
-        select: {
-          nombre: true,
-          stock: true,
-          precio: true,
-          categoria: { select: { nombre: true } },
-        },
+        where: { activo: true, stock: { lte: limite } },
         orderBy: { stock: "asc" },
         take: 20,
+        select: { nombre: true, stock: true, precio: true },
       })
       return {
         productos: productos.map((p) => ({
           nombre: p.nombre,
           stock: p.stock,
           precio: `$${p.precio.toLocaleString("es-AR")}`,
-          categoria: p.categoria?.nombre || "Sin categoría",
         })),
-        total: productos.length,
       }
     }
 
     case "get_ventas_resumen": {
       const periodo = (input.periodo as string) || "mes"
       const desde = getStartOfPeriod(periodo)
-
-      const pedidosPagados = await prisma.pedido.findMany({
+      const pedidos = await prisma.pedido.findMany({
         where: {
-          createdAt: { gte: desde },
           estadoPago: "APROBADO",
+          createdAt: { gte: desde },
         },
         select: { total: true },
       })
-
-      const totalRecaudado = pedidosPagados.reduce((acc, p) => acc + p.total, 0)
-      const ticketPromedio =
-        pedidosPagados.length > 0
-          ? Math.round(totalRecaudado / pedidosPagados.length)
-          : 0
-
+      const totalRecaudado = pedidos.reduce((s, p) => s + p.total, 0)
+      const cantidad = pedidos.length
+      const promedio = cantidad > 0 ? Math.round(totalRecaudado / cantidad) : 0
       return {
         periodo,
-        pedidos_pagados: pedidosPagados.length,
         total_recaudado: `$${totalRecaudado.toLocaleString("es-AR")}`,
-        ticket_promedio: `$${ticketPromedio.toLocaleString("es-AR")}`,
+        pedidos_pagados: cantidad,
+        ticket_promedio: `$${promedio.toLocaleString("es-AR")}`,
       }
     }
 
     default:
       return { error: "Tool desconocida" }
   }
+}
+
+// ==================== TYPES PARA INPUT ====================
+
+type ImageBlock = {
+  type: "image"
+  source: {
+    type: "base64"
+    media_type: "image/jpeg" | "image/png" | "image/gif" | "image/webp"
+    data: string
+  }
+}
+
+type IncomingMessage = {
+  role: "user" | "assistant"
+  content: string | Array<{ type: "text"; text: string } | ImageBlock>
 }
 
 export async function POST(request: Request) {
@@ -354,7 +454,7 @@ export async function POST(request: Request) {
     })
   }
 
-  let messages: Array<{ role: string; content: string }>
+  let messages: IncomingMessage[]
 
   try {
     const body = await request.json()
@@ -376,16 +476,24 @@ export async function POST(request: Request) {
   const client = new Anthropic({ apiKey })
   const encoder = new TextEncoder()
 
+  // Helper para enviar eventos NDJSON al cliente
   const stream = new ReadableStream({
     async start(controller) {
+      const send = (event: Record<string, unknown>) => {
+        controller.enqueue(encoder.encode(JSON.stringify(event) + "\n"))
+      }
+
       try {
-        let currentMessages = [...messages] as Anthropic.MessageParam[]
+        let currentMessages = messages.map((m) => ({
+          role: m.role,
+          content: m.content,
+        })) as Anthropic.MessageParam[]
 
         // Agentic loop para manejar tool use
         while (true) {
           const response = await client.messages.create({
             model: "claude-sonnet-4-5",
-            max_tokens: 1024,
+            max_tokens: 2048,
             system: SYSTEM_PROMPT,
             tools,
             messages: currentMessages,
@@ -402,6 +510,21 @@ export async function POST(request: Request) {
                 toolUse.name,
                 toolUse.input as Record<string, unknown>
               )
+
+              // Si la tool devolvió una "preview", la mandamos al cliente
+              if (
+                result &&
+                typeof result === "object" &&
+                "__preview__" in result &&
+                result.__preview__ === true
+              ) {
+                send({
+                  type: "preview",
+                  entidad: (result as { entidad: string }).entidad,
+                  datos: (result as { datos: unknown }).datos,
+                })
+              }
+
               toolResults.push({
                 type: "tool_result",
                 tool_use_id: toolUse.id,
@@ -417,23 +540,25 @@ export async function POST(request: Request) {
             continue
           }
 
-          // Respuesta final: streamear texto en chunks
+          // Respuesta final: streamear texto
           for (const block of response.content) {
             if (block.type === "text") {
               const text = block.text
-              const chunkSize = 8
+              const chunkSize = 32
               for (let i = 0; i < text.length; i += chunkSize) {
-                controller.enqueue(encoder.encode(text.slice(i, i + chunkSize)))
+                send({ type: "text", text: text.slice(i, i + chunkSize) })
               }
             }
           }
+          send({ type: "done" })
           break
         }
       } catch (err) {
         console.error("[admin/chat] Error:", err)
-        controller.enqueue(
-          encoder.encode("Error al procesar la consulta. Intentá de nuevo.")
-        )
+        send({
+          type: "text",
+          text: "Error al procesar la consulta. Intentá de nuevo.",
+        })
       } finally {
         controller.close()
       }
@@ -442,7 +567,7 @@ export async function POST(request: Request) {
 
   return new Response(stream, {
     headers: {
-      "Content-Type": "text/plain; charset=utf-8",
+      "Content-Type": "application/x-ndjson; charset=utf-8",
       "Transfer-Encoding": "chunked",
       "Cache-Control": "no-cache",
     },

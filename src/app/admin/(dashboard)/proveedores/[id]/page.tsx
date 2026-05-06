@@ -160,6 +160,7 @@ export default async function EditarProveedorPage({
       alias: c.alias || "",
       titular: c.titular || "",
       moneda: c.moneda || "ARS",
+      principal: c.principal === true,
     }))
   }
 

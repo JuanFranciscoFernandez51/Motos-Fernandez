@@ -19,6 +19,7 @@ import {
   ListOrdered,
   Copy,
   Check,
+  Star,
 } from "lucide-react"
 
 export type Contacto = {
@@ -38,6 +39,7 @@ export type CuentaBancaria = {
   alias: string
   titular: string
   moneda: string // "ARS" | "USD"
+  principal: boolean // si es la cuenta destacada para esa moneda
 }
 
 export type ItemLista = {
@@ -134,6 +136,7 @@ function newCuenta(): CuentaBancaria {
     alias: "",
     titular: "",
     moneda: "ARS",
+    principal: false,
   }
 }
 
@@ -201,7 +204,7 @@ export function ProveedorForm({
   const updateCuenta = (
     id: string,
     field: keyof CuentaBancaria,
-    value: string
+    value: string | boolean
   ) =>
     setData((p) => ({
       ...p,
@@ -209,6 +212,25 @@ export function ProveedorForm({
         c.id === id ? { ...c, [field]: value } : c
       ),
     }))
+
+  // Marca una cuenta como principal y desmarca las demás de la misma moneda
+  const setPrincipal = (id: string) =>
+    setData((p) => {
+      const cuenta = p.cuentasBancarias.find((c) => c.id === id)
+      if (!cuenta) return p
+      return {
+        ...p,
+        cuentasBancarias: p.cuentasBancarias.map((c) => {
+          if (c.id === id) return { ...c, principal: !c.principal }
+          // Si la cuenta target la marcamos principal, desmarcamos las otras
+          // de la misma moneda
+          if (!cuenta.principal && c.moneda === cuenta.moneda) {
+            return { ...c, principal: false }
+          }
+          return c
+        }),
+      }
+    })
 
   // Lista de precios
   const addItem = () =>
@@ -444,20 +466,43 @@ export function ProveedorForm({
                   {data.cuentasBancarias.map((c, idx) => (
                     <div
                       key={c.id}
-                      className="rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-900/50 p-4 space-y-3"
+                      className={`rounded-lg border p-4 space-y-3 transition-colors ${
+                        c.principal
+                          ? "border-[#6B4F7A]/60 bg-[#6B4F7A]/5"
+                          : "border-gray-200 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-900/50"
+                      }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B4F7A]">
-                          Cuenta #{idx + 1}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => removeCuenta(c.id)}
-                          className="text-red-500 hover:text-red-700 dark:text-red-300 transition-colors"
-                          title="Eliminar cuenta"
-                        >
-                          <Trash2 className="size-3.5" />
-                        </button>
+                      <div className="flex items-center justify-between gap-2 flex-wrap">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B4F7A]">
+                            Cuenta #{idx + 1}
+                          </span>
+                          {c.principal && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-[#6B4F7A] text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5">
+                              <Star className="size-2.5 fill-current" />
+                              Principal {c.moneda}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <label className="flex items-center gap-1.5 text-[10px] cursor-pointer text-gray-600 dark:text-gray-300 hover:text-[#6B4F7A]">
+                            <input
+                              type="checkbox"
+                              checked={c.principal}
+                              onChange={() => setPrincipal(c.id)}
+                              className="rounded accent-[#6B4F7A]"
+                            />
+                            Principal
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => removeCuenta(c.id)}
+                            className="text-red-500 hover:text-red-700 dark:text-red-300 transition-colors"
+                            title="Eliminar cuenta"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        </div>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                         <div className="sm:col-span-2">

@@ -23,6 +23,14 @@ type CuentaJSON = {
   alias?: string
   titular?: string
   moneda?: string
+  principal?: boolean
+}
+
+function pickCuenta(cuentas: CuentaJSON[], moneda: string): CuentaJSON | null {
+  const delaMoneda = cuentas.filter((c) => (c.moneda || "ARS") === moneda)
+  if (delaMoneda.length === 0) return null
+  // Priorizar la marcada como "principal", sino la primera
+  return delaMoneda.find((c) => c.principal === true) ?? delaMoneda[0]
 }
 
 export default async function ProveedoresPage() {
@@ -59,6 +67,7 @@ export default async function ProveedoresPage() {
               <TableHead>Rubro</TableHead>
               <TableHead>Contacto</TableHead>
               <TableHead>Cuenta ARS</TableHead>
+              <TableHead>Cuenta USD</TableHead>
               <TableHead>Usado en</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead className="w-24">Acciones</TableHead>
@@ -68,7 +77,7 @@ export default async function ProveedoresPage() {
             {proveedores.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={7}
+                  colSpan={8}
                   className="text-center py-12 text-gray-500 dark:text-gray-400"
                 >
                   Todavía no cargaste proveedores. Agregá el primero con el
@@ -77,12 +86,12 @@ export default async function ProveedoresPage() {
               </TableRow>
             ) : (
               proveedores.map((p) => {
-                // Buscar primera cuenta en pesos
+                // Buscar cuenta principal por moneda (con fallback a la primera)
                 const cuentas = Array.isArray(p.cuentasBancarias)
                   ? (p.cuentasBancarias as unknown as CuentaJSON[])
                   : []
-                const cuentaARS =
-                  cuentas.find((c) => (c.moneda || "ARS") === "ARS") ?? null
+                const cuentaARS = pickCuenta(cuentas, "ARS")
+                const cuentaUSD = pickCuenta(cuentas, "USD")
 
                 return (
                   <TableRow key={p.id}>
@@ -131,6 +140,17 @@ export default async function ProveedoresPage() {
                       {cuentaARS ? (
                         <CopiarCuentaButton
                           cuenta={cuentaARS}
+                          proveedorNombre={p.nombre}
+                          proveedorCuit={p.cuit}
+                        />
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      {cuentaUSD ? (
+                        <CopiarCuentaButton
+                          cuenta={cuentaUSD}
                           proveedorNombre={p.nombre}
                           proveedorCuit={p.cuit}
                         />
