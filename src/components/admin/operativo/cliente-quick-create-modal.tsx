@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { createPortal } from "react-dom"
 import { X, Loader2, UserPlus } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -36,7 +37,13 @@ export function ClienteQuickCreateModal({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  if (!open) return null
+  // Necesario para createPortal en SSR: solo montar despues del primer render del cliente
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!open || !mounted) return null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -81,10 +88,17 @@ export function ClienteQuickCreateModal({
     }
   }
 
-  return (
+  // Renderizar via portal a document.body para sacarlo del DOM tree del padre
+  // (importante: el modal se abre desde un drawer que tambien es fixed inset-0
+  //  y tiene su propio onClick={onClose} y un <form>; sin portal habia forms
+  //  anidados y los clicks se propagaban al backdrop del drawer cerrandolo).
+  return createPortal(
     <div
-      className="fixed inset-0 z-[60] flex items-start justify-center bg-black/60 p-4 pt-10 overflow-y-auto"
-      onClick={onClose}
+      className="fixed inset-0 z-[70] flex items-start justify-center bg-black/60 p-4 pt-10 overflow-y-auto"
+      onClick={(e) => {
+        // Solo cerrar si el click fue exactamente en el backdrop (no en hijos)
+        if (e.target === e.currentTarget) onClose()
+      }}
     >
       <div
         className="w-full max-w-lg rounded-xl bg-white dark:bg-neutral-900 shadow-2xl"
@@ -206,6 +220,7 @@ export function ClienteQuickCreateModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
