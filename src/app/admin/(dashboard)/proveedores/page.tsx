@@ -11,8 +11,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { CopiarCuentaButton } from "@/components/admin/operativo/copiar-cuenta-button"
 
 export const dynamic = "force-dynamic"
+
+type CuentaJSON = {
+  banco?: string
+  tipo?: string
+  numero?: string
+  cbu?: string
+  alias?: string
+  titular?: string
+  moneda?: string
+}
 
 export default async function ProveedoresPage() {
   const proveedores = await prisma.proveedor.findMany({
@@ -47,6 +58,7 @@ export default async function ProveedoresPage() {
               <TableHead>Proveedor</TableHead>
               <TableHead>Rubro</TableHead>
               <TableHead>Contacto</TableHead>
+              <TableHead>Cuenta ARS</TableHead>
               <TableHead>Usado en</TableHead>
               <TableHead>Estado</TableHead>
               <TableHead className="w-24">Acciones</TableHead>
@@ -56,7 +68,7 @@ export default async function ProveedoresPage() {
             {proveedores.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
                   className="text-center py-12 text-gray-500 dark:text-gray-400"
                 >
                   Todavía no cargaste proveedores. Agregá el primero con el
@@ -64,90 +76,110 @@ export default async function ProveedoresPage() {
                 </TableCell>
               </TableRow>
             ) : (
-              proveedores.map((p) => (
-                <TableRow key={p.id}>
-                  <TableCell>
-                    <div>
-                      <p className="font-medium text-sm">{p.nombre}</p>
-                      {p.contacto && (
-                        <p className="text-xs text-gray-500 dark:text-gray-400">{p.contacto}</p>
-                      )}
-                      {p.cuit && (
-                        <p className="text-xs font-mono text-gray-400">
-                          CUIT {p.cuit}
-                        </p>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-sm">
-                    {p.rubro || <span className="text-gray-400">—</span>}
-                  </TableCell>
-                  <TableCell>
-                    <div className="space-y-0.5 text-xs">
-                      {p.telefono && (
-                        <p className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
-                          <Phone className="size-3" /> {p.telefono}
-                        </p>
-                      )}
-                      {p.email && (
-                        <p className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
-                          <Mail className="size-3" /> {p.email}
-                        </p>
-                      )}
-                      {p.sitio && (
-                        <a
-                          href={p.sitio}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 text-[#6B4F7A] hover:underline"
-                        >
-                          <ExternalLink className="size-3" /> Sitio
-                        </a>
-                      )}
-                      {!p.telefono && !p.email && !p.sitio && "—"}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex gap-1 flex-wrap">
-                      {p._count.modelos > 0 && (
-                        <span className="text-[10px] bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded">
-                          {p._count.modelos} modelo{p._count.modelos !== 1 ? "s" : ""}
-                        </span>
-                      )}
-                      {p._count.productos > 0 && (
-                        <span className="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">
-                          {p._count.productos} producto{p._count.productos !== 1 ? "s" : ""}
-                        </span>
-                      )}
-                      {p._count.modelos === 0 &&
-                        p._count.productos === 0 && (
-                          <span className="text-xs text-gray-400">—</span>
+              proveedores.map((p) => {
+                // Buscar primera cuenta en pesos
+                const cuentas = Array.isArray(p.cuentasBancarias)
+                  ? (p.cuentasBancarias as unknown as CuentaJSON[])
+                  : []
+                const cuentaARS =
+                  cuentas.find((c) => (c.moneda || "ARS") === "ARS") ?? null
+
+                return (
+                  <TableRow key={p.id}>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium text-sm">{p.nombre}</p>
+                        {p.contacto && (
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{p.contacto}</p>
                         )}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge
-                      variant="secondary"
-                      className={
-                        p.activo
-                          ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300"
-                          : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400"
-                      }
-                    >
-                      {p.activo ? "Activo" : "Inactivo"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      render={<Link href={`/admin/proveedores/${p.id}`} />}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))
+                        {p.cuit && (
+                          <p className="text-xs font-mono text-gray-400">
+                            CUIT {p.cuit}
+                          </p>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm">
+                      {p.rubro || <span className="text-gray-400">—</span>}
+                    </TableCell>
+                    <TableCell>
+                      <div className="space-y-0.5 text-xs">
+                        {p.telefono && (
+                          <p className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
+                            <Phone className="size-3" /> {p.telefono}
+                          </p>
+                        )}
+                        {p.email && (
+                          <p className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
+                            <Mail className="size-3" /> {p.email}
+                          </p>
+                        )}
+                        {p.sitio && (
+                          <a
+                            href={p.sitio}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-[#6B4F7A] hover:underline"
+                          >
+                            <ExternalLink className="size-3" /> Sitio
+                          </a>
+                        )}
+                        {!p.telefono && !p.email && !p.sitio && "—"}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {cuentaARS ? (
+                        <CopiarCuentaButton
+                          cuenta={cuentaARS}
+                          proveedorNombre={p.nombre}
+                          proveedorCuit={p.cuit}
+                        />
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1 flex-wrap">
+                        {p._count.modelos > 0 && (
+                          <span className="text-[10px] bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300 px-1.5 py-0.5 rounded">
+                            {p._count.modelos} modelo{p._count.modelos !== 1 ? "s" : ""}
+                          </span>
+                        )}
+                        {p._count.productos > 0 && (
+                          <span className="text-[10px] bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 px-1.5 py-0.5 rounded">
+                            {p._count.productos} producto{p._count.productos !== 1 ? "s" : ""}
+                          </span>
+                        )}
+                        {p._count.modelos === 0 &&
+                          p._count.productos === 0 && (
+                            <span className="text-xs text-gray-400">—</span>
+                          )}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={
+                          p.activo
+                            ? "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300"
+                            : "bg-gray-100 dark:bg-neutral-800 text-gray-500 dark:text-gray-400"
+                        }
+                      >
+                        {p.activo ? "Activo" : "Inactivo"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        render={<Link href={`/admin/proveedores/${p.id}`} />}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                )
+              })
             )}
           </TableBody>
         </Table>
