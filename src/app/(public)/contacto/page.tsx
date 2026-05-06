@@ -55,14 +55,14 @@ export default function ContactoPage() {
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
         <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C9A55C]/[0.06] blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C8C8D0]/[0.06] blur-3xl pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl">
-            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#C9A55C] mb-3">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#C8C8D0] mb-3">
               Estamos para ayudarte
             </p>
-            <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
+            <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
               Hablemos
             </h1>
             <p className="mt-5 text-base sm:text-lg text-gray-300 max-w-xl leading-relaxed">

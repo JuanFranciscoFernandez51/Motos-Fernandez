@@ -26,14 +26,14 @@ export function MobileBottomBar() {
       {/* Línea dorada sutil arriba */}
       <div
         aria-hidden
-        className="h-px bg-gradient-to-r from-transparent via-[#C9A55C]/40 to-transparent"
+        className="h-px bg-gradient-to-r from-transparent via-[#C8C8D0]/40 to-transparent"
       />
       <div className="bg-[#0E0B12]/95 backdrop-blur-lg border-t border-white/5">
         <div className="grid grid-cols-4 h-16 max-w-md mx-auto">
           <Link
             href="/catalogo"
             className={`flex flex-col items-center justify-center gap-0.5 transition-colors ${
-              isCatalogo ? "text-[#C9A55C]" : "text-gray-400 hover:text-white"
+              isCatalogo ? "text-[#C8C8D0]" : "text-gray-400 hover:text-white"
             }`}
           >
             <Bike className="size-5" />
@@ -42,7 +42,7 @@ export function MobileBottomBar() {
 
           <Link
             href="/recomendador"
-            className="flex flex-col items-center justify-center gap-0.5 text-gray-400 hover:text-[#C9A55C] transition-colors"
+            className="flex flex-col items-center justify-center gap-0.5 text-gray-400 hover:text-[#C8C8D0] transition-colors"
           >
             <Sparkles className="size-5" />
             <span className="text-[10px] font-semibold">Quiz</span>
@@ -51,13 +51,13 @@ export function MobileBottomBar() {
           <Link
             href="/tienda"
             className={`relative flex flex-col items-center justify-center gap-0.5 transition-colors ${
-              isTienda ? "text-[#C9A55C]" : "text-gray-400 hover:text-white"
+              isTienda ? "text-[#C8C8D0]" : "text-gray-400 hover:text-white"
             }`}
           >
             <ShoppingBag className="size-5" />
             <span className="text-[10px] font-semibold">Tienda</span>
             {totalItems > 0 && (
-              <span className="absolute top-2 right-1/2 translate-x-3 size-4 flex items-center justify-center rounded-full bg-[#C9A55C] text-[9px] font-bold text-[#0E0B12]">
+              <span className="absolute top-2 right-1/2 translate-x-3 size-4 flex items-center justify-center rounded-full bg-[#C8C8D0] text-[9px] font-bold text-[#0E0B12]">
                 {totalItems > 9 ? "9+" : totalItems}
               </span>
             )}

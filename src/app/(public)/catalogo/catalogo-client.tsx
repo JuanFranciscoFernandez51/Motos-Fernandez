@@ -447,7 +447,7 @@ export function CatalogoClient({
               {/* Borde dorado sutil en hover */}
               <div
                 aria-hidden
-                className="absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-[#C9A55C]/40 transition-all duration-500 pointer-events-none z-[1]"
+                className="absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-[#C8C8D0]/40 transition-all duration-500 pointer-events-none z-[1]"
               />
               {/* Link principal — envuelve imagen + info */}
               <Link href={`/catalogo/${model.slug}`} className="block">
@@ -481,10 +481,10 @@ export function CatalogoClient({
                   </div>
                 </div>
                 <div className="p-5">
-                  <p className="text-[10px] font-bold text-[#C9A55C] uppercase tracking-[0.18em]">
+                  <p className="text-[10px] font-bold text-[#C8C8D0] uppercase tracking-[0.18em]">
                     {model.marca}
                   </p>
-                  <h3 className="mt-1 font-serif text-xl font-semibold text-[#1A1A1A] dark:text-white leading-tight">
+                  <h3 className="mt-1 font-heading text-xl font-semibold text-[#1A1A1A] dark:text-white leading-tight">
                     {model.nombre}
                   </h3>
                   <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -514,7 +514,7 @@ export function CatalogoClient({
                           : formatPrice(model.precio)
                         : "Consultar"}
                     </p>
-                    <span className="text-xs font-bold text-[#C9A55C] group-hover:gap-2 inline-flex items-center gap-1 transition-all">
+                    <span className="text-xs font-bold text-[#C8C8D0] group-hover:gap-2 inline-flex items-center gap-1 transition-all">
                       Ver detalle <span className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
                     </span>
                   </div>

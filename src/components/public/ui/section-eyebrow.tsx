@@ -15,14 +15,14 @@ export function SectionEyebrow({
 }) {
   const colorClass =
     variant === "gold"
-      ? "text-[#C9A55C]"
+      ? "text-[#C8C8D0]"
       : variant === "white"
         ? "text-white/70"
         : "text-[#8B6F9A]"
 
   const dotClass =
     variant === "gold"
-      ? "bg-[#C9A55C]"
+      ? "bg-[#C8C8D0]"
       : variant === "white"
         ? "bg-white/60"
         : "bg-[#8B6F9A]"

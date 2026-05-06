@@ -41,7 +41,7 @@ export function PageHero({
       <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
       <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
       <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C9A55C]/[0.06] blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C8C8D0]/[0.06] blur-3xl pointer-events-none" />
       {variant !== "compact" && (
         <Watermark position="right" size="lg" opacity="subtle" className="hidden md:block" />
       )}
@@ -53,13 +53,13 @@ export function PageHero({
           </SectionEyebrow>
         )}
         <h1
-          className={`${eyebrow ? "mt-5" : ""} font-serif text-white text-balance leading-tight ${titleSize}`}
+          className={`${eyebrow ? "mt-5" : ""} font-heading text-white text-balance leading-tight ${titleSize}`}
         >
           {title}
           {highlight && (
             <>
               {" "}
-              <em className="text-[#C9A55C]">{highlight}</em>
+              <span className="text-[#C8C8D0]">{highlight}</span>
             </>
           )}
         </h1>

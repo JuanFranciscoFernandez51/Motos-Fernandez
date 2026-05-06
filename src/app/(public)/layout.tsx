@@ -44,12 +44,12 @@ function CartIcon() {
   return (
     <Link
       href="/carrito"
-      className="relative inline-flex items-center justify-center size-9 rounded-md text-gray-300 hover:text-[#C9A55C] hover:bg-white/5 transition-colors"
+      className="relative inline-flex items-center justify-center size-9 rounded-md text-gray-300 hover:text-[#C8C8D0] hover:bg-white/5 transition-colors"
       aria-label="Carrito"
     >
       <ShoppingBag className="size-5" />
       {totalItems > 0 && (
-        <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center size-4 rounded-full bg-[#C9A55C] text-[10px] font-bold text-[#0E0B12]">
+        <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center size-4 rounded-full bg-[#C8C8D0] text-[10px] font-bold text-[#0E0B12]">
           {totalItems > 9 ? "9+" : totalItems}
         </span>
       )}
@@ -62,12 +62,12 @@ function WishlistIcon() {
   return (
     <Link
       href="/favoritos"
-      className="relative inline-flex items-center justify-center size-9 rounded-md text-gray-300 hover:text-[#C9A55C] hover:bg-white/5 transition-colors"
+      className="relative inline-flex items-center justify-center size-9 rounded-md text-gray-300 hover:text-[#C8C8D0] hover:bg-white/5 transition-colors"
       aria-label="Favoritos"
     >
       <Heart className="size-5" />
       {count > 0 && (
-        <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center size-4 rounded-full bg-[#C9A55C] text-[10px] font-bold text-[#0E0B12]">
+        <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center size-4 rounded-full bg-[#C8C8D0] text-[10px] font-bold text-[#0E0B12]">
           {count > 9 ? "9+" : count}
         </span>
       )}
@@ -116,7 +116,7 @@ function Navbar() {
         {/* Línea dorada sutil arriba */}
         <div
           aria-hidden
-          className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C9A55C]/40 to-transparent"
+          className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C8C8D0]/40 to-transparent"
         />
 
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -145,7 +145,7 @@ function Navbar() {
                     href={link.href}
                     className={`relative whitespace-nowrap px-3.5 py-2 text-[13px] font-medium transition-colors rounded-md group ${
                       (link as { highlight?: boolean }).highlight
-                        ? "text-[#C9A55C] hover:text-[#E2BE6E] font-semibold"
+                        ? "text-[#C8C8D0] hover:text-white font-semibold"
                         : isActive
                           ? "text-white"
                           : "text-gray-400 hover:text-white"
@@ -157,7 +157,7 @@ function Navbar() {
                       <span
                         className={`absolute inset-x-3 -bottom-0.5 h-px ${
                           (link as { highlight?: boolean }).highlight
-                            ? "bg-gradient-to-r from-transparent via-[#C9A55C] to-transparent"
+                            ? "bg-gradient-to-r from-transparent via-[#C8C8D0] to-transparent"
                             : "bg-gradient-to-r from-transparent via-white/60 to-transparent"
                         }`}
                       />
@@ -177,7 +177,7 @@ function Navbar() {
                   href={getWhatsAppUrl(WHATSAPP_MESSAGES.general)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-2 inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-4 py-2 text-xs font-bold text-[#0E0B12] hover:shadow-champagne-glow transition-all hover:-translate-y-0.5"
+                  className="ml-2 inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-4 py-2 text-xs font-bold text-white hover:shadow-violeta-glow transition-all hover:-translate-y-0.5"
                 >
                   <Phone className="size-3.5" />
                   WhatsApp
@@ -215,14 +215,14 @@ function Navbar() {
 
         {/* Drawer panel */}
         <aside
-          className={`absolute right-0 top-0 h-full w-[88%] max-w-sm bg-gradient-to-b from-[#15121A] to-[#0E0B12] shadow-premium-xl border-l border-[#C9A55C]/15 transition-transform duration-300 ease-out flex flex-col ${
+          className={`absolute right-0 top-0 h-full w-[88%] max-w-sm bg-gradient-to-b from-[#15121A] to-[#0E0B12] shadow-premium-xl border-l border-[#C8C8D0]/15 transition-transform duration-300 ease-out flex flex-col ${
             mobileOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
           {/* Línea dorada al borde */}
           <div
             aria-hidden
-            className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-[#C9A55C]/50 to-transparent"
+            className="absolute inset-y-0 left-0 w-px bg-gradient-to-b from-transparent via-[#C8C8D0]/50 to-transparent"
           />
 
           {/* Header del drawer */}
@@ -239,7 +239,7 @@ function Navbar() {
                 height={36}
                 className="h-9 w-9"
               />
-              <span className="font-serif text-lg text-white tracking-wide">
+              <span className="font-heading text-lg text-white tracking-wide">
                 Motos Fernández
               </span>
             </Link>
@@ -265,7 +265,7 @@ function Navbar() {
                       href={link.href}
                       className={`group flex items-center justify-between rounded-lg px-4 py-3.5 text-base font-medium transition-all ${
                         (link as { highlight?: boolean }).highlight
-                          ? "bg-gradient-to-r from-[#C9A55C]/15 to-transparent text-[#C9A55C] font-semibold border-l-2 border-[#C9A55C]"
+                          ? "bg-gradient-to-r from-[#C8C8D0]/15 to-transparent text-[#C8C8D0] font-semibold border-l-2 border-[#C8C8D0]"
                           : isActive
                             ? "bg-white/5 text-white"
                             : "text-gray-300 hover:bg-white/5 hover:text-white"
@@ -289,10 +289,10 @@ function Navbar() {
             <Link
               href="/recomendador"
               onClick={() => setMobileOpen(false)}
-              className="mt-6 flex items-center gap-3 rounded-xl border border-[#C9A55C]/30 bg-gradient-to-r from-[#C9A55C]/10 to-transparent p-4 hover:border-[#C9A55C]/60 transition-colors"
+              className="mt-6 flex items-center gap-3 rounded-xl border border-[#C8C8D0]/30 bg-gradient-to-r from-[#C8C8D0]/10 to-transparent p-4 hover:border-[#C8C8D0]/60 transition-colors"
             >
-              <div className="flex items-center justify-center size-10 rounded-full bg-[#C9A55C]/20">
-                <Sparkles className="size-5 text-[#C9A55C]" />
+              <div className="flex items-center justify-center size-10 rounded-full bg-[#C8C8D0]/20">
+                <Sparkles className="size-5 text-[#C8C8D0]" />
               </div>
               <div className="flex-1">
                 <p className="text-sm font-bold text-white">
@@ -310,7 +310,7 @@ function Navbar() {
               href={getWhatsAppUrl(WHATSAPP_MESSAGES.general)}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full rounded-lg bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-4 py-3 text-sm font-bold text-[#0E0B12] shadow-champagne-glow"
+              className="flex items-center justify-center gap-2 w-full rounded-lg bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-4 py-3 text-sm font-bold text-white shadow-violeta-glow"
             >
               <MessageCircle className="size-4" />
               Hablar por WhatsApp
@@ -320,7 +320,7 @@ function Navbar() {
               <WishlistIcon />
               <a
                 href={`tel:${BUSINESS.phone}`}
-                className="inline-flex items-center justify-center size-9 rounded-md text-gray-300 hover:text-[#C9A55C] hover:bg-white/5 transition-colors"
+                className="inline-flex items-center justify-center size-9 rounded-md text-gray-300 hover:text-[#C8C8D0] hover:bg-white/5 transition-colors"
                 aria-label="Llamar"
               >
                 <Phone className="size-5" />
@@ -339,7 +339,7 @@ function Footer() {
       {/* Línea dorada arriba */}
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C9A55C]/30 to-transparent"
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#C8C8D0]/30 to-transparent"
       />
       {/* Glows decorativos */}
       <div
@@ -348,7 +348,7 @@ function Footer() {
       />
       <div
         aria-hidden
-        className="absolute -bottom-40 -left-32 size-[420px] rounded-full bg-[#C9A55C]/[0.03] blur-3xl pointer-events-none"
+        className="absolute -bottom-40 -left-32 size-[420px] rounded-full bg-[#C8C8D0]/[0.03] blur-3xl pointer-events-none"
       />
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
@@ -362,12 +362,12 @@ function Footer() {
               height={48}
               className="h-10 w-auto mb-5"
             />
-            <p className="text-sm text-gray-400 leading-relaxed font-serif italic">
+            <p className="text-sm text-gray-400 leading-relaxed font-heading italic">
               &ldquo;{BUSINESS.slogan}&rdquo;
             </p>
             <p className="mt-3 text-sm text-gray-500 leading-relaxed">
               Concesionaria multimarca en {BUSINESS.city} con más de{" "}
-              <span className="text-[#C9A55C] font-semibold">
+              <span className="text-[#C8C8D0] font-semibold">
                 {BUSINESS.yearsInBusiness} años
               </span>{" "}
               de trayectoria.
@@ -377,7 +377,7 @@ function Footer() {
           {/* Links */}
           <div>
             <h3 className="relative text-xs font-bold text-white uppercase tracking-[0.2em] mb-5 inline-flex items-center gap-2">
-              <span className="size-1 bg-[#C9A55C]" />
+              <span className="size-1 bg-[#C8C8D0]" />
               Navegación
             </h3>
             <ul className="space-y-2.5">
@@ -385,9 +385,9 @@ function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="group inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-[#C9A55C] transition-colors"
+                    className="group inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-[#C8C8D0] transition-colors"
                   >
-                    <span className="size-1 rounded-full bg-[#C9A55C]/0 group-hover:bg-[#C9A55C] transition-colors" />
+                    <span className="size-1 rounded-full bg-[#C8C8D0]/0 group-hover:bg-[#C8C8D0] transition-colors" />
                     {link.label}
                   </Link>
                 </li>
@@ -398,26 +398,26 @@ function Footer() {
           {/* Contact */}
           <div>
             <h3 className="relative text-xs font-bold text-white uppercase tracking-[0.2em] mb-5 inline-flex items-center gap-2">
-              <span className="size-1 bg-[#C9A55C]" />
+              <span className="size-1 bg-[#C8C8D0]" />
               Contacto
             </h3>
             <ul className="space-y-3.5">
               <li className="flex items-start gap-2.5">
-                <MapPin className="size-4 mt-0.5 text-[#C9A55C] shrink-0" />
+                <MapPin className="size-4 mt-0.5 text-[#C8C8D0] shrink-0" />
                 <span className="text-sm text-gray-400">{BUSINESS.address}</span>
               </li>
               <li className="flex items-center gap-2.5">
-                <Phone className="size-4 text-[#C9A55C] shrink-0" />
+                <Phone className="size-4 text-[#C8C8D0] shrink-0" />
                 <a
                   href={`tel:${BUSINESS.phone}`}
-                  className="text-sm text-gray-400 hover:text-[#C9A55C] transition-colors"
+                  className="text-sm text-gray-400 hover:text-[#C8C8D0] transition-colors"
                 >
                   {BUSINESS.whatsappDisplay}
                 </a>
               </li>
               <li className="flex items-center gap-2.5">
                 <svg
-                  className="size-4 text-[#C9A55C] shrink-0"
+                  className="size-4 text-[#C8C8D0] shrink-0"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -433,7 +433,7 @@ function Footer() {
                   href={BUSINESS.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-gray-400 hover:text-[#C9A55C] transition-colors"
+                  className="text-sm text-gray-400 hover:text-[#C8C8D0] transition-colors"
                 >
                   {BUSINESS.instagram}
                 </a>
@@ -444,26 +444,26 @@ function Footer() {
           {/* Hours */}
           <div>
             <h3 className="relative text-xs font-bold text-white uppercase tracking-[0.2em] mb-5 inline-flex items-center gap-2">
-              <span className="size-1 bg-[#C9A55C]" />
+              <span className="size-1 bg-[#C8C8D0]" />
               Horarios
             </h3>
             <ul className="space-y-3">
               <li className="flex items-start gap-2.5">
-                <Clock className="size-4 mt-0.5 text-[#C9A55C] shrink-0" />
+                <Clock className="size-4 mt-0.5 text-[#C8C8D0] shrink-0" />
                 <div className="text-sm text-gray-400">
                   <p className="font-medium text-gray-300">Lunes a Viernes</p>
                   <p>{HORARIOS.lunesViernes}</p>
                 </div>
               </li>
               <li className="flex items-start gap-2.5">
-                <Clock className="size-4 mt-0.5 text-[#C9A55C] shrink-0" />
+                <Clock className="size-4 mt-0.5 text-[#C8C8D0] shrink-0" />
                 <div className="text-sm text-gray-400">
                   <p className="font-medium text-gray-300">Sábados</p>
                   <p>{HORARIOS.sabados}</p>
                 </div>
               </li>
               <li className="flex items-start gap-2.5">
-                <Clock className="size-4 mt-0.5 text-[#C9A55C] shrink-0" />
+                <Clock className="size-4 mt-0.5 text-[#C8C8D0] shrink-0" />
                 <div className="text-sm text-gray-400">
                   <p className="font-medium text-gray-300">Domingos</p>
                   <p>{HORARIOS.domingos}</p>
@@ -480,7 +480,7 @@ function Footer() {
               <h3 className="text-xs font-bold text-white uppercase tracking-[0.2em] mb-2">
                 Sumate a la familia Fernández
               </h3>
-              <p className="font-serif text-2xl sm:text-3xl text-white leading-tight">
+              <p className="font-heading text-2xl sm:text-3xl text-white leading-tight">
                 Las novedades, en tu casilla.
               </p>
               <p className="text-sm text-gray-400 mt-2">
@@ -498,19 +498,19 @@ function Footer() {
           <div className="flex items-center gap-5">
             <Link
               href="/envios"
-              className="text-xs text-gray-500 hover:text-[#C9A55C] transition-colors"
+              className="text-xs text-gray-500 hover:text-[#C8C8D0] transition-colors"
             >
               Envíos
             </Link>
             <Link
               href="/privacidad"
-              className="text-xs text-gray-500 hover:text-[#C9A55C] transition-colors"
+              className="text-xs text-gray-500 hover:text-[#C8C8D0] transition-colors"
             >
               Privacidad
             </Link>
             <Link
               href="/terminos"
-              className="text-xs text-gray-500 hover:text-[#C9A55C] transition-colors"
+              className="text-xs text-gray-500 hover:text-[#C8C8D0] transition-colors"
             >
               Términos
             </Link>

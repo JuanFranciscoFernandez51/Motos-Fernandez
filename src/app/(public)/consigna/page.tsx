@@ -119,19 +119,19 @@ export default function ConsignaPage() {
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
         <div className="absolute -top-40 -right-40 size-[600px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 size-[400px] rounded-full bg-[#C9A55C]/[0.08] blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 size-[400px] rounded-full bg-[#C8C8D0]/[0.08] blur-3xl pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#C9A55C]/30 bg-[#C9A55C]/[0.08] px-4 py-1.5 mb-6 backdrop-blur-sm">
-              <Bike className="size-4 text-[#C9A55C]" />
-              <span className="text-xs font-bold text-[#C9A55C] uppercase tracking-[0.22em]">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#C8C8D0]/30 bg-[#C8C8D0]/[0.08] px-4 py-1.5 mb-6 backdrop-blur-sm">
+              <Bike className="size-4 text-[#C8C8D0]" />
+              <span className="text-xs font-bold text-[#C8C8D0] uppercase tracking-[0.22em]">
                 Consigna de motos
               </span>
             </div>
-            <h1 className="font-serif text-5xl sm:text-6xl lg:text-7xl text-white leading-[1.05] text-balance">
+            <h1 className="font-heading text-5xl sm:text-6xl lg:text-7xl text-white leading-[1.05] text-balance">
               Vendé tu moto
-              <span className="block mt-2 italic text-[#C9A55C] font-light">con nosotros</span>
+              <span className="block mt-2 italic text-[#C8C8D0] font-light">con nosotros</span>
             </h1>
             <p className="mt-7 text-lg text-gray-300 max-w-2xl leading-relaxed">
               Dejá tu moto en nuestro local y nosotros nos encargamos de venderla. Vos fijás el
@@ -140,7 +140,7 @@ export default function ConsignaPage() {
             <div className="mt-10 flex flex-wrap gap-4">
               <a
                 href="#formulario"
-                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-8 py-4 text-sm font-bold text-[#0E0B12] shadow-champagne-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-8 py-4 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
               >
                 <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
                 <span className="relative">Dejar mis datos</span>

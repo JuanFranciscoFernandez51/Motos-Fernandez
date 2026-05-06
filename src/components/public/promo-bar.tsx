@@ -18,9 +18,9 @@ function MarqueeTrack() {
             key={i}
             className="inline-flex items-center gap-2 px-8 text-xs sm:text-[13px] font-semibold tracking-wide whitespace-nowrap"
           >
-            <Icon className="size-3.5 shrink-0 text-[#C9A55C]" aria-hidden />
+            <Icon className="size-3.5 shrink-0 text-[#C8C8D0]" aria-hidden />
             {m.text}
-            <span className="size-1 rounded-full bg-[#C9A55C]/50 ml-2" aria-hidden />
+            <span className="size-1 rounded-full bg-[#C8C8D0]/50 ml-2" aria-hidden />
           </span>
         )
       })}
@@ -30,11 +30,11 @@ function MarqueeTrack() {
 
 export function PromoBar() {
   return (
-    <div className="relative overflow-hidden bg-gradient-to-r from-[#0E0B12] via-[#1A1325] to-[#0E0B12] text-white border-b border-[#C9A55C]/20">
+    <div className="relative overflow-hidden bg-gradient-to-r from-[#0E0B12] via-[#1A1325] to-[#0E0B12] text-white border-b border-[#C8C8D0]/20">
       {/* Línea dorada arriba/abajo */}
       <div
         aria-hidden
-        className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#C9A55C]/40 to-transparent"
+        className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#C8C8D0]/40 to-transparent"
       />
       <div className="flex h-9 items-center">
         <div className="flex shrink-0 animate-marquee whitespace-nowrap [will-change:transform]">

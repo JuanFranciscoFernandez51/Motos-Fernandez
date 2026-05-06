@@ -80,15 +80,15 @@ export default function UbicacionPage() {
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
         <div className="absolute -top-32 -right-32 size-[400px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 size-[320px] rounded-full bg-[#C9A55C]/[0.06] blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 size-[320px] rounded-full bg-[#C8C8D0]/[0.06] blur-3xl pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 text-xs text-[#C9A55C] uppercase tracking-[0.22em] font-bold mb-3">
+          <div className="flex items-center gap-2 text-xs text-[#C8C8D0] uppercase tracking-[0.22em] font-bold mb-3">
             <MapPin className="size-4" />
             Ubicación
           </div>
-          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
-            Visitanos en <em className="text-[#C9A55C]">{BUSINESS.city}</em>
+          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
+            Visitanos en <span className="text-[#C8C8D0]">{BUSINESS.city}</span>
           </h1>
           <p className="mt-5 text-base sm:text-lg text-gray-300 max-w-2xl leading-relaxed">
             Estamos en <span className="text-white font-medium">{BUSINESS.address}</span>. Más de {BUSINESS.yearsInBusiness} años atendiendo a motociclistas. Te esperamos en el local con todas las marcas y atención personalizada.
@@ -98,7 +98,7 @@ export default function UbicacionPage() {
               href={directionsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-6 py-3 text-sm font-bold text-[#0E0B12] shadow-champagne-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-6 py-3 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
             >
               <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
               <Navigation className="relative size-4" />

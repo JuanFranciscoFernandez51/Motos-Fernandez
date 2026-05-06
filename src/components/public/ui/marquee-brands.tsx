@@ -68,7 +68,7 @@ export function MarqueeBrands({
         {items.map((brand, i) => (
           <span
             key={i}
-            className={`inline-flex items-center gap-8 px-8 font-serif text-2xl sm:text-3xl lg:text-4xl tracking-wide ${
+            className={`inline-flex items-center gap-8 px-8 font-heading text-2xl sm:text-3xl lg:text-4xl tracking-wide ${
               variant === "violeta"
                 ? "text-white/85"
                 : variant === "dark"
@@ -80,9 +80,9 @@ export function MarqueeBrands({
             <span
               className={`size-1.5 rounded-full ${
                 variant === "violeta"
-                  ? "bg-[#C9A55C]"
+                  ? "bg-[#C8C8D0]"
                   : variant === "dark"
-                    ? "bg-[#C9A55C]"
+                    ? "bg-[#C8C8D0]"
                     : "bg-[#6B4F7A]"
               }`}
               aria-hidden

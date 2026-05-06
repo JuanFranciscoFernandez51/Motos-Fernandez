@@ -24,6 +24,9 @@ import {
   Sparkles,
   Truck,
   Quote,
+  TrendingUp,
+  Banknote,
+  CheckCircle2,
 } from "lucide-react"
 
 // ==================== PAGE ====================
@@ -48,7 +51,7 @@ export default async function HomePage() {
         {/* Glows decorativos */}
         <div className="absolute -top-48 -right-48 size-[700px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -left-20 size-[420px] rounded-full bg-[#9B59B6]/10 blur-3xl pointer-events-none" />
-        <div className="absolute top-1/3 left-1/2 size-[300px] rounded-full bg-[#C9A55C]/[0.06] blur-3xl pointer-events-none" />
+        <div className="absolute top-1/3 left-1/2 size-[300px] rounded-full bg-[#C8C8D0]/[0.06] blur-3xl pointer-events-none" />
 
         {/* Marca de agua del monograma */}
         <Watermark position="right" size="2xl" opacity="soft" className="hidden md:block" />
@@ -56,31 +59,31 @@ export default async function HomePage() {
         {/* Línea dorada decorativa */}
         <div
           aria-hidden
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-32 bg-gradient-to-b from-transparent via-[#C9A55C]/40 to-transparent"
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-px h-32 bg-gradient-to-b from-transparent via-[#C8C8D0]/40 to-transparent"
         />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-28">
           <div className="max-w-4xl">
             {/* Eyebrow premium */}
             <AnimatedSection animation="fade" delay={100}>
-              <div className="inline-flex items-center gap-2.5 rounded-full border border-[#C9A55C]/30 bg-[#C9A55C]/[0.08] px-4 py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.22em] text-[#C9A55C] backdrop-blur-sm">
-                <span className="size-1.5 rounded-full bg-[#C9A55C] animate-pulse" />
+              <div className="inline-flex items-center gap-2.5 rounded-full border border-[#C8C8D0]/30 bg-[#C8C8D0]/[0.08] px-4 py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.22em] text-[#C8C8D0] backdrop-blur-sm">
+                <span className="size-1.5 rounded-full bg-[#C8C8D0] animate-pulse" />
                 Concesionaria multimarca · {BUSINESS.city}
-                <span className="size-1.5 rounded-full bg-[#C9A55C]/50" />
+                <span className="size-1.5 rounded-full bg-[#C8C8D0]/50" />
                 Desde {BUSINESS.yearFounded}
               </div>
             </AnimatedSection>
 
-            {/* Headline display - tipografía premium serif */}
+            {/* Headline display sobrio y moderno */}
             <AnimatedSection animation="fade-up" delay={200}>
-              <h1 className="mt-6 text-display text-white text-balance">
-                <span className="block font-serif text-5xl sm:text-6xl lg:text-7xl xl:text-8xl font-light italic text-[#C9A55C]/90">
-                  Tu próxima
+              <h1 className="mt-7 text-white text-balance">
+                <span className="block font-display text-6xl sm:text-7xl lg:text-8xl xl:text-9xl leading-[0.9] tracking-tight">
+                  TU PRÓXIMA
                 </span>
-                <span className="block font-display text-7xl sm:text-8xl lg:text-9xl xl:text-[10rem] mt-1 leading-[0.85]">
+                <span className="block font-display text-6xl sm:text-7xl lg:text-8xl xl:text-9xl mt-1 leading-[0.9] tracking-tight text-[#C8C8D0]">
                   AVENTURA
                 </span>
-                <span className="block font-serif text-3xl sm:text-4xl lg:text-5xl mt-3 italic font-light text-gray-300">
+                <span className="block font-heading text-2xl sm:text-3xl lg:text-4xl mt-4 font-light text-gray-300">
                   empieza acá.
                 </span>
               </h1>
@@ -89,7 +92,7 @@ export default async function HomePage() {
             <AnimatedSection animation="fade-up" delay={400}>
               <p className="mt-8 text-base sm:text-lg lg:text-xl text-gray-300/90 max-w-2xl leading-relaxed">
                 Más de{" "}
-                <span className="text-[#C9A55C] font-semibold">
+                <span className="text-[#C8C8D0] font-semibold">
                   {BUSINESS.yearsInBusiness} años
                 </span>{" "}
                 eligiendo con vos la moto, cuatri o UTV ideal. Las mejores marcas,
@@ -102,7 +105,7 @@ export default async function HomePage() {
                 {/* CTA principal — dorado premium */}
                 <Link
                   href="/catalogo"
-                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-7 sm:px-8 py-4 text-sm font-bold text-[#0E0B12] shadow-champagne-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-7 sm:px-8 py-4 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
                 >
                   {/* Shine effect on hover */}
                   <span
@@ -117,7 +120,7 @@ export default async function HomePage() {
                   href="/recomendador"
                   className="group inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/[0.04] px-7 py-4 text-sm font-semibold text-white hover:bg-white/[0.08] hover:border-white/30 transition-all backdrop-blur-sm"
                 >
-                  <Sparkles className="size-4 text-[#C9A55C]" />
+                  <Sparkles className="size-4 text-[#C8C8D0]" />
                   Quiz: ¿qué moto te conviene?
                 </Link>
 
@@ -135,37 +138,37 @@ export default async function HomePage() {
             <AnimatedSection animation="fade-up" delay={700}>
               <div className="mt-14 flex flex-wrap gap-x-10 sm:gap-x-14 gap-y-6">
                 <div>
-                  <p className="font-serif text-5xl sm:text-6xl text-white leading-none italic">
+                  <p className="font-heading text-5xl sm:text-6xl text-white leading-none">
                     +{BUSINESS.yearsInBusiness}
                   </p>
-                  <p className="text-[10px] text-[#C9A55C] mt-2 uppercase tracking-[0.22em] font-bold">
+                  <p className="text-[10px] text-[#C8C8D0] mt-2 uppercase tracking-[0.22em] font-bold">
                     Años
                   </p>
                 </div>
                 <div className="w-px bg-gradient-to-b from-transparent via-white/10 to-transparent self-stretch" />
                 <div>
-                  <p className="font-serif text-5xl sm:text-6xl text-white leading-none italic">
+                  <p className="font-heading text-5xl sm:text-6xl text-white leading-none">
                     +50
                   </p>
-                  <p className="text-[10px] text-[#C9A55C] mt-2 uppercase tracking-[0.22em] font-bold">
+                  <p className="text-[10px] text-[#C8C8D0] mt-2 uppercase tracking-[0.22em] font-bold">
                     Marcas
                   </p>
                 </div>
                 <div className="w-px bg-gradient-to-b from-transparent via-white/10 to-transparent self-stretch" />
                 <div>
-                  <p className="font-serif text-5xl sm:text-6xl text-white leading-none italic">
+                  <p className="font-heading text-5xl sm:text-6xl text-white leading-none">
                     24
                   </p>
-                  <p className="text-[10px] text-[#C9A55C] mt-2 uppercase tracking-[0.22em] font-bold">
+                  <p className="text-[10px] text-[#C8C8D0] mt-2 uppercase tracking-[0.22em] font-bold">
                     Cuotas
                   </p>
                 </div>
                 <div className="w-px bg-gradient-to-b from-transparent via-white/10 to-transparent self-stretch" />
                 <div>
-                  <p className="font-serif text-5xl sm:text-6xl text-white leading-none italic">
+                  <p className="font-heading text-5xl sm:text-6xl text-white leading-none">
                     #1
                   </p>
-                  <p className="text-[10px] text-[#C9A55C] mt-2 uppercase tracking-[0.22em] font-bold">
+                  <p className="text-[10px] text-[#C8C8D0] mt-2 uppercase tracking-[0.22em] font-bold">
                     {BUSINESS.city}
                   </p>
                 </div>
@@ -179,25 +182,25 @@ export default async function HomePage() {
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 text-xs sm:text-sm text-gray-300">
               <div className="flex items-center gap-2.5">
-                <span className="flex items-center justify-center size-7 rounded-md bg-[#C9A55C]/10 text-[#C9A55C] shrink-0">
+                <span className="flex items-center justify-center size-7 rounded-md bg-[#C8C8D0]/10 text-[#C8C8D0] shrink-0">
                   <CreditCard className="size-3.5" />
                 </span>
                 <span>Financiación propia</span>
               </div>
               <div className="flex items-center gap-2.5">
-                <span className="flex items-center justify-center size-7 rounded-md bg-[#C9A55C]/10 text-[#C9A55C] shrink-0">
+                <span className="flex items-center justify-center size-7 rounded-md bg-[#C8C8D0]/10 text-[#C8C8D0] shrink-0">
                   <Wrench className="size-3.5" />
                 </span>
                 <span>Taller oficial multimarca</span>
               </div>
               <div className="flex items-center gap-2.5">
-                <span className="flex items-center justify-center size-7 rounded-md bg-[#C9A55C]/10 text-[#C9A55C] shrink-0">
+                <span className="flex items-center justify-center size-7 rounded-md bg-[#C8C8D0]/10 text-[#C8C8D0] shrink-0">
                   <Package className="size-3.5" />
                 </span>
                 <span>Stock · entrega inmediata</span>
               </div>
               <div className="flex items-center gap-2.5">
-                <span className="flex items-center justify-center size-7 rounded-md bg-[#C9A55C]/10 text-[#C9A55C] shrink-0">
+                <span className="flex items-center justify-center size-7 rounded-md bg-[#C8C8D0]/10 text-[#C8C8D0] shrink-0">
                   <Truck className="size-3.5" />
                 </span>
                 <span>Envío propio a todo el país</span>
@@ -219,8 +222,8 @@ export default async function HomePage() {
           <AnimatedSection animation="fade-up">
             <div className="text-center mb-14">
               <SectionEyebrow centered>Catálogo destacado</SectionEyebrow>
-              <h2 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white text-balance leading-tight">
-                Modelos que <em className="text-[#6B4F7A]">enamoran</em>
+              <h2 className="mt-5 font-heading text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white text-balance leading-tight">
+                Modelos que <span className="text-[#6B4F7A]">enamoran</span>
               </h2>
               <p className="mt-4 text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
                 Una selección curada de los modelos más elegidos por nuestros clientes.
@@ -240,20 +243,15 @@ export default async function HomePage() {
                   >
                     <Link
                       href={`/catalogo/${model.slug}`}
-                      className="group relative flex flex-col h-full rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-500 hover:-translate-y-1"
+                      className="group relative flex flex-col h-full rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
                     >
-                      {/* Borde gradient en hover */}
-                      <div
-                        aria-hidden
-                        className="absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-[#C9A55C]/40 transition-all duration-500 pointer-events-none"
-                      />
-                      <div className="relative aspect-square bg-gradient-to-br from-[#F8F5FA] to-[#EFEAF2] dark:from-neutral-800 dark:to-neutral-900 overflow-hidden">
+                      <div className="relative aspect-[4/3] bg-gradient-to-br from-[#F8F5FA] to-[#EFEAF2] dark:from-neutral-800 dark:to-neutral-900 overflow-hidden">
                         {model.fotos[0] ? (
                           <Image
                             src={model.fotos[0]}
                             alt={model.nombre}
                             fill
-                            className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                            className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
                           />
                         ) : (
@@ -261,17 +259,16 @@ export default async function HomePage() {
                             <Bike className="size-10" />
                           </div>
                         )}
-                        {/* Overlay gradient bottom */}
-                        <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
+                        {/* Badges */}
                         {model.destacado && (
-                          <div className="absolute top-2.5 left-2.5 flex items-center gap-1 rounded-full bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-2.5 py-1 text-[10px] font-bold text-[#0E0B12] shadow-lg">
-                            <Star className="size-2.5 fill-current" />
+                          <div className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-[#0E0B12]/85 backdrop-blur-sm px-2.5 py-1 text-[10px] font-bold text-white">
+                            <Star className="size-2.5 fill-[#C8C8D0] text-[#C8C8D0]" />
                             Destacado
                           </div>
                         )}
                         <span
-                          className={`absolute top-2.5 right-2.5 rounded-md px-2 py-0.5 text-[10px] font-bold shadow ${
+                          className={`absolute top-3 right-3 rounded-md px-2 py-0.5 text-[10px] font-bold ${
                             (model.condicion || "0KM") === "0KM"
                               ? "bg-emerald-500 text-white"
                               : "bg-orange-500 text-white"
@@ -280,14 +277,14 @@ export default async function HomePage() {
                           {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
                         </span>
                       </div>
-                      <div className="p-3.5 sm:p-4">
-                        <p className="text-[10px] font-bold text-[#C9A55C] uppercase tracking-[0.15em] truncate">
+                      <div className="p-5">
+                        <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-[0.18em]">
                           {model.marca}
                         </p>
-                        <h3 className="mt-1 font-serif text-base sm:text-lg font-semibold text-[#1A1A1A] dark:text-white truncate leading-tight">
+                        <h3 className="mt-1 font-heading text-base font-bold text-[#1A1A1A] dark:text-white truncate">
                           {model.nombre}
                         </h3>
-                        <p className="text-[11px] text-gray-400 truncate mt-0.5">
+                        <p className="text-xs text-gray-400 mt-1">
                           {(model.condicion || "0KM") === "USADA" ? (
                             <>
                               {model.anio && <span>{model.anio}</span>}
@@ -305,15 +302,20 @@ export default async function HomePage() {
                             </>
                           )}
                         </p>
-                        <div className="mt-3 pt-3 border-t border-gray-100 dark:border-neutral-800 flex items-center justify-between">
-                          <p className="text-base font-bold text-[#6B4F7A] dark:text-[#C39BD3]">
-                            {model.precio
-                              ? (model.moneda || "ARS") === "USD"
-                                ? `USD ${model.precio.toLocaleString("es-AR")}`
-                                : formatPrice(model.precio)
-                              : "Consultar"}
-                          </p>
-                          <ArrowRight className="size-3.5 text-[#6B4F7A]/40 group-hover:text-[#C9A55C] group-hover:translate-x-0.5 transition-all" />
+                        <div className="mt-4 flex items-end justify-between">
+                          <div>
+                            <p className="text-[10px] text-gray-400 uppercase tracking-wide font-semibold">
+                              Precio
+                            </p>
+                            <p className="text-lg font-bold text-[#3D2649] dark:text-[#C39BD3] leading-tight">
+                              {model.precio
+                                ? (model.moneda || "ARS") === "USD"
+                                  ? `USD ${model.precio.toLocaleString("es-AR")}`
+                                  : formatPrice(model.precio)
+                                : "Consultar"}
+                            </p>
+                          </div>
+                          <ArrowRight className="size-4 text-[#6B4F7A] group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
                     </Link>
@@ -359,7 +361,7 @@ export default async function HomePage() {
               {/* Patterns and glows */}
               <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.08]" />
               <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
-              <div className="absolute -top-16 -right-16 size-64 rounded-full bg-[#C9A55C]/15 blur-3xl" />
+              <div className="absolute -top-16 -right-16 size-64 rounded-full bg-[#C8C8D0]/15 blur-3xl" />
               <div className="absolute -bottom-20 -left-20 size-72 rounded-full bg-white/5 blur-3xl" />
 
               {/* Marca de agua */}
@@ -368,23 +370,23 @@ export default async function HomePage() {
               {/* Línea dorada */}
               <div
                 aria-hidden
-                className="absolute top-0 inset-x-12 h-px bg-gradient-to-r from-transparent via-[#C9A55C]/60 to-transparent"
+                className="absolute top-0 inset-x-12 h-px bg-gradient-to-r from-transparent via-[#C8C8D0]/60 to-transparent"
               />
 
               <div className="relative flex flex-col lg:flex-row items-center justify-between gap-8">
                 <div className="flex-1 text-center lg:text-left max-w-2xl">
-                  <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-[#C9A55C]/15 backdrop-blur-sm mb-6 ring-1 ring-[#C9A55C]/30">
-                    <Sparkles className="size-8 text-[#C9A55C]" />
+                  <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-[#C8C8D0]/15 backdrop-blur-sm mb-6 ring-1 ring-[#C8C8D0]/30">
+                    <Sparkles className="size-8 text-[#C8C8D0]" />
                   </div>
                   <SectionEyebrow variant="gold" className="mb-4">
                     Quiz interactivo con IA
                   </SectionEyebrow>
-                  <h2 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
-                    ¿No sabés qué <em className="text-[#C9A55C]">moto</em> te conviene?
+                  <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
+                    ¿No sabés qué <span className="text-[#C8C8D0]">moto</span> te conviene?
                   </h2>
                   <p className="mt-5 text-base sm:text-lg text-white/85 leading-relaxed max-w-xl">
                     Hacé el quiz interactivo y te recomendamos{" "}
-                    <span className="font-semibold text-[#C9A55C]">3 motos ideales</span>{" "}
+                    <span className="font-semibold text-[#C8C8D0]">3 motos ideales</span>{" "}
                     según tu uso, experiencia y presupuesto.
                   </p>
                 </div>
@@ -392,7 +394,7 @@ export default async function HomePage() {
                 <div className="shrink-0">
                   <Link
                     href="/recomendador"
-                    className="group inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-8 py-4 text-base font-bold text-[#0E0B12] shadow-champagne-glow hover:shadow-2xl transition-all hover:scale-105"
+                    className="group inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-8 py-4 text-base font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:scale-105"
                   >
                     Hacer quiz
                     <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
@@ -413,8 +415,8 @@ export default async function HomePage() {
             <AnimatedSection animation="fade-up">
               <div className="text-center mb-14">
                 <SectionEyebrow centered>Testimonios reales</SectionEyebrow>
-                <h2 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white text-balance leading-tight">
-                  Lo que dicen <em className="text-[#6B4F7A]">nuestros clientes</em>
+                <h2 className="mt-5 font-heading text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white text-balance leading-tight">
+                  Lo que dicen <span className="text-[#6B4F7A]">nuestros clientes</span>
                 </h2>
                 <GoldDivider variant="ornament" className="mt-8" />
               </div>
@@ -432,10 +434,10 @@ export default async function HomePage() {
                     animation="fade-up"
                     delay={idx * 100}
                   >
-                    <article className="group relative h-full flex flex-col rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-7 shadow-premium-sm hover:shadow-premium-lg hover:border-[#C9A55C]/30 transition-all duration-300 overflow-hidden">
+                    <article className="group relative h-full flex flex-col rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-7 shadow-premium-sm hover:shadow-premium-lg hover:border-[#C8C8D0]/30 transition-all duration-300 overflow-hidden">
                       {/* Quote decoration */}
                       <Quote
-                        className="absolute -top-1 -right-1 size-20 text-[#C9A55C]/[0.06] group-hover:text-[#C9A55C]/[0.10] transition-colors"
+                        className="absolute -top-1 -right-1 size-20 text-[#C8C8D0]/[0.06] group-hover:text-[#C8C8D0]/[0.10] transition-colors"
                         aria-hidden
                       />
 
@@ -446,7 +448,7 @@ export default async function HomePage() {
                             key={i}
                             className={
                               i < t.rating
-                                ? "size-4 fill-[#C9A55C] text-[#C9A55C]"
+                                ? "size-4 fill-[#C9A55C] text-[#C8C8D0]"
                                 : "size-4 text-gray-200 dark:text-neutral-700"
                             }
                           />
@@ -454,7 +456,7 @@ export default async function HomePage() {
                       </div>
 
                       {/* Contenido */}
-                      <p className="relative text-[15px] text-gray-700 dark:text-gray-200 leading-relaxed flex-1 font-serif italic">
+                      <p className="relative text-[15px] text-gray-700 dark:text-gray-200 leading-relaxed flex-1 font-heading">
                         &ldquo;{contenido}&rdquo;
                       </p>
 
@@ -466,10 +468,10 @@ export default async function HomePage() {
                             alt={t.nombre}
                             width={48}
                             height={48}
-                            className="size-12 rounded-full object-cover shrink-0 ring-2 ring-[#C9A55C]/20"
+                            className="size-12 rounded-full object-cover shrink-0 ring-2 ring-[#C8C8D0]/20"
                           />
                         ) : (
-                          <div className="size-12 rounded-full bg-gradient-to-br from-[#6B4F7A] to-[#8B6F9A] flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-[#C9A55C]/20">
+                          <div className="size-12 rounded-full bg-gradient-to-br from-[#6B4F7A] to-[#8B6F9A] flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-[#C8C8D0]/20">
                             {t.nombre
                               .split(" ")
                               .map((n) => n[0])
@@ -489,7 +491,7 @@ export default async function HomePage() {
                           )}
                         </div>
                         {t.modelo && (
-                          <span className="shrink-0 inline-flex items-center rounded-full border border-[#C9A55C]/30 bg-[#C9A55C]/5 px-2.5 py-1 text-[10px] font-bold text-[#C9A55C] uppercase tracking-wide">
+                          <span className="shrink-0 inline-flex items-center rounded-full border border-[#C8C8D0]/30 bg-[#C8C8D0]/5 px-2.5 py-1 text-[10px] font-bold text-[#C8C8D0] uppercase tracking-wide">
                             {t.modelo}
                           </span>
                         )}
@@ -507,7 +509,7 @@ export default async function HomePage() {
       <section className="relative py-20 sm:py-24 overflow-hidden bg-gradient-to-br from-[#0E0B12] via-[#1A1325] to-[#2A1E3A]">
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-10" />
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
-        <div className="absolute -top-20 -right-20 size-80 rounded-full bg-[#C9A55C]/10 blur-3xl" />
+        <div className="absolute -top-20 -right-20 size-80 rounded-full bg-[#C8C8D0]/10 blur-3xl" />
         <div className="absolute -bottom-20 -left-20 size-80 rounded-full bg-[#6B4F7A]/20 blur-3xl" />
 
         <Watermark position="right" size="2xl" opacity="subtle" />
@@ -516,26 +518,26 @@ export default async function HomePage() {
           <AnimatedSection animation="fade-up">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
               <div className="text-center lg:text-left max-w-xl">
-                <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-[#C9A55C]/10 backdrop-blur-sm mb-6 ring-1 ring-[#C9A55C]/30">
-                  <CreditCard className="size-8 text-[#C9A55C]" />
+                <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-[#C8C8D0]/10 backdrop-blur-sm mb-6 ring-1 ring-[#C8C8D0]/30">
+                  <CreditCard className="size-8 text-[#C8C8D0]" />
                 </div>
                 <SectionEyebrow variant="gold">Financiación a tu medida</SectionEyebrow>
-                <h2 className="mt-4 font-serif text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
-                  Financiamos <em className="text-[#C9A55C]">tu moto</em>
+                <h2 className="mt-4 font-heading text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
+                  Financiamos <span className="text-[#C8C8D0]">tu moto</span>
                 </h2>
                 <p className="mt-5 text-base sm:text-lg text-white/80 leading-relaxed">
                   Planes a medida. Financiación propia, con banco o tarjeta. Entregá lo
                   mínimo y lleváte tu vehículo hoy.
                 </p>
                 <GoldDivider variant="thin" className="my-6 max-w-xs mx-auto lg:mx-0" />
-                <p className="text-sm text-white/60 italic">
+                <p className="text-sm text-white/60">
                   Hasta 24 cuotas con planes adaptados a tu presupuesto.
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 shrink-0">
                 <Link
                   href="/financiacion"
-                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-7 py-4 text-sm font-bold text-[#0E0B12] shadow-champagne-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-7 py-4 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
                 >
                   <span
                     aria-hidden
@@ -564,14 +566,14 @@ export default async function HomePage() {
           <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
             <AnimatedSection animation="slide-right" className="flex-1 text-center lg:text-left">
               <SectionEyebrow>Servicio exclusivo</SectionEyebrow>
-              <h2 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white leading-tight text-balance">
-                ¿Querés vender <em className="text-[#6B4F7A]">tu moto</em>?
+              <h2 className="mt-5 font-heading text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white leading-tight text-balance">
+                ¿Querés vender <span className="text-[#6B4F7A]">tu moto</span>?
               </h2>
               <p className="mt-5 text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg mx-auto lg:mx-0 text-base sm:text-lg">
                 Dejala en nuestro local y nosotros nos encargamos de todo. La exhibimos,
                 la publicamos en todos nuestros canales y te avisamos cuando se vende.
               </p>
-              <p className="mt-3 text-sm text-gray-500 dark:text-gray-400 italic font-serif max-w-lg mx-auto lg:mx-0">
+              <p className="mt-3 text-sm text-gray-500 dark:text-gray-400 font-heading max-w-lg mx-auto lg:mx-0">
                 Vos fijás el precio. Nosotros ponemos la vidriera. Cobramos solo al cerrar.
               </p>
               <GoldDivider variant="thin" className="my-7 max-w-xs mx-auto lg:mx-0" />
@@ -596,21 +598,18 @@ export default async function HomePage() {
 
             <AnimatedSection animation="slide-left" className="flex-1 grid grid-cols-2 gap-4 w-full max-w-md">
               {[
-                { icon: "🏍️", titulo: "Tasación gratis", desc: "Sin compromiso" },
-                { icon: "📱", titulo: "Máxima exposición", desc: "Web + redes + local" },
-                { icon: "💰", titulo: "Precio justo", desc: "Vos lo fijás" },
-                { icon: "✅", titulo: "Sin costos fijos", desc: "Comisión al vender" },
+                { Icon: Bike, titulo: "Tasación gratis", desc: "Sin compromiso" },
+                { Icon: TrendingUp, titulo: "Máxima exposición", desc: "Web + redes + local" },
+                { Icon: Banknote, titulo: "Precio justo", desc: "Vos lo fijás" },
+                { Icon: CheckCircle2, titulo: "Sin costos fijos", desc: "Comisión al vender" },
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="group relative rounded-2xl border border-[#6B4F7A]/15 bg-white dark:bg-neutral-900 p-5 hover:border-[#C9A55C]/40 hover:shadow-premium-md transition-all duration-300 overflow-hidden"
+                  className="group relative rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 hover:border-[#6B4F7A]/30 hover:shadow-premium-md transition-all duration-300"
                 >
-                  {/* Corner accent */}
-                  <span
-                    aria-hidden
-                    className="absolute top-0 right-0 w-8 h-8 bg-gradient-to-bl from-[#C9A55C]/0 via-[#C9A55C]/0 to-transparent group-hover:from-[#C9A55C]/30 transition-all"
-                  />
-                  <div className="text-3xl mb-2.5">{item.icon}</div>
+                  <div className="flex items-center justify-center size-11 rounded-xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-3 group-hover:bg-[#6B4F7A] group-hover:text-white transition-colors">
+                    <item.Icon className="size-5" />
+                  </div>
                   <h3 className="text-sm font-bold text-[#1A1A1A] dark:text-white">
                     {item.titulo}
                   </h3>
@@ -630,8 +629,8 @@ export default async function HomePage() {
           <AnimatedSection animation="fade-up">
             <div className="text-center mb-16">
               <SectionEyebrow centered>Desde {BUSINESS.yearFounded}</SectionEyebrow>
-              <h2 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white text-balance leading-tight">
-                ¿Por qué <em className="text-[#6B4F7A]">elegirnos</em>?
+              <h2 className="mt-5 font-heading text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white text-balance leading-tight">
+                ¿Por qué <span className="text-[#6B4F7A]">elegirnos</span>?
               </h2>
               <p className="mt-4 text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
                 Más de {BUSINESS.yearsInBusiness} años de experiencia nos respaldan, con
@@ -670,29 +669,29 @@ export default async function HomePage() {
               },
             ].map((card, idx) => (
               <AnimatedSection key={idx} animation="fade-up" delay={idx * 100}>
-                <article className="group h-full relative flex flex-col items-center text-center p-7 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#C9A55C]/40 hover:shadow-premium-lg transition-all duration-300 overflow-hidden">
+                <article className="group h-full relative flex flex-col items-center text-center p-7 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#C8C8D0]/40 hover:shadow-premium-lg transition-all duration-300 overflow-hidden">
                   {/* Esquinas decorativas dorada */}
                   <span
                     aria-hidden
-                    className="absolute top-0 left-0 w-6 h-px bg-gradient-to-r from-[#C9A55C] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-0 left-0 w-6 h-px bg-gradient-to-r from-[#C8C8D0] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
                   />
                   <span
                     aria-hidden
-                    className="absolute top-0 left-0 w-px h-6 bg-gradient-to-b from-[#C9A55C] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-0 left-0 w-px h-6 bg-gradient-to-b from-[#C8C8D0] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
                   />
                   <span
                     aria-hidden
-                    className="absolute bottom-0 right-0 w-6 h-px bg-gradient-to-l from-[#C9A55C] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute bottom-0 right-0 w-6 h-px bg-gradient-to-l from-[#C8C8D0] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
                   />
                   <span
                     aria-hidden
-                    className="absolute bottom-0 right-0 w-px h-6 bg-gradient-to-t from-[#C9A55C] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute bottom-0 right-0 w-px h-6 bg-gradient-to-t from-[#C8C8D0] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
                   />
 
                   <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] dark:text-[#C39BD3] mb-5 group-hover:bg-gradient-to-br group-hover:from-[#6B4F7A] group-hover:to-[#8B6F9A] group-hover:text-white transition-all duration-300 group-hover:scale-110">
                     <card.icon className="size-7" />
                   </div>
-                  <h3 className="font-serif text-lg font-semibold text-[#1A1A1A] dark:text-white mb-2 leading-tight">
+                  <h3 className="font-heading text-lg font-semibold text-[#1A1A1A] dark:text-white mb-2 leading-tight">
                     {card.title}
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
@@ -712,8 +711,8 @@ export default async function HomePage() {
             <div className="flex items-end justify-between mb-12 flex-wrap gap-4">
               <div>
                 <SectionEyebrow>Blog</SectionEyebrow>
-                <h2 className="mt-4 font-serif text-4xl sm:text-5xl text-[#1A1A1A] dark:text-white leading-tight">
-                  Noticias <em className="text-[#6B4F7A]">recientes</em>
+                <h2 className="mt-4 font-heading text-4xl sm:text-5xl text-[#1A1A1A] dark:text-white leading-tight">
+                  Noticias <span className="text-[#6B4F7A]">recientes</span>
                 </h2>
                 <p className="mt-2 text-gray-500 dark:text-gray-400">
                   Novedades, lanzamientos y consejos del mundo moto
@@ -721,7 +720,7 @@ export default async function HomePage() {
               </div>
               <Link
                 href="/noticias"
-                className="hidden sm:inline-flex items-center gap-1.5 text-sm font-bold text-[#6B4F7A] hover:text-[#C9A55C] transition-colors"
+                className="hidden sm:inline-flex items-center gap-1.5 text-sm font-bold text-[#6B4F7A] hover:text-[#C8C8D0] transition-colors"
               >
                 Ver todas
                 <ArrowRight className="size-4" />
@@ -753,11 +752,11 @@ export default async function HomePage() {
                           />
                         ) : (
                           <div className="flex items-center justify-center h-full bg-gradient-to-br from-[#6B4F7A]/10 to-[#9B59B6]/10">
-                            <span className="font-serif text-3xl text-[#6B4F7A]/40">MF</span>
+                            <span className="font-heading text-3xl text-[#6B4F7A]/40">MF</span>
                           </div>
                         )}
                         {noticia.categoria && (
-                          <div className="absolute top-3 left-3 rounded-full bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-3 py-1 text-[10px] font-bold text-[#0E0B12] uppercase tracking-wide shadow-lg">
+                          <div className="absolute top-3 left-3 rounded-full bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-3 py-1 text-[10px] font-bold text-white uppercase tracking-wide shadow-lg">
                             {noticia.categoria}
                           </div>
                         )}
@@ -770,7 +769,7 @@ export default async function HomePage() {
                             year: "numeric",
                           })}
                         </p>
-                        <h3 className="font-serif text-lg font-semibold text-[#1A1A1A] dark:text-white leading-snug line-clamp-2 group-hover:text-[#6B4F7A] transition-colors">
+                        <h3 className="font-heading text-lg font-semibold text-[#1A1A1A] dark:text-white leading-snug line-clamp-2 group-hover:text-[#6B4F7A] transition-colors">
                           {noticia.titulo}
                         </h3>
                         {noticia.resumen && (
@@ -778,7 +777,7 @@ export default async function HomePage() {
                             {noticia.resumen}
                           </p>
                         )}
-                        <span className="mt-auto pt-4 inline-flex items-center gap-1 text-xs font-bold text-[#C9A55C] group-hover:gap-2 transition-all">
+                        <span className="mt-auto pt-4 inline-flex items-center gap-1 text-xs font-bold text-[#C8C8D0] group-hover:gap-2 transition-all">
                           Leer más <ArrowRight className="size-3" />
                         </span>
                       </div>
@@ -789,7 +788,7 @@ export default async function HomePage() {
               <div className="mt-10 text-center sm:hidden">
                 <Link
                   href="/noticias"
-                  className="inline-flex items-center gap-1.5 text-sm font-bold text-[#6B4F7A] hover:text-[#C9A55C] transition-colors"
+                  className="inline-flex items-center gap-1.5 text-sm font-bold text-[#6B4F7A] hover:text-[#C8C8D0] transition-colors"
                 >
                   Ver todas las noticias
                   <ArrowRight className="size-4" />
@@ -821,8 +820,8 @@ export default async function HomePage() {
         <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
           <AnimatedSection animation="fade-up">
             <SectionEyebrow centered variant="gold">Tu próximo paso</SectionEyebrow>
-            <h2 className="mt-5 font-serif text-4xl sm:text-5xl lg:text-6xl text-white text-balance leading-tight">
-              ¿Listo para dar el <em className="text-[#C9A55C]">siguiente paso</em>?
+            <h2 className="mt-5 font-heading text-4xl sm:text-5xl lg:text-6xl text-white text-balance leading-tight">
+              ¿Listo para dar el <span className="text-[#C8C8D0]">siguiente paso</span>?
             </h2>
             <GoldDivider variant="ornament" className="mt-8" />
             <p className="mt-8 text-lg text-gray-400 max-w-xl mx-auto leading-relaxed">
@@ -832,7 +831,7 @@ export default async function HomePage() {
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <Link
                 href="/contacto"
-                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-8 py-4 text-sm font-bold text-[#0E0B12] shadow-champagne-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-8 py-4 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
               >
                 <span
                   aria-hidden

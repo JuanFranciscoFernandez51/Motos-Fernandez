@@ -63,7 +63,7 @@ export default async function NoticiasPage() {
                         </div>
                       )}
                       {noticia.categoria && (
-                        <span className="absolute top-3 left-3 bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] text-[#0E0B12] text-[10px] font-bold uppercase tracking-wide px-3 py-1 rounded-full shadow-lg">
+                        <span className="absolute top-3 left-3 bg-gradient-to-r from-[#3D2649] to-[#6B4F7A]  text-white text-[10px] font-bold uppercase tracking-wide px-3 py-1 rounded-full shadow-lg">
                           {noticia.categoria}
                         </span>
                       )}
@@ -78,7 +78,7 @@ export default async function NoticiasPage() {
                           year: "numeric",
                         })}
                       </p>
-                      <h2 className="font-serif text-lg font-semibold text-[#1A1A1A] dark:text-white leading-snug group-hover:text-[#6B4F7A] transition-colors line-clamp-2">
+                      <h2 className="font-heading text-lg font-semibold text-[#1A1A1A] dark:text-white leading-snug group-hover:text-[#6B4F7A] transition-colors line-clamp-2">
                         {noticia.titulo}
                       </h2>
                       {noticia.resumen && (
@@ -86,7 +86,7 @@ export default async function NoticiasPage() {
                           {noticia.resumen}
                         </p>
                       )}
-                      <span className="mt-auto pt-4 inline-flex items-center gap-1 text-xs font-bold text-[#C9A55C] group-hover:gap-2 transition-all">
+                      <span className="mt-auto pt-4 inline-flex items-center gap-1 text-xs font-bold text-[#C8C8D0] group-hover:gap-2 transition-all">
                         Leer más <ArrowRight className="size-3" />
                       </span>
                     </div>

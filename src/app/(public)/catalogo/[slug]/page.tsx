@@ -92,17 +92,17 @@ export default async function ModeloDetailPage({ params }: Props) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       {/* Breadcrumb premium */}
-      <div className="relative bg-gradient-to-r from-[#0E0B12] via-[#15121A] to-[#0E0B12] py-4 border-b border-[#C9A55C]/10">
+      <div className="relative bg-gradient-to-r from-[#0E0B12] via-[#15121A] to-[#0E0B12] py-4 border-b border-[#C8C8D0]/10">
         <div
           aria-hidden
-          className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#C9A55C]/30 to-transparent"
+          className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#C8C8D0]/30 to-transparent"
         />
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <nav className="flex items-center gap-2 text-sm text-gray-400">
-            <Link href="/catalogo" className="hover:text-[#C9A55C] transition-colors">
+            <Link href="/catalogo" className="hover:text-[#C8C8D0] transition-colors">
               Catálogo
             </Link>
-            <ChevronRight className="size-3.5 text-[#C9A55C]/50" />
+            <ChevronRight className="size-3.5 text-[#C8C8D0]/50" />
             <span className="text-gray-200">
               {model.marca} {model.nombre}
             </span>
@@ -131,8 +131,8 @@ export default async function ModeloDetailPage({ params }: Props) {
             {/* Info */}
             <div>
               <div className="flex items-start justify-between gap-4">
-                <span className="inline-flex items-center gap-1.5 rounded-md border border-[#C9A55C]/30 bg-[#C9A55C]/5 px-3 py-1 text-xs font-bold text-[#C9A55C] uppercase tracking-[0.18em]">
-                  <span className="size-1 rounded-full bg-[#C9A55C]" />
+                <span className="inline-flex items-center gap-1.5 rounded-md border border-[#C8C8D0]/30 bg-[#C8C8D0]/5 px-3 py-1 text-xs font-bold text-[#C8C8D0] uppercase tracking-[0.18em]">
+                  <span className="size-1 rounded-full bg-[#C8C8D0]" />
                   {model.marca}
                 </span>
                 <div className="flex items-center gap-2">
@@ -175,7 +175,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                   />
                 </div>
               </div>
-              <h1 className="mt-4 font-serif text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white leading-[1.05] text-balance">
+              <h1 className="mt-4 font-heading text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white leading-[1.05] text-balance">
                 {model.nombre}
               </h1>
               <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -314,7 +314,7 @@ export default async function ModeloDetailPage({ params }: Props) {
           {/* Specs table */}
           {Object.keys(specs).length > 0 && (
             <div className="mt-16">
-              <h2 className="font-serif text-3xl sm:text-4xl text-[#1A1A1A] dark:text-white mb-6 leading-tight">
+              <h2 className="font-heading text-3xl sm:text-4xl text-[#1A1A1A] dark:text-white mb-6 leading-tight">
                 Especificaciones tecnicas
               </h2>
               <div className="rounded-xl border border-gray-100 dark:border-neutral-800 overflow-hidden">
@@ -342,7 +342,7 @@ export default async function ModeloDetailPage({ params }: Props) {
           {/* Financiacion plans */}
           {financiacion.length > 0 && (
             <div className="mt-16">
-              <h2 className="font-serif text-3xl sm:text-4xl text-[#1A1A1A] dark:text-white mb-6 leading-tight">
+              <h2 className="font-heading text-3xl sm:text-4xl text-[#1A1A1A] dark:text-white mb-6 leading-tight">
                 Planes de financiacion
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -376,7 +376,7 @@ export default async function ModeloDetailPage({ params }: Props) {
           {/* Related models */}
           {related.length > 0 && (
             <div className="mt-16">
-              <h2 className="font-serif text-3xl sm:text-4xl text-[#1A1A1A] dark:text-white mb-6 leading-tight">
+              <h2 className="font-heading text-3xl sm:text-4xl text-[#1A1A1A] dark:text-white mb-6 leading-tight">
                 Modelos relacionados
               </h2>
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Montserrat, Poppins, Playfair_Display } from "next/font/google"
+import { Montserrat, Poppins } from "next/font/google"
 import localFont from "next/font/local"
 import Script from "next/script"
 import "./globals.css"
@@ -9,7 +9,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 const montserrat = Montserrat({
   variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["500", "600", "700", "800", "900"],
   display: "swap",
 })
 
@@ -17,14 +17,6 @@ const poppins = Poppins({
   variable: "--font-body",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
-  display: "swap",
-})
-
-const playfair = Playfair_Display({
-  variable: "--font-serif",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800", "900"],
-  style: ["normal", "italic"],
   display: "swap",
 })
 
@@ -150,7 +142,7 @@ export default function RootLayout({
   return (
     <html
       lang="es-AR"
-      className={`${montserrat.variable} ${poppins.variable} ${playfair.variable} ${bebasNeue.variable} h-full antialiased`}
+      className={`${montserrat.variable} ${poppins.variable} ${bebasNeue.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

@@ -16,11 +16,11 @@ export default function Page() {
         <div className="absolute -top-32 -right-32 size-[400px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#C9A55C] mb-3">
+          <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#C8C8D0] mb-3">
             Logística propia
           </p>
-          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
-            Envío propio <em className="text-[#C9A55C]">a todo el país</em>
+          <h1 className="font-heading text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
+            Envío propio <span className="text-[#C8C8D0]">a todo el país</span>
           </h1>
           <p className="mt-5 text-base sm:text-lg text-gray-300 max-w-2xl">
             Sin intermediarios: nosotros nos encargamos de que tu pedido llegue

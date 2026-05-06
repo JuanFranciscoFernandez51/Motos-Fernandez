@@ -63,18 +63,18 @@ export default function FinanciacionPage() {
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
         <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C9A55C]/[0.08] blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C8C8D0]/[0.08] blur-3xl pointer-events-none" />
         <Watermark position="right" size="xl" opacity="subtle" className="hidden md:block" />
 
         <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-[#C9A55C]/10 backdrop-blur-sm mb-6 ring-1 ring-[#C9A55C]/30">
-            <CreditCard className="size-8 text-[#C9A55C]" />
+          <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-[#C8C8D0]/10 backdrop-blur-sm mb-6 ring-1 ring-[#C8C8D0]/30">
+            <CreditCard className="size-8 text-[#C8C8D0]" />
           </div>
           <SectionEyebrow centered variant="gold">
             Hasta 24 cuotas
           </SectionEyebrow>
-          <h1 className="mt-5 font-serif text-5xl sm:text-6xl lg:text-7xl text-white text-balance leading-tight">
-            Financiamos <em className="text-[#C9A55C]">tu moto</em>
+          <h1 className="mt-5 font-heading text-5xl sm:text-6xl lg:text-7xl text-white text-balance leading-tight">
+            Financiamos <span className="text-[#C8C8D0]">tu moto</span>
           </h1>
           <GoldDivider variant="ornament" className="mt-7" />
           <p className="mt-7 text-base sm:text-lg text-gray-300 max-w-xl mx-auto leading-relaxed">
@@ -86,7 +86,7 @@ export default function FinanciacionPage() {
               href={getWhatsAppUrl(WHATSAPP_MESSAGES.general)}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#C9A55C] to-[#E2BE6E] px-7 py-3.5 text-sm font-bold text-[#0E0B12] shadow-champagne-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-7 py-3.5 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
             >
               <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
               <MessageCircle className="relative size-5" />
