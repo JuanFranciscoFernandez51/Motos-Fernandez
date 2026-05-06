@@ -135,9 +135,12 @@ export function ImageCropperModal({
 
         {/* Cropper — flex-1 para adaptarse al alto disponible.
             touch-none + overscroll-none evita que el browser robe el gesto
-            (scroll/zoom de página) y deja que react-easy-crop maneje el drag. */}
+            (scroll/zoom de página) y deja que react-easy-crop maneje el drag.
+            objectFit="cover": la foto siempre LLENA el cuadrado de recorte
+            (sin bandas negras) y se puede arrastrar para elegir qué parte
+            mantener. Subí el zoom para tener libertad en ambas direcciones. */}
         <div
-          className="relative w-full flex-1 min-h-[260px] sm:min-h-[380px] bg-gray-900 touch-none overscroll-none"
+          className="relative w-full flex-1 min-h-[300px] sm:min-h-[420px] bg-gray-900 touch-none overscroll-none"
           style={{ touchAction: "none" }}
         >
           <Cropper
@@ -146,12 +149,13 @@ export function ImageCropperModal({
             zoom={zoom}
             aspect={1}
             minZoom={1}
-            maxZoom={3}
+            maxZoom={5}
             onCropChange={setCrop}
             onZoomChange={setZoom}
             onCropComplete={onCropComplete}
-            objectFit="contain"
+            objectFit="cover"
             showGrid
+            restrictPosition
           />
         </div>
 
@@ -163,14 +167,17 @@ export function ImageCropperModal({
               type="range"
               value={zoom}
               min={1}
-              max={3}
+              max={5}
               step={0.05}
               onChange={(e) => setZoom(Number(e.target.value))}
               className="flex-1 accent-[#6B4F7A]"
             />
+            <span className="text-xs font-mono text-gray-500 dark:text-gray-400 shrink-0 w-10 text-right">
+              {zoom.toFixed(1)}x
+            </span>
           </div>
           <p className="text-[11px] text-gray-500 dark:text-gray-400">
-            Arrastrá con un dedo para reposicionar · Pellizcá o usá el slider para zoom
+            Arrastrá la foto con el mouse o un dedo para mover el encuadre · Subí el zoom si necesitás más libertad para mover hacia arriba/abajo
           </p>
           {error && <p className="text-sm text-red-500">{error}</p>}
         </div>
