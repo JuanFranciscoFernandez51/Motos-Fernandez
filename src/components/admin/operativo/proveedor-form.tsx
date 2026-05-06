@@ -399,6 +399,189 @@ export function ProveedorForm({
               />
               Proveedor activo
             </label>
+
+            {/* === Cuentas bancarias === */}
+            <div className="pt-5 mt-5 border-t border-gray-100 dark:border-neutral-800">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Landmark className="size-5 text-[#6B4F7A]" />
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                    Cuentas bancarias
+                    {data.cuentasBancarias.length > 0 && (
+                      <span className="ml-1.5 text-xs font-normal text-gray-500 dark:text-gray-400">
+                        ({data.cuentasBancarias.length})
+                      </span>
+                    )}
+                  </h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={addCuenta}
+                  className="inline-flex items-center gap-1 rounded-md bg-[#6B4F7A] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+                >
+                  <Plus className="size-3.5" />
+                  Agregar
+                </button>
+              </div>
+
+              {data.cuentasBancarias.length === 0 ? (
+                <div className="rounded-lg border border-dashed border-gray-200 dark:border-neutral-800 p-6 text-center">
+                  <Landmark className="size-7 mx-auto text-gray-300 dark:text-gray-600 mb-2" />
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
+                    Sin cuentas bancarias cargadas.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={addCuenta}
+                    className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A]"
+                  >
+                    <Plus className="size-3.5" />
+                    Agregar primera cuenta
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {data.cuentasBancarias.map((c, idx) => (
+                    <div
+                      key={c.id}
+                      className="rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-900/50 p-4 space-y-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B4F7A]">
+                          Cuenta #{idx + 1}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeCuenta(c.id)}
+                          className="text-red-500 hover:text-red-700 dark:text-red-300 transition-colors"
+                          title="Eliminar cuenta"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div className="sm:col-span-2">
+                          <Label className="text-xs">Banco</Label>
+                          <Input
+                            value={c.banco}
+                            onChange={(e) => updateCuenta(c.id, "banco", e.target.value)}
+                            list={`bancos-${c.id}`}
+                            placeholder="Banco Galicia"
+                            className="h-9 text-sm"
+                          />
+                          <datalist id={`bancos-${c.id}`}>
+                            {BANCOS_SUGERIDOS.map((b) => (
+                              <option key={b} value={b} />
+                            ))}
+                          </datalist>
+                        </div>
+                        <div>
+                          <Label className="text-xs">Moneda</Label>
+                          <select
+                            value={c.moneda}
+                            onChange={(e) => updateCuenta(c.id, "moneda", e.target.value)}
+                            className="w-full h-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 text-sm"
+                          >
+                            <option value="ARS">Pesos (ARS)</option>
+                            <option value="USD">Dólares (USD)</option>
+                          </select>
+                        </div>
+                        <div>
+                          <Label className="text-xs">Tipo</Label>
+                          <select
+                            value={c.tipo}
+                            onChange={(e) => updateCuenta(c.id, "tipo", e.target.value)}
+                            className="w-full h-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 text-sm"
+                          >
+                            <option value="CA">Caja de ahorro</option>
+                            <option value="CC">Cuenta corriente</option>
+                            <option value="VIRTUAL">Cuenta virtual</option>
+                          </select>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <Label className="text-xs">Nº de cuenta</Label>
+                          <Input
+                            value={c.numero}
+                            onChange={(e) => updateCuenta(c.id, "numero", e.target.value)}
+                            placeholder="12345/6"
+                            className="h-9 text-sm font-mono"
+                          />
+                        </div>
+                        <div className="sm:col-span-3">
+                          <Label className="text-xs">CBU / CVU</Label>
+                          <div className="flex gap-1.5">
+                            <Input
+                              value={c.cbu}
+                              onChange={(e) => updateCuenta(c.id, "cbu", e.target.value.replace(/\s/g, ""))}
+                              placeholder="0000000000000000000000"
+                              maxLength={22}
+                              className="h-9 text-sm font-mono"
+                            />
+                            {c.cbu && (
+                              <button
+                                type="button"
+                                onClick={() => copiar(c.cbu, `cbu-${c.id}`)}
+                                className="shrink-0 inline-flex items-center justify-center size-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#6B4F7A] hover:bg-[#6B4F7A]/5"
+                                title="Copiar CBU"
+                              >
+                                {copiado === `cbu-${c.id}` ? (
+                                  <Check className="size-4 text-green-600" />
+                                ) : (
+                                  <Copy className="size-4" />
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <div className="sm:col-span-3">
+                          <Label className="text-xs">Alias</Label>
+                          <div className="flex gap-1.5">
+                            <Input
+                              value={c.alias}
+                              onChange={(e) => updateCuenta(c.id, "alias", e.target.value)}
+                              placeholder="proveedor.banco.alias"
+                              className="h-9 text-sm font-mono"
+                            />
+                            {c.alias && (
+                              <button
+                                type="button"
+                                onClick={() => copiar(c.alias, `alias-${c.id}`)}
+                                className="shrink-0 inline-flex items-center justify-center size-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#6B4F7A] hover:bg-[#6B4F7A]/5"
+                                title="Copiar alias"
+                              >
+                                {copiado === `alias-${c.id}` ? (
+                                  <Check className="size-4 text-green-600" />
+                                ) : (
+                                  <Copy className="size-4" />
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <div className="sm:col-span-3">
+                          <Label className="text-xs">Titular</Label>
+                          <Input
+                            value={c.titular}
+                            onChange={(e) => updateCuenta(c.id, "titular", e.target.value)}
+                            placeholder="Razón social del titular"
+                            className="h-9 text-sm"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={addCuenta}
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-dashed border-[#6B4F7A]/40 bg-[#6B4F7A]/5 hover:bg-[#6B4F7A]/10 px-3 py-2 text-xs font-semibold text-[#6B4F7A] transition-colors"
+                  >
+                    <Plus className="size-3.5" />
+                    Agregar otra cuenta
+                  </button>
+                </div>
+              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -522,185 +705,6 @@ export function ProveedorForm({
               >
                 <Plus className="size-3.5" />
                 Agregar otro contacto
-              </button>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Cuentas bancarias - full width */}
-        <Card className="lg:col-span-3">
-          <CardHeader className="flex flex-row items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <Landmark className="size-5 text-[#6B4F7A]" />
-              Cuentas bancarias ({data.cuentasBancarias.length})
-            </CardTitle>
-            <button
-              type="button"
-              onClick={addCuenta}
-              className="inline-flex items-center gap-1 rounded-md bg-[#6B4F7A] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
-            >
-              <Plus className="size-3.5" />
-              Agregar cuenta
-            </button>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {data.cuentasBancarias.length === 0 && (
-              <div className="rounded-lg border border-dashed border-gray-200 dark:border-neutral-800 p-8 text-center">
-                <Landmark className="size-8 mx-auto text-gray-300 dark:text-gray-600 mb-2" />
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                  Sin cuentas bancarias cargadas.
-                </p>
-                <button
-                  type="button"
-                  onClick={addCuenta}
-                  className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A]"
-                >
-                  <Plus className="size-3.5" />
-                  Agregar primera cuenta
-                </button>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {data.cuentasBancarias.map((c, idx) => (
-                <div
-                  key={c.id}
-                  className="rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-900/50 p-4 space-y-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B4F7A]">
-                      Cuenta #{idx + 1}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => removeCuenta(c.id)}
-                      className="text-red-500 hover:text-red-700 dark:text-red-300 transition-colors"
-                      title="Eliminar cuenta"
-                    >
-                      <Trash2 className="size-3.5" />
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                      <Label className="text-xs">Banco</Label>
-                      <Input
-                        value={c.banco}
-                        onChange={(e) => updateCuenta(c.id, "banco", e.target.value)}
-                        list={`bancos-${c.id}`}
-                        placeholder="Banco Galicia"
-                        className="h-9 text-sm"
-                      />
-                      <datalist id={`bancos-${c.id}`}>
-                        {BANCOS_SUGERIDOS.map((b) => (
-                          <option key={b} value={b} />
-                        ))}
-                      </datalist>
-                    </div>
-                    <div>
-                      <Label className="text-xs">Tipo</Label>
-                      <select
-                        value={c.tipo}
-                        onChange={(e) => updateCuenta(c.id, "tipo", e.target.value)}
-                        className="w-full h-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 text-sm"
-                      >
-                        <option value="CA">Caja de ahorro</option>
-                        <option value="CC">Cuenta corriente</option>
-                        <option value="VIRTUAL">Cuenta virtual</option>
-                      </select>
-                    </div>
-                    <div>
-                      <Label className="text-xs">Moneda</Label>
-                      <select
-                        value={c.moneda}
-                        onChange={(e) => updateCuenta(c.id, "moneda", e.target.value)}
-                        className="w-full h-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 text-sm"
-                      >
-                        <option value="ARS">Pesos (ARS)</option>
-                        <option value="USD">Dólares (USD)</option>
-                      </select>
-                    </div>
-                    <div>
-                      <Label className="text-xs">Nº de cuenta</Label>
-                      <Input
-                        value={c.numero}
-                        onChange={(e) => updateCuenta(c.id, "numero", e.target.value)}
-                        placeholder="12345/6"
-                        className="h-9 text-sm font-mono"
-                      />
-                    </div>
-                    <div className="sm:col-span-2">
-                      <Label className="text-xs">CBU / CVU</Label>
-                      <div className="flex gap-1.5">
-                        <Input
-                          value={c.cbu}
-                          onChange={(e) => updateCuenta(c.id, "cbu", e.target.value.replace(/\s/g, ""))}
-                          placeholder="0000000000000000000000"
-                          maxLength={22}
-                          className="h-9 text-sm font-mono"
-                        />
-                        {c.cbu && (
-                          <button
-                            type="button"
-                            onClick={() => copiar(c.cbu, `cbu-${c.id}`)}
-                            className="shrink-0 inline-flex items-center justify-center size-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#6B4F7A] hover:bg-[#6B4F7A]/5"
-                            title="Copiar CBU"
-                          >
-                            {copiado === `cbu-${c.id}` ? (
-                              <Check className="size-4 text-green-600" />
-                            ) : (
-                              <Copy className="size-4" />
-                            )}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <Label className="text-xs">Alias</Label>
-                      <div className="flex gap-1.5">
-                        <Input
-                          value={c.alias}
-                          onChange={(e) => updateCuenta(c.id, "alias", e.target.value)}
-                          placeholder="proveedor.banco.alias"
-                          className="h-9 text-sm font-mono"
-                        />
-                        {c.alias && (
-                          <button
-                            type="button"
-                            onClick={() => copiar(c.alias, `alias-${c.id}`)}
-                            className="shrink-0 inline-flex items-center justify-center size-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#6B4F7A] hover:bg-[#6B4F7A]/5"
-                            title="Copiar alias"
-                          >
-                            {copiado === `alias-${c.id}` ? (
-                              <Check className="size-4 text-green-600" />
-                            ) : (
-                              <Copy className="size-4" />
-                            )}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                    <div className="sm:col-span-2">
-                      <Label className="text-xs">Titular</Label>
-                      <Input
-                        value={c.titular}
-                        onChange={(e) => updateCuenta(c.id, "titular", e.target.value)}
-                        placeholder="Razón social del titular"
-                        className="h-9 text-sm"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {data.cuentasBancarias.length > 0 && (
-              <button
-                type="button"
-                onClick={addCuenta}
-                className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-dashed border-[#6B4F7A]/40 bg-[#6B4F7A]/5 hover:bg-[#6B4F7A]/10 px-3 py-2.5 text-sm font-semibold text-[#6B4F7A] transition-colors"
-              >
-                <Plus className="size-4" />
-                Agregar otra cuenta
               </button>
             )}
           </CardContent>
