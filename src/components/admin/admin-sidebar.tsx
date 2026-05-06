@@ -57,15 +57,18 @@ const isGroup = (e: NavEntry): e is NavGroup => "items" in e
 const navEntries: NavEntry[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
 
+  // Pedidos online — acceso directo de primer nivel
+  { href: "/admin/pedidos", label: "Pedidos", icon: Package },
+
   // Operaciones diarias del negocio
   {
     id: "operaciones",
     label: "Operaciones",
     icon: ListChecks,
     items: [
-      { href: "/admin/clientes", label: "Clientes", icon: UserCircle },
-      { href: "/admin/ordenes-compra", label: "Órdenes de compra", icon: Receipt },
       { href: "/admin/mandatos", label: "Mandatos de venta", icon: FileText },
+      { href: "/admin/ordenes-compra", label: "Órdenes de compra", icon: Receipt },
+      { href: "/admin/clientes", label: "Clientes", icon: UserCircle },
       { href: "/admin/proveedores", label: "Proveedores", icon: TruckIcon },
     ],
   },
@@ -76,8 +79,18 @@ const navEntries: NavEntry[] = [
     icon: Bike,
     items: [
       { href: "/admin/modelos", label: "Modelos", icon: Bike },
-      { href: "/admin/productos", label: "Productos tienda", icon: ShoppingBag },
-      { href: "/admin/pedidos", label: "Pedidos online", icon: Package },
+      { href: "/admin/productos", label: "Productos de tienda", icon: ShoppingBag },
+    ],
+  },
+  // Taller
+  {
+    id: "taller",
+    label: "Taller",
+    icon: Wrench,
+    items: [
+      { href: "/admin/taller", label: "Órdenes", icon: FileText },
+      { href: "/admin/turnos", label: "Turnos", icon: CalendarClock },
+      { href: "/admin/taller/tipos-servicio", label: "Tipos de servicio", icon: Tag },
     ],
   },
   // Tesorería: cobranzas, financiaciones
@@ -88,17 +101,6 @@ const navEntries: NavEntry[] = [
     items: [
       { href: "/admin/tesoreria", label: "Resumen", icon: LayoutDashboard },
       { href: "/admin/tesoreria/financiaciones", label: "Financiaciones", icon: CreditCard },
-    ],
-  },
-  // Taller
-  {
-    id: "taller",
-    label: "Taller",
-    icon: Wrench,
-    items: [
-      { href: "/admin/taller", label: "Órdenes de trabajo", icon: FileText },
-      { href: "/admin/taller/tipos-servicio", label: "Tipos de servicio", icon: Tag },
-      { href: "/admin/turnos", label: "Turnos", icon: CalendarClock },
     ],
   },
   // Marketing y comunicación
