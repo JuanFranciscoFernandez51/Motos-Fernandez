@@ -1,11 +1,39 @@
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
+import { revalidatePath } from "next/cache"
 import { Button } from "@/components/ui/button"
 import { Plus, Wrench, ListOrdered } from "lucide-react"
 import { OrdenesList } from "./ordenes-list"
 import { nombreCompleto } from "@/lib/admin-helpers"
 
 export const dynamic = "force-dynamic"
+
+// Server action: cambiar el estado de una OT desde la lista (inline).
+async function updateEstadoOT(id: string, nuevoEstado: string) {
+  "use server"
+  const estadosValidos = [
+    "INGRESADA", "EN_DIAGNOSTICO", "PRESUPUESTADA", "APROBADA",
+    "EN_REPARACION", "LISTA", "ENTREGADA", "CANCELADA",
+  ] as const
+  if (!estadosValidos.includes(nuevoEstado as typeof estadosValidos[number])) {
+    return { error: "Estado inválido" }
+  }
+  // Si pasa a ENTREGADA y no tiene fechaEntrega, set ahora.
+  const data: { estado: typeof estadosValidos[number]; fechaEntrega?: Date } = {
+    estado: nuevoEstado as typeof estadosValidos[number],
+  }
+  if (nuevoEstado === "ENTREGADA") {
+    const ot = await prisma.ordenTrabajo.findUnique({
+      where: { id },
+      select: { fechaEntrega: true },
+    })
+    if (ot && !ot.fechaEntrega) data.fechaEntrega = new Date()
+  }
+  await prisma.ordenTrabajo.update({ where: { id }, data })
+  revalidatePath("/admin/taller")
+  revalidatePath(`/admin/taller/${id}`)
+  return {}
+}
 
 export default async function TallerPage() {
   const ordenes = await prisma.ordenTrabajo.findMany({
@@ -47,6 +75,7 @@ export default async function TallerPage() {
       </div>
 
       <OrdenesList
+        updateEstado={updateEstadoOT}
         ordenes={ordenes.map((ot) => ({
           id: ot.id,
           numero: ot.numero,

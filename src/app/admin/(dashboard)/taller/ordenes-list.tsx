@@ -1,9 +1,9 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useTransition } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
   Table,
@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Search, X, Pencil, FileText, Wrench } from "lucide-react"
+import { Search, X, Pencil, FileText, Wrench, MessageCircle, Loader2 } from "lucide-react"
 import {
   formatDate,
   formatMoney,
@@ -21,6 +21,24 @@ import {
   ESTADO_OT_STYLES,
   ESTADO_OT_LABELS,
 } from "@/lib/admin-helpers"
+
+/**
+ * Normaliza teléfono argentino al formato wa.me (E.164 sin +).
+ */
+function normalizarParaWhatsApp(tel: string): string {
+  let n = tel.replace(/[^\d]/g, "")
+  if (n.startsWith("0")) n = n.slice(1)
+  let isMobile = false
+  if (n.startsWith("15")) {
+    n = n.slice(2)
+    isMobile = true
+  }
+  if (!n.startsWith("54")) n = "54" + n
+  if (isMobile && n.startsWith("54") && !n.startsWith("549")) {
+    n = "549" + n.slice(2)
+  }
+  return n
+}
 
 type Row = {
   id: string
@@ -45,9 +63,27 @@ const FILTROS: { id: string; label: string; estado: string | null; color: string
   { id: "entregadas", label: "Entregadas", estado: "ENTREGADA", color: "gray-400" },
 ]
 
-export function OrdenesList({ ordenes }: { ordenes: Row[] }) {
+export function OrdenesList({
+  ordenes,
+  updateEstado,
+}: {
+  ordenes: Row[]
+  updateEstado: (id: string, nuevoEstado: string) => Promise<{ error?: string } | void>
+}) {
+  const router = useRouter()
   const [query, setQuery] = useState("")
   const [filterId, setFilterId] = useState("todas")
+  const [isPending, startTransition] = useTransition()
+  const [updatingId, setUpdatingId] = useState<string | null>(null)
+
+  const handleEstadoChange = (id: string, nuevoEstado: string) => {
+    setUpdatingId(id)
+    startTransition(async () => {
+      await updateEstado(id, nuevoEstado)
+      setUpdatingId(null)
+      router.refresh()
+    })
+  }
 
   const counts = useMemo(() => {
     const enCurso = ordenes.filter((o) =>
@@ -186,7 +222,20 @@ export function OrdenesList({ ordenes }: { ordenes: Row[] }) {
                   <TableCell>
                     <p className="text-sm">{o.clienteNombre}</p>
                     {o.clienteTelefono && (
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{o.clienteTelefono}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <span className="text-xs text-gray-500 dark:text-gray-400">{o.clienteTelefono}</span>
+                        <a
+                          href={`https://wa.me/${normalizarParaWhatsApp(o.clienteTelefono)}?text=${encodeURIComponent(`Hola, te escribo de Motos Fernández por la OT ${formatNumero("OT", o.numero)} de tu ${o.motoMarca} ${o.motoModelo}.`)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center justify-center size-5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900/60 transition-colors"
+                          title={`Abrir WhatsApp con ${o.clienteTelefono}`}
+                          aria-label="Abrir WhatsApp"
+                        >
+                          <MessageCircle className="size-3" />
+                        </a>
+                      </div>
                     )}
                   </TableCell>
                   <TableCell className="text-xs">{o.tipoServicio || "—"}</TableCell>
@@ -201,9 +250,23 @@ export function OrdenesList({ ordenes }: { ordenes: Row[] }) {
                     )}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className={ESTADO_OT_STYLES[o.estado]}>
-                      {ESTADO_OT_LABELS[o.estado]}
-                    </Badge>
+                    <div className="relative">
+                      <select
+                        value={o.estado}
+                        onChange={(e) => handleEstadoChange(o.id, e.target.value)}
+                        disabled={isPending && updatingId === o.id}
+                        className={`text-xs font-semibold rounded-md px-2 py-1 pr-7 border-0 cursor-pointer appearance-none ${ESTADO_OT_STYLES[o.estado]} disabled:opacity-50`}
+                      >
+                        {Object.entries(ESTADO_OT_LABELS).map(([k, v]) => (
+                          <option key={k} value={k}>{v}</option>
+                        ))}
+                      </select>
+                      {isPending && updatingId === o.id ? (
+                        <Loader2 className="size-3 absolute right-1.5 top-1/2 -translate-y-1/2 animate-spin pointer-events-none" />
+                      ) : (
+                        <span className="absolute right-1.5 top-1/2 -translate-y-1/2 text-[10px] pointer-events-none opacity-60">▼</span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="text-xs text-gray-500 dark:text-gray-400">{formatDate(o.fechaIngreso)}</TableCell>
                   <TableCell>
