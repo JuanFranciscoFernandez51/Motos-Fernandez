@@ -107,6 +107,19 @@ async function markVendida(id: string, vendida: boolean) {
 }
 
 // Server action: crear OC desde el catálogo (con cliente, parte de pago, etc.)
+type PermutaInput = {
+  marca: string | null
+  modelo: string | null
+  anio: number | null
+  kilometros: number | null
+  patente: string | null
+  chasis: string | null
+  motor: string | null
+  descripcion: string | null
+  valor: number | null
+  subirAlStock: boolean
+}
+
 type CrearOCDesdeModeloInput = {
   modeloId: string
   clienteId: string
@@ -118,21 +131,18 @@ type CrearOCDesdeModeloInput = {
   detallePago: string | null
   estado: "BORRADOR" | "RESERVADA" | "CONCRETADA"
   observaciones: string | null
-  // Permuta / parte de pago
-  permutaDescripcion: string | null
-  permutaValor: number | null
-  subirPermutaAStock: boolean
-  permutaMarca: string | null
-  permutaModelo: string | null
-  permutaAnio: number | null
-  permutaKm: number | null
-  permutaPatente: string | null
-  permutaChasis: string | null
-  permutaMotor: string | null
+  // Permutas (N) — cada una puede o no subirse al stock
+  permutas: PermutaInput[]
   // Financiación
   cuotas: number | null
   valorCuota: number | null
   entrega: number | null
+  // Garante (opcional, solo si hay financiación)
+  garanteNombre: string | null
+  garanteApellido: string | null
+  garanteDni: string | null
+  garanteTelefono: string | null
+  garanteDireccion: string | null
 }
 
 async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
@@ -156,6 +166,21 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
 
     const motoDescripcion = `${modelo.marca} ${modelo.nombre}${modelo.anio ? ` ${modelo.anio}` : ""}`
 
+    // Resumen agregado de las permutas (suma valores + texto resumen) para
+    // los campos legacy permutaDescripcion/permutaValor (compat con OCs viejas).
+    const sumaPermutas = input.permutas.reduce((s, p) => s + (p.valor || 0), 0) || null
+    const resumenPermutas =
+      input.permutas.length > 0
+        ? input.permutas
+            .map((p, i) => {
+              const partes = [p.marca, p.modelo, p.anio ? String(p.anio) : null]
+                .filter(Boolean)
+                .join(" ")
+              return `${i + 1}) ${partes || "Permuta"} — $${(p.valor ?? 0).toLocaleString("es-AR")}`
+            })
+            .join("\n")
+        : null
+
     // Transaction: todo o nada
     const result = await prisma.$transaction(async (tx) => {
       // 1) Crear la OC
@@ -175,8 +200,10 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
           sena: input.sena,
           saldo: input.saldo,
           detallePago: input.detallePago,
-          permutaDescripcion: input.permutaDescripcion,
-          permutaValor: input.permutaValor,
+          // Legacy: agregamos resumen y suma para compat con código que aún lee
+          // estos campos. La fuente de verdad ahora es la tabla OCPermuta.
+          permutaDescripcion: resumenPermutas,
+          permutaValor: sumaPermutas,
           cuotas: input.cuotas,
           valorCuota: input.valorCuota,
           entrega: input.entrega,
@@ -186,62 +213,74 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
         },
       })
 
-      // 2) Si hay parte de pago + se sube a stock → crear nuevo Modelo
-      let motoRecibidaId: string | null = null
-      if (
-        input.subirPermutaAStock &&
-        input.permutaMarca &&
-        input.permutaModelo
-      ) {
-        // Generar slug secuencial mf-XXXX continuando el ultimo que haya en
-        // el catalogo. Ejemplo: si el ultimo es mf-0023, el nuevo es mf-0024.
-        // Si no hay ninguno con ese formato, empieza en mf-0001.
-        const ultimosMF = await tx.modelo.findMany({
-          where: { slug: { startsWith: "mf-" } },
-          select: { slug: true },
+      // 2) Crear cada permuta (con o sin subir al stock)
+      // Calculo el siguiente slug mf-XXXX una sola vez, e incremento por cada
+      // moto que tenga subirAlStock=true.
+      const ultimosMF = await tx.modelo.findMany({
+        where: { slug: { startsWith: "mf-" } },
+        select: { slug: true },
+      })
+      const numerosMF = ultimosMF
+        .map((m) => {
+          const match = m.slug.match(/^mf-(\d+)$/i)
+          return match ? parseInt(match[1], 10) : 0
         })
-        const numeros = ultimosMF
-          .map((m) => {
-            const match = m.slug.match(/^mf-(\d+)$/i)
-            return match ? parseInt(match[1], 10) : 0
+        .filter((n) => n > 0)
+      let proximoMF = numerosMF.length > 0 ? Math.max(...numerosMF) + 1 : 1
+      const placeholderFoto = "/images/logo-clasico.png"
+
+      const motosRecibidasIds: string[] = []
+      for (const p of input.permutas) {
+        let motoRecibidaId: string | null = null
+        if (p.subirAlStock && p.marca && p.modelo) {
+          const slug = `mf-${String(proximoMF).padStart(4, "0")}`
+          proximoMF++
+          const motoRecibida = await tx.modelo.create({
+            data: {
+              nombre: p.modelo,
+              slug,
+              marca: p.marca,
+              condicion: "USADA",
+              anio: p.anio,
+              kilometros: p.kilometros,
+              patente: p.patente,
+              chasis: p.chasis,
+              motor: p.motor,
+              precio: p.valor,
+              moneda: input.moneda,
+              activo: false,
+              fotos: [placeholderFoto],
+              origen: "PARTE_DE_PAGO",
+              clienteEntregaId: input.clienteId,
+              ordenCompraOrigenId: orden.id,
+              etiqueta: null,
+            },
           })
-          .filter((n) => n > 0)
-        const proximo = numeros.length > 0 ? Math.max(...numeros) + 1 : 1
-        const slug = `mf-${String(proximo).padStart(4, "0")}`
-
-        // Foto placeholder (logo) si no hay foto
-        const placeholderFoto = "/images/logo-clasico.png"
-
-        const motoRecibida = await tx.modelo.create({
+          motoRecibidaId = motoRecibida.id
+          motosRecibidasIds.push(motoRecibida.id)
+        }
+        await tx.oCPermuta.create({
           data: {
-            nombre: input.permutaModelo,
-            slug,
-            marca: input.permutaMarca,
-            condicion: "USADA",
-            anio: input.permutaAnio,
-            kilometros: input.permutaKm,
-            patente: input.permutaPatente,
-            chasis: input.permutaChasis,
-            motor: input.permutaMotor,
-            precio: input.permutaValor,
-            moneda: input.moneda,
-            // Inactiva por default — Francisco la activa cuando suba fotos buenas
-            activo: false,
-            fotos: [placeholderFoto],
-            // Trazabilidad
-            origen: "PARTE_DE_PAGO",
-            clienteEntregaId: input.clienteId,
-            ordenCompraOrigenId: orden.id,
-            // Etiqueta para que se vea que falta info
-            etiqueta: null,
+            ordenCompraId: orden.id,
+            marca: p.marca,
+            modelo: p.modelo,
+            anio: p.anio,
+            kilometros: p.kilometros,
+            patente: p.patente,
+            chasis: p.chasis,
+            motor: p.motor,
+            descripcion: p.descripcion,
+            valor: p.valor ?? 0,
+            motoRecibidaId,
           },
         })
-        motoRecibidaId = motoRecibida.id
-
-        // Linkear desde la OC
+      }
+      // Compat: si hay al menos una moto recibida, linkeamos la PRIMERA en
+      // el campo legacy motoRecibidaId de OC (para que código viejo no se rompa).
+      if (motosRecibidasIds.length > 0) {
         await tx.ordenCompra.update({
           where: { id: orden.id },
-          data: { motoRecibidaId: motoRecibida.id },
+          data: { motoRecibidaId: motosRecibidasIds[0] },
         })
       }
 
@@ -249,11 +288,7 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
       if (input.estado === "CONCRETADA") {
         await tx.modelo.update({
           where: { id: input.modeloId },
-          data: {
-            vendida: true,
-            fechaVenta: new Date(),
-            activo: false,
-          },
+          data: { vendida: true, fechaVenta: new Date(), activo: false },
         })
       } else if (input.estado === "RESERVADA") {
         await tx.modelo.update({
@@ -262,7 +297,7 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
         })
       }
 
-      // 4) Si tiene financiación → crear planilla en tesorería
+      // 4) Si tiene financiación → crear planilla en tesorería con garante
       await crearFinanciacionDesdeOC(tx, {
         id: orden.id,
         clienteId: orden.clienteId,
@@ -273,9 +308,14 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
         entrega: orden.entrega,
         precioVenta: orden.precioVenta,
         moneda: orden.moneda,
+        garanteNombre: input.garanteNombre,
+        garanteApellido: input.garanteApellido,
+        garanteDni: input.garanteDni,
+        garanteTelefono: input.garanteTelefono,
+        garanteDireccion: input.garanteDireccion,
       })
 
-      return { ordenId: orden.id, motoRecibidaId }
+      return { ordenId: orden.id, motoRecibidaId: motosRecibidasIds[0] || null }
     })
 
     revalidatePath("/admin/modelos")

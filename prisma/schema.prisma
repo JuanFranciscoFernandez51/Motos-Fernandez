@@ -77,6 +77,7 @@ model Modelo {
   mandato        MandatoVenta?  @relation("MandatoModelo")
   ordenesCompra  OrdenCompra[]
   ocComoMotoRecibida OrdenCompra[] @relation("MotoRecibidaOC")
+  ocPermuta      OCPermuta? @relation("OCPermutaMotoRecibida")
   ordenesTrabajo OrdenTrabajo[]
 }
 
@@ -538,6 +539,13 @@ model FinanciacionOC {
   // Cuotas relacionadas
   cuotas          CuotaFinanciacion[]
 
+  // Garante (opcional, texto libre)
+  garanteNombre    String?
+  garanteApellido  String?
+  garanteDni       String?
+  garanteTelefono  String?
+  garanteDireccion String?
+
   observaciones   String?  @db.Text
 
   createdAt       DateTime @default(now())
@@ -748,6 +756,12 @@ model OrdenCompra {
   // Financiación vinculada (si la OC tiene cuotas)
   financiacion    FinanciacionOC?
 
+  // Permutas (parte de pago) — N motos que el cliente entrega como
+  // parte del pago. Permite que una OC tenga 0, 1 o varias.
+  // Los campos legacy permutaDescripcion, permutaValor, motoRecibidaId
+  // se siguen usando para OCs viejas con una sola permuta.
+  permutas        OCPermuta[]
+
   observaciones   String?   @db.Text
 
   createdAt DateTime @default(now())
@@ -765,6 +779,34 @@ enum EstadoVenta {
   RESERVADA       // seña pagada, falta saldo/entrega
   CONCRETADA      // vendida y entregada
   CANCELADA
+}
+
+// ==================== PERMUTAS (parte de pago) ====================
+// Una OC puede tener N permutas (motos que el cliente entrega como pago).
+// Cada permuta puede o no subirse al stock como moto usada.
+model OCPermuta {
+  id            String      @id @default(cuid())
+  ordenCompraId String
+  ordenCompra   OrdenCompra @relation(fields: [ordenCompraId], references: [id], onDelete: Cascade)
+
+  // Datos de la moto entregada
+  marca         String?
+  modelo        String?
+  anio          Int?
+  kilometros    Int?
+  patente       String?
+  chasis        String?
+  motor         String?
+  descripcion   String?     @db.Text
+  valor         Int         // valor tomado por esta permuta
+
+  // Si se subió al stock como moto usada → linkeo
+  motoRecibidaId String?    @unique
+  motoRecibida   Modelo?    @relation("OCPermutaMotoRecibida", fields: [motoRecibidaId], references: [id])
+
+  createdAt     DateTime    @default(now())
+
+  @@index([ordenCompraId])
 }
 
 // ==================== TALLER - ÓRDENES DE TRABAJO ====================

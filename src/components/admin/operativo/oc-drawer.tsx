@@ -34,6 +34,20 @@ type Props = {
   }>
 }
 
+// Una permuta dentro de la OC. La OC puede tener N permutas.
+export type PermutaInput = {
+  marca: string | null
+  modelo: string | null
+  anio: number | null
+  kilometros: number | null
+  patente: string | null
+  chasis: string | null
+  motor: string | null
+  descripcion: string | null
+  valor: number | null
+  subirAlStock: boolean
+}
+
 type CrearOCInput = {
   modeloId: string
   clienteId: string
@@ -45,19 +59,18 @@ type CrearOCInput = {
   detallePago: string | null
   estado: "BORRADOR" | "RESERVADA" | "CONCRETADA"
   observaciones: string | null
-  permutaDescripcion: string | null
-  permutaValor: number | null
-  subirPermutaAStock: boolean
-  permutaMarca: string | null
-  permutaModelo: string | null
-  permutaAnio: number | null
-  permutaKm: number | null
-  permutaPatente: string | null
-  permutaChasis: string | null
-  permutaMotor: string | null
+  // Permutas (N): si formaPago incluye permuta. Vacio si no aplica.
+  permutas: PermutaInput[]
+  // Financiación
   cuotas: number | null
   valorCuota: number | null
   entrega: number | null
+  // Garante (opcional, solo aplica si hay financiación)
+  garanteNombre: string | null
+  garanteApellido: string | null
+  garanteDni: string | null
+  garanteTelefono: string | null
+  garanteDireccion: string | null
 }
 
 export function OCDrawer({
@@ -85,22 +98,37 @@ export function OCDrawer({
   const [saldo, setSaldo] = useState("")
   const [detallePago, setDetallePago] = useState("")
 
-  // Permuta
-  const [subirPermutaAStock, setSubirPermutaAStock] = useState(true)
-  const [permutaMarca, setPermutaMarca] = useState("")
-  const [permutaModelo, setPermutaModelo] = useState("")
-  const [permutaAnio, setPermutaAnio] = useState("")
-  const [permutaKm, setPermutaKm] = useState("")
-  const [permutaPatente, setPermutaPatente] = useState("")
-  const [permutaChasis, setPermutaChasis] = useState("")
-  const [permutaMotor, setPermutaMotor] = useState("")
-  const [permutaValor, setPermutaValor] = useState("")
-  const [permutaDescripcion, setPermutaDescripcion] = useState("")
+  // Permutas (array). Cada item es un parte de pago. Usar string para inputs;
+  // se parsea a number al enviar.
+  type PermutaForm = {
+    marca: string
+    modelo: string
+    anio: string
+    km: string
+    patente: string
+    chasis: string
+    motor: string
+    valor: string
+    descripcion: string
+    subirAlStock: boolean
+  }
+  const permutaVacia = (): PermutaForm => ({
+    marca: "", modelo: "", anio: "", km: "", patente: "",
+    chasis: "", motor: "", valor: "", descripcion: "", subirAlStock: true,
+  })
+  const [permutas, setPermutas] = useState<PermutaForm[]>([permutaVacia()])
 
   // Financiación
   const [entrega, setEntrega] = useState("")
   const [cuotas, setCuotas] = useState("")
   const [valorCuota, setValorCuota] = useState("")
+
+  // Garante (opcional, solo se muestra si hay financiación)
+  const [garanteNombre, setGaranteNombre] = useState("")
+  const [garanteApellido, setGaranteApellido] = useState("")
+  const [garanteDni, setGaranteDni] = useState("")
+  const [garanteTelefono, setGaranteTelefono] = useState("")
+  const [garanteDireccion, setGaranteDireccion] = useState("")
 
   // Estado y observaciones
   const [estado, setEstado] = useState<"BORRADOR" | "RESERVADA" | "CONCRETADA">("CONCRETADA")
@@ -117,35 +145,34 @@ export function OCDrawer({
       setSena("")
       setSaldo("")
       setDetallePago("")
-      setSubirPermutaAStock(true)
-      setPermutaMarca("")
-      setPermutaModelo("")
-      setPermutaAnio("")
-      setPermutaKm("")
-      setPermutaPatente("")
-      setPermutaChasis("")
-      setPermutaMotor("")
-      setPermutaValor("")
-      setPermutaDescripcion("")
+      setPermutas([permutaVacia()])
       setEntrega("")
       setCuotas("")
       setValorCuota("")
+      setGaranteNombre("")
+      setGaranteApellido("")
+      setGaranteDni("")
+      setGaranteTelefono("")
+      setGaranteDireccion("")
       setEstado("CONCRETADA")
       setObservaciones("")
     }
   }, [open, modelo])
 
+  // Suma de permutas válidas (con valor > 0)
+  const totalPermutas = permutas.reduce((sum, pp) => sum + (parseInt(pp.valor) || 0), 0)
+
   // Auto-calcular saldo
   useEffect(() => {
     const p = parseInt(precioVenta) || 0
     const s = parseInt(sena) || 0
-    const v = parseInt(permutaValor) || 0
+    const v = totalPermutas
     const e = parseInt(entrega) || 0
     if (p > 0) {
       const saldoCalc = p - s - v - e
       setSaldo(saldoCalc > 0 ? String(saldoCalc) : "")
     }
-  }, [precioVenta, sena, permutaValor, entrega])
+  }, [precioVenta, sena, totalPermutas, entrega])
 
   // Auto-sugerir estado según seña
   useEffect(() => {
@@ -188,10 +215,39 @@ export function OCDrawer({
     }
 
     const hayPermuta = formaPago === "Permuta" || formaPago === "Mixta"
-    if (hayPermuta && subirPermutaAStock && (!permutaMarca.trim() || !permutaModelo.trim())) {
-      setError("Para subir la moto recibida al stock, completá al menos marca y modelo")
+
+    // Filtrar permutas validas (al menos algun dato cargado o valor > 0)
+    const permutasFiltradas = hayPermuta
+      ? permutas
+          .filter((pp) => pp.marca.trim() || pp.modelo.trim() || pp.valor.trim())
+          .map((pp) => ({
+            marca: pp.marca.trim() || null,
+            modelo: pp.modelo.trim() || null,
+            anio: num(pp.anio),
+            kilometros: num(pp.km),
+            patente: pp.patente.trim().toUpperCase() || null,
+            chasis: pp.chasis.trim() || null,
+            motor: pp.motor.trim() || null,
+            descripcion: pp.descripcion.trim() || null,
+            valor: num(pp.valor),
+            subirAlStock: pp.subirAlStock,
+          }))
+      : []
+
+    if (hayPermuta && permutasFiltradas.length === 0) {
+      setError("Cargá al menos una permuta o cambiá la forma de pago")
       return
     }
+    // Si alguna se sube al stock, debe tener marca y modelo
+    const incompleta = permutasFiltradas.find(
+      (pp) => pp.subirAlStock && (!pp.marca || !pp.modelo)
+    )
+    if (incompleta) {
+      setError("Para subir una moto al stock, completá al menos marca y modelo")
+      return
+    }
+
+    const hayFin = formaPago === "Financiado" || formaPago === "Mixta"
 
     startTransition(async () => {
       const result = await crearOCDesdeModelo({
@@ -205,19 +261,15 @@ export function OCDrawer({
         detallePago: detallePago.trim() || null,
         estado,
         observaciones: observaciones.trim() || null,
-        permutaDescripcion: hayPermuta ? (permutaDescripcion.trim() || null) : null,
-        permutaValor: hayPermuta ? num(permutaValor) : null,
-        subirPermutaAStock: hayPermuta && subirPermutaAStock,
-        permutaMarca: hayPermuta ? (permutaMarca.trim() || null) : null,
-        permutaModelo: hayPermuta ? (permutaModelo.trim() || null) : null,
-        permutaAnio: hayPermuta ? num(permutaAnio) : null,
-        permutaKm: hayPermuta ? num(permutaKm) : null,
-        permutaPatente: hayPermuta ? (permutaPatente.trim().toUpperCase() || null) : null,
-        permutaChasis: hayPermuta ? (permutaChasis.trim() || null) : null,
-        permutaMotor: hayPermuta ? (permutaMotor.trim() || null) : null,
-        cuotas: formaPago === "Financiado" || formaPago === "Mixta" ? num(cuotas) : null,
-        valorCuota: formaPago === "Financiado" || formaPago === "Mixta" ? num(valorCuota) : null,
-        entrega: formaPago === "Financiado" || formaPago === "Mixta" ? num(entrega) : null,
+        permutas: permutasFiltradas,
+        cuotas: hayFin ? num(cuotas) : null,
+        valorCuota: hayFin ? num(valorCuota) : null,
+        entrega: hayFin ? num(entrega) : null,
+        garanteNombre: hayFin ? (garanteNombre.trim() || null) : null,
+        garanteApellido: hayFin ? (garanteApellido.trim() || null) : null,
+        garanteDni: hayFin ? (garanteDni.trim() || null) : null,
+        garanteTelefono: hayFin ? (garanteTelefono.trim() || null) : null,
+        garanteDireccion: hayFin ? (garanteDireccion.trim() || null) : null,
       })
 
       if (result?.error) {
@@ -416,111 +468,148 @@ export function OCDrawer({
                 </div>
               </section>
 
-              {/* Permuta */}
+              {/* Permutas (parte de pago) — pueden ser varias */}
               {hayPermuta && (
                 <section className="space-y-3 rounded-lg border border-purple-200 dark:border-purple-900/40 bg-purple-50/50 dark:bg-purple-950/20 p-4">
-                  <h3 className="text-sm font-semibold text-purple-900 dark:text-purple-200 flex items-center gap-2">
-                    🔄 Parte de pago (moto que entrega el cliente)
-                  </h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <Label htmlFor="permutaMarca">Marca</Label>
-                      <Input
-                        id="permutaMarca"
-                        value={permutaMarca}
-                        onChange={(e) => setPermutaMarca(e.target.value)}
-                        placeholder="Honda"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="permutaModelo">Modelo</Label>
-                      <Input
-                        id="permutaModelo"
-                        value={permutaModelo}
-                        onChange={(e) => setPermutaModelo(e.target.value)}
-                        placeholder="Wave 110"
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="permutaAnio">Año</Label>
-                      <Input
-                        id="permutaAnio"
-                        type="number"
-                        value={permutaAnio}
-                        onChange={(e) => setPermutaAnio(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="permutaKm">Km</Label>
-                      <Input
-                        id="permutaKm"
-                        type="number"
-                        value={permutaKm}
-                        onChange={(e) => setPermutaKm(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="permutaPatente">Patente</Label>
-                      <Input
-                        id="permutaPatente"
-                        value={permutaPatente}
-                        onChange={(e) => setPermutaPatente(e.target.value.toUpperCase())}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="permutaValor">Valor tomado *</Label>
-                      <Input
-                        id="permutaValor"
-                        type="number"
-                        value={permutaValor}
-                        onChange={(e) => setPermutaValor(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="permutaChasis">Nº chasis</Label>
-                      <Input
-                        id="permutaChasis"
-                        value={permutaChasis}
-                        onChange={(e) => setPermutaChasis(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="permutaMotor">Nº motor</Label>
-                      <Input
-                        id="permutaMotor"
-                        value={permutaMotor}
-                        onChange={(e) => setPermutaMotor(e.target.value)}
-                      />
-                    </div>
-                    <div className="col-span-2">
-                      <Label htmlFor="permutaDescripcion">Notas/descripción</Label>
-                      <Textarea
-                        id="permutaDescripcion"
-                        value={permutaDescripcion}
-                        onChange={(e) => setPermutaDescripcion(e.target.value)}
-                        placeholder="Estado general, detalles, observaciones..."
-                        rows={2}
-                      />
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-semibold text-purple-900 dark:text-purple-200 flex items-center gap-2">
+                      🔄 Partes de pago ({permutas.length}) — motos que entrega el cliente
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setPermutas((prev) => [...prev, permutaVacia()])}
+                      className="text-xs font-semibold text-purple-700 dark:text-purple-300 hover:underline"
+                    >
+                      + Agregar otra
+                    </button>
                   </div>
 
-                  <label className="flex items-start gap-2 cursor-pointer rounded-md bg-white dark:bg-neutral-900 border border-purple-200 dark:border-purple-900/40 p-3">
-                    <input
-                      type="checkbox"
-                      checked={subirPermutaAStock}
-                      onChange={(e) => setSubirPermutaAStock(e.target.checked)}
-                      className="mt-0.5"
-                    />
-                    <div className="text-sm">
-                      <p className="font-medium text-gray-900 dark:text-gray-100">
-                        Subir esta moto al stock como usada
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        Crea automáticamente un nuevo modelo (inactivo, con foto del logo) en
-                        el catálogo. Después subís fotos reales y la activás manualmente.
-                      </p>
-                    </div>
-                  </label>
+                  {permutas.map((pp, idx) => {
+                    const updatePermuta = (patch: Partial<PermutaForm>) =>
+                      setPermutas((prev) =>
+                        prev.map((p, i) => (i === idx ? { ...p, ...patch } : p))
+                      )
+                    return (
+                      <div
+                        key={idx}
+                        className="rounded-md border border-purple-200 dark:border-purple-900/40 bg-white dark:bg-neutral-900 p-3 space-y-3"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
+                            Permuta #{idx + 1}
+                          </span>
+                          {permutas.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setPermutas((prev) => prev.filter((_, i) => i !== idx))
+                              }
+                              className="text-xs text-red-600 hover:underline"
+                            >
+                              Quitar
+                            </button>
+                          )}
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div>
+                            <Label>Marca</Label>
+                            <Input
+                              value={pp.marca}
+                              onChange={(e) => updatePermuta({ marca: e.target.value })}
+                              placeholder="Honda"
+                            />
+                          </div>
+                          <div>
+                            <Label>Modelo</Label>
+                            <Input
+                              value={pp.modelo}
+                              onChange={(e) => updatePermuta({ modelo: e.target.value })}
+                              placeholder="Wave 110"
+                            />
+                          </div>
+                          <div>
+                            <Label>Año</Label>
+                            <Input
+                              type="number"
+                              value={pp.anio}
+                              onChange={(e) => updatePermuta({ anio: e.target.value })}
+                            />
+                          </div>
+                          <div>
+                            <Label>Km</Label>
+                            <Input
+                              type="number"
+                              value={pp.km}
+                              onChange={(e) => updatePermuta({ km: e.target.value })}
+                            />
+                          </div>
+                          <div>
+                            <Label>Patente</Label>
+                            <Input
+                              value={pp.patente}
+                              onChange={(e) =>
+                                updatePermuta({ patente: e.target.value.toUpperCase() })
+                              }
+                            />
+                          </div>
+                          <div>
+                            <Label>Valor tomado *</Label>
+                            <Input
+                              type="number"
+                              value={pp.valor}
+                              onChange={(e) => updatePermuta({ valor: e.target.value })}
+                            />
+                          </div>
+                          <div>
+                            <Label>Nº chasis</Label>
+                            <Input
+                              value={pp.chasis}
+                              onChange={(e) => updatePermuta({ chasis: e.target.value })}
+                            />
+                          </div>
+                          <div>
+                            <Label>Nº motor</Label>
+                            <Input
+                              value={pp.motor}
+                              onChange={(e) => updatePermuta({ motor: e.target.value })}
+                            />
+                          </div>
+                          <div className="col-span-2">
+                            <Label>Notas/descripción</Label>
+                            <Textarea
+                              value={pp.descripcion}
+                              onChange={(e) => updatePermuta({ descripcion: e.target.value })}
+                              placeholder="Estado general, detalles, observaciones..."
+                              rows={2}
+                            />
+                          </div>
+                        </div>
+                        <label className="flex items-start gap-2 cursor-pointer rounded-md bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 p-2.5">
+                          <input
+                            type="checkbox"
+                            checked={pp.subirAlStock}
+                            onChange={(e) => updatePermuta({ subirAlStock: e.target.checked })}
+                            className="mt-0.5"
+                          />
+                          <div className="text-xs">
+                            <p className="font-medium text-gray-900 dark:text-gray-100">
+                              Subir esta moto al stock como usada
+                            </p>
+                            <p className="text-gray-500 dark:text-gray-400 mt-0.5">
+                              Crea un modelo nuevo en el catálogo (inactivo, slug mf-XXXX
+                              continuando la numeración).
+                            </p>
+                          </div>
+                        </label>
+                      </div>
+                    )
+                  })}
+
+                  {totalPermutas > 0 && (
+                    <p className="text-xs text-purple-700 dark:text-purple-300 font-mono px-1">
+                      Total tomado en permuta: ${totalPermutas.toLocaleString("es-AR")}
+                    </p>
+                  )}
                 </section>
               )}
 
@@ -557,6 +646,77 @@ export function OCDrawer({
                         value={valorCuota}
                         onChange={(e) => setValorCuota(e.target.value)}
                       />
+                    </div>
+                  </div>
+
+                  {/* Garante (sub-bloque dentro de financiación) */}
+                  <div className="rounded-md border border-blue-200 dark:border-blue-900/40 bg-white dark:bg-neutral-900 p-3 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">
+                        Garante (opcional)
+                      </h4>
+                      {(garanteNombre || garanteApellido || garanteDni) && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setGaranteNombre("")
+                            setGaranteApellido("")
+                            setGaranteDni("")
+                            setGaranteTelefono("")
+                            setGaranteDireccion("")
+                          }}
+                          className="text-xs text-red-600 hover:underline"
+                        >
+                          Limpiar
+                        </button>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label htmlFor="garanteApellido">Apellido</Label>
+                        <Input
+                          id="garanteApellido"
+                          value={garanteApellido}
+                          onChange={(e) => setGaranteApellido(e.target.value)}
+                          placeholder="Pérez"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="garanteNombre">Nombre</Label>
+                        <Input
+                          id="garanteNombre"
+                          value={garanteNombre}
+                          onChange={(e) => setGaranteNombre(e.target.value)}
+                          placeholder="Juan"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="garanteDni">DNI</Label>
+                        <Input
+                          id="garanteDni"
+                          value={garanteDni}
+                          onChange={(e) => setGaranteDni(e.target.value.replace(/\D/g, ""))}
+                          placeholder="12345678"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="garanteTelefono">Teléfono</Label>
+                        <Input
+                          id="garanteTelefono"
+                          value={garanteTelefono}
+                          onChange={(e) => setGaranteTelefono(e.target.value)}
+                          placeholder="2914567890"
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Label htmlFor="garanteDireccion">Dirección</Label>
+                        <Input
+                          id="garanteDireccion"
+                          value={garanteDireccion}
+                          onChange={(e) => setGaranteDireccion(e.target.value)}
+                          placeholder="Av. Colón 1500, Bahía Blanca"
+                        />
+                      </div>
                     </div>
                   </div>
                 </section>

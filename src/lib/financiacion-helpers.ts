@@ -16,6 +16,12 @@ type OCParaFinanciacion = {
   entrega: number | null
   precioVenta: number
   moneda: string
+  // Garante (opcional, datos texto libre)
+  garanteNombre?: string | null
+  garanteApellido?: string | null
+  garanteDni?: string | null
+  garanteTelefono?: string | null
+  garanteDireccion?: string | null
 }
 
 /**
@@ -87,6 +93,12 @@ export async function crearFinanciacionDesdeOC(
       fechaFin,
       diaVencimiento,
       estado: "ACTIVA",
+      // Garante (opcional)
+      garanteNombre: oc.garanteNombre ?? null,
+      garanteApellido: oc.garanteApellido ?? null,
+      garanteDni: oc.garanteDni ?? null,
+      garanteTelefono: oc.garanteTelefono ?? null,
+      garanteDireccion: oc.garanteDireccion ?? null,
     },
   })
 

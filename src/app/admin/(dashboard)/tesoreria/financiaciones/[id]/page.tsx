@@ -240,6 +240,54 @@ export default async function FinanciacionDetallePage({
         </Card>
       </div>
 
+      {/* Garante (si fue cargado al crear la financiación) */}
+      {(financiacion.garanteNombre ||
+        financiacion.garanteApellido ||
+        financiacion.garanteDni ||
+        financiacion.garanteTelefono ||
+        financiacion.garanteDireccion) && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2">
+              <User className="size-4 text-amber-600 dark:text-amber-300" />
+              Garante
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sm">
+              {(financiacion.garanteNombre || financiacion.garanteApellido) && (
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">Nombre</p>
+                  <p className="font-medium">
+                    {[financiacion.garanteApellido, financiacion.garanteNombre]
+                      .filter(Boolean)
+                      .join(", ") || "—"}
+                  </p>
+                </div>
+              )}
+              {financiacion.garanteDni && (
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">DNI</p>
+                  <p className="font-medium font-mono">{financiacion.garanteDni}</p>
+                </div>
+              )}
+              {financiacion.garanteTelefono && (
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">Teléfono</p>
+                  <p className="font-medium">{financiacion.garanteTelefono}</p>
+                </div>
+              )}
+              {financiacion.garanteDireccion && (
+                <div className="sm:col-span-2 lg:col-span-1">
+                  <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">Dirección</p>
+                  <p className="font-medium">{financiacion.garanteDireccion}</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Resumen de avance */}
       <Card>
         <CardContent className="p-5">
