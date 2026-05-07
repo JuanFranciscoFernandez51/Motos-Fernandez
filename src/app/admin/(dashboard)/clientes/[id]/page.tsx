@@ -21,6 +21,7 @@ import {
   ClienteDocumentos,
   type ClienteDocumento,
 } from "@/components/admin/operativo/cliente-documentos"
+import { ClienteResumen } from "@/components/admin/operativo/cliente-resumen"
 
 export const dynamic = "force-dynamic"
 
@@ -129,8 +130,85 @@ export default async function EditarClientePage({
     ? (cliente.documentos as unknown as ClienteDocumento[])
     : []
 
+  // Construir timeline unificado de eventos
+  type Evento = React.ComponentProps<typeof ClienteResumen>["eventos"][number]
+  const eventos: Evento[] = [
+    ...cliente.mandatos.map((m) => ({
+      id: m.id,
+      fecha: m.createdAt,
+      tipo: "MANDATO" as const,
+      titulo: `${m.marca} ${m.modelo}`,
+      subtitulo: `${formatNumero("MV", m.numero)} · ${ESTADO_MANDATO_LABELS[m.estado]}`,
+      importe: m.precioVenta,
+      moneda: m.moneda,
+      estado: ESTADO_MANDATO_LABELS[m.estado],
+      href: `/admin/mandatos/${m.id}`,
+    })),
+    ...cliente.ordenesCompra.map((o) => ({
+      id: o.id,
+      fecha: o.fecha,
+      tipo: "OC" as const,
+      titulo: o.motoDescripcion,
+      subtitulo: `${formatNumero("OC", o.numero)} · ${o.formaPago || "—"}`,
+      importe: o.precioVenta,
+      moneda: o.moneda,
+      estado: ESTADO_OC_LABELS[o.estado],
+      href: `/admin/ordenes-compra/${o.id}`,
+    })),
+    ...cliente.motosEntregadas.map((m) => ({
+      id: m.id,
+      fecha: (m as unknown as { createdAt: Date }).createdAt ?? new Date(),
+      tipo: "MOTO_ENTREGA" as const,
+      titulo: `${m.marca} ${m.nombre}`,
+      subtitulo: [m.anio, m.kilometros ? `${m.kilometros.toLocaleString("es-AR")} km` : null]
+        .filter(Boolean)
+        .join(" · "),
+      importe: m.precio,
+      moneda: m.moneda,
+      estado: m.vendida ? "Vendida" : m.activo ? "En catálogo" : "Pendiente",
+      href: `/admin/modelos/${m.id}`,
+    })),
+    ...cliente.ordenesTrabajo.map((ot) => ({
+      id: ot.id,
+      fecha: ot.fechaIngreso,
+      tipo: "OT" as const,
+      titulo: `${ot.motoMarca} ${ot.motoModelo}`,
+      subtitulo: `${formatNumero("OT", ot.numero)} · ${ESTADO_OT_LABELS[ot.estado]}`,
+      importe: ot.total,
+      moneda: "ARS",
+      estado: ESTADO_OT_LABELS[ot.estado],
+      href: `/admin/taller/${ot.id}`,
+    })),
+  ].sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
+
+  // Totales para los stats
+  const totalCompras = cliente.ordenesCompra
+    .filter((o) => o.estado === "CONCRETADA")
+    .reduce((sum, o) => sum + (o.precioVenta || 0), 0)
+  const totalTaller = cliente.ordenesTrabajo.reduce((sum, ot) => sum + (ot.total || 0), 0)
+
   return (
     <div className="space-y-6">
+      <ClienteResumen
+        cliente={{
+          id: cliente.id,
+          nombre: cliente.nombre,
+          apellido: cliente.apellido,
+          dni: cliente.dni,
+          email: cliente.email,
+          telefono: cliente.telefono,
+          telefonoAlt: cliente.telefonoAlt,
+          direccion: cliente.direccion,
+          ciudad: cliente.ciudad,
+          ocupacion: cliente.ocupacion,
+          createdAt: cliente.createdAt,
+        }}
+        totalCompras={totalCompras}
+        totalTaller={totalTaller}
+        ultimoEvento={eventos[0] || null}
+        eventos={eventos}
+      />
+
       <ClienteForm initialData={initialData} saveAction={updateCliente} />
 
       {/* Carpeta de documentos digitales */}

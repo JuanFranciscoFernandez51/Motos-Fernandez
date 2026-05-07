@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Search, X, Pencil, User, Phone, Mail } from "lucide-react"
+import { Search, X, Pencil, User, Phone, Mail, MessageCircle } from "lucide-react"
 import { formatDate, nombreCompleto } from "@/lib/admin-helpers"
 
 type Cliente = {
@@ -30,6 +30,33 @@ type Cliente = {
     ordenesCompra: number
     ordenesTrabajo: number
   }
+}
+
+/**
+ * Normaliza un teléfono argentino al formato wa.me (E.164 sin +).
+ * - Saca espacios, guiones, puntos.
+ * - Si arranca con 0 (código de área local), lo saca.
+ * - Si arranca con 15 (cel viejo), lo saca y agrega 9 después del código país.
+ * - Si NO empieza con 54, le antepone 54.
+ * - Inserta el "9" obligatorio para mobile en Argentina si no lo tiene.
+ */
+function normalizarParaWhatsApp(tel: string): string {
+  let n = tel.replace(/[^\d]/g, "")
+  // Si arranca con 0, sacarlo (código local)
+  if (n.startsWith("0")) n = n.slice(1)
+  // Si arranca con "15" (mobile prefix viejo), sacar y marcar mobile
+  let isMobile = false
+  if (n.startsWith("15")) {
+    n = n.slice(2)
+    isMobile = true
+  }
+  // Si tiene 10+ dígitos sin código país, agregar 54
+  if (!n.startsWith("54")) n = "54" + n
+  // Insertar "9" después de 54 para mobile (si no está ya)
+  if (isMobile && n.startsWith("54") && !n.startsWith("549")) {
+    n = "549" + n.slice(2)
+  }
+  return n
 }
 
 export function ClientesList({ clientes }: { clientes: Cliente[] }) {
@@ -122,9 +149,21 @@ export function ClientesList({ clientes }: { clientes: Cliente[] }) {
                   <TableCell>
                     <div className="space-y-0.5 text-xs">
                       {c.telefono && (
-                        <p className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
-                          <Phone className="size-3" /> {c.telefono}
-                        </p>
+                        <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-300">
+                          <Phone className="size-3 shrink-0" />
+                          <span>{c.telefono}</span>
+                          <a
+                            href={`https://wa.me/${normalizarParaWhatsApp(c.telefono)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="inline-flex items-center justify-center size-5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900/60 transition-colors shrink-0"
+                            title={`Abrir WhatsApp con ${c.telefono}`}
+                            aria-label="Abrir WhatsApp"
+                          >
+                            <MessageCircle className="size-3" />
+                          </a>
+                        </div>
                       )}
                       {c.email && (
                         <p className="flex items-center gap-1 text-gray-600 dark:text-gray-300">
