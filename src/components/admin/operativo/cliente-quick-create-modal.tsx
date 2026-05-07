@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { createPortal } from "react-dom"
 import { X, Loader2, UserPlus } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -36,7 +37,14 @@ export function ClienteQuickCreateModal({
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
-  if (!open) return null
+  // createPortal requiere document. Esperamos al primer render del cliente
+  // para evitar mismatches de SSR.
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!open || !mounted) return null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -81,10 +89,19 @@ export function ClienteQuickCreateModal({
     }
   }
 
-  return (
+  // CRITICAL: portal a document.body para sacar el modal del DOM tree del
+  // padre. Este modal se abre desde dentro de un <form> (form de moto, drawer
+  // OC, etc.), y HTML5 NO permite forms anidados — el navegador los aplana
+  // y el submit del modal termina disparando el handler del form externo.
+  // Con portal, el form del modal vive en <body>, sin colisionar.
+  // Tambien evita que clicks dentro del modal se propaguen al backdrop del
+  // contenedor padre (que solia cerrarlo).
+  return createPortal(
     <div
-      className="fixed inset-0 z-[60] flex items-start justify-center bg-black/60 p-4 pt-10 overflow-y-auto"
-      onClick={onClose}
+      className="fixed inset-0 z-[70] flex items-start justify-center bg-black/60 p-4 pt-10 overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose()
+      }}
     >
       <div
         className="w-full max-w-lg rounded-xl bg-white dark:bg-neutral-900 shadow-2xl"
@@ -206,6 +223,7 @@ export function ClienteQuickCreateModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
