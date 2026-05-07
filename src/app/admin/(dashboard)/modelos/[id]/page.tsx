@@ -36,7 +36,8 @@ async function updateModelo(formData: FormData) {
     const chasis = (formData.get("chasis") as string) || ""
     const motor = (formData.get("motor") as string) || ""
     const patente = (formData.get("patente") as string) || ""
-    const clienteId = (formData.get("clienteId") as string) || ""
+    const proveedorId = (formData.get("proveedorId") as string) || ""
+    const clienteEntregaId = (formData.get("clienteEntregaId") as string) || ""
     const clienteNombre = (formData.get("clienteNombre") as string) || ""
     const clienteContacto = (formData.get("clienteContacto") as string) || ""
     const notasInternas = (formData.get("notasInternas") as string) || ""
@@ -73,7 +74,8 @@ async function updateModelo(formData: FormData) {
         chasis: chasis || null,
         motor: motor || null,
         patente: patente || null,
-        clienteId: clienteId || null,
+        proveedorId: proveedorId || null,
+        clienteEntregaId: clienteEntregaId || null,
         clienteNombre: clienteNombre || null,
         clienteContacto: clienteContacto || null,
         notasInternas: notasInternas || null,
@@ -101,7 +103,7 @@ export default async function EditModeloPage({
 }) {
   const { id } = await params
 
-  const [modelo, clientes] = await Promise.all([
+  const [modelo, clientes, proveedores] = await Promise.all([
     prisma.modelo.findUnique({
       where: { id },
       include: { colores: true },
@@ -116,6 +118,10 @@ export default async function EditModeloPage({
         telefono: true,
         email: true,
       },
+    }),
+    prisma.proveedor.findMany({
+      orderBy: { nombre: "asc" },
+      select: { id: true, nombre: true },
     }),
   ])
 
@@ -162,11 +168,19 @@ export default async function EditModeloPage({
     chasis: modelo.chasis,
     motor: modelo.motor,
     patente: modelo.patente,
-    clienteId: modelo.clienteId,
+    proveedorId: modelo.proveedorId,
+    clienteEntregaId: modelo.clienteEntregaId,
     clienteNombre: modelo.clienteNombre,
     clienteContacto: modelo.clienteContacto,
     notasInternas: modelo.notasInternas,
   }
 
-  return <ModeloForm initialData={initialData} saveAction={updateModelo} clientes={clientes} />
+  return (
+    <ModeloForm
+      initialData={initialData}
+      saveAction={updateModelo}
+      clientes={clientes}
+      proveedores={proveedores}
+    />
+  )
 }

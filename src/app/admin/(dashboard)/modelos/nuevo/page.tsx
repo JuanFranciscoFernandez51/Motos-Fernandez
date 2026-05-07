@@ -34,7 +34,8 @@ async function createModelo(formData: FormData) {
     const chasis = (formData.get("chasis") as string) || ""
     const motor = (formData.get("motor") as string) || ""
     const patente = (formData.get("patente") as string) || ""
-    const clienteId = (formData.get("clienteId") as string) || ""
+    const proveedorId = (formData.get("proveedorId") as string) || ""
+    const clienteEntregaId = (formData.get("clienteEntregaId") as string) || ""
     const clienteNombre = (formData.get("clienteNombre") as string) || ""
     const clienteContacto = (formData.get("clienteContacto") as string) || ""
     const notasInternas = (formData.get("notasInternas") as string) || ""
@@ -68,7 +69,8 @@ async function createModelo(formData: FormData) {
         chasis: chasis || null,
         motor: motor || null,
         patente: patente || null,
-        clienteId: clienteId || null,
+        proveedorId: proveedorId || null,
+        clienteEntregaId: clienteEntregaId || null,
         clienteNombre: clienteNombre || null,
         clienteContacto: clienteContacto || null,
         notasInternas: notasInternas || null,
@@ -90,16 +92,22 @@ async function createModelo(formData: FormData) {
 }
 
 export default async function NuevoModeloPage() {
-  const clientes = await prisma.cliente.findMany({
-    orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
-    select: {
-      id: true,
-      nombre: true,
-      apellido: true,
-      dni: true,
-      telefono: true,
-      email: true,
-    },
-  })
-  return <ModeloForm saveAction={createModelo} clientes={clientes} />
+  const [clientes, proveedores] = await Promise.all([
+    prisma.cliente.findMany({
+      orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
+      select: {
+        id: true,
+        nombre: true,
+        apellido: true,
+        dni: true,
+        telefono: true,
+        email: true,
+      },
+    }),
+    prisma.proveedor.findMany({
+      orderBy: { nombre: "asc" },
+      select: { id: true, nombre: true },
+    }),
+  ])
+  return <ModeloForm saveAction={createModelo} clientes={clientes} proveedores={proveedores} />
 }

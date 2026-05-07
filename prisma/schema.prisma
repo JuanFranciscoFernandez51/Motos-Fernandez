@@ -67,10 +67,6 @@ model Modelo {
   clienteEntrega      Cliente?        @relation("ClienteEntregaModelo", fields: [clienteEntregaId], references: [id])
   ordenCompraOrigenId String?
   ordenCompraOrigen   OrdenCompra?    @relation("OCOrigenModelo", fields: [ordenCompraOrigenId], references: [id])
-  // Cliente asociado a la moto (dueño actual / referente). Usado en form
-  // de editar moto para vincular a un cliente real en lugar de texto libre.
-  clienteId           String?
-  cliente             Cliente?        @relation("ClienteModelo", fields: [clienteId], references: [id])
 
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
@@ -618,7 +614,6 @@ model Cliente {
   mandatos        MandatoVenta[]
   ordenesCompra   OrdenCompra[]
   motosEntregadas Modelo[]      @relation("ClienteEntregaModelo")
-  motos           Modelo[]      @relation("ClienteModelo")
   financiaciones  FinanciacionOC[]
   ordenesTrabajo  OrdenTrabajo[]
 
