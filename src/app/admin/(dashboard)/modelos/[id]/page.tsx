@@ -2,7 +2,9 @@ import { notFound } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { ModeloForm } from "@/components/admin/modelo-form"
+import { ModeloEditActions } from "@/components/admin/modelo-edit-actions"
 import { invalidateModelos } from "@/lib/cached-queries"
+import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -96,6 +98,197 @@ async function updateModelo(formData: FormData) {
   }
 }
 
+// ─── Server actions de Vender / Borrar / Devolver al catálogo ───
+// Duplicadas de /admin/modelos/page.tsx para usar desde el form de editar.
+
+async function markVendida(id: string, vendida: boolean) {
+  "use server"
+  await prisma.modelo.update({
+    where: { id },
+    data: vendida
+      ? { vendida: true, fechaVenta: new Date(), activo: false }
+      : { vendida: false, fechaVenta: null },
+  })
+  revalidatePath("/admin/modelos")
+  revalidatePath(`/admin/modelos/${id}`)
+  revalidatePath("/catalogo")
+  revalidatePath("/")
+  invalidateModelos()
+}
+
+type CrearOCDesdeModeloInput = {
+  modeloId: string
+  clienteId: string
+  precioVenta: number
+  moneda: string
+  formaPago: string
+  sena: number | null
+  saldo: number | null
+  detallePago: string | null
+  estado: "BORRADOR" | "RESERVADA" | "CONCRETADA"
+  observaciones: string | null
+  permutaDescripcion: string | null
+  permutaValor: number | null
+  subirPermutaAStock: boolean
+  permutaMarca: string | null
+  permutaModelo: string | null
+  permutaAnio: number | null
+  permutaKm: number | null
+  permutaPatente: string | null
+  permutaChasis: string | null
+  permutaMotor: string | null
+  cuotas: number | null
+  valorCuota: number | null
+  entrega: number | null
+}
+
+async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
+  "use server"
+  try {
+    const modelo = await prisma.modelo.findUnique({
+      where: { id: input.modeloId },
+      select: {
+        id: true, nombre: true, marca: true, anio: true, kilometros: true,
+        chasis: true, motor: true, patente: true,
+      },
+    })
+    if (!modelo) return { error: "Moto no encontrada" }
+    const motoDescripcion = `${modelo.marca} ${modelo.nombre}${modelo.anio ? ` ${modelo.anio}` : ""}`
+
+    const result = await prisma.$transaction(async (tx) => {
+      const orden = await tx.ordenCompra.create({
+        data: {
+          clienteId: input.clienteId,
+          modeloId: input.modeloId,
+          motoDescripcion,
+          motoChasis: modelo.chasis,
+          motoMotor: modelo.motor,
+          motoPatente: modelo.patente,
+          motoAnio: modelo.anio,
+          motoKilometros: modelo.kilometros,
+          precioVenta: input.precioVenta,
+          moneda: input.moneda,
+          formaPago: input.formaPago,
+          sena: input.sena,
+          saldo: input.saldo,
+          detallePago: input.detallePago,
+          permutaDescripcion: input.permutaDescripcion,
+          permutaValor: input.permutaValor,
+          cuotas: input.cuotas,
+          valorCuota: input.valorCuota,
+          entrega: input.entrega,
+          estado: input.estado,
+          observaciones: input.observaciones,
+          fecha: new Date(),
+        },
+      })
+
+      let motoRecibidaId: string | null = null
+      if (input.subirPermutaAStock && input.permutaMarca && input.permutaModelo) {
+        const ultimosMF = await tx.modelo.findMany({
+          where: { slug: { startsWith: "mf-" } },
+          select: { slug: true },
+        })
+        const numeros = ultimosMF
+          .map((m) => {
+            const match = m.slug.match(/^mf-(\d+)$/i)
+            return match ? parseInt(match[1], 10) : 0
+          })
+          .filter((n) => n > 0)
+        const proximo = numeros.length > 0 ? Math.max(...numeros) + 1 : 1
+        const slug = `mf-${String(proximo).padStart(4, "0")}`
+        const placeholderFoto = "/images/logo-clasico.png"
+
+        const motoRecibida = await tx.modelo.create({
+          data: {
+            nombre: input.permutaModelo,
+            slug,
+            marca: input.permutaMarca,
+            condicion: "USADA",
+            anio: input.permutaAnio,
+            kilometros: input.permutaKm,
+            patente: input.permutaPatente,
+            chasis: input.permutaChasis,
+            motor: input.permutaMotor,
+            precio: input.permutaValor,
+            moneda: input.moneda,
+            activo: false,
+            fotos: [placeholderFoto],
+            origen: "PARTE_DE_PAGO",
+            clienteEntregaId: input.clienteId,
+            ordenCompraOrigenId: orden.id,
+            etiqueta: null,
+          },
+        })
+        motoRecibidaId = motoRecibida.id
+        await tx.ordenCompra.update({
+          where: { id: orden.id },
+          data: { motoRecibidaId: motoRecibida.id },
+        })
+      }
+
+      if (input.estado === "CONCRETADA") {
+        await tx.modelo.update({
+          where: { id: input.modeloId },
+          data: { vendida: true, fechaVenta: new Date(), activo: false },
+        })
+      } else if (input.estado === "RESERVADA") {
+        await tx.modelo.update({
+          where: { id: input.modeloId },
+          data: { etiqueta: "RESERVADA" },
+        })
+      }
+
+      await crearFinanciacionDesdeOC(tx, {
+        id: orden.id,
+        clienteId: orden.clienteId,
+        motoDescripcion: orden.motoDescripcion,
+        formaPago: orden.formaPago,
+        cuotas: orden.cuotas,
+        valorCuota: orden.valorCuota,
+        entrega: orden.entrega,
+        precioVenta: orden.precioVenta,
+        moneda: orden.moneda,
+      })
+
+      return { ordenId: orden.id, motoRecibidaId }
+    })
+
+    revalidatePath("/admin/modelos")
+    revalidatePath("/admin/ordenes-compra")
+    revalidatePath("/admin/tesoreria")
+    revalidatePath("/admin/tesoreria/financiaciones")
+    revalidatePath("/catalogo")
+    revalidatePath("/")
+    invalidateModelos()
+    return result
+  } catch (e: unknown) {
+    return { error: e instanceof Error ? e.message : "Error al crear OC" }
+  }
+}
+
+async function deleteModelo(id: string, confirmText: string) {
+  "use server"
+  try {
+    const modelo = await prisma.modelo.findUnique({
+      where: { id },
+      select: { nombre: true, slug: true },
+    })
+    if (!modelo) return { error: "Modelo no encontrado" }
+    if (confirmText !== modelo.slug) {
+      return { error: `Tenés que escribir exactamente "${modelo.slug}"` }
+    }
+    await prisma.modelo.delete({ where: { id } })
+    revalidatePath("/admin/modelos")
+    revalidatePath("/catalogo")
+    revalidatePath("/")
+    invalidateModelos()
+    return {}
+  } catch (e: unknown) {
+    return { error: e instanceof Error ? e.message : "Error al borrar" }
+  }
+}
+
 export default async function EditModeloPage({
   params,
 }: {
@@ -175,12 +368,36 @@ export default async function EditModeloPage({
     notasInternas: modelo.notasInternas,
   }
 
+  // Datos minimos para el OCDrawer (necesita ModeloAVender shape)
+  const modeloAVender = {
+    id: modelo.id,
+    nombre: modelo.nombre,
+    slug: modelo.slug,
+    marca: modelo.marca,
+    anio: modelo.anio,
+    kilometros: modelo.kilometros,
+    precio: modelo.precio,
+    moneda: modelo.moneda,
+    fotos: modelo.fotos,
+    patente: modelo.patente,
+    vendida: modelo.vendida,
+  }
+
   return (
     <ModeloForm
       initialData={initialData}
       saveAction={updateModelo}
       clientes={clientes}
       proveedores={proveedores}
+      extraActions={
+        <ModeloEditActions
+          modelo={modeloAVender}
+          clientes={clientes}
+          markVendida={markVendida}
+          crearOCDesdeModelo={crearOCDesdeModelo}
+          deleteModelo={deleteModelo}
+        />
+      }
     />
   )
 }

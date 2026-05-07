@@ -88,11 +88,15 @@ export function ModeloForm({
   saveAction,
   clientes = [],
   proveedores = [],
+  extraActions,
 }: {
   initialData?: ModeloData
   saveAction: (data: FormData) => Promise<{ error?: string }>
   clientes?: import("./operativo/cliente-selector").ClienteOption[]
   proveedores?: { id: string; nombre: string }[]
+  // Botones extra que aparecen en el header al lado de "Guardar".
+  // Usado por la pagina de editar para "Vender" y "Borrar".
+  extraActions?: React.ReactNode
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -268,14 +272,17 @@ export function ModeloForm({
             {initialData?.id ? "Editar modelo" : "Nuevo modelo"}
           </h1>
         </div>
-        <Button
-          type="submit"
-          className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
-          disabled={isPending}
-        >
-          <Save className="h-4 w-4 mr-2" />
-          {isPending ? "Guardando..." : "Guardar"}
-        </Button>
+        <div className="flex items-center gap-2">
+          {extraActions}
+          <Button
+            type="submit"
+            className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+            disabled={isPending}
+          >
+            <Save className="h-4 w-4 mr-2" />
+            {isPending ? "Guardando..." : "Guardar"}
+          </Button>
+        </div>
       </div>
 
       {error && (
