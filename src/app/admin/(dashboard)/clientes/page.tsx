@@ -17,6 +17,9 @@ export default async function ClientesPage() {
       email: true,
       telefono: true,
       ciudad: true,
+      // notasInternas se trae para que el buscador pueda matchear por
+      // historial de motos (ej: "Versys 650"). No se renderiza en la tabla.
+      notasInternas: true,
       createdAt: true,
       _count: {
         select: {

@@ -23,6 +23,7 @@ type Cliente = {
   email: string | null
   telefono: string | null
   ciudad: string | null
+  notasInternas: string | null
   createdAt: Date
   _count: {
     mandatos: number
@@ -38,7 +39,17 @@ export function ClientesList({ clientes }: { clientes: Cliente[] }) {
     const q = query.trim().toLowerCase()
     if (!q) return clientes
     return clientes.filter((c) => {
-      const hay = [c.nombre, c.apellido, c.dni, c.email, c.telefono, c.ciudad]
+      // Incluye notasInternas: alli vive el historial de motos (ej buscar "versys 650"
+      // y que aparezcan los clientes que la tuvieron).
+      const hay = [
+        c.nombre,
+        c.apellido,
+        c.dni,
+        c.email,
+        c.telefono,
+        c.ciudad,
+        c.notasInternas,
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
@@ -53,7 +64,7 @@ export function ClientesList({ clientes }: { clientes: Cliente[] }) {
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Buscar por nombre, DNI, teléfono, email..."
+          placeholder="Buscar por nombre, DNI, teléfono, moto que tuvo..."
           className="pl-9"
         />
         {query && (
