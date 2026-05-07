@@ -46,8 +46,9 @@ export function ClienteQuickCreateModal({
 
   if (!open || !mounted) return null
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  // Lógica de creación. Se invoca desde onClick del boton (no del form
+  // submit) para evitar cualquier interferencia con forms padres.
+  const handleCrear = async () => {
     setError("")
     if (!nombre.trim() || !apellido.trim()) {
       setError("Nombre y apellido son obligatorios")
@@ -68,9 +69,13 @@ export function ClienteQuickCreateModal({
           ciudad,
         }),
       })
-      const data = await res.json()
+      const data = await res.json().catch(() => ({}))
       if (!res.ok) {
-        setError(data.error || "Error al crear cliente")
+        setError(data.error || `Error al crear cliente (HTTP ${res.status})`)
+        return
+      }
+      if (!data.cliente) {
+        setError("Respuesta del servidor sin cliente")
         return
       }
       onCreated(data.cliente)
@@ -83,10 +88,18 @@ export function ClienteQuickCreateModal({
       setDireccion("")
       onClose()
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Error")
+      setError(err instanceof Error ? err.message : "Error de conexión")
     } finally {
       setLoading(false)
     }
+  }
+
+  // Submit del form (cuando se aprieta Enter en un input).
+  // Evita que se propague al form padre y delega en handleCrear.
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    void handleCrear()
   }
 
   // CRITICAL: portal a document.body para sacar el modal del DOM tree del
@@ -213,7 +226,12 @@ export function ClienteQuickCreateModal({
               Cancelar
             </button>
             <button
-              type="submit"
+              type="button"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                void handleCrear()
+              }}
               disabled={loading}
               className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] px-4 py-1.5 text-sm font-medium text-white hover:bg-[#8B6F9A] disabled:opacity-50"
             >
