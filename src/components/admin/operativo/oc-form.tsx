@@ -8,9 +8,34 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, Save, Loader2 } from "lucide-react"
+import { ArrowLeft, Save, Loader2, Plus, Trash2, Lock } from "lucide-react"
 import { ClienteSelector, type ClienteOption } from "./cliente-selector"
 import { MotoSelector, type ModeloOption } from "./moto-selector"
+
+// Una permuta dentro de la OC (form usa strings).
+export type PermutaForm = {
+  // ID Si es una permuta existente (para distinguir de nuevas)
+  id?: string
+  marca: string
+  modelo: string
+  anio: string
+  kilometros: string
+  patente: string
+  chasis: string
+  motor: string
+  descripcion: string
+  valor: string
+  // ID de la moto en stock asociada (si ya se subió). Si esta seteado,
+  // significa que la permuta ya fue procesada y no se puede editar libremente.
+  motoRecibidaId?: string | null
+  // Solo para permutas nuevas (sin id): si se sube al stock como usada
+  subirAlStock?: boolean
+}
+
+const permutaVacia = (): PermutaForm => ({
+  marca: "", modelo: "", anio: "", kilometros: "", patente: "",
+  chasis: "", motor: "", descripcion: "", valor: "", subirAlStock: false,
+})
 
 export type OCData = {
   id?: string
@@ -65,11 +90,21 @@ const EMPTY: OCData = {
 
 export function OCForm({
   initialData,
+  initialPermutas = [],
+  initialGarante,
   clientes,
   modelos,
   saveAction,
 }: {
   initialData?: Partial<OCData> & { id?: string }
+  initialPermutas?: PermutaForm[]
+  initialGarante?: {
+    nombre: string
+    apellido: string
+    dni: string
+    telefono: string
+    direccion: string
+  }
   clientes: ClienteOption[]
   modelos: ModeloOption[]
   saveAction: (data: FormData) => Promise<{ error?: string; id?: string }>
@@ -77,6 +112,16 @@ export function OCForm({
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [data, setData] = useState<OCData>({ ...EMPTY, ...initialData })
+  const [permutas, setPermutas] = useState<PermutaForm[]>(
+    initialPermutas.length > 0 ? initialPermutas : [permutaVacia()]
+  )
+  const [garante, setGarante] = useState({
+    nombre: initialGarante?.nombre || "",
+    apellido: initialGarante?.apellido || "",
+    dni: initialGarante?.dni || "",
+    telefono: initialGarante?.telefono || "",
+    direccion: initialGarante?.direccion || "",
+  })
   const [error, setError] = useState("")
 
   const set = <K extends keyof OCData>(key: K, value: OCData[K]) => {
@@ -118,6 +163,37 @@ export function OCForm({
     const formData = new FormData()
     if (initialData?.id) formData.append("id", initialData.id)
     Object.entries(data).forEach(([k, v]) => formData.append(k, String(v ?? "")))
+
+    // Serializar permutas (filtrar las vacías) y garante
+    const hayPermuta = data.formaPago === "Permuta" || data.formaPago === "Mixta"
+    const hayFin = data.formaPago === "Financiado" || data.formaPago === "Mixta"
+    const permutasFiltradas = hayPermuta
+      ? permutas
+          .filter((p) => p.marca.trim() || p.modelo.trim() || p.valor.trim())
+          .map((p) => ({
+            id: p.id ?? null,
+            marca: p.marca.trim() || null,
+            modelo: p.modelo.trim() || null,
+            anio: p.anio ? parseInt(p.anio) : null,
+            kilometros: p.kilometros ? parseInt(p.kilometros) : null,
+            patente: p.patente.trim().toUpperCase() || null,
+            chasis: p.chasis.trim() || null,
+            motor: p.motor.trim() || null,
+            descripcion: p.descripcion.trim() || null,
+            valor: p.valor ? parseInt(p.valor) : 0,
+            motoRecibidaId: p.motoRecibidaId ?? null,
+            subirAlStock: !!p.subirAlStock,
+          }))
+      : []
+    formData.append("permutas", JSON.stringify(permutasFiltradas))
+
+    if (hayFin) {
+      formData.append("garanteNombre", garante.nombre.trim())
+      formData.append("garanteApellido", garante.apellido.trim())
+      formData.append("garanteDni", garante.dni.trim())
+      formData.append("garanteTelefono", garante.telefono.trim())
+      formData.append("garanteDireccion", garante.direccion.trim())
+    }
 
     startTransition(async () => {
       const result = await saveAction(formData)
@@ -289,28 +365,169 @@ export function OCForm({
         {(data.formaPago === "Permuta" || data.formaPago === "Mixta") && (
           <Card>
             <CardHeader>
-              <CardTitle>Permuta</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle>Partes de pago ({permutas.length})</CardTitle>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPermutas((prev) => [...prev, permutaVacia()])}
+                >
+                  <Plus className="h-3.5 w-3.5 mr-1" />
+                  Agregar otra
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="permutaDescripcion">Descripción</Label>
-                <Textarea
-                  id="permutaDescripcion"
-                  value={data.permutaDescripcion}
-                  onChange={(e) => set("permutaDescripcion", e.target.value)}
-                  placeholder="Ej: Yamaha FZ 150 2020, 25.000km, patente ABC123"
-                  rows={3}
-                />
-              </div>
-              <div>
-                <Label htmlFor="permutaValor">Valor tomado</Label>
-                <Input
-                  id="permutaValor"
-                  type="number"
-                  value={data.permutaValor}
-                  onChange={(e) => set("permutaValor", e.target.value)}
-                />
-              </div>
+            <CardContent className="space-y-3">
+              {permutas.map((pp, idx) => {
+                const upd = (patch: Partial<PermutaForm>) =>
+                  setPermutas((prev) =>
+                    prev.map((p, i) => (i === idx ? { ...p, ...patch } : p))
+                  )
+                const yaEnStock = !!pp.motoRecibidaId
+                return (
+                  <div
+                    key={pp.id ?? `nueva-${idx}`}
+                    className={`rounded-md border p-3 space-y-3 ${
+                      yaEnStock
+                        ? "border-blue-200 dark:border-blue-900/40 bg-blue-50/40 dark:bg-blue-950/10"
+                        : "border-purple-200 dark:border-purple-900/40 bg-purple-50/40 dark:bg-purple-950/10"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
+                          Permuta #{idx + 1}
+                        </span>
+                        {yaEnStock && (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40 px-1.5 py-0.5 rounded">
+                            <Lock className="size-3" />
+                            En stock
+                          </span>
+                        )}
+                      </div>
+                      {permutas.length > 1 && !yaEnStock && (
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={() =>
+                            setPermutas((prev) => prev.filter((_, i) => i !== idx))
+                          }
+                          className="text-red-600 hover:bg-red-50"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </Button>
+                      )}
+                    </div>
+                    {yaEnStock && (
+                      <p className="text-[11px] text-blue-700 dark:text-blue-300">
+                        Esta permuta ya creó una moto en el catálogo. Si necesitás
+                        cambiar la marca/modelo, editá la moto desde el catálogo
+                        para mantener todo sincronizado.
+                      </p>
+                    )}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <Label>Marca</Label>
+                        <Input
+                          value={pp.marca}
+                          onChange={(e) => upd({ marca: e.target.value })}
+                          placeholder="Honda"
+                          disabled={yaEnStock}
+                        />
+                      </div>
+                      <div>
+                        <Label>Modelo</Label>
+                        <Input
+                          value={pp.modelo}
+                          onChange={(e) => upd({ modelo: e.target.value })}
+                          placeholder="Wave 110"
+                          disabled={yaEnStock}
+                        />
+                      </div>
+                      <div>
+                        <Label>Año</Label>
+                        <Input
+                          type="number"
+                          value={pp.anio}
+                          onChange={(e) => upd({ anio: e.target.value })}
+                          disabled={yaEnStock}
+                        />
+                      </div>
+                      <div>
+                        <Label>Km</Label>
+                        <Input
+                          type="number"
+                          value={pp.kilometros}
+                          onChange={(e) => upd({ kilometros: e.target.value })}
+                          disabled={yaEnStock}
+                        />
+                      </div>
+                      <div>
+                        <Label>Patente</Label>
+                        <Input
+                          value={pp.patente}
+                          onChange={(e) => upd({ patente: e.target.value.toUpperCase() })}
+                          disabled={yaEnStock}
+                        />
+                      </div>
+                      <div>
+                        <Label>Valor tomado</Label>
+                        <Input
+                          type="number"
+                          value={pp.valor}
+                          onChange={(e) => upd({ valor: e.target.value })}
+                        />
+                      </div>
+                      <div>
+                        <Label>Nº chasis</Label>
+                        <Input
+                          value={pp.chasis}
+                          onChange={(e) => upd({ chasis: e.target.value })}
+                          disabled={yaEnStock}
+                        />
+                      </div>
+                      <div>
+                        <Label>Nº motor</Label>
+                        <Input
+                          value={pp.motor}
+                          onChange={(e) => upd({ motor: e.target.value })}
+                          disabled={yaEnStock}
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Label>Notas/descripción</Label>
+                        <Textarea
+                          value={pp.descripcion}
+                          onChange={(e) => upd({ descripcion: e.target.value })}
+                          rows={2}
+                        />
+                      </div>
+                    </div>
+                    {/* Solo permutas NUEVAS (sin id) pueden marcarse para subir al stock */}
+                    {!pp.id && !yaEnStock && (
+                      <label className="flex items-start gap-2 cursor-pointer rounded-md bg-white dark:bg-neutral-900 border border-purple-200 dark:border-purple-900/40 p-2.5">
+                        <input
+                          type="checkbox"
+                          checked={!!pp.subirAlStock}
+                          onChange={(e) => upd({ subirAlStock: e.target.checked })}
+                          className="mt-0.5"
+                        />
+                        <div className="text-xs">
+                          <p className="font-medium text-gray-900 dark:text-gray-100">
+                            Subir esta moto al stock como usada
+                          </p>
+                          <p className="text-gray-500 dark:text-gray-400 mt-0.5">
+                            Crea un modelo nuevo en el catálogo (slug mf-XXXX
+                            consecutivo, inactivo).
+                          </p>
+                        </div>
+                      </label>
+                    )}
+                  </div>
+                )
+              })}
             </CardContent>
           </Card>
         )}
@@ -333,6 +550,52 @@ export function OCForm({
                 <div>
                   <Label htmlFor="valorCuota">Valor cuota</Label>
                   <Input id="valorCuota" type="number" value={data.valorCuota} onChange={(e) => set("valorCuota", e.target.value)} />
+                </div>
+              </div>
+
+              {/* Garante (sub-bloque) */}
+              <div className="rounded-md border border-blue-200 dark:border-blue-900/40 bg-blue-50/30 dark:bg-blue-950/10 p-3 space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">
+                  Garante (opcional)
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Apellido</Label>
+                    <Input
+                      value={garante.apellido}
+                      onChange={(e) => setGarante((g) => ({ ...g, apellido: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <Label>Nombre</Label>
+                    <Input
+                      value={garante.nombre}
+                      onChange={(e) => setGarante((g) => ({ ...g, nombre: e.target.value }))}
+                    />
+                  </div>
+                  <div>
+                    <Label>DNI</Label>
+                    <Input
+                      value={garante.dni}
+                      onChange={(e) =>
+                        setGarante((g) => ({ ...g, dni: e.target.value.replace(/\D/g, "") }))
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label>Teléfono</Label>
+                    <Input
+                      value={garante.telefono}
+                      onChange={(e) => setGarante((g) => ({ ...g, telefono: e.target.value }))}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <Label>Dirección</Label>
+                    <Input
+                      value={garante.direccion}
+                      onChange={(e) => setGarante((g) => ({ ...g, direccion: e.target.value }))}
+                    />
+                  </div>
                 </div>
               </div>
             </CardContent>

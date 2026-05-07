@@ -16,6 +16,21 @@ import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 
 export const dynamic = "force-dynamic"
 
+type PermutaFormPayload = {
+  id: string | null
+  marca: string | null
+  modelo: string | null
+  anio: number | null
+  kilometros: number | null
+  patente: string | null
+  chasis: string | null
+  motor: string | null
+  descripcion: string | null
+  valor: number
+  motoRecibidaId: string | null
+  subirAlStock: boolean
+}
+
 async function updateOrden(formData: FormData) {
   "use server"
   try {
@@ -29,6 +44,33 @@ async function updateOrden(formData: FormData) {
       const v = get(k)
       return v && v.trim() ? new Date(v) : new Date()
     }
+
+    // Parsear permutas + garante
+    let permutasInput: PermutaFormPayload[] = []
+    try {
+      permutasInput = JSON.parse(get("permutas") || "[]")
+    } catch {
+      permutasInput = []
+    }
+
+    const formaPago = get("formaPago") || null
+    const hayPermuta = formaPago === "Permuta" || formaPago === "Mixta"
+    const hayFin = formaPago === "Financiado" || formaPago === "Mixta"
+
+    // Resumen agregado de permutas para campos legacy
+    const sumaPermutas = hayPermuta
+      ? permutasInput.reduce((s, p) => s + (p.valor || 0), 0) || null
+      : null
+    const resumenPermutas = hayPermuta && permutasInput.length > 0
+      ? permutasInput
+          .map((p, i) => {
+            const partes = [p.marca, p.modelo, p.anio ? String(p.anio) : null]
+              .filter(Boolean)
+              .join(" ")
+            return `${i + 1}) ${partes || "Permuta"} — $${(p.valor ?? 0).toLocaleString("es-AR")}`
+          })
+          .join("\n")
+      : null
 
     const orden = await prisma.$transaction(async (tx) => {
       const orden = await tx.ordenCompra.update({
@@ -44,12 +86,12 @@ async function updateOrden(formData: FormData) {
           motoKilometros: num("motoKilometros"),
           precioVenta: num("precioVenta") ?? 0,
           moneda: get("moneda") || "ARS",
-          formaPago: get("formaPago") || null,
+          formaPago,
           sena: num("sena"),
           saldo: num("saldo"),
           detallePago: get("detallePago") || null,
-          permutaDescripcion: get("permutaDescripcion") || null,
-          permutaValor: num("permutaValor"),
+          permutaDescripcion: resumenPermutas,
+          permutaValor: sumaPermutas,
           cuotas: num("cuotas"),
           valorCuota: num("valorCuota"),
           entrega: num("entrega"),
@@ -62,6 +104,102 @@ async function updateOrden(formData: FormData) {
           observaciones: get("observaciones") || null,
         },
       })
+
+      // Sincronizar permutas: borrar las que ya no estan, actualizar las que tienen id, crear las nuevas
+      const idsEnviados = new Set(permutasInput.filter((p) => p.id).map((p) => p.id as string))
+      // Borrar permutas que estaban antes pero ya no estan
+      // OJO: si una permuta tiene motoRecibidaId, NO la borro (rompería la moto del catálogo)
+      const existentes = await tx.oCPermuta.findMany({
+        where: { ordenCompraId: id },
+        select: { id: true, motoRecibidaId: true },
+      })
+      const aBorrar = existentes.filter(
+        (e) => !idsEnviados.has(e.id) && !e.motoRecibidaId
+      )
+      if (aBorrar.length > 0) {
+        await tx.oCPermuta.deleteMany({
+          where: { id: { in: aBorrar.map((e) => e.id) } },
+        })
+      }
+
+      // Calculo el siguiente slug mf-XXXX para permutas nuevas que se suban al stock
+      const ultimosMF = await tx.modelo.findMany({
+        where: { slug: { startsWith: "mf-" } },
+        select: { slug: true },
+      })
+      const numerosMF = ultimosMF
+        .map((m) => {
+          const match = m.slug.match(/^mf-(\d+)$/i)
+          return match ? parseInt(match[1], 10) : 0
+        })
+        .filter((n) => n > 0)
+      let proximoMF = numerosMF.length > 0 ? Math.max(...numerosMF) + 1 : 1
+      const placeholderFoto = "/images/logo-clasico.png"
+
+      for (const p of permutasInput) {
+        if (p.id) {
+          // Update permuta existente — NO toco motoRecibidaId (la moto del catálogo
+          // se edita aparte para no desincronizar)
+          await tx.oCPermuta.update({
+            where: { id: p.id },
+            data: {
+              marca: p.marca,
+              modelo: p.modelo,
+              anio: p.anio,
+              kilometros: p.kilometros,
+              patente: p.patente,
+              chasis: p.chasis,
+              motor: p.motor,
+              descripcion: p.descripcion,
+              valor: p.valor,
+            },
+          })
+        } else {
+          // Permuta nueva. Si subirAlStock, crear primero la moto y linkearla.
+          let motoRecibidaId: string | null = null
+          if (p.subirAlStock && p.marca && p.modelo) {
+            const slug = `mf-${String(proximoMF).padStart(4, "0")}`
+            proximoMF++
+            const motoRecibida = await tx.modelo.create({
+              data: {
+                nombre: p.modelo,
+                slug,
+                marca: p.marca,
+                condicion: "USADA",
+                anio: p.anio,
+                kilometros: p.kilometros,
+                patente: p.patente,
+                chasis: p.chasis,
+                motor: p.motor,
+                precio: p.valor,
+                moneda: orden.moneda,
+                activo: false,
+                fotos: [placeholderFoto],
+                origen: "PARTE_DE_PAGO",
+                clienteEntregaId: orden.clienteId,
+                ordenCompraOrigenId: orden.id,
+                etiqueta: null,
+              },
+            })
+            motoRecibidaId = motoRecibida.id
+          }
+          await tx.oCPermuta.create({
+            data: {
+              ordenCompraId: orden.id,
+              marca: p.marca,
+              modelo: p.modelo,
+              anio: p.anio,
+              kilometros: p.kilometros,
+              patente: p.patente,
+              chasis: p.chasis,
+              motor: p.motor,
+              descripcion: p.descripcion,
+              valor: p.valor,
+              motoRecibidaId,
+            },
+          })
+        }
+      }
 
       if (orden.modeloId) {
         if (orden.estado === "CONCRETADA") {
@@ -77,8 +215,32 @@ async function updateOrden(formData: FormData) {
         }
       }
 
-      // Crear financiación si pasa a tener cuotas (idempotente: no crea duplicados)
-      await crearFinanciacionDesdeOC(tx, orden)
+      // Crear o actualizar financiación. Si ya existe, solo actualizar el garante.
+      const finExistente = await tx.financiacionOC.findUnique({
+        where: { ordenCompraId: orden.id },
+      })
+      if (finExistente && hayFin) {
+        await tx.financiacionOC.update({
+          where: { id: finExistente.id },
+          data: {
+            garanteNombre: get("garanteNombre") || null,
+            garanteApellido: get("garanteApellido") || null,
+            garanteDni: get("garanteDni") || null,
+            garanteTelefono: get("garanteTelefono") || null,
+            garanteDireccion: get("garanteDireccion") || null,
+          },
+        })
+      } else {
+        // No existia: la helper la crea con garante incluido
+        await crearFinanciacionDesdeOC(tx, {
+          ...orden,
+          garanteNombre: get("garanteNombre") || null,
+          garanteApellido: get("garanteApellido") || null,
+          garanteDni: get("garanteDni") || null,
+          garanteTelefono: get("garanteTelefono") || null,
+          garanteDireccion: get("garanteDireccion") || null,
+        })
+      }
 
       return orden
     })
@@ -139,7 +301,13 @@ export default async function EditarOrdenCompraPage({
   const esReciente = recien === "1"
 
   const [orden, clientes, modelos] = await Promise.all([
-    prisma.ordenCompra.findUnique({ where: { id } }),
+    prisma.ordenCompra.findUnique({
+      where: { id },
+      include: {
+        permutas: { orderBy: { createdAt: "asc" } },
+        financiacion: true,
+      },
+    }),
     prisma.cliente.findMany({
       orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
       select: {
@@ -201,6 +369,31 @@ export default async function EditarOrdenCompraPage({
     estado: orden.estado,
     observaciones: orden.observaciones || "",
   }
+
+  // Permutas existentes -> shape PermutaForm
+  const initialPermutas = orden.permutas.map((p) => ({
+    id: p.id,
+    marca: p.marca || "",
+    modelo: p.modelo || "",
+    anio: p.anio != null ? String(p.anio) : "",
+    kilometros: p.kilometros != null ? String(p.kilometros) : "",
+    patente: p.patente || "",
+    chasis: p.chasis || "",
+    motor: p.motor || "",
+    descripcion: p.descripcion || "",
+    valor: String(p.valor),
+    motoRecibidaId: p.motoRecibidaId,
+  }))
+
+  const initialGarante = orden.financiacion
+    ? {
+        nombre: orden.financiacion.garanteNombre || "",
+        apellido: orden.financiacion.garanteApellido || "",
+        dni: orden.financiacion.garanteDni || "",
+        telefono: orden.financiacion.garanteTelefono || "",
+        direccion: orden.financiacion.garanteDireccion || "",
+      }
+    : undefined
 
   return (
     <div className="space-y-6">
@@ -280,6 +473,8 @@ export default async function EditarOrdenCompraPage({
 
       <OCForm
         initialData={initialData}
+        initialPermutas={initialPermutas}
+        initialGarante={initialGarante}
         clientes={clientes}
         modelos={modelos}
         saveAction={updateOrden}

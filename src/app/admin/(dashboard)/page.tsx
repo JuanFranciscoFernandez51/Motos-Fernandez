@@ -118,6 +118,16 @@ export default async function AdminDashboardPage() {
     visitasTienda30d,
     ingresosUltimos7d,
     ingresosPrevios7d,
+    // Métricas del negocio
+    ocMesActual,
+    ocPorMesRaw,
+    topMarcasRaw,
+    motosEnStock,
+    motosListasParaPublicar,
+    cuotasAtrasadas,
+    cuotasProximaSemana,
+    otActivas,
+    otListas,
   ] = await Promise.all([
     prisma.pedido.count({
       where: { createdAt: { gte: todayUTC } },
@@ -265,6 +275,58 @@ export default async function AdminDashboardPage() {
         estadoPago: "APROBADO",
       },
     }),
+    // ─── Métricas del negocio (motos, taller, financiación) ───
+    // OC concretadas en el mes actual
+    prisma.ordenCompra.aggregate({
+      _sum: { precioVenta: true },
+      _count: true,
+      where: { estado: "CONCRETADA", fecha: { gte: monthStartUTC } },
+    }),
+    // OC concretadas en los últimos 6 meses (para gráfico)
+    prisma.$queryRaw<VentaMes[]>`
+      SELECT
+        TO_CHAR(fecha AT TIME ZONE 'America/Argentina/Buenos_Aires', 'YYYY-MM') AS mes,
+        SUM("precioVenta")::bigint AS total,
+        COUNT(*)::bigint AS cantidad
+      FROM "VentaMoto"
+      WHERE fecha >= ${sixMonthsAgoUTC} AND estado = 'CONCRETADA'
+      GROUP BY mes
+      ORDER BY mes ASC
+    `,
+    // Top marcas vendidas (último año, en OC concretadas)
+    prisma.$queryRaw<{ marca: string; cantidad: bigint; total: bigint }[]>`
+      SELECT
+        m.marca,
+        COUNT(*)::bigint AS cantidad,
+        SUM(oc."precioVenta")::bigint AS total
+      FROM "VentaMoto" oc
+      JOIN "Modelo" m ON m.id = oc."modeloId"
+      WHERE oc.fecha >= ${new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)}
+        AND oc.estado = 'CONCRETADA'
+      GROUP BY m.marca
+      ORDER BY cantidad DESC
+      LIMIT 5
+    `,
+    // Stock de motos
+    prisma.modelo.count({ where: { activo: true, vendida: false } }),
+    prisma.modelo.count({ where: { vendida: false, activo: true, fotos: { isEmpty: false } } }),
+    // Cuotas vencidas (estado ATRASADA)
+    prisma.cuotaFinanciacion.count({ where: { estado: "ATRASADA" } }),
+    // Cuotas que vencen esta semana (próximos 7 días) y están pendientes
+    prisma.cuotaFinanciacion.count({
+      where: {
+        estado: "PENDIENTE",
+        fechaVencimiento: { gte: nowUTC, lt: new Date(nowUTC.getTime() + 7 * 24 * 60 * 60 * 1000) },
+      },
+    }),
+    // OT activas (en taller)
+    prisma.ordenTrabajo.count({
+      where: {
+        estado: { in: ["INGRESADA", "EN_DIAGNOSTICO", "PRESUPUESTADA", "APROBADA", "EN_REPARACION"] },
+      },
+    }),
+    // OT listas para entregar
+    prisma.ordenTrabajo.count({ where: { estado: "LISTA" } }),
   ])
 
   // Build all 6 months array (including months with 0 sales)
@@ -351,6 +413,30 @@ export default async function AdminDashboardPage() {
       color: "text-[#6B4F7A] bg-purple-50 dark:bg-purple-950/30",
     },
   ]
+
+  // Datos para sección "Métricas del negocio"
+  const ocPorMesData = (() => {
+    const map = new Map(ocPorMesRaw.map((v) => [v.mes, { total: Number(v.total), cantidad: Number(v.cantidad) }]))
+    return Array.from({ length: 6 }, (_, i) => {
+      const d = new Date(nowAR.getFullYear(), nowAR.getMonth() - 5 + i, 1)
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
+      const entry = map.get(key)
+      return {
+        mes: mesesEspanol[d.getMonth()],
+        anio: d.getFullYear(),
+        total: entry?.total || 0,
+        cantidad: entry?.cantidad || 0,
+      }
+    })
+  })()
+  const maxOCTotal = Math.max(...ocPorMesData.map((m) => m.total), 1)
+
+  const topMarcas = topMarcasRaw.map((m) => ({
+    marca: m.marca,
+    cantidad: Number(m.cantidad),
+    total: Number(m.total),
+  }))
+  const maxMarcaCant = Math.max(...topMarcas.map((m) => m.cantidad), 1)
 
   return (
     <div className="space-y-6">
@@ -929,6 +1015,145 @@ export default async function AdminDashboardPage() {
                         </div>
                         <span className="w-10 text-right text-xs font-semibold text-gray-700 dark:text-gray-300 shrink-0">
                           {m.cantidad}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* ════════════════════════════════════════════════════
+          MÉTRICAS DEL NEGOCIO (motos, OC, taller, financiación)
+          ════════════════════════════════════════════════════ */}
+      <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-neutral-800">
+        <div>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <Bike className="size-5 text-[#6B4F7A]" />
+            Métricas del negocio
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+            Ventas de motos, taller, financiaciones, stock.
+          </p>
+        </div>
+
+        {/* Stats principales en 4 cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Motos vendidas (mes)</p>
+              <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300 mt-1">
+                {ocMesActual._count}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Facturado: {formatPrice(Number(ocMesActual._sum.precioVenta || 0))}
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Stock activo</p>
+              <p className="text-2xl font-bold text-blue-700 dark:text-blue-300 mt-1">
+                {motosEnStock}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {motosListasParaPublicar} con fotos cargadas
+              </p>
+            </CardContent>
+          </Card>
+          <Card className={cuotasAtrasadas > 0 ? "border-red-300 dark:border-red-900/40" : ""}>
+            <CardContent className="p-4">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Cuotas vencidas</p>
+              <p className={`text-2xl font-bold mt-1 ${cuotasAtrasadas > 0 ? "text-red-600 dark:text-red-400" : "text-gray-700 dark:text-gray-300"}`}>
+                {cuotasAtrasadas}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {cuotasProximaSemana} vencen esta semana
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Taller</p>
+              <p className="text-2xl font-bold text-orange-600 dark:text-orange-300 mt-1">
+                {otActivas}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {otListas > 0 ? <span className="font-semibold text-emerald-600 dark:text-emerald-300">{otListas} listas para entregar</span> : "OT en curso"}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* OC por mes (gráfico de barras) + Top marcas */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Motos vendidas por mes (últimos 6)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2.5">
+                {ocPorMesData.map((m) => {
+                  const pct = (m.total / maxOCTotal) * 100
+                  return (
+                    <div key={`${m.anio}-${m.mes}`} className="flex items-center gap-3">
+                      <span className="w-12 text-xs font-medium text-gray-600 dark:text-gray-300 shrink-0">
+                        {m.mes}
+                      </span>
+                      <div className="flex-1 h-7 bg-gray-100 dark:bg-neutral-800 rounded-md overflow-hidden relative">
+                        <div
+                          className="h-full bg-emerald-500 transition-all"
+                          style={{ width: `${Math.max(pct, m.cantidad > 0 ? 3 : 0)}%` }}
+                        />
+                        {m.cantidad > 0 && (
+                          <span className="absolute inset-0 flex items-center px-2 text-xs font-semibold text-gray-900 dark:text-gray-100">
+                            {m.cantidad} {m.cantidad === 1 ? "moto" : "motos"} · {formatPrice(m.total)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+                {ocPorMesData.every((m) => m.cantidad === 0) && (
+                  <p className="text-sm text-gray-400 text-center py-4">
+                    Aún no hay OC concretadas en los últimos 6 meses.
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-base">Top marcas vendidas (último año)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {topMarcas.length === 0 ? (
+                <p className="text-sm text-gray-400 text-center py-4">
+                  Sin OC concretadas todavía.
+                </p>
+              ) : (
+                <div className="space-y-2.5">
+                  {topMarcas.map((m) => {
+                    const pct = (m.cantidad / maxMarcaCant) * 100
+                    return (
+                      <div key={m.marca} className="flex items-center gap-3">
+                        <span className="w-24 text-xs font-medium text-gray-700 dark:text-gray-200 shrink-0 truncate">
+                          {m.marca}
+                        </span>
+                        <div className="flex-1 h-2.5 bg-gray-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                          <div
+                            className="h-full rounded-full"
+                            style={{ width: `${Math.max(pct, 4)}%`, backgroundColor: "#6B4F7A" }}
+                          />
+                        </div>
+                        <span className="w-28 text-right text-xs text-gray-700 dark:text-gray-300 shrink-0">
+                          <span className="font-semibold">{m.cantidad}</span>
+                          <span className="text-gray-400 ml-1">·</span>
+                          <span className="ml-1 font-mono text-[10px]">{formatPrice(m.total)}</span>
                         </span>
                       </div>
                     )
