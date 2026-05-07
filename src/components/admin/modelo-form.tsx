@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Plus, Trash2, ArrowLeft, Save, Sparkles, Loader2 } from "lucide-react"
+import { ClienteSelector } from "./operativo/cliente-selector"
 import Link from "next/link"
 import { CATEGORIAS_VEHICULO, ETIQUETAS_MODELO } from "@/lib/constants"
 import { ImageUpload } from "@/components/admin/image-upload"
@@ -66,6 +67,7 @@ type ModeloData = {
   chasis?: string | null
   motor?: string | null
   patente?: string | null
+  clienteId?: string | null
   clienteNombre?: string | null
   clienteContacto?: string | null
   notasInternas?: string | null
@@ -83,9 +85,11 @@ function slugify(text: string): string {
 export function ModeloForm({
   initialData,
   saveAction,
+  clientes = [],
 }: {
   initialData?: ModeloData
   saveAction: (data: FormData) => Promise<{ error?: string }>
+  clientes?: import("./operativo/cliente-selector").ClienteOption[]
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -130,6 +134,7 @@ export function ModeloForm({
   const [chasis, setChasis] = useState(initialData?.chasis || "")
   const [motor, setMotor] = useState(initialData?.motor || "")
   const [patente, setPatente] = useState(initialData?.patente || "")
+  const [clienteId, setClienteId] = useState(initialData?.clienteId || "")
   const [clienteNombre, setClienteNombre] = useState(initialData?.clienteNombre || "")
   const [clienteContacto, setClienteContacto] = useState(initialData?.clienteContacto || "")
   const [notasInternas, setNotasInternas] = useState(initialData?.notasInternas || "")
@@ -231,6 +236,7 @@ export function ModeloForm({
     formData.append("chasis", chasis)
     formData.append("motor", motor)
     formData.append("patente", patente)
+    formData.append("clienteId", clienteId)
     formData.append("clienteNombre", clienteNombre)
     formData.append("clienteContacto", clienteContacto)
     formData.append("notasInternas", notasInternas)
@@ -765,23 +771,38 @@ export function ModeloForm({
                 placeholder="ej: AA123BB"
               />
             </div>
-            <div>
-              <Label htmlFor="clienteNombre">Cliente (nombre)</Label>
-              <Input
-                id="clienteNombre"
-                value={clienteNombre}
-                onChange={(e) => setClienteNombre(e.target.value)}
-                placeholder="ej: Juan Pérez"
-              />
-            </div>
             <div className="md:col-span-2">
-              <Label htmlFor="clienteContacto">Cliente (contacto)</Label>
-              <Input
-                id="clienteContacto"
-                value={clienteContacto}
-                onChange={(e) => setClienteContacto(e.target.value)}
-                placeholder="teléfono, email, DNI..."
+              <Label>Cliente asociado</Label>
+              <ClienteSelector
+                clientes={clientes}
+                value={clienteId}
+                onChange={setClienteId}
               />
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Seleccioná el cliente vinculado a esta moto (dueño actual,
+                referente, quien la entregó). Buscá por nombre, DNI o teléfono.
+              </p>
+              {/* Fallback legacy: campos de texto libre para datos importados
+                  del Cardfile que no estan vinculados a un Cliente real.
+                  Solo se muestran si NO hay clienteId seleccionado y hay
+                  data legacy guardada. */}
+              {!clienteId && (clienteNombre || clienteContacto) && (
+                <div className="mt-3 rounded-md border border-amber-200 dark:border-amber-900/40 bg-amber-50/60 dark:bg-amber-950/20 p-3 space-y-2">
+                  <p className="text-xs text-amber-800 dark:text-amber-300 font-medium">
+                    Datos legacy (texto libre) — vinculá un cliente arriba para reemplazarlos
+                  </p>
+                  {clienteNombre && (
+                    <p className="text-xs text-gray-700 dark:text-gray-300">
+                      <span className="font-mono text-[10px] uppercase text-gray-500 dark:text-gray-400">Nombre:</span> {clienteNombre}
+                    </p>
+                  )}
+                  {clienteContacto && (
+                    <p className="text-xs text-gray-700 dark:text-gray-300">
+                      <span className="font-mono text-[10px] uppercase text-gray-500 dark:text-gray-400">Contacto:</span> {clienteContacto}
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
             <div className="md:col-span-2">
               <Label htmlFor="notasInternas">Notas internas</Label>

@@ -36,6 +36,7 @@ async function updateModelo(formData: FormData) {
     const chasis = (formData.get("chasis") as string) || ""
     const motor = (formData.get("motor") as string) || ""
     const patente = (formData.get("patente") as string) || ""
+    const clienteId = (formData.get("clienteId") as string) || ""
     const clienteNombre = (formData.get("clienteNombre") as string) || ""
     const clienteContacto = (formData.get("clienteContacto") as string) || ""
     const notasInternas = (formData.get("notasInternas") as string) || ""
@@ -72,6 +73,7 @@ async function updateModelo(formData: FormData) {
         chasis: chasis || null,
         motor: motor || null,
         patente: patente || null,
+        clienteId: clienteId || null,
         clienteNombre: clienteNombre || null,
         clienteContacto: clienteContacto || null,
         notasInternas: notasInternas || null,
@@ -99,10 +101,23 @@ export default async function EditModeloPage({
 }) {
   const { id } = await params
 
-  const modelo = await prisma.modelo.findUnique({
-    where: { id },
-    include: { colores: true },
-  })
+  const [modelo, clientes] = await Promise.all([
+    prisma.modelo.findUnique({
+      where: { id },
+      include: { colores: true },
+    }),
+    prisma.cliente.findMany({
+      orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
+      select: {
+        id: true,
+        nombre: true,
+        apellido: true,
+        dni: true,
+        telefono: true,
+        email: true,
+      },
+    }),
+  ])
 
   if (!modelo) notFound()
 
@@ -147,10 +162,11 @@ export default async function EditModeloPage({
     chasis: modelo.chasis,
     motor: modelo.motor,
     patente: modelo.patente,
+    clienteId: modelo.clienteId,
     clienteNombre: modelo.clienteNombre,
     clienteContacto: modelo.clienteContacto,
     notasInternas: modelo.notasInternas,
   }
 
-  return <ModeloForm initialData={initialData} saveAction={updateModelo} />
+  return <ModeloForm initialData={initialData} saveAction={updateModelo} clientes={clientes} />
 }
