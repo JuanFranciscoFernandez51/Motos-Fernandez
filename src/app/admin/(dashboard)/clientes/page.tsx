@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic"
 
 export default async function ClientesPage() {
   const clientes = await prisma.cliente.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
     select: {
       id: true,
       dni: true,
