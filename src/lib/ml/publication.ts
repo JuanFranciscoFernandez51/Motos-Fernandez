@@ -199,7 +199,9 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       currency_id: m.moneda === "USD" ? "USD" : "ARS",
       available_quantity: 1,
       buying_mode: "classified",
-      listing_type_id: "gold_premium", // Oro Premium para clasificados de motos
+      // free = clasificado gratuito. silver/gold/gold_premium cuestan plata.
+      // bronze/gold_special/gold_pro no aplican a MLA1763 (motos).
+      listing_type_id: "free",
       condition,
       pictures: fotosPublicas.map((url) => ({ source: url })),
       // Ubicación obligatoria para clasificados
