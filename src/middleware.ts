@@ -17,6 +17,17 @@ export async function middleware(request: NextRequest) {
 
   // Protect admin API routes
   if (pathname.startsWith("/api/admin")) {
+    // Excepciones: endpoints que tienen su propia auth con Bearer token
+    // (cron de Vercel + scripts manuales). NO usan cookie de NextAuth.
+    const bearerAuthPaths = [
+      "/api/admin/backup",
+      "/api/admin/backup-sheets",
+      "/api/admin/backup-check",
+    ]
+    if (bearerAuthPaths.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
+      return NextResponse.next()
+    }
+
     const token = await getToken({ req: request })
 
     if (!token) {
