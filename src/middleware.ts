@@ -27,6 +27,8 @@ export async function middleware(request: NextRequest) {
       // y webhook (lo llama ML al haber novedades en items/orders/questions).
       "/api/admin/ml/callback",
       "/api/admin/ml/webhook",
+      // Meta: callback OAuth de Facebook/Instagram
+      "/api/admin/meta/callback",
     ]
     if (bearerAuthPaths.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
       return NextResponse.next()

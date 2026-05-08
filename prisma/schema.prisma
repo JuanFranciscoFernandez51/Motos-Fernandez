@@ -124,6 +124,14 @@ model Modelo {
   mlUltimaSync  DateTime?            // ultima vez que sincronizamos
   mlError       String?    @db.Text  // si hubo error en la ultima sync
   mlListingType String?    @default("free")  // free | silver | gold | gold_premium
+
+  // Meta (Instagram + Facebook)
+  igPostId      String?              // id del post de IG (formato 1234_5678)
+  igPermalink   String?              // url publica del post de IG
+  fbPostId      String?              // id del post de FB
+  fbPermalink   String?              // url publica del post de FB
+  igUltimaSync  DateTime?            // ultima vez que se publicó/actualizó
+  igError       String?    @db.Text  // ultimo error si hubo
 }
 
 enum CategoriaVehiculo {
@@ -1028,6 +1036,26 @@ model MLConfig {
   ultimoWebhook DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+// ==================== META (Instagram + Facebook) ====================
+// Configuración de la integración con Meta Graph API. Una sola fila
+// (id="default"). Guarda el page access token (no el user token), que
+// dura ~60 días renovable. Asociado a UNA página de FB y UNA cuenta IG
+// Business linkeada a esa página.
+model MetaConfig {
+  id              String    @id @default("default")
+  userId          String?              // ID del user de Facebook que conectó
+  userName        String?              // Nombre del user
+  pageId          String?              // ID de la página de FB
+  pageName        String?              // Nombre de la página
+  pageAccessToken String?   @db.Text   // Token de la página (no expira si es long-lived)
+  igUserId        String?              // ID de la cuenta IG Business (vinculada a la page)
+  igUsername      String?              // @motosfernandez
+  expiresAt       DateTime?            // del user token (page token suele no expirar)
+  scope           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
 }
 
 // ==================== TIPOS DE SERVICIO (TALLER) ====================

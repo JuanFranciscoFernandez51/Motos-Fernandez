@@ -34,6 +34,7 @@ import {
   Truck as TruckIcon,
   Wallet,
 } from "lucide-react"
+import { InstagramIcon } from "@/components/icons/social"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -109,6 +110,7 @@ const navEntries: NavEntry[] = [
   // porque son herramientas operativas, no campañas.
   { href: "/admin/crm", label: "CRM / Leads", icon: Users },
   { href: "/admin/ml", label: "Mercado Libre", icon: ShoppingBag },
+  { href: "/admin/meta", label: "Instagram + FB", icon: InstagramIcon as LucideIcon },
 
   // Marketing y comunicación
   {
