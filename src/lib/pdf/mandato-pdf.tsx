@@ -61,10 +61,12 @@ const styles = StyleSheet.create({
     color: "#6B4F7A",
   },
   termsItem: { marginBottom: 2 },
+  // marginTop alto a propósito: deja ~5 renglones de aire arriba de la
+  // línea de firma para que el cliente pueda firmar cómodo en papel.
   signatures: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginTop: 24,
+    marginTop: 60,
     gap: 24,
   },
   signBox: {

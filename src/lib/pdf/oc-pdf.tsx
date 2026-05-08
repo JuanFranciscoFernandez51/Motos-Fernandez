@@ -124,7 +124,9 @@ const styles = StyleSheet.create({
   terms: { marginTop: 8, padding: 6, backgroundColor: "#F8F5FA", fontSize: 7.5, lineHeight: 1.3 },
   termsTitle: { fontWeight: 700, marginBottom: 2, fontSize: 8.5, color: "#6B4F7A" },
   termsItem: { marginBottom: 2 },
-  signatures: { flexDirection: "row", justifyContent: "space-between", marginTop: 22, gap: 24 },
+  // marginTop alto a propósito: deja ~5 renglones de aire arriba de la
+  // línea de firma para que el cliente pueda firmar cómodo en papel.
+  signatures: { flexDirection: "row", justifyContent: "space-between", marginTop: 60, gap: 24 },
   signBox: { flex: 1, textAlign: "center", borderTop: "1px solid #1A1A1A", paddingTop: 4 },
   signLabel: { fontSize: 8, fontWeight: 700 },
   signSub: { fontSize: 7, color: "#666", marginTop: 1 },
