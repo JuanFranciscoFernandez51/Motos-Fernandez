@@ -14,13 +14,29 @@ export async function GET(
   const { id } = await params
   const orden = await prisma.ordenCompra.findUnique({
     where: { id },
-    include: { cliente: true },
+    include: {
+      cliente: true,
+      pagos: { orderBy: { createdAt: "asc" } },
+      permutas: { orderBy: { createdAt: "asc" } },
+      financiacion: true,
+    },
   })
   if (!orden) {
     return NextResponse.json({ error: "No encontrado" }, { status: 404 })
   }
 
   const negocio = await getNegocioConfig()
+
+  // Datos del garante: viene de la financiación asociada (si hay).
+  const garante = orden.financiacion
+    ? {
+        nombre: orden.financiacion.garanteNombre,
+        apellido: orden.financiacion.garanteApellido,
+        dni: orden.financiacion.garanteDni,
+        telefono: orden.financiacion.garanteTelefono,
+        direccion: orden.financiacion.garanteDireccion,
+      }
+    : null
 
   const pdfBuffer = await renderToBuffer(
     <OCPDF
@@ -53,12 +69,28 @@ export async function GET(
           sena: orden.sena,
           saldo: orden.saldo,
           detallePago: orden.detallePago,
-          permutaDescripcion: orden.permutaDescripcion,
-          permutaValor: orden.permutaValor,
           cuotas: orden.cuotas,
           valorCuota: orden.valorCuota,
           entrega: orden.entrega,
         },
+        pagos: orden.pagos.map((p) => ({
+          metodo: p.metodo,
+          monto: p.monto,
+          detalle: p.detalle,
+          fecha: p.fecha,
+        })),
+        permutas: orden.permutas.map((p) => ({
+          marca: p.marca,
+          modelo: p.modelo,
+          anio: p.anio,
+          kilometros: p.kilometros,
+          patente: p.patente,
+          chasis: p.chasis,
+          motor: p.motor,
+          descripcion: p.descripcion,
+          valor: p.valor,
+        })),
+        garante,
         observaciones: orden.observaciones,
         negocio,
       }}

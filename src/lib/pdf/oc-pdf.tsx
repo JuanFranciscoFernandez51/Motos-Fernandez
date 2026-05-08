@@ -33,36 +33,98 @@ const styles = StyleSheet.create({
   },
   priceLabel: { fontSize: 9, textTransform: "uppercase", opacity: 0.8 },
   priceValue: { fontSize: 18, fontWeight: 700, marginTop: 2 },
-  terms: { marginTop: 18, padding: 10, backgroundColor: "#F8F5FA", fontSize: 8, lineHeight: 1.5 },
-  termsTitle: { fontWeight: 700, marginBottom: 4, fontSize: 9, color: "#6B4F7A" },
-  termsItem: { marginBottom: 3 },
-  finBox: {
-    marginTop: 10,
-    padding: 10,
-    backgroundColor: "#EFF6FF",
-    borderLeft: "3px solid #2563EB",
+  // Tabla de pagos
+  tableHeader: {
+    flexDirection: "row",
+    backgroundColor: "#F3EEF7",
+    borderTopLeftRadius: 3,
+    borderTopRightRadius: 3,
+    padding: 6,
+    marginTop: 4,
+  },
+  tableHeaderCell: {
+    fontSize: 8,
+    fontWeight: 700,
+    color: "#6B4F7A",
+    textTransform: "uppercase",
+  },
+  tableRow: {
+    flexDirection: "row",
+    borderBottom: "1px solid #EFEFEF",
+    padding: 6,
+  },
+  tableCell: { fontSize: 9 },
+  tableTotalRow: {
+    flexDirection: "row",
+    backgroundColor: "#F8F5FA",
+    padding: 6,
+    marginTop: 2,
+  },
+  tableTotalCell: { fontSize: 9, fontWeight: 700, color: "#6B4F7A" },
+  // Permuta - cuadro detallado por cada permuta
+  permutaBox: {
+    marginTop: 6,
+    padding: 8,
+    backgroundColor: "#FAF5FE",
+    borderLeft: "3px solid #9333EA",
     borderRadius: 3,
   },
-  finTitle: {
-    fontSize: 10,
+  permutaTitle: {
+    fontSize: 9,
     fontWeight: 700,
-    color: "#1E40AF",
-    marginBottom: 6,
+    color: "#7E22CE",
+    marginBottom: 3,
+  },
+  permutaSubrow: { flexDirection: "row", marginBottom: 2 },
+  permutaLabel: { width: 70, color: "#7E22CE", fontSize: 8 },
+  permutaValue: { flex: 1, fontSize: 8 },
+  // Financiación
+  finBox: {
+    marginTop: 10, padding: 10, backgroundColor: "#EFF6FF",
+    borderLeft: "3px solid #2563EB", borderRadius: 3,
+  },
+  finTitle: {
+    fontSize: 10, fontWeight: 700, color: "#1E40AF", marginBottom: 6,
   },
   finRow: { flexDirection: "row", marginBottom: 3 },
   finLabel: { width: 120, color: "#1E40AF", fontWeight: 700 },
   finValue: { flex: 1 },
   finHighlight: {
-    marginTop: 6,
-    padding: 6,
-    backgroundColor: "#DBEAFE",
-    borderRadius: 2,
-    flexDirection: "row",
-    justifyContent: "space-between",
+    marginTop: 6, padding: 6, backgroundColor: "#DBEAFE",
+    borderRadius: 2, flexDirection: "row", justifyContent: "space-between",
   },
   finHighlightLabel: { fontWeight: 700, color: "#1E3A8A" },
   finHighlightValue: { fontWeight: 700, color: "#1E3A8A" },
-  signatures: { flexDirection: "row", justifyContent: "space-between", marginTop: 50, gap: 30 },
+  garanteBox: {
+    marginTop: 8, padding: 8, backgroundColor: "#F0FDF4",
+    borderLeft: "3px solid #16A34A", borderRadius: 3,
+  },
+  garanteTitle: {
+    fontSize: 9, fontWeight: 700, color: "#15803D", marginBottom: 4,
+  },
+  garanteRow: { flexDirection: "row", marginBottom: 2 },
+  garanteLabel: { width: 80, color: "#15803D", fontSize: 8, fontWeight: 700 },
+  garanteValue: { flex: 1, fontSize: 8 },
+  // Resumen totales
+  resumenBox: {
+    marginTop: 10, padding: 8, backgroundColor: "#F8F5FA",
+    borderRadius: 3,
+  },
+  resumenRow: {
+    flexDirection: "row", justifyContent: "space-between", marginBottom: 2,
+  },
+  resumenLabel: { fontSize: 9, color: "#666" },
+  resumenValue: { fontSize: 9, fontWeight: 700 },
+  resumenTotalRow: {
+    flexDirection: "row", justifyContent: "space-between",
+    borderTop: "1px solid #6B4F7A", paddingTop: 4, marginTop: 4,
+  },
+  resumenTotalLabel: { fontSize: 10, fontWeight: 700, color: "#6B4F7A" },
+  resumenTotalValue: { fontSize: 10, fontWeight: 700, color: "#6B4F7A" },
+  terms: { marginTop: 18, padding: 10, backgroundColor: "#F8F5FA", fontSize: 8, lineHeight: 1.5 },
+  termsTitle: { fontWeight: 700, marginBottom: 4, fontSize: 9, color: "#6B4F7A" },
+  termsItem: { marginBottom: 3 },
+  signatures: { flexDirection: "row", justifyContent: "space-between", marginTop: 30, gap: 30 },
   signBox: { flex: 1, textAlign: "center", borderTop: "1px solid #1A1A1A", paddingTop: 5 },
   signLabel: { fontSize: 8, fontWeight: 700 },
   signSub: { fontSize: 7, color: "#666", marginTop: 2 },
@@ -72,6 +134,45 @@ const styles = StyleSheet.create({
     borderTop: "1px solid #E5E5E5", paddingTop: 6,
   },
 })
+
+const METODO_LABELS: Record<string, string> = {
+  EFECTIVO: "Efectivo",
+  TRANSFERENCIA: "Transferencia",
+  TARJETA_DEBITO: "Débito",
+  TARJETA_CREDITO: "Crédito",
+  MERCADO_PAGO: "Mercado Pago",
+  CHEQUE: "Cheque",
+  DEPOSITO: "Depósito",
+  DOLARES: "Dólares",
+  OTRO: "Otro",
+}
+
+type PagoData = {
+  metodo: string
+  monto: number
+  detalle?: string | null
+  fecha?: Date | null
+}
+
+type PermutaData = {
+  marca?: string | null
+  modelo?: string | null
+  anio?: number | null
+  kilometros?: number | null
+  patente?: string | null
+  chasis?: string | null
+  motor?: string | null
+  descripcion?: string | null
+  valor: number
+}
+
+type GaranteData = {
+  nombre?: string | null
+  apellido?: string | null
+  dni?: string | null
+  telefono?: string | null
+  direccion?: string | null
+}
 
 type OCPDFData = {
   numero: number
@@ -102,12 +203,13 @@ type OCPDFData = {
     sena?: number | null
     saldo?: number | null
     detallePago?: string | null
-    permutaDescripcion?: string | null
-    permutaValor?: number | null
     cuotas?: number | null
     valorCuota?: number | null
     entrega?: number | null
   }
+  pagos?: PagoData[]
+  permutas?: PermutaData[]
+  garante?: GaranteData | null
   observaciones?: string | null
   negocio: {
     razonSocial: string
@@ -127,6 +229,28 @@ const dateStr = (d: Date | null | undefined) =>
 
 export function OCPDF({ data }: { data: OCPDFData }) {
   const numeroFormateado = `OC-${String(data.numero).padStart(4, "0")}`
+  const moneda = data.economico.moneda
+
+  // Cómputo de totales para el resumen
+  const totalPagos = (data.pagos || []).reduce((s, p) => s + (p.monto || 0), 0)
+  const totalPermutas = (data.permutas || []).reduce((s, p) => s + (p.valor || 0), 0)
+  const totalFinanciado =
+    data.economico.cuotas && data.economico.valorCuota
+      ? data.economico.cuotas * data.economico.valorCuota +
+        (data.economico.entrega || 0)
+      : 0
+  const totalCubierto = totalPagos + totalPermutas + totalFinanciado
+  const restante = data.economico.precioVenta - totalCubierto
+
+  const tieneFinanciacion =
+    !!(data.economico.cuotas && data.economico.cuotas > 0)
+  const tieneGarante =
+    !!data.garante &&
+    !!(
+      data.garante.nombre ||
+      data.garante.apellido ||
+      data.garante.dni
+    )
 
   return (
     <Document title={`Boleto Compra-Venta ${numeroFormateado}`}>
@@ -229,61 +353,122 @@ export function OCPDF({ data }: { data: OCPDFData }) {
         <View style={styles.priceBox}>
           <Text style={styles.priceLabel}>Precio total de venta</Text>
           <Text style={styles.priceValue}>
-            {money(data.economico.precioVenta, data.economico.moneda)}
+            {money(data.economico.precioVenta, moneda)}
           </Text>
         </View>
 
-        <Text style={styles.h2}>Forma de pago</Text>
-        <View style={styles.row}>
-          <Text style={styles.label}>Modalidad:</Text>
-          <Text style={styles.value}>{data.economico.formaPago || "—"}</Text>
-        </View>
-        {data.economico.sena != null && data.economico.sena > 0 && (
-          <View style={styles.row}>
-            <Text style={styles.label}>Seña:</Text>
-            <Text style={styles.value}>
-              {money(data.economico.sena, data.economico.moneda)}
-            </Text>
-          </View>
-        )}
-        {data.economico.saldo != null && data.economico.saldo > 0 && (
-          <View style={styles.row}>
-            <Text style={styles.label}>Saldo pendiente:</Text>
-            <Text style={styles.value}>
-              {money(data.economico.saldo, data.economico.moneda)}
-            </Text>
-          </View>
-        )}
-        {data.economico.permutaDescripcion && (
+        {/* Pagos directos */}
+        {data.pagos && data.pagos.length > 0 && (
           <>
-            <View style={styles.row}>
-              <Text style={styles.label}>Permuta:</Text>
-              <Text style={styles.value}>{data.economico.permutaDescripcion}</Text>
+            <Text style={styles.h2}>Pagos directos</Text>
+            <View style={styles.tableHeader}>
+              <Text style={[styles.tableHeaderCell, { flex: 2 }]}>Método</Text>
+              <Text style={[styles.tableHeaderCell, { flex: 1.2 }]}>Fecha</Text>
+              <Text style={[styles.tableHeaderCell, { flex: 3 }]}>Detalle</Text>
+              <Text style={[styles.tableHeaderCell, { flex: 1.5, textAlign: "right" }]}>
+                Monto
+              </Text>
             </View>
-            <View style={styles.row}>
-              <Text style={styles.label}>Valor permuta:</Text>
-              <Text style={styles.value}>
-                {money(data.economico.permutaValor, data.economico.moneda)}
+            {data.pagos.map((p, i) => (
+              <View key={i} style={styles.tableRow}>
+                <Text style={[styles.tableCell, { flex: 2 }]}>
+                  {METODO_LABELS[p.metodo] || p.metodo}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1.2 }]}>{dateStr(p.fecha)}</Text>
+                <Text style={[styles.tableCell, { flex: 3 }]}>
+                  {p.detalle || "—"}
+                </Text>
+                <Text style={[styles.tableCell, { flex: 1.5, textAlign: "right" }]}>
+                  {money(p.monto, moneda)}
+                </Text>
+              </View>
+            ))}
+            <View style={styles.tableTotalRow}>
+              <Text style={[styles.tableTotalCell, { flex: 6.2 }]}>
+                Subtotal pagos directos
+              </Text>
+              <Text style={[styles.tableTotalCell, { flex: 1.5, textAlign: "right" }]}>
+                {money(totalPagos, moneda)}
               </Text>
             </View>
           </>
         )}
-        {data.economico.detallePago && (
-          <View style={styles.row}>
-            <Text style={styles.label}>Detalle:</Text>
-            <Text style={styles.value}>{data.economico.detallePago}</Text>
-          </View>
+
+        {/* Permutas detalladas */}
+        {data.permutas && data.permutas.length > 0 && (
+          <>
+            <Text style={styles.h2}>Motos recibidas en parte de pago</Text>
+            {data.permutas.map((perm, i) => (
+              <View key={i} style={styles.permutaBox}>
+                <Text style={styles.permutaTitle}>
+                  Permuta #{i + 1} — {money(perm.valor, moneda)}
+                </Text>
+                <View style={styles.twoCol}>
+                  <View style={styles.col}>
+                    <View style={styles.permutaSubrow}>
+                      <Text style={styles.permutaLabel}>Marca:</Text>
+                      <Text style={styles.permutaValue}>{perm.marca || "—"}</Text>
+                    </View>
+                    <View style={styles.permutaSubrow}>
+                      <Text style={styles.permutaLabel}>Modelo:</Text>
+                      <Text style={styles.permutaValue}>{perm.modelo || "—"}</Text>
+                    </View>
+                    <View style={styles.permutaSubrow}>
+                      <Text style={styles.permutaLabel}>Año:</Text>
+                      <Text style={styles.permutaValue}>{perm.anio || "—"}</Text>
+                    </View>
+                    <View style={styles.permutaSubrow}>
+                      <Text style={styles.permutaLabel}>Km:</Text>
+                      <Text style={styles.permutaValue}>
+                        {perm.kilometros != null
+                          ? perm.kilometros.toLocaleString("es-AR")
+                          : "—"}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.col}>
+                    <View style={styles.permutaSubrow}>
+                      <Text style={styles.permutaLabel}>Patente:</Text>
+                      <Text style={styles.permutaValue}>{perm.patente || "—"}</Text>
+                    </View>
+                    <View style={styles.permutaSubrow}>
+                      <Text style={styles.permutaLabel}>Chasis:</Text>
+                      <Text style={styles.permutaValue}>{perm.chasis || "—"}</Text>
+                    </View>
+                    <View style={styles.permutaSubrow}>
+                      <Text style={styles.permutaLabel}>Motor:</Text>
+                      <Text style={styles.permutaValue}>{perm.motor || "—"}</Text>
+                    </View>
+                  </View>
+                </View>
+                {perm.descripcion && (
+                  <View style={styles.permutaSubrow}>
+                    <Text style={styles.permutaLabel}>Notas:</Text>
+                    <Text style={styles.permutaValue}>{perm.descripcion}</Text>
+                  </View>
+                )}
+              </View>
+            ))}
+            <View style={styles.tableTotalRow}>
+              <Text style={[styles.tableTotalCell, { flex: 6.2 }]}>
+                Subtotal permutas ({data.permutas.length})
+              </Text>
+              <Text style={[styles.tableTotalCell, { flex: 1.5, textAlign: "right" }]}>
+                {money(totalPermutas, moneda)}
+              </Text>
+            </View>
+          </>
         )}
 
-        {/* Sección de financiación destacada (solo si hay cuotas) */}
-        {data.economico.cuotas != null && data.economico.cuotas > 0 && (
+        {/* Financiación */}
+        {tieneFinanciacion && (
           <View style={styles.finBox}>
             <Text style={styles.finTitle}>FINANCIACIÓN ACORDADA</Text>
             {data.economico.entrega != null && data.economico.entrega > 0 && (
               <View style={styles.finRow}>
                 <Text style={styles.finLabel}>Entrega:</Text>
                 <Text style={styles.finValue}>
-                  {money(data.economico.entrega, data.economico.moneda)}
+                  {money(data.economico.entrega, moneda)}
                 </Text>
               </View>
             )}
@@ -294,22 +479,59 @@ export function OCPDF({ data }: { data: OCPDFData }) {
             <View style={styles.finRow}>
               <Text style={styles.finLabel}>Valor por cuota:</Text>
               <Text style={styles.finValue}>
-                {money(data.economico.valorCuota, data.economico.moneda)}
+                {money(data.economico.valorCuota, moneda)}
               </Text>
             </View>
             {data.economico.valorCuota != null && (
               <View style={styles.finHighlight}>
                 <Text style={styles.finHighlightLabel}>
-                  Total financiado ({data.economico.cuotas} cuotas):
+                  Total financiado ({data.economico.cuotas} cuotas
+                  {data.economico.entrega ? " + entrega" : ""}):
                 </Text>
                 <Text style={styles.finHighlightValue}>
-                  {money(
-                    (data.economico.valorCuota || 0) * (data.economico.cuotas || 0),
-                    data.economico.moneda
-                  )}
+                  {money(totalFinanciado, moneda)}
                 </Text>
               </View>
             )}
+
+            {tieneGarante && data.garante && (
+              <View style={styles.garanteBox}>
+                <Text style={styles.garanteTitle}>Garante</Text>
+                <View style={styles.twoCol}>
+                  <View style={styles.col}>
+                    <View style={styles.garanteRow}>
+                      <Text style={styles.garanteLabel}>Apellido y nombre:</Text>
+                      <Text style={styles.garanteValue}>
+                        {[data.garante.apellido, data.garante.nombre]
+                          .filter(Boolean)
+                          .join(", ") || "—"}
+                      </Text>
+                    </View>
+                    <View style={styles.garanteRow}>
+                      <Text style={styles.garanteLabel}>DNI:</Text>
+                      <Text style={styles.garanteValue}>
+                        {data.garante.dni || "—"}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.col}>
+                    <View style={styles.garanteRow}>
+                      <Text style={styles.garanteLabel}>Teléfono:</Text>
+                      <Text style={styles.garanteValue}>
+                        {data.garante.telefono || "—"}
+                      </Text>
+                    </View>
+                    <View style={styles.garanteRow}>
+                      <Text style={styles.garanteLabel}>Domicilio:</Text>
+                      <Text style={styles.garanteValue}>
+                        {data.garante.direccion || "—"}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )}
+
             <Text
               style={{ fontSize: 7, color: "#1E40AF", marginTop: 6, fontStyle: "italic" }}
             >
@@ -318,6 +540,94 @@ export function OCPDF({ data }: { data: OCPDFData }) {
               la concesionaria.
             </Text>
           </View>
+        )}
+
+        {/* Resumen totales (solo si tiene varias formas de pago combinadas) */}
+        {((data.pagos && data.pagos.length > 0) ||
+          (data.permutas && data.permutas.length > 0) ||
+          tieneFinanciacion) && (
+          <View style={styles.resumenBox}>
+            {totalPagos > 0 && (
+              <View style={styles.resumenRow}>
+                <Text style={styles.resumenLabel}>Pagos directos</Text>
+                <Text style={styles.resumenValue}>{money(totalPagos, moneda)}</Text>
+              </View>
+            )}
+            {totalPermutas > 0 && (
+              <View style={styles.resumenRow}>
+                <Text style={styles.resumenLabel}>Permutas</Text>
+                <Text style={styles.resumenValue}>{money(totalPermutas, moneda)}</Text>
+              </View>
+            )}
+            {totalFinanciado > 0 && (
+              <View style={styles.resumenRow}>
+                <Text style={styles.resumenLabel}>Financiación</Text>
+                <Text style={styles.resumenValue}>{money(totalFinanciado, moneda)}</Text>
+              </View>
+            )}
+            <View style={styles.resumenTotalRow}>
+              <Text style={styles.resumenTotalLabel}>Total cubierto</Text>
+              <Text style={styles.resumenTotalValue}>{money(totalCubierto, moneda)}</Text>
+            </View>
+            {restante !== 0 && (
+              <View style={styles.resumenRow}>
+                <Text
+                  style={[
+                    styles.resumenLabel,
+                    { color: restante > 0 ? "#B91C1C" : "#B45309" },
+                  ]}
+                >
+                  {restante > 0 ? "Falta cubrir" : "Cubre de más"}
+                </Text>
+                <Text
+                  style={[
+                    styles.resumenValue,
+                    { color: restante > 0 ? "#B91C1C" : "#B45309" },
+                  ]}
+                >
+                  {money(Math.abs(restante), moneda)}
+                </Text>
+              </View>
+            )}
+          </View>
+        )}
+
+        {/* Detalle libre y modalidad legacy (si hay) */}
+        {(data.economico.formaPago ||
+          data.economico.sena ||
+          data.economico.saldo ||
+          data.economico.detallePago) && (
+          <>
+            <Text style={styles.h2}>Notas de pago</Text>
+            {data.economico.formaPago && (
+              <View style={styles.row}>
+                <Text style={styles.label}>Modalidad:</Text>
+                <Text style={styles.value}>{data.economico.formaPago}</Text>
+              </View>
+            )}
+            {data.economico.sena != null && data.economico.sena > 0 && (
+              <View style={styles.row}>
+                <Text style={styles.label}>Seña:</Text>
+                <Text style={styles.value}>
+                  {money(data.economico.sena, moneda)}
+                </Text>
+              </View>
+            )}
+            {data.economico.saldo != null && data.economico.saldo > 0 && (
+              <View style={styles.row}>
+                <Text style={styles.label}>Saldo pendiente:</Text>
+                <Text style={styles.value}>
+                  {money(data.economico.saldo, moneda)}
+                </Text>
+              </View>
+            )}
+            {data.economico.detallePago && (
+              <View style={styles.row}>
+                <Text style={styles.label}>Observaciones:</Text>
+                <Text style={styles.value}>{data.economico.detallePago}</Text>
+              </View>
+            )}
+          </>
         )}
 
         {data.observaciones && (
@@ -343,23 +653,35 @@ export function OCPDF({ data }: { data: OCPDFData }) {
             quedan a cargo del comprador (salvo pacto en contrario).
           </Text>
           <Text style={styles.termsItem}>
-            4. La seña entregada forma parte del precio total. El saldo deberá
-            abonarse en los términos acordados.
+            4. Las sumas entregadas en concepto de seña forman parte del precio
+            total. El saldo deberá abonarse en los términos acordados.
           </Text>
-          {data.economico.cuotas != null && data.economico.cuotas > 0 && (
+          {tieneFinanciacion && (
             <Text style={styles.termsItem}>
               5. El saldo financiado se abonará en {data.economico.cuotas} cuota
               {data.economico.cuotas === 1 ? "" : "s"} de{" "}
-              {money(data.economico.valorCuota, data.economico.moneda)} cada una. La
-              falta de pago de cualquier cuota faculta al vendedor a exigir el saldo
-              total y/o resolver este boleto, sin perjuicio de las acciones legales
+              {money(data.economico.valorCuota, moneda)} cada una. La falta de pago
+              de cualquier cuota faculta al vendedor a exigir el saldo total y/o
+              resolver este boleto, sin perjuicio de las acciones legales
               correspondientes.
             </Text>
           )}
+          {tieneGarante && (
+            <Text style={styles.termsItem}>
+              {tieneFinanciacion ? "6" : "5"}. El garante consignado en este
+              boleto se constituye en deudor solidario del comprador frente al
+              vendedor por todas las obligaciones asumidas, renunciando al
+              beneficio de excusión.
+            </Text>
+          )}
           <Text style={styles.termsItem}>
-            {data.economico.cuotas != null && data.economico.cuotas > 0 ? "6" : "5"}.
-            Cualquier controversia se someterá a los tribunales ordinarios de la
-            ciudad de Bahía Blanca, con renuncia a cualquier otro fuero.
+            {tieneFinanciacion && tieneGarante
+              ? "7"
+              : tieneFinanciacion || tieneGarante
+                ? "6"
+                : "5"}
+            . Cualquier controversia se someterá a los tribunales ordinarios de
+            la ciudad de Bahía Blanca, con renuncia a cualquier otro fuero.
           </Text>
         </View>
 
@@ -373,6 +695,19 @@ export function OCPDF({ data }: { data: OCPDFData }) {
               <Text style={styles.signSub}>DNI {data.cliente.dni}</Text>
             )}
           </View>
+          {tieneGarante && data.garante && (
+            <View style={styles.signBox}>
+              <Text style={styles.signLabel}>GARANTE</Text>
+              <Text style={styles.signSub}>
+                {[data.garante.apellido, data.garante.nombre]
+                  .filter(Boolean)
+                  .join(", ") || "—"}
+              </Text>
+              {data.garante.dni && (
+                <Text style={styles.signSub}>DNI {data.garante.dni}</Text>
+              )}
+            </View>
+          )}
           <View style={styles.signBox}>
             <Text style={styles.signLabel}>VENDEDOR</Text>
             <Text style={styles.signSub}>{data.negocio.razonSocial}</Text>

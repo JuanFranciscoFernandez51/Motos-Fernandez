@@ -808,6 +808,12 @@ model OrdenCompra {
   // se siguen usando para OCs viejas con una sola permuta.
   permutas        OCPermuta[]
 
+  // Pagos directos (efectivo, transferencia, tarjeta, etc) — combinables.
+  // Una OC puede tener N pagos. Excluye permutas (van en OCPermuta) y
+  // financiación (va en FinanciacionOC). El total se computa sumando
+  // pagos + permutas + monto financiado y debería igualar a precioVenta.
+  pagos           OCPago[]
+
   observaciones   String?   @db.Text
 
   createdAt DateTime @default(now())
@@ -825,6 +831,27 @@ enum EstadoVenta {
   RESERVADA       // seña pagada, falta saldo/entrega
   CONCRETADA      // vendida y entregada
   CANCELADA
+}
+
+// ==================== PAGOS DE OC (combinables) ====================
+// Cada renglón es un pago concreto: efectivo, transferencia, tarjeta,
+// MP, cheque, depósito, etc. La OC puede tener varios.
+// Permutas y financiación NO van acá — usan sus tablas dedicadas.
+model OCPago {
+  id            String      @id @default(cuid())
+  ordenCompraId String
+  ordenCompra   OrdenCompra @relation(fields: [ordenCompraId], references: [id], onDelete: Cascade)
+
+  // EFECTIVO | TRANSFERENCIA | TARJETA_DEBITO | TARJETA_CREDITO |
+  // MERCADO_PAGO | CHEQUE | DEPOSITO | DOLARES | OTRO
+  metodo        String
+  monto         Int
+  detalle       String?     // texto libre opcional ("Visa 12 sin interés", "Cheque 30 días", etc)
+  fecha         DateTime?   // opcional: cuándo se acreditó (default = fecha de OC)
+
+  createdAt     DateTime    @default(now())
+
+  @@index([ordenCompraId])
 }
 
 // ==================== PERMUTAS (parte de pago) ====================

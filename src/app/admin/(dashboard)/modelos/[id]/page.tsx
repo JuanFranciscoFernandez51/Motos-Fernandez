@@ -198,6 +198,13 @@ type PermutaInput = {
   subirAlStock: boolean
 }
 
+type PagoInput = {
+  metodo: string
+  monto: number
+  detalle: string | null
+  fecha: string | null
+}
+
 type CrearOCDesdeModeloInput = {
   modeloId: string
   clienteId: string
@@ -210,6 +217,7 @@ type CrearOCDesdeModeloInput = {
   estado: "BORRADOR" | "RESERVADA" | "CONCRETADA"
   observaciones: string | null
   permutas: PermutaInput[]
+  pagos?: PagoInput[]
   cuotas: number | null
   valorCuota: number | null
   entrega: number | null
@@ -337,6 +345,19 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
         await tx.ordenCompra.update({
           where: { id: orden.id },
           data: { motoRecibidaId: motosRecibidasIds[0] },
+        })
+      }
+
+      // Crear pagos directos si vinieron
+      for (const p of input.pagos || []) {
+        await tx.oCPago.create({
+          data: {
+            ordenCompraId: orden.id,
+            metodo: p.metodo,
+            monto: p.monto,
+            detalle: p.detalle,
+            fecha: p.fecha ? new Date(p.fecha) : null,
+          },
         })
       }
 

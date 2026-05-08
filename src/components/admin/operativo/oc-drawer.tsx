@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { ClienteSelector, type ClienteOption } from "./cliente-selector"
+import { PagosEditor, pagoVacio, type PagoForm } from "./pagos-editor"
 
 export type ModeloAVender = {
   id: string
@@ -48,6 +49,14 @@ export type PermutaInput = {
   subirAlStock: boolean
 }
 
+// Un pago directo (efectivo, transfer, tarjeta, etc). La OC puede tener N pagos.
+export type PagoInput = {
+  metodo: string
+  monto: number
+  detalle: string | null
+  fecha: string | null  // ISO YYYY-MM-DD o null
+}
+
 type CrearOCInput = {
   modeloId: string
   clienteId: string
@@ -61,6 +70,8 @@ type CrearOCInput = {
   observaciones: string | null
   // Permutas (N): si formaPago incluye permuta. Vacio si no aplica.
   permutas: PermutaInput[]
+  // Pagos directos (N): efectivo, transfer, tarjeta, etc — combinables.
+  pagos: PagoInput[]
   // Financiación
   cuotas: number | null
   valorCuota: number | null
@@ -117,6 +128,7 @@ export function OCDrawer({
     chasis: "", motor: "", valor: "", descripcion: "", subirAlStock: true,
   })
   const [permutas, setPermutas] = useState<PermutaForm[]>([permutaVacia()])
+  const [pagos, setPagos] = useState<PagoForm[]>([pagoVacio()])
 
   // Financiación
   const [entrega, setEntrega] = useState("")
@@ -249,6 +261,19 @@ export function OCDrawer({
 
     const hayFin = formaPago === "Financiado" || formaPago === "Mixta"
 
+    // Pagos directos: filtrar los renglones con monto válido > 0
+    const pagosFiltrados: PagoInput[] = pagos
+      .filter((p) => {
+        const n = parseInt(p.monto || "0")
+        return Number.isFinite(n) && n > 0
+      })
+      .map((p) => ({
+        metodo: p.metodo,
+        monto: parseInt(p.monto),
+        detalle: p.detalle.trim() || null,
+        fecha: p.fecha || null,
+      }))
+
     startTransition(async () => {
       const result = await crearOCDesdeModelo({
         modeloId: modelo.id,
@@ -262,6 +287,7 @@ export function OCDrawer({
         estado,
         observaciones: observaciones.trim() || null,
         permutas: permutasFiltradas,
+        pagos: pagosFiltrados,
         cuotas: hayFin ? num(cuotas) : null,
         valorCuota: hayFin ? num(valorCuota) : null,
         entrega: hayFin ? num(entrega) : null,
@@ -466,6 +492,26 @@ export function OCDrawer({
                     />
                   </div>
                 </div>
+              </section>
+
+              {/* Pagos directos combinables */}
+              <section className="space-y-3 rounded-lg border border-emerald-200 dark:border-emerald-900/40 bg-emerald-50/40 dark:bg-emerald-950/20 p-4">
+                <h3 className="text-sm font-semibold text-emerald-900 dark:text-emerald-200">
+                  💵 Pagos directos
+                </h3>
+                <PagosEditor
+                  pagos={pagos}
+                  setPagos={setPagos}
+                  precioVenta={parseInt(precioVenta || "0") || 0}
+                  totalPermutas={hayPermuta ? totalPermutas : 0}
+                  montoFinanciado={
+                    hayFinanciacion
+                      ? (parseInt(cuotas || "0") || 0) *
+                          (parseInt(valorCuota || "0") || 0) +
+                        (parseInt(entrega || "0") || 0)
+                      : 0
+                  }
+                />
               </section>
 
               {/* Permutas (parte de pago) — pueden ser varias */}

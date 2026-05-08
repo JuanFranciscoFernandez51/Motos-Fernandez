@@ -21,6 +21,14 @@ type PermutaFormPayload = {
   subirAlStock: boolean
 }
 
+type PagoFormPayload = {
+  id: string | null
+  metodo: string
+  monto: number
+  detalle: string | null
+  fecha: string | null
+}
+
 async function createOrdenCompra(formData: FormData) {
   "use server"
   try {
@@ -39,6 +47,13 @@ async function createOrdenCompra(formData: FormData) {
       permutasInput = JSON.parse(get("permutas") || "[]")
     } catch {
       permutasInput = []
+    }
+
+    let pagosInput: PagoFormPayload[] = []
+    try {
+      pagosInput = JSON.parse(get("pagos") || "[]")
+    } catch {
+      pagosInput = []
     }
 
     const formaPago = get("formaPago") || null
@@ -148,6 +163,19 @@ async function createOrdenCompra(formData: FormData) {
             },
           })
         }
+      }
+
+      // Crear pagos directos
+      for (const p of pagosInput) {
+        await tx.oCPago.create({
+          data: {
+            ordenCompraId: orden.id,
+            metodo: p.metodo,
+            monto: p.monto,
+            detalle: p.detalle,
+            fecha: p.fecha ? new Date(p.fecha) : null,
+          },
+        })
       }
 
       // Side effects según estado

@@ -31,6 +31,14 @@ type PermutaFormPayload = {
   subirAlStock: boolean
 }
 
+type PagoFormPayload = {
+  id: string | null
+  metodo: string
+  monto: number
+  detalle: string | null
+  fecha: string | null
+}
+
 async function updateOrden(formData: FormData) {
   "use server"
   try {
@@ -51,6 +59,14 @@ async function updateOrden(formData: FormData) {
       permutasInput = JSON.parse(get("permutas") || "[]")
     } catch {
       permutasInput = []
+    }
+
+    // Parsear pagos directos (efectivo, transfer, tarjeta, etc)
+    let pagosInput: PagoFormPayload[] = []
+    try {
+      pagosInput = JSON.parse(get("pagos") || "[]")
+    } catch {
+      pagosInput = []
     }
 
     const formaPago = get("formaPago") || null
@@ -201,6 +217,47 @@ async function updateOrden(formData: FormData) {
         }
       }
 
+      // Sincronizar pagos directos: delete los que no estan, update id existentes,
+      // create los nuevos. No hay efectos colaterales (a diferencia de las permutas
+      // que crean motos), así que es más simple.
+      const pagosIdsEnviados = new Set(
+        pagosInput.filter((p) => p.id).map((p) => p.id as string)
+      )
+      const pagosExistentes = await tx.oCPago.findMany({
+        where: { ordenCompraId: id },
+        select: { id: true },
+      })
+      const pagosABorrar = pagosExistentes
+        .filter((e) => !pagosIdsEnviados.has(e.id))
+        .map((e) => e.id)
+      if (pagosABorrar.length > 0) {
+        await tx.oCPago.deleteMany({ where: { id: { in: pagosABorrar } } })
+      }
+      for (const p of pagosInput) {
+        const fecha = p.fecha ? new Date(p.fecha) : null
+        if (p.id) {
+          await tx.oCPago.update({
+            where: { id: p.id },
+            data: {
+              metodo: p.metodo,
+              monto: p.monto,
+              detalle: p.detalle,
+              fecha,
+            },
+          })
+        } else {
+          await tx.oCPago.create({
+            data: {
+              ordenCompraId: orden.id,
+              metodo: p.metodo,
+              monto: p.monto,
+              detalle: p.detalle,
+              fecha,
+            },
+          })
+        }
+      }
+
       if (orden.modeloId) {
         if (orden.estado === "CONCRETADA") {
           await tx.modelo.update({
@@ -305,6 +362,7 @@ export default async function EditarOrdenCompraPage({
       where: { id },
       include: {
         permutas: { orderBy: { createdAt: "asc" } },
+        pagos: { orderBy: { createdAt: "asc" } },
         financiacion: true,
       },
     }),
@@ -383,6 +441,14 @@ export default async function EditarOrdenCompraPage({
     descripcion: p.descripcion || "",
     valor: String(p.valor),
     motoRecibidaId: p.motoRecibidaId,
+  }))
+
+  const initialPagos = orden.pagos.map((p) => ({
+    id: p.id,
+    metodo: p.metodo,
+    monto: String(p.monto),
+    detalle: p.detalle || "",
+    fecha: p.fecha ? p.fecha.toISOString().split("T")[0] : "",
   }))
 
   const initialGarante = orden.financiacion
@@ -474,6 +540,7 @@ export default async function EditarOrdenCompraPage({
       <OCForm
         initialData={initialData}
         initialPermutas={initialPermutas}
+        initialPagos={initialPagos}
         initialGarante={initialGarante}
         clientes={clientes}
         modelos={modelos}

@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Save, Loader2, Plus, Trash2, Lock } from "lucide-react"
 import { ClienteSelector, type ClienteOption } from "./cliente-selector"
 import { MotoSelector, type ModeloOption } from "./moto-selector"
+import { PagosEditor, pagoVacio, type PagoForm } from "./pagos-editor"
 
 // Una permuta dentro de la OC (form usa strings).
 export type PermutaForm = {
@@ -91,6 +92,7 @@ const EMPTY: OCData = {
 export function OCForm({
   initialData,
   initialPermutas = [],
+  initialPagos = [],
   initialGarante,
   clientes,
   modelos,
@@ -98,6 +100,7 @@ export function OCForm({
 }: {
   initialData?: Partial<OCData> & { id?: string }
   initialPermutas?: PermutaForm[]
+  initialPagos?: PagoForm[]
   initialGarante?: {
     nombre: string
     apellido: string
@@ -114,6 +117,9 @@ export function OCForm({
   const [data, setData] = useState<OCData>({ ...EMPTY, ...initialData })
   const [permutas, setPermutas] = useState<PermutaForm[]>(
     initialPermutas.length > 0 ? initialPermutas : [permutaVacia()]
+  )
+  const [pagos, setPagos] = useState<PagoForm[]>(
+    initialPagos.length > 0 ? initialPagos : [pagoVacio()]
   )
   const [garante, setGarante] = useState({
     nombre: initialGarante?.nombre || "",
@@ -186,6 +192,22 @@ export function OCForm({
           }))
       : []
     formData.append("permutas", JSON.stringify(permutasFiltradas))
+
+    // Pagos directos (efectivo, transferencia, etc) — combinables siempre.
+    // Filtramos los renglones vacíos (sin monto válido).
+    const pagosFiltrados = pagos
+      .filter((p) => {
+        const n = parseInt(p.monto || "0")
+        return Number.isFinite(n) && n > 0
+      })
+      .map((p) => ({
+        id: p.id ?? null,
+        metodo: p.metodo,
+        monto: parseInt(p.monto),
+        detalle: p.detalle.trim() || null,
+        fecha: p.fecha || null,
+      }))
+    formData.append("pagos", JSON.stringify(pagosFiltrados))
 
     if (hayFin) {
       formData.append("garanteNombre", garante.nombre.trim())
@@ -359,6 +381,32 @@ export function OCForm({
                 rows={3}
               />
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Pagos directos combinables (efectivo, transferencia, tarjeta, etc) */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Pagos directos</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <PagosEditor
+              pagos={pagos}
+              setPagos={setPagos}
+              precioVenta={parseInt(data.precioVenta || "0") || 0}
+              totalPermutas={
+                data.formaPago === "Permuta" || data.formaPago === "Mixta"
+                  ? permutas.reduce((s, p) => s + (parseInt(p.valor || "0") || 0), 0)
+                  : 0
+              }
+              montoFinanciado={
+                data.formaPago === "Financiado" || data.formaPago === "Mixta"
+                  ? (parseInt(data.cuotas || "0") || 0) *
+                      (parseInt(data.valorCuota || "0") || 0) +
+                    (parseInt(data.entrega || "0") || 0)
+                  : 0
+              }
+            />
           </CardContent>
         </Card>
 
