@@ -44,27 +44,39 @@ export function PublishButton({
   }
 
   return (
-    <div className="inline-flex items-center gap-1">
-      <button
-        type="button"
-        onClick={handleClick}
-        disabled={loading || isPending}
-        className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-[#FFE600] text-[#2D3277] hover:bg-[#fff04d] font-medium disabled:opacity-50"
-      >
-        {loading || isPending ? (
-          <Loader2 className="size-3 animate-spin" />
-        ) : yaPublicada ? (
-          <RefreshCw className="size-3" />
-        ) : null}
-        {yaPublicada ? "Actualizar" : "Publicar"}
-      </button>
-      {error && (
-        <span
-          className="inline-flex items-center text-red-600 cursor-help"
-          title={error}
+    <div className="inline-flex flex-col items-end gap-1 max-w-[280px]">
+      <div className="inline-flex items-center gap-1">
+        <button
+          type="button"
+          onClick={handleClick}
+          disabled={loading || isPending}
+          className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-[#FFE600] text-[#2D3277] hover:bg-[#fff04d] font-medium disabled:opacity-50"
         >
-          <AlertCircle className="size-4" />
-        </span>
+          {loading || isPending ? (
+            <Loader2 className="size-3 animate-spin" />
+          ) : yaPublicada ? (
+            <RefreshCw className="size-3" />
+          ) : null}
+          {yaPublicada ? "Actualizar" : "Publicar"}
+        </button>
+        {error && (
+          <button
+            type="button"
+            onClick={() => {
+              navigator.clipboard?.writeText(error).catch(() => null)
+              alert(error)
+            }}
+            className="inline-flex items-center text-red-600 hover:text-red-700"
+            title="Click para copiar / ver error completo"
+          >
+            <AlertCircle className="size-4" />
+          </button>
+        )}
+      </div>
+      {error && (
+        <p className="text-[10px] text-red-600 dark:text-red-400 break-all leading-tight text-right">
+          {error.length > 120 ? error.slice(0, 117) + "..." : error}
+        </p>
       )}
     </div>
   )
