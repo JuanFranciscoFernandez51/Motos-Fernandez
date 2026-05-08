@@ -58,6 +58,7 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       id: true, nombre: true, marca: true, anio: true, kilometros: true,
       condicion: true, cilindrada: true, precio: true, moneda: true,
       descripcion: true, fotos: true,
+      transmision: true, combustible: true, color: true,
       mlListingId: true,
     },
   })
@@ -113,7 +114,7 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       attributes: [
         { id: "BRAND", value_name: m.marca },
         { id: "MODEL", value_name: m.nombre },
-        ...(m.anio ? [{ id: "ITEM_CONDITION", value_name: condition === "new" ? "Nuevo" : "Usado" }] : []),
+        { id: "ITEM_CONDITION", value_name: condition === "new" ? "Nuevo" : "Usado" },
         ...(m.anio ? [{ id: "VEHICLE_YEAR", value_name: String(m.anio) }] : []),
         ...(m.kilometros != null
           ? [{ id: "KILOMETERS", value_struct: { number: m.kilometros, unit: "km" } }]
@@ -121,6 +122,9 @@ export async function publicarOActualizar(modeloId: string): Promise<{
         ...(m.cilindrada
           ? [{ id: "ENGINE_DISPLACEMENT", value_name: m.cilindrada }]
           : []),
+        ...(m.transmision ? [{ id: "TRANSMISSION", value_name: m.transmision }] : []),
+        ...(m.combustible ? [{ id: "FUEL_TYPE", value_name: m.combustible }] : []),
+        ...(m.color ? [{ id: "COLOR", value_name: m.color }] : []),
       ],
     }
 

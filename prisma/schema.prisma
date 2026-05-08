@@ -32,6 +32,10 @@ model Modelo {
   kilometros        Int?              // km recorridos (null o 0 para 0km)
   observaciones     String?           @db.Text  // observaciones breves para usadas
   cilindrada        String?           // "150cc", "250cc", "450cc", etc.
+  // Atributos requeridos por Mercado Libre (mapeados al publicar)
+  transmision       String?           // "Manual" | "Automática" | "Semiautomática"
+  combustible       String?           // "Nafta" | "Eléctrica" | "Híbrido"
+  color             String?           // color principal (ej "Negro", "Rojo")
   precio            Int?              // valor numérico, null = "consultar"
   moneda            String            @default("ARS")  // "ARS" o "USD"
   descripcion       String?           @db.Text

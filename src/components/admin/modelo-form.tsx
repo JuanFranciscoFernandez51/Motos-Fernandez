@@ -48,6 +48,9 @@ type ModeloData = {
   marca: string
   categoriaVehiculo: string
   condicion: string
+  transmision?: string | null
+  combustible?: string | null
+  color?: string | null
   anio: number | null
   kilometros: number | null
   observaciones: string
@@ -116,6 +119,9 @@ export function ModeloForm({
   )
   const [observaciones, setObservaciones] = useState(initialData?.observaciones || "")
   const [cilindrada, setCilindrada] = useState(initialData?.cilindrada || "")
+  const [transmision, setTransmision] = useState(initialData?.transmision || "")
+  const [combustible, setCombustible] = useState(initialData?.combustible || "Nafta")
+  const [color, setColor] = useState(initialData?.color || "")
   const [precio, setPrecio] = useState(
     initialData?.precio != null ? String(initialData.precio) : ""
   )
@@ -217,6 +223,9 @@ export function ModeloForm({
     formData.append("kilometros", kilometros)
     formData.append("observaciones", observaciones)
     formData.append("cilindrada", cilindrada)
+    formData.append("transmision", transmision)
+    formData.append("combustible", combustible)
+    formData.append("color", color)
     formData.append("moneda", moneda)
     formData.append("precio", precio)
     formData.append("descripcion", descripcion)
@@ -351,6 +360,54 @@ export function ModeloForm({
                     value={cilindrada}
                     onChange={(e) => setCilindrada(e.target.value)}
                     placeholder="150cc, 250cc..."
+                  />
+                </div>
+              </div>
+              {/* Atributos requeridos por Mercado Libre */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2 border-t border-gray-100 dark:border-neutral-800">
+                <div className="space-y-2">
+                  <Label htmlFor="transmision">
+                    Transmisión
+                    <span className="text-[10px] text-gray-400 ml-1">(ML)</span>
+                  </Label>
+                  <select
+                    id="transmision"
+                    value={transmision}
+                    onChange={(e) => setTransmision(e.target.value)}
+                    className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 text-sm"
+                  >
+                    <option value="">— Sin especificar —</option>
+                    <option value="Manual">Manual</option>
+                    <option value="Automática">Automática</option>
+                    <option value="Semiautomática">Semiautomática</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="combustible">
+                    Combustible
+                    <span className="text-[10px] text-gray-400 ml-1">(ML)</span>
+                  </Label>
+                  <select
+                    id="combustible"
+                    value={combustible}
+                    onChange={(e) => setCombustible(e.target.value)}
+                    className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 text-sm"
+                  >
+                    <option value="Nafta">Nafta</option>
+                    <option value="Eléctrica">Eléctrica</option>
+                    <option value="Híbrido">Híbrido</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="color">
+                    Color
+                    <span className="text-[10px] text-gray-400 ml-1">(ML)</span>
+                  </Label>
+                  <Input
+                    id="color"
+                    value={color}
+                    onChange={(e) => setColor(e.target.value)}
+                    placeholder="Negro, Rojo, Azul..."
                   />
                 </div>
               </div>

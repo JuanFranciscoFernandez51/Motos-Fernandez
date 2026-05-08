@@ -22,6 +22,9 @@ async function updateModelo(formData: FormData) {
     const kilometrosStr = formData.get("kilometros") as string
     const observaciones = formData.get("observaciones") as string
     const cilindrada = formData.get("cilindrada") as string
+    const transmision = formData.get("transmision") as string
+    const combustible = formData.get("combustible") as string
+    const color = formData.get("color") as string
     const precioStr = formData.get("precio") as string
     const moneda = formData.get("moneda") as string || "ARS"
     const descripcion = formData.get("descripcion") as string
@@ -63,6 +66,9 @@ async function updateModelo(formData: FormData) {
         kilometros: kilometrosStr ? parseInt(kilometrosStr) : null,
         observaciones: observaciones || null,
         cilindrada: cilindrada || null,
+        transmision: transmision || null,
+        combustible: combustible || null,
+        color: color || null,
         precio: precioStr ? parseInt(precioStr) : null,
         moneda,
         descripcion: descripcion || null,
@@ -391,6 +397,9 @@ export default async function EditModeloPage({
     kilometros: modelo.kilometros,
     observaciones: modelo.observaciones || "",
     cilindrada: modelo.cilindrada || "",
+    transmision: modelo.transmision || "",
+    combustible: modelo.combustible || "",
+    color: modelo.color || "",
     precio: modelo.precio,
     moneda: modelo.moneda || "ARS",
     descripcion: modelo.descripcion || "",
