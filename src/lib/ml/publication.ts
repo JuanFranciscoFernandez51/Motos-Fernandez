@@ -425,6 +425,49 @@ export async function publicarOActualizar(modeloId: string): Promise<{
 }
 
 /**
+ * Re-publica una moto en ML cerrando la publicación actual y creando una
+ * nueva. Útil cuando ML no permite modificar campos del item existente
+ * (ej. descripción inmutable en clasificados de vehículos).
+ *
+ * IMPORTANTE: pierde antigüedad, visitas acumuladas, posición en búsquedas
+ * y favoritos. Solo usar cuando el cambio amerita.
+ */
+export async function republicar(modeloId: string): Promise<{
+  ok: boolean
+  listingId?: string
+  permalink?: string
+  error?: string
+}> {
+  const m = await prisma.modelo.findUnique({
+    where: { id: modeloId },
+    select: { id: true, mlListingId: true },
+  })
+  if (!m) return { ok: false, error: "Moto no encontrada" }
+  // Si ya tiene una publicación, la cerramos primero. Si la cerrada falla
+  // (ej. ya estaba cerrada, o ML no responde), seguimos igual — el listing
+  // viejo queda zombie pero el nuevo se crea OK.
+  if (m.mlListingId) {
+    try {
+      await mlPut(`/items/${m.mlListingId}`, { status: "closed" })
+    } catch (e) {
+      console.warn("[ML] No se pudo cerrar la publicación vieja:", e)
+    }
+  }
+  // Reseteamos los campos ML para que publicarOActualizar() entre por la
+  // rama de "publicación nueva" y cree todo desde cero.
+  await prisma.modelo.update({
+    where: { id: modeloId },
+    data: {
+      mlListingId: null,
+      mlPermalink: null,
+      mlEstado: null,
+      mlError: null,
+    },
+  })
+  return publicarOActualizar(modeloId)
+}
+
+/**
  * Refresca el estado de las motos publicadas en ML sin modificarlas.
  * Útil cuando ML cambió el estado por su lado (ej: under_review → active,
  * o paused por baja calidad de fotos) y nuestro cache quedó desactualizado.

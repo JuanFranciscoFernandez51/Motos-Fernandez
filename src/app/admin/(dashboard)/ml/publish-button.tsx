@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { Loader2, RefreshCw, AlertCircle } from "lucide-react"
+import { Loader2, RefreshCw, AlertCircle, RotateCcw } from "lucide-react"
 
 const TIPO_LABELS: Record<string, string> = {
   free: "Gratis",
@@ -63,6 +63,34 @@ export function PublishButton({
     }
   }
 
+  const handleRepublicar = async () => {
+    if (
+      !confirm(
+        "Va a CERRAR la publicación actual y crear una NUEVA con los datos actuales (descripción, precio, etc).\n\n⚠️ Pierde antigüedad, visitas y favoritos acumulados.\n\nUsalo solo si no podés actualizar la descripción de otra forma. ¿Confirmás?"
+      )
+    ) {
+      return
+    }
+    setError(null)
+    setLoading(true)
+    try {
+      const res = await fetch(
+        `/api/admin/ml/publish/${modeloId}?action=republish`,
+        { method: "POST" }
+      )
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data.ok) {
+        setError(data.error || `Error ${res.status}`)
+        return
+      }
+      startTransition(() => router.refresh())
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error de conexión")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="inline-flex flex-col items-end gap-1 max-w-[300px]">
       <div className="inline-flex items-center gap-1">
@@ -90,6 +118,17 @@ export function PublishButton({
           ) : null}
           {yaPublicada ? "Actualizar" : "Publicar"}
         </button>
+        {yaPublicada && (
+          <button
+            type="button"
+            onClick={handleRepublicar}
+            disabled={loading || isPending}
+            className="inline-flex items-center justify-center size-7 rounded-md border border-gray-200 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-900 disabled:opacity-50"
+            title="Re-publicar (cierra la actual y crea una nueva con datos actualizados). Pierde antigüedad — usar solo si necesitás cambiar descripción."
+          >
+            <RotateCcw className="size-3" />
+          </button>
+        )}
         {error && (
           <button
             type="button"
