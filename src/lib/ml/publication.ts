@@ -224,7 +224,13 @@ export async function publicarOActualizar(modeloId: string): Promise<{
         { id: "MOTO_TYPE", value_name: motoType },
         { id: "BRAND", value_name: m.marca.trim() },
         { id: "MODEL", value_name: m.nombre.trim() },
-        { id: "ITEM_CONDITION", value_name: condition === "new" ? "Nuevo" : "Usado" },
+        // ITEM_CONDITION exige value_id, no value_name (sino tira
+        // "Couldn't obtain a valid item condition mapping").
+        // 2230284 = Nuevo, 2230581 = Usado.
+        {
+          id: "ITEM_CONDITION",
+          value_id: condition === "new" ? "2230284" : "2230581",
+        },
         ...(m.anio ? [{ id: "VEHICLE_YEAR", value_name: String(m.anio) }] : []),
         ...(m.kilometros != null
           ? [{ id: "KILOMETERS", value_name: `${m.kilometros} km` }]

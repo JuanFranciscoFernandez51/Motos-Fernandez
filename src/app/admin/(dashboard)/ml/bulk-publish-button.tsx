@@ -17,11 +17,19 @@ type ResultadoItem = {
   error?: string
 }
 
+const TIPO_LABELS: Record<string, string> = {
+  free: "Gratis",
+  silver: "Plata ($)",
+  gold: "Oro ($$)",
+  gold_premium: "Oro Premium ($$$)",
+}
+
 /**
  * Botón para publicar/actualizar varias motos en ML en lote (secuencial).
- * Hace POST a /api/admin/ml/publish/[id] una por una, esperando entre cada
- * llamada para no superar los rate-limits de ML. Muestra progreso en vivo
- * y al finalizar refresca la página para que se vea el estado actualizado.
+ * Antes de publicar, opcionalmente fuerza un listing_type para todas
+ * (útil cuando se agotó el cupo de "free" del mes y querés mandar todas
+ * como silver/gold). Hace POST a /api/admin/ml/publish/[id] una por una,
+ * con pausa entre cada llamada para no superar rate-limits.
  */
 export function BulkPublishButton({
   pendientes,
@@ -33,19 +41,54 @@ export function BulkPublishButton({
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [running, setRunning] = useState(false)
+  const [tipoOverride, setTipoOverride] = useState<string>("free")
   const [progreso, setProgreso] = useState({ done: 0, total: 0 })
   const [resultados, setResultados] = useState<ResultadoItem[]>([])
+  const [warning, setWarning] = useState<string | null>(null)
 
   const handleClick = async () => {
     if (running) return
     if (pendientes.length === 0) return
-    if (!confirm(`Vas a publicar ${pendientes.length} motos en Mercado Libre. ¿Confirmás?`)) {
+    const tipoLabel = TIPO_LABELS[tipoOverride] || tipoOverride
+    if (
+      !confirm(
+        `Vas a publicar ${pendientes.length} motos en Mercado Libre como "${tipoLabel}".\n¿Confirmás?`
+      )
+    ) {
       return
     }
     setRunning(true)
     setResultados([])
+    setWarning(null)
     setProgreso({ done: 0, total: pendientes.length })
 
+    // 1) Setear listing_type a TODAS antes de publicar (un solo POST)
+    try {
+      const res = await fetch(`/api/admin/ml/listing-type/bulk`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ids: pendientes.map((m) => m.id),
+          tipo: tipoOverride,
+        }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setWarning(
+          `No se pudo aplicar el tipo "${tipoLabel}" en lote: ${
+            data.error || res.status
+          }. Sigo con el tipo guardado de cada moto.`
+        )
+      }
+    } catch (e) {
+      setWarning(
+        `No se pudo aplicar el tipo "${tipoLabel}" en lote: ${
+          e instanceof Error ? e.message : "error de red"
+        }. Sigo con el tipo guardado de cada moto.`
+      )
+    }
+
+    // 2) Publicar una por una
     const acumulado: ResultadoItem[] = []
     for (let i = 0; i < pendientes.length; i++) {
       const m = pendientes[i]
@@ -75,7 +118,6 @@ export function BulkPublishButton({
       }
       setResultados([...acumulado])
       setProgreso({ done: i + 1, total: pendientes.length })
-      // Pausa breve para no martillar ML (también ayuda con cuotas)
       if (i < pendientes.length - 1) {
         await new Promise((r) => setTimeout(r, 1200))
       }
@@ -90,21 +132,45 @@ export function BulkPublishButton({
 
   return (
     <div className="space-y-2">
-      <button
-        type="button"
-        onClick={handleClick}
-        disabled={running || isPending || pendientes.length === 0}
-        className="inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-md bg-[#FFE600] text-[#2D3277] hover:bg-[#fff04d] font-semibold disabled:opacity-50"
-      >
-        {running || isPending ? (
-          <Loader2 className="size-4 animate-spin" />
-        ) : (
-          <Upload className="size-4" />
-        )}
-        {running
-          ? `Publicando ${progreso.done}/${progreso.total}...`
-          : `${label} (${pendientes.length})`}
-      </button>
+      <div className="flex flex-wrap items-center gap-2">
+        <label className="text-xs text-gray-600 dark:text-gray-400">
+          Tipo:
+        </label>
+        <select
+          value={tipoOverride}
+          onChange={(e) => setTipoOverride(e.target.value)}
+          disabled={running || isPending}
+          className="text-xs h-8 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-2 cursor-pointer disabled:opacity-50"
+          title="Tipo de publicación que se aplicará a todas las motos antes de publicarlas"
+        >
+          {Object.entries(TIPO_LABELS).map(([k, v]) => (
+            <option key={k} value={k}>
+              {v}
+            </option>
+          ))}
+        </select>
+        <button
+          type="button"
+          onClick={handleClick}
+          disabled={running || isPending || pendientes.length === 0}
+          className="inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-md bg-[#FFE600] text-[#2D3277] hover:bg-[#fff04d] font-semibold disabled:opacity-50"
+        >
+          {running || isPending ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Upload className="size-4" />
+          )}
+          {running
+            ? `Publicando ${progreso.done}/${progreso.total}...`
+            : `${label} (${pendientes.length})`}
+        </button>
+      </div>
+
+      {warning && (
+        <p className="text-[11px] text-amber-700 dark:text-amber-300">
+          {warning}
+        </p>
+      )}
 
       {resultados.length > 0 && (
         <div className="rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 space-y-1.5 text-xs max-h-64 overflow-y-auto">
@@ -134,7 +200,9 @@ export function BulkPublishButton({
                 <p className="font-medium truncate">{r.label}</p>
                 {r.error && (
                   <p className="text-[10px] text-red-600 dark:text-red-400 break-all leading-tight">
-                    {r.error.length > 200 ? r.error.slice(0, 197) + "..." : r.error}
+                    {r.error.length > 200
+                      ? r.error.slice(0, 197) + "..."
+                      : r.error}
                   </p>
                 )}
               </div>
