@@ -376,7 +376,6 @@ export function ModeloForm({
                     onChange={(e) => setTransmision(e.target.value)}
                     className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 text-sm"
                   >
-                    <option value="">— Sin especificar —</option>
                     <option value="Manual">Manual</option>
                     <option value="Automática">Automática</option>
                     <option value="Semiautomática">Semiautomática</option>
