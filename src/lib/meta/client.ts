@@ -97,17 +97,110 @@ type Page = {
   tasks?: string[]
 }
 
-/** Lista todas las pages que administra el user (con sus page access tokens). */
+/**
+ * Lista todas las pages que administra el user (con sus page access tokens).
+ * Intenta dos endpoints:
+ *   1. /me/accounts → pages que el user admin directamente
+ *   2. /me/businesses → si es admin via Business Manager, listar pages de cada business
+ * Concatena los resultados deduplicando por page id.
+ */
 export async function getPages(userToken: string): Promise<Page[]> {
-  const url = new URL(`${GRAPH_API}/me/accounts`)
-  url.searchParams.set("access_token", userToken)
-  url.searchParams.set("fields", "id,name,access_token,category,tasks")
-  const res = await fetch(url.toString())
-  const data = await res.json()
-  if (!res.ok) {
-    throw new Error(`Meta /me/accounts falló: ${JSON.stringify(data)}`)
+  const all = new Map<string, Page>()
+
+  // 1) Intento directo: /me/accounts
+  try {
+    const url = new URL(`${GRAPH_API}/me/accounts`)
+    url.searchParams.set("access_token", userToken)
+    url.searchParams.set("fields", "id,name,access_token,category,tasks")
+    url.searchParams.set("limit", "100")
+    const res = await fetch(url.toString())
+    const data = await res.json()
+    if (res.ok && Array.isArray(data.data)) {
+      for (const p of data.data as Page[]) {
+        if (p.id) all.set(p.id, p)
+      }
+    }
+  } catch (e) {
+    console.warn("[Meta] /me/accounts falló:", e)
   }
-  return (data.data || []) as Page[]
+
+  // 2) Fallback: pages via Business Manager (si la pagina está en un BM,
+  //    /me/accounts capaz no la lista). Listamos los BMs del user y por
+  //    cada uno las owned_pages + client_pages.
+  try {
+    const burl = new URL(`${GRAPH_API}/me/businesses`)
+    burl.searchParams.set("access_token", userToken)
+    burl.searchParams.set("fields", "id,name")
+    burl.searchParams.set("limit", "50")
+    const bres = await fetch(burl.toString())
+    const bdata = await bres.json()
+    if (bres.ok && Array.isArray(bdata.data)) {
+      for (const biz of bdata.data as { id: string; name: string }[]) {
+        // Owned pages del business
+        for (const path of ["owned_pages", "client_pages"]) {
+          try {
+            const pagesUrl = new URL(`${GRAPH_API}/${biz.id}/${path}`)
+            pagesUrl.searchParams.set("access_token", userToken)
+            pagesUrl.searchParams.set("fields", "id,name,access_token,category,tasks")
+            pagesUrl.searchParams.set("limit", "100")
+            const pres = await fetch(pagesUrl.toString())
+            const pdata = await pres.json()
+            if (pres.ok && Array.isArray(pdata.data)) {
+              for (const p of pdata.data as Page[]) {
+                if (p.id && !all.has(p.id)) all.set(p.id, p)
+              }
+            }
+          } catch (e) {
+            console.warn(`[Meta] /${biz.id}/${path} falló:`, e)
+          }
+        }
+      }
+    }
+  } catch (e) {
+    console.warn("[Meta] /me/businesses falló:", e)
+  }
+
+  return Array.from(all.values())
+}
+
+/**
+ * Diagnostico: devuelve una serializacion de lo que Meta sabe del user
+ * para entender por que no aparecen pages. Solo usar desde el endpoint
+ * de debug. NO loggear el access_token completo.
+ */
+export async function diagnosticoMeta(userToken: string) {
+  const result: Record<string, unknown> = {}
+
+  const safeFetch = async (label: string, urlBuilder: () => URL) => {
+    try {
+      const url = urlBuilder()
+      url.searchParams.set("access_token", userToken)
+      const res = await fetch(url.toString())
+      const data = await res.json()
+      result[label] = { status: res.status, body: data }
+    } catch (e) {
+      result[label] = { error: e instanceof Error ? e.message : String(e) }
+    }
+  }
+
+  await safeFetch("me", () => {
+    const u = new URL(`${GRAPH_API}/me`)
+    u.searchParams.set("fields", "id,name,email")
+    return u
+  })
+  await safeFetch("permissions", () => new URL(`${GRAPH_API}/me/permissions`))
+  await safeFetch("accounts", () => {
+    const u = new URL(`${GRAPH_API}/me/accounts`)
+    u.searchParams.set("fields", "id,name,category,tasks")
+    return u
+  })
+  await safeFetch("businesses", () => {
+    const u = new URL(`${GRAPH_API}/me/businesses`)
+    u.searchParams.set("fields", "id,name")
+    return u
+  })
+
+  return result
 }
 
 type FBUser = { id: string; name: string }

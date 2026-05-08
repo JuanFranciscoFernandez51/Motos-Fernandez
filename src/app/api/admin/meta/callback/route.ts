@@ -48,9 +48,35 @@ export async function GET(request: Request) {
     // 4) Lista de pages que administra
     const pages = await getPages(longToken.access_token)
     if (pages.length === 0) {
+      // Guardamos el user token igual para poder diagnosticar via /api/admin/meta/debug
+      const expiresAtFallback = longToken.expires_in
+        ? new Date(Date.now() + longToken.expires_in * 1000)
+        : null
+      await prisma.metaConfig.upsert({
+        where: { id: "default" },
+        update: {
+          userId: user.id,
+          userName: user.name,
+          // Guardamos el long-lived USER token en pageAccessToken como fallback
+          // para que el endpoint de debug pueda leer /me/businesses, etc.
+          pageAccessToken: longToken.access_token,
+          pageId: null,
+          pageName: null,
+          igUserId: null,
+          igUsername: null,
+          expiresAt: expiresAtFallback,
+        },
+        create: {
+          id: "default",
+          userId: user.id,
+          userName: user.name,
+          pageAccessToken: longToken.access_token,
+          expiresAt: expiresAtFallback,
+        },
+      })
       return NextResponse.redirect(
         `${baseAdmin}?error=${encodeURIComponent(
-          "No se encontraron páginas de Facebook que administres con esta cuenta"
+          "No se encontraron páginas. Andá a /api/admin/meta/debug para diagnosticar."
         )}`
       )
     }
