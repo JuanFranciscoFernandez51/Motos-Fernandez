@@ -20,6 +20,14 @@ const COLORES_VALIDOS_ML = [
   "Bordó", "Celeste", "Dorado",
 ]
 
+// Convierte URL de Cloudinary a JPG redimensionado para Claude vision.
+// Necesario para fotos HEIC/HEIF que Anthropic no soporta directo.
+function urlClaude(url) {
+  if (!url.includes("res.cloudinary.com")) return url
+  // Insertar transformaciones después de /upload/
+  return url.replace(/\/upload\//, "/upload/f_jpg,w_1024,q_auto/")
+}
+
 async function detectarColor(fotoUrl, motoNombre) {
   const prompt = `Mirá esta foto de una moto "${motoNombre}". ¿Cuál es el COLOR PRINCIPAL del cuerpo/carrocería de la moto?
 Respondé SOLO con UNA palabra de esta lista exacta:
@@ -35,7 +43,7 @@ Respondé SOLO con la palabra del color, sin punto, sin comillas, sin nada más.
       {
         role: "user",
         content: [
-          { type: "image", source: { type: "url", url: fotoUrl } },
+          { type: "image", source: { type: "url", url: urlClaude(fotoUrl) } },
           { type: "text", text: prompt },
         ],
       },

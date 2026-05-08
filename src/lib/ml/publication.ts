@@ -80,12 +80,18 @@ export async function publicarOActualizar(modeloId: string): Promise<{
   // Si el nombre ya empieza con la marca, no duplicarla en el título
   // (caso típico del import del Cardfile donde nombre = "Honda CRF 250 Rally"
   //  y marca = "Honda" → no queremos "Honda Honda CRF 250 Rally").
-  const marcaLower = m.marca.toLowerCase().trim()
-  const nombreLower = m.nombre.toLowerCase().trim()
+  const marcaTrim = m.marca.trim()
+  const nombreTrim = m.nombre.trim()
+  const marcaLower = marcaTrim.toLowerCase()
+  const nombreLower = nombreTrim.toLowerCase()
   const tituloBase = nombreLower.startsWith(marcaLower)
-    ? m.nombre
-    : `${m.marca} ${m.nombre}`
-  const titulo = `${tituloBase}${m.anio ? ` ${m.anio}` : ""}`.trim().slice(0, 60)
+    ? nombreTrim
+    : `${marcaTrim} ${nombreTrim}`
+  // Normalizar espacios duplicados ("Honda  CRF" → "Honda CRF")
+  const titulo = `${tituloBase}${m.anio ? ` ${m.anio}` : ""}`
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 60)
 
   try {
     // Si ya existe la publicación, hacemos UPDATE
@@ -130,6 +136,27 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       .filter((url) => /^https?:\/\//i.test(url))
       .slice(0, 12)
 
+    // Si el color es multi (ej "Negra, azul y roja"), tomamos solo el primero
+    // y lo normalizamos a la lista válida de ML (capitalizando primera letra).
+    const colorNormalizado = m.color
+      ? (() => {
+          const primero = m.color.split(/[,\s/]/).filter(Boolean)[0] || ""
+          // ML usa formato "Negro" no "Negra"; sacar 'a' al final solo si es color común
+          let c = primero.charAt(0).toUpperCase() + primero.slice(1).toLowerCase()
+          // Femenino → masculino para los más comunes
+          const masc: Record<string, string> = {
+            Negra: "Negro",
+            Roja: "Rojo",
+            Blanca: "Blanco",
+            Amarilla: "Amarillo",
+            Naranja: "Naranja",
+            Gris: "Gris",
+          }
+          if (masc[c]) c = masc[c]
+          return c
+        })()
+      : null
+
     if (fotosPublicas.length === 0) {
       return { ok: false, error: "La moto no tiene fotos con URL pública (Cloudinary)" }
     }
@@ -158,7 +185,7 @@ export async function publicarOActualizar(modeloId: string): Promise<{
           : []),
         ...(m.transmision ? [{ id: "TRANSMISSION", value_name: m.transmision }] : []),
         ...(m.combustible ? [{ id: "FUEL_TYPE", value_name: m.combustible }] : []),
-        ...(m.color ? [{ id: "COLOR", value_name: m.color }] : []),
+        ...(colorNormalizado ? [{ id: "COLOR", value_name: colorNormalizado }] : []),
       ],
     }
 
