@@ -283,15 +283,16 @@ export async function publicarOActualizar(modeloId: string): Promise<{
         longitude: BUSINESS.coordinates.lng,
       },
       // Datos de contacto que ML muestra en la publicación clasificada.
-      // Phone format: "+54 291 578 8671" → area_code "291", number "5788671"
+      // Hardcodeados con los datos finales del negocio (no usamos
+      // constants.HORARIOS porque ML quiere un único string corto).
       seller_contact: {
-        contact: BUSINESS.name,
-        other_info: `Lun a Vie ${HORARIOS.lunesViernes} | Sáb ${HORARIOS.sabados}`,
+        contact: "Motos Fernandez",
+        other_info: "Lunes a Viernes de 9 a 17 hs",
         area_code: "291",
         phone: "5788671",
         area_code2: "291",
         phone2: "5788671",
-        email: BUSINESS.email,
+        email: "info@motosfernandez.com.ar",
         webpage: "https://www.motosfernandez.com.ar",
       },
       attributes: [
