@@ -622,6 +622,7 @@ model Cliente {
   mandatos        MandatoVenta[]
   ordenesCompra   OrdenCompra[]
   motosEntregadas Modelo[]      @relation("ClienteEntregaModelo")
+  presupuestos    Presupuesto[]
   financiaciones  FinanciacionOC[]
   ordenesTrabajo  OrdenTrabajo[]
 
@@ -854,6 +855,9 @@ model OrdenTrabajo {
   // Notas internas
   observaciones   String?   @db.Text
 
+  // Si vino de un presupuesto previo
+  presupuesto     Presupuesto? @relation("PresupuestoOT")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -872,6 +876,65 @@ enum EstadoOT {
   LISTA              // terminada, lista para entregar
   ENTREGADA          // retirada por el cliente
   CANCELADA          // cliente canceló
+}
+
+// ==================== PRESUPUESTOS DE TRABAJO ====================
+// Similar a OT pero NO ingresa al taller — es un cotizador rapido para
+// dar al cliente. Si el cliente acepta, se puede convertir en OT.
+
+model Presupuesto {
+  id              String    @id @default(cuid())
+  numero          Int       @unique @default(autoincrement())  // PRE-0001, PRE-0002...
+  fecha           DateTime  @default(now())
+  validezDias     Int       @default(15)  // dias que vale el presupuesto
+  estado          EstadoPresupuesto @default(BORRADOR)
+
+  // Cliente (opcional para presupuestos a "potencial cliente")
+  clienteId       String?
+  cliente         Cliente?  @relation(fields: [clienteId], references: [id])
+  // Datos del cliente como snapshot (por si no esta en la base)
+  clienteNombre   String?   // "Juan Perez" si no hay clienteId
+  clienteContacto String?   // tel/email/dni
+
+  // Moto del trabajo (texto libre, no requiere catalogo)
+  motoMarca       String?
+  motoModelo      String?
+  motoAnio        Int?
+  motoPatente     String?
+  motoKilometros  Int?
+
+  // Trabajo
+  motivoIngreso   String?   @db.Text
+  trabajosACotizar String?  @db.Text
+
+  // Items (mismo formato que OT: [{ descripcion, cantidad, precio, tipo }])
+  items           Json?
+
+  // Económico
+  subtotal        Int       @default(0)
+  descuento       Int       @default(0)
+  total           Int       @default(0)
+
+  observaciones   String?   @db.Text
+
+  // Si se convirtio en OT, link a la OT creada
+  ordenTrabajoId  String?   @unique
+  ordenTrabajo    OrdenTrabajo? @relation("PresupuestoOT", fields: [ordenTrabajoId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([clienteId])
+  @@index([estado])
+  @@index([fecha])
+}
+
+enum EstadoPresupuesto {
+  BORRADOR     // se está armando
+  ENVIADO      // enviado al cliente, esperando respuesta
+  ACEPTADO     // cliente aprobó (idealmente se convierte en OT)
+  RECHAZADO    // cliente rechazó
+  VENCIDO      // pasó la validezDias sin respuesta
 }
 
 // ==================== TIPOS DE SERVICIO (TALLER) ====================

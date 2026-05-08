@@ -14,6 +14,7 @@ import {
   MessageCircle,
   ShoppingBag,
   Heart,
+  Scale,
   ChevronRight,
   Bike,
   Sparkles,
@@ -21,7 +22,7 @@ import {
 import { ThemeToggleSubtle } from "@/components/theme-toggle"
 import { Chatbot } from "@/components/public/chatbot"
 import { CartProvider, useCart } from "@/lib/cart-context"
-import { ComparadorProvider } from "@/components/public/comparador-provider"
+import { ComparadorProvider, useCompare } from "@/components/public/comparador-provider"
 import { WishlistProvider, useWishlist } from "@/components/public/wishlist-provider"
 import { CookieBanner } from "@/components/public/cookie-banner"
 import { NewsletterForm } from "@/components/public/newsletter-form"
@@ -70,6 +71,26 @@ function WishlistIcon() {
       {count > 0 && (
         <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center size-4 rounded-full bg-[#C8C8D0] text-[10px] font-bold text-[#0E0B12]">
           {count > 9 ? "9+" : count}
+        </span>
+      )}
+    </Link>
+  )
+}
+
+function CompareIcon() {
+  const { compareItems } = useCompare()
+  const count = compareItems.length
+  return (
+    <Link
+      href="/comparador"
+      className="relative inline-flex items-center justify-center size-9 rounded-md text-gray-300 hover:text-[#C8C8D0] hover:bg-white/5 transition-colors"
+      aria-label="Comparador de motos"
+      title="Comparador de motos"
+    >
+      <Scale className="size-5" />
+      {count > 0 && (
+        <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center size-4 rounded-full bg-[#C8C8D0] text-[10px] font-bold text-[#0E0B12]">
+          {count}
         </span>
       )}
     </Link>
@@ -172,6 +193,7 @@ function Navbar() {
             <div className="flex items-center gap-1.5 ml-auto lg:ml-4">
               <div className="hidden lg:flex items-center gap-1">
                 <ThemeToggleSubtle className="text-gray-300 hover:text-white hover:bg-white/5" />
+                <CompareIcon />
                 <WishlistIcon />
                 <CartIcon />
                 <a
@@ -186,6 +208,7 @@ function Navbar() {
               </div>
               {/* Mobile actions */}
               <div className="lg:hidden flex items-center gap-1">
+                <CompareIcon />
                 <CartIcon />
                 <button
                   type="button"
@@ -318,6 +341,7 @@ function Navbar() {
             </a>
             <div className="flex items-center justify-around gap-2 pt-2">
               <ThemeToggleSubtle className="text-gray-300 hover:text-white hover:bg-white/5" />
+              <CompareIcon />
               <WishlistIcon />
               <a
                 href={`tel:${BUSINESS.phone}`}
