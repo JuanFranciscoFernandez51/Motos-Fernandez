@@ -25,23 +25,24 @@ const LIMIT_IDX = args.indexOf("--limit")
 const LIMIT = LIMIT_IDX >= 0 ? parseInt(args[LIMIT_IDX + 1] || "0") : 0
 
 // Bloque fijo que se concatena al final de cada descripcion. Mismo
-// formato para todas las motos. Usa caracteres ASCII ampliados que se
-// ven bien tanto en la web como en ML.
+// formato para todas las motos. Usa SOLO ASCII porque ML rechaza
+// emojis y caracteres unicode "raros" como description.type.invalid
+// con referencias a posiciones específicas en plain_text.
 const BLOQUE_CONCESIONARIA = `
 
-──────────────────────────
+------------------------------
 
-✓ Financiación propia en cuotas en pesos sin sorpresas
-✓ Aceptamos tu moto en parte de pago — te tasamos en el momento
-✓ Servicio técnico oficial post-venta
-✓ Patentamiento, transferencia y trámites a acordar (no incluidos)
+- Financiacion propia en cuotas en pesos sin sorpresas
+- Aceptamos tu moto en parte de pago - te tasamos en el momento
+- Servicio tecnico oficial post-venta
+- Patentamiento, transferencia y tramites a acordar (no incluidos)
 
-~ TIENDA OFICIAL MOTOS FERNANDEZ ~
-+38 años vendiendo motos en Bahía Blanca
-📍 Brown 1052, Bahía Blanca, Buenos Aires
-📞 WhatsApp +54 9 2915 78-8671
-🕐 Lunes a Viernes de 9 a 17 hs
-🌐 motosfernandez.com.ar`
+** TIENDA OFICIAL MOTOS FERNANDEZ **
++38 anos vendiendo motos en Bahia Blanca
+Direccion: Brown 1052, Bahia Blanca, Buenos Aires
+WhatsApp: +54 9 2915 78-8671
+Horario: Lunes a Viernes de 9 a 17 hs
+Web: motosfernandez.com.ar`
 
 async function generarConIA(moto) {
   const specs = []

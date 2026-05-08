@@ -181,15 +181,13 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       // 3) Construir payload. Si está pausada, la reactivamos en el mismo
       //    PUT (intent del usuario al hacer click en "Actualizar" suele ser
       //    relistarla). Si está active, solo cambiamos lo que cambió.
-      //    La descripción va INLINE en el body del item (antes la mandábamos
-      //    al endpoint /items/X/description con plain_text pero ML responde
-      //    DESCRIPTION_PLAIN_TEXT_NOT_ALLOWED para vehículos clasificados).
+      //    La descripción NO se puede cambiar en items publicados (ML
+      //    responde item.description.not_modifiable). Por eso solo se
+      //    actualiza precio/status. Si el usuario quiere cambiar
+      //    descripción debe usar Re-publicar.
       const payload: Record<string, unknown> = { price: m.precio }
       if (estadoActual === "paused" || estadoActual === "closed") {
         payload.status = "active"
-      }
-      if (m.descripcion) {
-        payload.description = { plain_text: m.descripcion.slice(0, 50000) }
       }
 
       const update = await mlPut<{
@@ -271,13 +269,9 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       // bronze/gold_special/gold_pro NO aplican a MLA1763.
       listing_type_id: m.mlListingType || "free",
       condition,
-      // Descripción inline en el body. Antes la mandábamos por separado al
-      // endpoint /items/X/description con plain_text pero ML responde
-      // DESCRIPTION_PLAIN_TEXT_NOT_ALLOWED para vehículos clasificados al
-      // hacer update. Inline funciona tanto para create como update.
-      ...(m.descripcion
-        ? { description: { plain_text: m.descripcion.slice(0, 50000) } }
-        : {}),
+      // La descripción NO va inline en el body — ML la descarta en silencio
+      // para vehículos clasificados (descriptions queda []). Después del
+      // POST hacemos POST separado a /items/<id>/description.
       pictures: fotosPublicas.map((url) => ({ source: url })),
       // Ubicación obligatoria para clasificados — usa los datos de BUSINESS
       location: {
@@ -392,7 +386,22 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       "/items",
       body
     )
-    // La descripción ya se mandó inline en el body del POST.
+    // Subir descripción al endpoint separado. Inline en el body del POST
+    // ML lo descarta en silencio para vehículos. Acá ya tenemos el item
+    // creado, así que un fallo del POST de description no debería ser
+    // fatal — sí lo logueamos para no perderlo.
+    if (m.descripcion) {
+      try {
+        await mlPost(`/items/${created.id}/description`, {
+          plain_text: m.descripcion.slice(0, 50000),
+        })
+      } catch (e) {
+        console.warn(
+          `[ML] No se pudo subir la descripción del item ${created.id}:`,
+          e instanceof Error ? e.message : e
+        )
+      }
+    }
     await prisma.modelo.update({
       where: { id: m.id },
       data: {
