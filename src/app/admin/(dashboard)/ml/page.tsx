@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, AlertCircle, Link as LinkIcon, ExternalLink, RefreshCw } from "lucide-react"
 import { formatDate, formatMoney } from "@/lib/admin-helpers"
+import { PublishButton } from "./publish-button"
 
 export const dynamic = "force-dynamic"
 
@@ -262,22 +263,3 @@ function StatCard({ label, value, color }: { label: string; value: number; color
   )
 }
 
-// Boton client-side que llama al endpoint POST
-function PublishButton({ modeloId, yaPublicada }: { modeloId: string; yaPublicada: boolean }) {
-  return (
-    <form action={async () => {
-      "use server"
-      // Ejecutamos el publish en server action para no necesitar JS
-      const baseUrl = process.env.NEXTAUTH_URL || "https://www.motosfernandez.com.ar"
-      await fetch(`${baseUrl}/api/admin/ml/publish/${modeloId}`, { method: "POST" })
-        .catch(() => null)
-    }}>
-      <button
-        type="submit"
-        className="text-xs px-2.5 py-1 rounded-md bg-[#FFE600] text-[#2D3277] hover:bg-[#fff04d] font-medium"
-      >
-        {yaPublicada ? "Actualizar" : "Publicar"}
-      </button>
-    </form>
-  )
-}
