@@ -36,6 +36,21 @@ model Modelo {
   transmision       String?           // "Manual" | "Automática" | "Semiautomática"
   combustible       String?           // "Nafta" | "Eléctrica" | "Híbrido"
   color             String?           // color principal (ej "Negro", "Rojo")
+  // Atributos opcionales para ML — mejoran calidad y posicionamiento
+  frenos            String?           // "Delantero y trasero" | "Solo delantero" | "ABS" | "Disco hidráulico"
+  tipoMotor         String?           // "4 tiempos" | "2 tiempos" | "Eléctrico"
+  potenciaHp        Int?              // potencia en HP (ej 23)
+  garantiaFabrica   Boolean           @default(false)
+  aceptaPermuta     Boolean           @default(true)
+  precioNegociable  Boolean           @default(true)
+  unicoDueno        Boolean           @default(false)
+  tieneAlarma       Boolean           @default(false)
+  entradaUsb        Boolean           @default(false)
+  distanciaEjesCm   Int?              // distancia entre ejes en cm
+  largoMm           Int?              // largo en mm
+  alturaMm          Int?              // altura en mm
+  anchoMm           Int?              // ancho en mm
+  pesoKg            Int?              // peso en kg
   precio            Int?              // valor numérico, null = "consultar"
   moneda            String            @default("ARS")  // "ARS" o "USD"
   descripcion       String?           @db.Text

@@ -51,6 +51,21 @@ type ModeloData = {
   transmision?: string | null
   combustible?: string | null
   color?: string | null
+  // Atributos opcionales para ML
+  frenos?: string | null
+  tipoMotor?: string | null
+  potenciaHp?: number | null
+  garantiaFabrica?: boolean | null
+  aceptaPermuta?: boolean | null
+  precioNegociable?: boolean | null
+  unicoDueno?: boolean | null
+  tieneAlarma?: boolean | null
+  entradaUsb?: boolean | null
+  distanciaEjesCm?: number | null
+  largoMm?: number | null
+  alturaMm?: number | null
+  anchoMm?: number | null
+  pesoKg?: number | null
   anio: number | null
   kilometros: number | null
   observaciones: string
@@ -122,6 +137,34 @@ export function ModeloForm({
   const [transmision, setTransmision] = useState(initialData?.transmision || "Manual")
   const [combustible, setCombustible] = useState(initialData?.combustible || "Nafta")
   const [color, setColor] = useState(initialData?.color || "")
+  // Atributos opcionales para ML
+  const [frenos, setFrenos] = useState(initialData?.frenos || "")
+  const [tipoMotor, setTipoMotor] = useState(initialData?.tipoMotor || "")
+  const [potenciaHp, setPotenciaHp] = useState(
+    initialData?.potenciaHp != null ? String(initialData.potenciaHp) : ""
+  )
+  const [garantiaFabrica, setGarantiaFabrica] = useState(initialData?.garantiaFabrica ?? false)
+  const [aceptaPermuta, setAceptaPermuta] = useState(initialData?.aceptaPermuta ?? true)
+  const [precioNegociable, setPrecioNegociable] = useState(initialData?.precioNegociable ?? true)
+  const [unicoDueno, setUnicoDueno] = useState(initialData?.unicoDueno ?? false)
+  const [tieneAlarma, setTieneAlarma] = useState(initialData?.tieneAlarma ?? false)
+  const [entradaUsb, setEntradaUsb] = useState(initialData?.entradaUsb ?? false)
+  const [distanciaEjesCm, setDistanciaEjesCm] = useState(
+    initialData?.distanciaEjesCm != null ? String(initialData.distanciaEjesCm) : ""
+  )
+  const [largoMm, setLargoMm] = useState(
+    initialData?.largoMm != null ? String(initialData.largoMm) : ""
+  )
+  const [alturaMm, setAlturaMm] = useState(
+    initialData?.alturaMm != null ? String(initialData.alturaMm) : ""
+  )
+  const [anchoMm, setAnchoMm] = useState(
+    initialData?.anchoMm != null ? String(initialData.anchoMm) : ""
+  )
+  const [pesoKg, setPesoKg] = useState(
+    initialData?.pesoKg != null ? String(initialData.pesoKg) : ""
+  )
+  const [showMLFields, setShowMLFields] = useState(false)
   const [precio, setPrecio] = useState(
     initialData?.precio != null ? String(initialData.precio) : ""
   )
@@ -226,6 +269,21 @@ export function ModeloForm({
     formData.append("transmision", transmision)
     formData.append("combustible", combustible)
     formData.append("color", color)
+    // ML opcionales
+    formData.append("frenos", frenos)
+    formData.append("tipoMotor", tipoMotor)
+    formData.append("potenciaHp", potenciaHp)
+    formData.append("garantiaFabrica", String(garantiaFabrica))
+    formData.append("aceptaPermuta", String(aceptaPermuta))
+    formData.append("precioNegociable", String(precioNegociable))
+    formData.append("unicoDueno", String(unicoDueno))
+    formData.append("tieneAlarma", String(tieneAlarma))
+    formData.append("entradaUsb", String(entradaUsb))
+    formData.append("distanciaEjesCm", distanciaEjesCm)
+    formData.append("largoMm", largoMm)
+    formData.append("alturaMm", alturaMm)
+    formData.append("anchoMm", anchoMm)
+    formData.append("pesoKg", pesoKg)
     formData.append("moneda", moneda)
     formData.append("precio", precio)
     formData.append("descripcion", descripcion)
@@ -493,6 +551,188 @@ export function ModeloForm({
                 />
               </div>
             </CardContent>
+          </Card>
+
+          {/* Datos para Mercado Libre — opcional, mejora la calidad de la publicación */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <CardTitle className="flex items-center gap-2">
+                  Datos para Mercado Libre
+                  <span className="text-[10px] font-normal text-gray-400">(opcionales)</span>
+                </CardTitle>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowMLFields((v) => !v)}
+                  className="text-xs"
+                >
+                  {showMLFields ? "Ocultar" : "Mostrar"}
+                </Button>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Cuanto más completes, mejor calidad y posicionamiento tendrá la publicación en ML.
+                Todos son opcionales — si quedan vacíos, ML simplemente los omite.
+              </p>
+            </CardHeader>
+            {showMLFields && (
+              <CardContent className="space-y-4">
+                {/* Características principales */}
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold">Características principales</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="frenos">Frenos</Label>
+                      <select
+                        id="frenos"
+                        value={frenos}
+                        onChange={(e) => setFrenos(e.target.value)}
+                        className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 text-sm"
+                      >
+                        <option value="">— Sin especificar —</option>
+                        <option value="Delantero y trasero">Delantero y trasero</option>
+                        <option value="Solo delantero">Solo delantero</option>
+                        <option value="Solo trasero">Solo trasero</option>
+                        <option value="ABS">ABS</option>
+                        <option value="Disco hidráulico">Disco hidráulico</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="tipoMotor">Motor (tiempos)</Label>
+                      <select
+                        id="tipoMotor"
+                        value={tipoMotor}
+                        onChange={(e) => setTipoMotor(e.target.value)}
+                        className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 text-sm"
+                      >
+                        <option value="">— Sin especificar —</option>
+                        <option value="4 tiempos">4 tiempos</option>
+                        <option value="2 tiempos">2 tiempos</option>
+                        <option value="Eléctrico">Eléctrico</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="potenciaHp">Potencia (HP)</Label>
+                      <Input
+                        id="potenciaHp"
+                        type="number"
+                        value={potenciaHp}
+                        onChange={(e) => setPotenciaHp(e.target.value)}
+                        placeholder="Ej: 23"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Garantía y condiciones */}
+                <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-neutral-800">
+                  <h3 className="text-sm font-semibold">Garantía y condiciones</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <label className="flex items-center justify-between rounded-md border border-gray-200 dark:border-neutral-800 px-3 py-2">
+                      <span className="text-sm">Garantía de fábrica</span>
+                      <Switch checked={garantiaFabrica} onCheckedChange={setGarantiaFabrica} />
+                    </label>
+                    <label className="flex items-center justify-between rounded-md border border-gray-200 dark:border-neutral-800 px-3 py-2">
+                      <span className="text-sm">Acepta permuta</span>
+                      <Switch checked={aceptaPermuta} onCheckedChange={setAceptaPermuta} />
+                    </label>
+                    <label className="flex items-center justify-between rounded-md border border-gray-200 dark:border-neutral-800 px-3 py-2">
+                      <span className="text-sm">Precio negociable</span>
+                      <Switch checked={precioNegociable} onCheckedChange={setPrecioNegociable} />
+                    </label>
+                    {condicion === "USADA" && (
+                      <label className="flex items-center justify-between rounded-md border border-gray-200 dark:border-neutral-800 px-3 py-2">
+                        <span className="text-sm">Único dueño</span>
+                        <Switch checked={unicoDueno} onCheckedChange={setUnicoDueno} />
+                      </label>
+                    )}
+                  </div>
+                </div>
+
+                {/* Equipamiento */}
+                <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-neutral-800">
+                  <h3 className="text-sm font-semibold">Seguridad y entretenimiento</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <label className="flex items-center justify-between rounded-md border border-gray-200 dark:border-neutral-800 px-3 py-2">
+                      <span className="text-sm">Alarma</span>
+                      <Switch checked={tieneAlarma} onCheckedChange={setTieneAlarma} />
+                    </label>
+                    <label className="flex items-center justify-between rounded-md border border-gray-200 dark:border-neutral-800 px-3 py-2">
+                      <span className="text-sm">Entrada USB</span>
+                      <Switch checked={entradaUsb} onCheckedChange={setEntradaUsb} />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Dimensiones */}
+                <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-neutral-800">
+                  <h3 className="text-sm font-semibold">Dimensiones y peso</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                    <div className="space-y-2">
+                      <Label htmlFor="distanciaEjesCm" className="text-xs">
+                        Distancia ejes (cm)
+                      </Label>
+                      <Input
+                        id="distanciaEjesCm"
+                        type="number"
+                        value={distanciaEjesCm}
+                        onChange={(e) => setDistanciaEjesCm(e.target.value)}
+                        placeholder="135"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="largoMm" className="text-xs">
+                        Largo (mm)
+                      </Label>
+                      <Input
+                        id="largoMm"
+                        type="number"
+                        value={largoMm}
+                        onChange={(e) => setLargoMm(e.target.value)}
+                        placeholder="2150"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="alturaMm" className="text-xs">
+                        Altura (mm)
+                      </Label>
+                      <Input
+                        id="alturaMm"
+                        type="number"
+                        value={alturaMm}
+                        onChange={(e) => setAlturaMm(e.target.value)}
+                        placeholder="1180"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="anchoMm" className="text-xs">
+                        Ancho (mm)
+                      </Label>
+                      <Input
+                        id="anchoMm"
+                        type="number"
+                        value={anchoMm}
+                        onChange={(e) => setAnchoMm(e.target.value)}
+                        placeholder="800"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="pesoKg" className="text-xs">
+                        Peso (kg)
+                      </Label>
+                      <Input
+                        id="pesoKg"
+                        type="number"
+                        value={pesoKg}
+                        onChange={(e) => setPesoKg(e.target.value)}
+                        placeholder="135"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            )}
           </Card>
 
           {/* Specs */}

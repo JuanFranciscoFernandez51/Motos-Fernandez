@@ -99,6 +99,12 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       condicion: true, cilindrada: true, precio: true, moneda: true,
       descripcion: true, fotos: true,
       transmision: true, combustible: true, color: true,
+      // attributes adicionales ML
+      frenos: true, tipoMotor: true, potenciaHp: true,
+      garantiaFabrica: true, aceptaPermuta: true, precioNegociable: true,
+      unicoDueno: true, tieneAlarma: true, entradaUsb: true,
+      distanciaEjesCm: true, largoMm: true, alturaMm: true,
+      anchoMm: true, pesoKg: true,
       mlListingId: true, mlListingType: true,
     },
   })
@@ -284,6 +290,29 @@ export async function publicarOActualizar(modeloId: string): Promise<{
         ...(m.transmision ? [{ id: "TRANSMISSION", value_name: m.transmision }] : []),
         ...(m.combustible ? [{ id: "FUEL_TYPE", value_name: m.combustible }] : []),
         ...(colorNormalizado ? [{ id: "COLOR", value_name: colorNormalizado }] : []),
+        // Frenos, motor, potencia (mejoran calidad de la publicación)
+        ...(m.frenos ? [{ id: "BRAKES", value_name: m.frenos }] : []),
+        ...(m.tipoMotor ? [{ id: "ENGINE_TYPE", value_name: m.tipoMotor }] : []),
+        ...(m.potenciaHp != null
+          ? [{ id: "POWER", value_name: `${m.potenciaHp} HP` }]
+          : []),
+        // Booleans (Sí/No) — ML usa value_name capitalizado con tilde
+        { id: "HAS_MANUFACTURER_WARRANTY", value_name: m.garantiaFabrica ? "Sí" : "No" },
+        { id: "ACCEPTS_TRADE", value_name: m.aceptaPermuta ? "Sí" : "No" },
+        { id: "IS_PRICE_NEGOTIABLE", value_name: m.precioNegociable ? "Sí" : "No" },
+        ...(condition === "used"
+          ? [{ id: "HAS_SINGLE_OWNER", value_name: m.unicoDueno ? "Sí" : "No" }]
+          : []),
+        { id: "HAS_ALARM", value_name: m.tieneAlarma ? "Sí" : "No" },
+        { id: "HAS_USB_INPUT", value_name: m.entradaUsb ? "Sí" : "No" },
+        // Dimensiones/peso (van con value_name "<n> <unidad>")
+        ...(m.distanciaEjesCm != null
+          ? [{ id: "WHEEL_BASE", value_name: `${m.distanciaEjesCm} cm` }]
+          : []),
+        ...(m.largoMm != null ? [{ id: "LENGTH", value_name: `${m.largoMm} mm` }] : []),
+        ...(m.alturaMm != null ? [{ id: "HEIGHT", value_name: `${m.alturaMm} mm` }] : []),
+        ...(m.anchoMm != null ? [{ id: "WIDTH", value_name: `${m.anchoMm} mm` }] : []),
+        ...(m.pesoKg != null ? [{ id: "WEIGHT", value_name: `${m.pesoKg} kg` }] : []),
       ],
     }
 

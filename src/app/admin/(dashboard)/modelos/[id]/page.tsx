@@ -25,6 +25,21 @@ async function updateModelo(formData: FormData) {
     const transmision = formData.get("transmision") as string
     const combustible = formData.get("combustible") as string
     const color = formData.get("color") as string
+    // ML opcionales
+    const frenos = formData.get("frenos") as string
+    const tipoMotor = formData.get("tipoMotor") as string
+    const potenciaHpStr = formData.get("potenciaHp") as string
+    const garantiaFabrica = formData.get("garantiaFabrica") === "true"
+    const aceptaPermuta = formData.get("aceptaPermuta") === "true"
+    const precioNegociable = formData.get("precioNegociable") === "true"
+    const unicoDueno = formData.get("unicoDueno") === "true"
+    const tieneAlarma = formData.get("tieneAlarma") === "true"
+    const entradaUsb = formData.get("entradaUsb") === "true"
+    const distanciaEjesCmStr = formData.get("distanciaEjesCm") as string
+    const largoMmStr = formData.get("largoMm") as string
+    const alturaMmStr = formData.get("alturaMm") as string
+    const anchoMmStr = formData.get("anchoMm") as string
+    const pesoKgStr = formData.get("pesoKg") as string
     const precioStr = formData.get("precio") as string
     const moneda = formData.get("moneda") as string || "ARS"
     const descripcion = formData.get("descripcion") as string
@@ -69,6 +84,20 @@ async function updateModelo(formData: FormData) {
         transmision: transmision || null,
         combustible: combustible || null,
         color: color || null,
+        frenos: frenos || null,
+        tipoMotor: tipoMotor || null,
+        potenciaHp: potenciaHpStr ? parseInt(potenciaHpStr) : null,
+        garantiaFabrica,
+        aceptaPermuta,
+        precioNegociable,
+        unicoDueno,
+        tieneAlarma,
+        entradaUsb,
+        distanciaEjesCm: distanciaEjesCmStr ? parseInt(distanciaEjesCmStr) : null,
+        largoMm: largoMmStr ? parseInt(largoMmStr) : null,
+        alturaMm: alturaMmStr ? parseInt(alturaMmStr) : null,
+        anchoMm: anchoMmStr ? parseInt(anchoMmStr) : null,
+        pesoKg: pesoKgStr ? parseInt(pesoKgStr) : null,
         precio: precioStr ? parseInt(precioStr) : null,
         moneda,
         descripcion: descripcion || null,
@@ -400,6 +429,20 @@ export default async function EditModeloPage({
     transmision: modelo.transmision || "",
     combustible: modelo.combustible || "",
     color: modelo.color || "",
+    frenos: modelo.frenos || "",
+    tipoMotor: modelo.tipoMotor || "",
+    potenciaHp: modelo.potenciaHp,
+    garantiaFabrica: modelo.garantiaFabrica,
+    aceptaPermuta: modelo.aceptaPermuta,
+    precioNegociable: modelo.precioNegociable,
+    unicoDueno: modelo.unicoDueno,
+    tieneAlarma: modelo.tieneAlarma,
+    entradaUsb: modelo.entradaUsb,
+    distanciaEjesCm: modelo.distanciaEjesCm,
+    largoMm: modelo.largoMm,
+    alturaMm: modelo.alturaMm,
+    anchoMm: modelo.anchoMm,
+    pesoKg: modelo.pesoKg,
     precio: modelo.precio,
     moneda: modelo.moneda || "ARS",
     descripcion: modelo.descripcion || "",
