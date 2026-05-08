@@ -7,18 +7,20 @@
 //   https://developers.facebook.com/docs/instagram-api/getting-started
 import { prisma } from "@/lib/prisma"
 
-const GRAPH_API = "https://graph.facebook.com/v23.0"
-const FB_AUTH = "https://www.facebook.com/v23.0/dialog/oauth"
+// v18.0 es la versión más estable y ampliamente soportada para
+// publicación. Versiones más nuevas (v22+, v23) pueden rechazar
+// scopes con "Invalid Scopes" cuando la app es Business sin verificar.
+const GRAPH_API = "https://graph.facebook.com/v18.0"
+const FB_AUTH = "https://www.facebook.com/v18.0/dialog/oauth"
 
-// Permisos que pedimos en el OAuth. Cubren publicar carruseles en IG +
-// publicar fotos/feed en FB Page + listar pages del usuario.
+// Permisos mínimos para publicar carruseles en IG y fotos en FB Page.
+// Quitamos business_management y pages_read_engagement porque tienden a
+// dar "Invalid Scopes" en apps Business sin verificación de negocio.
 const SCOPES = [
   "pages_show_list",
-  "pages_read_engagement",
   "pages_manage_posts",
   "instagram_basic",
   "instagram_content_publish",
-  "business_management",
 ].join(",")
 
 function getEnv() {
