@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { CheckCircle2, AlertCircle, Link as LinkIcon, ExternalLink, RefreshCw } from "lucide-react"
 import { formatDate, formatMoney } from "@/lib/admin-helpers"
 import { PublishButton } from "./publish-button"
+import { BulkPublishButton } from "./bulk-publish-button"
 
 export const dynamic = "force-dynamic"
 
@@ -34,6 +35,7 @@ export default async function MLAdminPage({
       mlEstado: true,
       mlUltimaSync: true,
       mlError: true,
+      mlListingType: true,
       fotos: true,
     },
   })
@@ -170,7 +172,18 @@ export default async function MLAdminPage({
       {status.connected && (
         <Card>
           <CardHeader>
-            <CardTitle>Motos del catálogo</CardTitle>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <CardTitle>Motos del catálogo</CardTitle>
+              {sinPublicar.length > 0 && (
+                <BulkPublishButton
+                  pendientes={sinPublicar.map((m) => ({
+                    id: m.id,
+                    marca: m.marca,
+                    nombre: m.nombre,
+                  }))}
+                />
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
@@ -227,7 +240,7 @@ export default async function MLAdminPage({
                               <ExternalLink className="size-3.5" />
                             </a>
                           )}
-                          <PublishButton modeloId={m.id} yaPublicada={!!m.mlListingId} />
+                          <PublishButton modeloId={m.id} yaPublicada={!!m.mlListingId} listingType={m.mlListingType ?? "free"} />
                         </div>
                       </td>
                     </tr>

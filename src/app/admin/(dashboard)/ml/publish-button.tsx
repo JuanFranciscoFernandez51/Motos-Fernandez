@@ -4,6 +4,13 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2, RefreshCw, AlertCircle } from "lucide-react"
 
+const TIPO_LABELS: Record<string, string> = {
+  free: "Gratis",
+  silver: "Plata ($)",
+  gold: "Oro ($$)",
+  gold_premium: "Oro Premium ($$$)",
+}
+
 /**
  * Botón client-side para publicar/actualizar una moto en ML.
  * Hace POST al endpoint /api/admin/ml/publish/[id] con credentials de la
@@ -13,14 +20,27 @@ import { Loader2, RefreshCw, AlertCircle } from "lucide-react"
 export function PublishButton({
   modeloId,
   yaPublicada,
+  listingType: initialType = "free",
 }: {
   modeloId: string
   yaPublicada: boolean
+  listingType?: string
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [listingType, setListingType] = useState(initialType)
+
+  const handleTypeChange = async (nuevo: string) => {
+    setListingType(nuevo)
+    // Persistir el cambio sin publicar todavia
+    await fetch(`/api/admin/ml/listing-type/${modeloId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tipo: nuevo }),
+    }).catch(() => null)
+  }
 
   const handleClick = async () => {
     setError(null)
@@ -44,8 +64,19 @@ export function PublishButton({
   }
 
   return (
-    <div className="inline-flex flex-col items-end gap-1 max-w-[280px]">
+    <div className="inline-flex flex-col items-end gap-1 max-w-[300px]">
       <div className="inline-flex items-center gap-1">
+        <select
+          value={listingType}
+          onChange={(e) => handleTypeChange(e.target.value)}
+          disabled={loading || isPending}
+          className="text-xs h-7 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-1 cursor-pointer disabled:opacity-50"
+          title="Tipo de publicación en ML (gratis o pago)"
+        >
+          {Object.entries(TIPO_LABELS).map(([k, v]) => (
+            <option key={k} value={k}>{v}</option>
+          ))}
+        </select>
         <button
           type="button"
           onClick={handleClick}

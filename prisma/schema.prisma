@@ -90,6 +90,7 @@ model Modelo {
   mlEstado      String?              // "active" | "paused" | "closed"
   mlUltimaSync  DateTime?            // ultima vez que sincronizamos
   mlError       String?    @db.Text  // si hubo error en la ultima sync
+  mlListingType String?    @default("free")  // free | silver | gold | gold_premium
 }
 
 enum CategoriaVehiculo {

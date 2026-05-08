@@ -99,7 +99,7 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       condicion: true, cilindrada: true, precio: true, moneda: true,
       descripcion: true, fotos: true,
       transmision: true, combustible: true, color: true,
-      mlListingId: true,
+      mlListingId: true, mlListingType: true,
     },
   })
   if (!m) return { ok: false, error: "Moto no encontrada" }
@@ -207,9 +207,10 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       currency_id: m.moneda === "USD" ? "USD" : "ARS",
       available_quantity: 1,
       buying_mode: "classified",
-      // free = clasificado gratuito. silver/gold/gold_premium cuestan plata.
-      // bronze/gold_special/gold_pro no aplican a MLA1763 (motos).
-      listing_type_id: "free",
+      // Listing type configurable por moto (campo mlListingType, default "free").
+      // free: gratis (limitado por mes). silver/gold/gold_premium: pago, mejor visibilidad.
+      // bronze/gold_special/gold_pro NO aplican a MLA1763.
+      listing_type_id: m.mlListingType || "free",
       condition,
       pictures: fotosPublicas.map((url) => ({ source: url })),
       // Ubicación obligatoria para clasificados
