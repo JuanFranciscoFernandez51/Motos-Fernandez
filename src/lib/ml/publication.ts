@@ -406,6 +406,46 @@ export async function publicarOActualizar(modeloId: string): Promise<{
     return { ok: true, listingId: created.id, permalink: created.permalink }
   } catch (e) {
     const rawMsg = e instanceof Error ? e.message : "Error desconocido"
+
+    // Caso especial: ML devuelve 402 (Payment Required) cuando publicás
+    // como gold_premium sin tener metodo de pago configurado, PERO el item
+    // SE CREA igual (queda en payment_required). Hay que extraer el
+    // listingId del body y guardarlo, sino la moto figura sin publicar
+    // pero en realidad existe en ML.
+    if (rawMsg.includes("falló (402)")) {
+      try {
+        const jsonStart = rawMsg.indexOf("{")
+        if (jsonStart > 0) {
+          const itemCreado = JSON.parse(rawMsg.slice(jsonStart))
+          if (
+            itemCreado &&
+            typeof itemCreado.id === "string" &&
+            itemCreado.id.startsWith("MLA")
+          ) {
+            await prisma.modelo.update({
+              where: { id: m.id },
+              data: {
+                mlListingId: itemCreado.id,
+                mlPermalink: itemCreado.permalink || null,
+                mlEstado: "payment_required",
+                mlError:
+                  "Publicación creada pero PENDIENTE DE PAGO. Andá a tu cuenta de Mercado Libre, sección Mis publicaciones, y completá el pago para activarla. Una vez hecho, click en 'Refrescar estado'.",
+                mlUltimaSync: new Date(),
+              },
+            })
+            return {
+              ok: false,
+              error: `Publicación creada (${itemCreado.id}) pero requiere completar el pago en Mercado Libre antes de activarse. Entrá a Mis Publicaciones en ML para completarlo.`,
+              listingId: itemCreado.id,
+              permalink: itemCreado.permalink,
+            }
+          }
+        }
+      } catch {
+        // si falla el parse, caemos al manejo normal abajo
+      }
+    }
+
     // Traducir errores comunes a un mensaje accionable en castellano
     let msg = rawMsg
     if (rawMsg.includes("listing_type_id.unavailable")) {
