@@ -77,7 +77,15 @@ export async function publicarOActualizar(modeloId: string): Promise<{
   if (!m.precio) return { ok: false, error: "La moto no tiene precio cargado" }
   if (m.fotos.length === 0) return { ok: false, error: "La moto no tiene fotos" }
 
-  const titulo = `${m.marca} ${m.nombre}${m.anio ? ` ${m.anio}` : ""}`.slice(0, 60)
+  // Si el nombre ya empieza con la marca, no duplicarla en el título
+  // (caso típico del import del Cardfile donde nombre = "Honda CRF 250 Rally"
+  //  y marca = "Honda" → no queremos "Honda Honda CRF 250 Rally").
+  const marcaLower = m.marca.toLowerCase().trim()
+  const nombreLower = m.nombre.toLowerCase().trim()
+  const tituloBase = nombreLower.startsWith(marcaLower)
+    ? m.nombre
+    : `${m.marca} ${m.nombre}`
+  const titulo = `${tituloBase}${m.anio ? ` ${m.anio}` : ""}`.trim().slice(0, 60)
 
   try {
     // Si ya existe la publicación, hacemos UPDATE
@@ -113,8 +121,8 @@ export async function publicarOActualizar(modeloId: string): Promise<{
     const condition = m.condicion === "0KM" ? "new" : "used"
 
     // family_name: agrupador de productos similares en ML (requerido en v2).
-    // Ej: para "Honda CRF 250 Rally 2017" -> family_name = "Honda CRF 250 Rally"
-    const familyName = `${m.marca} ${m.nombre}`.slice(0, 60)
+    // Mismo dedup de marca que el titulo (sin repetir "Honda Honda").
+    const familyName = tituloBase.slice(0, 60)
 
     // Filtrar fotos: solo URLs públicas absolutas (ML necesita poder descargarlas).
     // Saca el placeholder /images/logo-clasico.png y cualquier otra ruta relativa.
