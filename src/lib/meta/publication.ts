@@ -91,6 +91,36 @@ Devolvé SOLO el caption, sin comentarios ni comillas envolventes.`
 type IGMediaResponse = { id: string }
 type IGPostResponse = { id: string; permalink?: string }
 type FBPhotoResponse = { id: string; post_id?: string }
+type IGMediaStatus = { status_code?: string; status?: string }
+
+/**
+ * Espera a que un container de IG (foto carousel item o carusel completo)
+ * esté en estado FINISHED antes de seguir. IG procesa el upload async, y
+ * si llamamos a media_publish antes de FINISHED tira "Media ID is not available".
+ */
+async function esperarMediaListo(
+  creationId: string,
+  timeoutMs = 60000
+): Promise<void> {
+  const inicio = Date.now()
+  while (Date.now() - inicio < timeoutMs) {
+    const r = await metaGet<IGMediaStatus>(
+      `/${creationId}?fields=status_code,status`
+    )
+    const code = r.status_code || r.status
+    if (code === "FINISHED") return
+    if (code === "ERROR" || code === "EXPIRED") {
+      throw new Error(
+        `IG rechazó el media ${creationId}: status=${code} (revisá que la foto sea JPG válido y aspect ratio entre 4:5 y 1.91:1)`
+      )
+    }
+    // IN_PROGRESS o cualquier otro → seguir esperando
+    await new Promise((res) => setTimeout(res, 2000))
+  }
+  throw new Error(
+    `IG tardó más de ${timeoutMs / 1000}s en procesar el media ${creationId}`
+  )
+}
 
 /**
  * Publica una moto en Instagram (carrusel) + cross-post a Facebook Page.
@@ -161,10 +191,16 @@ export async function publicarEnMeta(
         image_url: url,
         is_carousel_item: true,
       })
-      if (!r.id) throw new Error("ML respondió sin id de media")
+      if (!r.id) throw new Error("IG respondió sin id de media")
       creationIds.push(r.id)
       // Pausa breve para no saturar IG
       await new Promise((res) => setTimeout(res, 400))
+    }
+
+    // 1b) Esperar que cada item carousel esté FINISHED (IG los procesa
+    //     async — si no, "Media ID is not available" al publicar).
+    for (const id of creationIds) {
+      await esperarMediaListo(id, 30000)
     }
 
     // 2) Crear el contenedor del carrusel
@@ -173,6 +209,9 @@ export async function publicarEnMeta(
       children: creationIds.join(","),
       caption,
     })
+
+    // 2b) También esperar el container de carrusel
+    await esperarMediaListo(carousel.id, 60000)
 
     // 3) Publicar
     const published = await metaPost<IGPostResponse>(
