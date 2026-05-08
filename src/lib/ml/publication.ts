@@ -13,19 +13,30 @@ type CategoryPrediction = {
 }
 
 async function predecirCategoria(titulo: string): Promise<string> {
+  // Intento 1: domain_discovery/search (mas moderno, devuelve array)
   try {
-    const r = await mlGet<CategoryPrediction>(
+    const r = await mlGet<unknown>(
       `/sites/MLA/domain_discovery/search?limit=1&q=${encodeURIComponent(titulo)}`
     )
     if (Array.isArray(r) && r.length > 0) {
-      const first = (r as unknown as CategoryPrediction[])[0]
-      if (first?.id) return first.id
+      const first = r[0] as { category_id?: string; id?: string }
+      const id = first.category_id || first.id
+      if (id && typeof id === "string") return id
     }
   } catch (e) {
-    console.warn("[ML] No se pudo predecir categoría, usando MLA1747:", e)
+    console.warn("[ML] domain_discovery/search falló:", e)
   }
-  // Fallback: Motos Calle (MLA1747 es padre, ML acepta el padre y muchas veces lo refina)
-  return "MLA1747"
+  // Intento 2: category_predictor/predict (legacy pero estable)
+  try {
+    const r = await mlGet<CategoryPrediction>(
+      `/sites/MLA/category_predictor/predict?title=${encodeURIComponent(titulo)}`
+    )
+    if (r?.id) return r.id
+  } catch (e) {
+    console.warn("[ML] category_predictor falló:", e)
+  }
+  // Fallback: Motos Calle 451+ cc, una de las más usadas. ML lo acepta.
+  return "MLA418082"
 }
 
 type ModeloParaML = {
@@ -101,8 +112,23 @@ export async function publicarOActualizar(modeloId: string): Promise<{
     const categoryId = await predecirCategoria(titulo)
     const condition = m.condicion === "0KM" ? "new" : "used"
 
+    // family_name: agrupador de productos similares en ML (requerido en v2).
+    // Ej: para "Honda CRF 250 Rally 2017" -> family_name = "Honda CRF 250 Rally"
+    const familyName = `${m.marca} ${m.nombre}`.slice(0, 60)
+
+    // Filtrar fotos: solo URLs públicas absolutas (ML necesita poder descargarlas).
+    // Saca el placeholder /images/logo-clasico.png y cualquier otra ruta relativa.
+    const fotosPublicas = m.fotos
+      .filter((url) => /^https?:\/\//i.test(url))
+      .slice(0, 12)
+
+    if (fotosPublicas.length === 0) {
+      return { ok: false, error: "La moto no tiene fotos con URL pública (Cloudinary)" }
+    }
+
     const body = {
       title: titulo,
+      family_name: familyName,
       category_id: categoryId,
       price: m.precio,
       currency_id: m.moneda === "USD" ? "USD" : "ARS",
@@ -110,7 +136,7 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       buying_mode: "buy_it_now",
       listing_type_id: "gold_special", // Clásica gratis. Otros: "gold_pro" (Premium pago)
       condition,
-      pictures: m.fotos.slice(0, 12).map((url) => ({ source: url })),
+      pictures: fotosPublicas.map((url) => ({ source: url })),
       attributes: [
         { id: "BRAND", value_name: m.marca },
         { id: "MODEL", value_name: m.nombre },
