@@ -1,0 +1,10 @@
+📄 tmp/clientes-word.txt: 1693 fichas
+🗑️  4 entradas basura descartadas (sin DNI/tel/dir/vehiculo)
+
+📊 Total fichas: 1693
+📊 Despues de dedup: 1656
+📊 Con DNI: 1525
+📊 Con telefono: 1583
+📊 Con email: 1
+📊 Con direccion: 1574
+📊 Con vehiculos: 1594
