@@ -182,32 +182,34 @@ export function CatalogoClient({
   return (
     <>
       {/* Filters */}
-      <div className="mb-8 space-y-4">
-        {/* Category tabs */}
-        <div className="flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => setCategoria("TODAS")}
-            className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${
-              categoria === "TODAS"
-                ? "bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] text-white shadow-violeta-soft"
-                : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 border border-gray-100 dark:border-neutral-800 hover:border-[#6B4F7A]/30"
-            }`}
-          >
-            Todas
-          </button>
-          {CATEGORIAS_VEHICULO.map((cat) => (
+      <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
+        {/* Category tabs - scroll horizontal en mobile */}
+        <div className="-mx-4 sm:mx-0 px-4 sm:px-0 overflow-x-auto sm:overflow-visible">
+          <div className="flex sm:flex-wrap justify-start sm:justify-center gap-2 min-w-max sm:min-w-0">
             <button
-              key={cat.value}
-              onClick={() => setCategoria(cat.value)}
-              className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${
-                categoria === cat.value
+              onClick={() => setCategoria("TODAS")}
+              className={`shrink-0 rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all ${
+                categoria === "TODAS"
                   ? "bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] text-white shadow-violeta-soft"
                   : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 border border-gray-100 dark:border-neutral-800 hover:border-[#6B4F7A]/30"
               }`}
             >
-              {cat.label}
+              Todas
             </button>
-          ))}
+            {CATEGORIAS_VEHICULO.map((cat) => (
+              <button
+                key={cat.value}
+                onClick={() => setCategoria(cat.value)}
+                className={`shrink-0 rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all ${
+                  categoria === cat.value
+                    ? "bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] text-white shadow-violeta-soft"
+                    : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 border border-gray-100 dark:border-neutral-800 hover:border-[#6B4F7A]/30"
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Condition filter */}
@@ -220,7 +222,7 @@ export function CatalogoClient({
             <button
               key={opt.value}
               onClick={() => setCondicion(opt.value)}
-              className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${
+              className={`rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all ${
                 condicion === opt.value
                   ? opt.value === "0KM"
                     ? "bg-emerald-600 text-white shadow"
@@ -438,16 +440,16 @@ export function CatalogoClient({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
           {filtered.map((model) => (
             <article
               key={model.id}
-              className="group relative rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-500 hover:-translate-y-1"
+              className="group relative rounded-xl sm:rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-500 hover:-translate-y-1"
             >
               {/* Borde dorado sutil en hover */}
               <div
                 aria-hidden
-                className="absolute inset-0 rounded-2xl ring-1 ring-transparent group-hover:ring-[#C8C8D0]/40 transition-all duration-500 pointer-events-none z-[1]"
+                className="absolute inset-0 rounded-xl sm:rounded-2xl ring-1 ring-transparent group-hover:ring-[#C8C8D0]/40 transition-all duration-500 pointer-events-none z-[1]"
               />
               {/* Link principal — envuelve imagen + info */}
               <Link href={`/catalogo/${model.slug}`} className="block">
@@ -458,36 +460,36 @@ export function CatalogoClient({
                       alt={model.nombre}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                     />
                   ) : (
                     <div className="flex items-center justify-center h-full text-gray-300">
-                      <Bike className="size-12" />
+                      <Bike className="size-10 sm:size-12" />
                     </div>
                   )}
                   {/* Overlay gradient bottom */}
                   <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
                   {/* Chips arriba a la izquierda (no clickeables) */}
-                  <div className="absolute top-3 left-3 flex flex-col items-start gap-1.5 pointer-events-none">
-                    <span className="rounded-md bg-[#0E0B12]/80 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm">
+                  <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col items-start gap-1 sm:gap-1.5 pointer-events-none max-w-[70%]">
+                    <span className="rounded-md bg-[#0E0B12]/80 px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[9px] sm:text-xs font-medium text-white backdrop-blur-sm truncate max-w-full">
                       {CATEGORIA_VEHICULO_LABELS[model.categoriaVehiculo] || model.categoriaVehiculo}
                     </span>
                     {model.etiqueta && ETIQUETAS_MAP[model.etiqueta] && (
-                      <span className={`rounded-md px-2.5 py-1 text-[10px] font-bold text-white shadow-lg ${ETIQUETAS_MAP[model.etiqueta].color}`}>
+                      <span className={`rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg truncate max-w-full ${ETIQUETAS_MAP[model.etiqueta].color}`}>
                         {ETIQUETAS_MAP[model.etiqueta].label.toUpperCase()}
                       </span>
                     )}
                   </div>
                 </div>
-                <div className="p-5">
-                  <p className="text-[10px] font-bold text-[#C8C8D0] uppercase tracking-[0.18em]">
+                <div className="p-3 sm:p-4 lg:p-5">
+                  <p className="text-[9px] sm:text-[10px] font-bold text-[#C8C8D0] uppercase tracking-[0.14em] sm:tracking-[0.18em] truncate">
                     {model.marca}
                   </p>
-                  <h3 className="mt-1 font-heading text-xl font-semibold text-[#1A1A1A] dark:text-white leading-tight">
+                  <h3 className="mt-0.5 sm:mt-1 font-heading text-sm sm:text-lg lg:text-xl font-semibold text-[#1A1A1A] dark:text-white leading-tight line-clamp-2">
                     {model.nombre}
                   </h3>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1 truncate">
                     {(model.condicion || "0KM") === "USADA" ? (
                       <>
                         {model.anio && <span>{model.anio}</span>}
@@ -506,15 +508,15 @@ export function CatalogoClient({
                       </>
                     )}
                   </p>
-                  <div className="mt-4 pt-4 border-t border-gray-100 dark:border-neutral-800 flex items-center justify-between">
-                    <p className="text-lg font-bold text-[#6B4F7A] dark:text-[#C39BD3]">
+                  <div className="mt-2 sm:mt-3 lg:mt-4 pt-2 sm:pt-3 lg:pt-4 border-t border-gray-100 dark:border-neutral-800 flex items-center justify-between gap-2">
+                    <p className="text-sm sm:text-base lg:text-lg font-bold text-[#6B4F7A] dark:text-[#C39BD3] truncate">
                       {model.precio
                         ? (model.moneda || "ARS") === "USD"
                           ? `USD ${model.precio.toLocaleString("es-AR")}`
                           : formatPrice(model.precio)
                         : "Consultar"}
                     </p>
-                    <span className="text-xs font-bold text-[#C8C8D0] group-hover:gap-2 inline-flex items-center gap-1 transition-all">
+                    <span className="hidden sm:inline-flex text-xs font-bold text-[#C8C8D0] group-hover:gap-2 items-center gap-1 transition-all whitespace-nowrap">
                       Ver detalle <span className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
                     </span>
                   </div>
@@ -522,9 +524,9 @@ export function CatalogoClient({
               </Link>
 
               {/* Badge de condición + botones interactivos — FUERA del Link (HTML válido) */}
-              <div className="absolute top-3 right-3 z-10 flex items-center gap-1.5">
+              <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10 flex items-center gap-1 sm:gap-1.5">
                 <span
-                  className={`pointer-events-none rounded-md px-2.5 py-1 text-xs font-bold backdrop-blur-sm ${
+                  className={`pointer-events-none rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[9px] sm:text-xs font-bold backdrop-blur-sm ${
                     (model.condicion || "0KM") === "0KM"
                       ? "bg-emerald-500/90 text-white"
                       : "bg-orange-500/90 text-white"

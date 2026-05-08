@@ -53,34 +53,36 @@ export function TiendaClient({
   return (
     <>
       {/* Filters */}
-      <div className="mb-8 space-y-4">
-        {/* Category tabs */}
-        <div className="flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => setCategoriaId("TODAS")}
-            className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-              categoriaId === "TODAS"
-                ? "bg-[#6B4F7A] text-white"
-                : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
-            }`}
-          >
-            Todas ({productos.length})
-          </button>
-          {categorias
-            .filter((c) => c._count.productos > 0)
-            .map((cat) => (
-              <button
-                key={cat.id}
-                onClick={() => setCategoriaId(cat.id)}
-                className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                  categoriaId === cat.id
-                    ? "bg-[#6B4F7A] text-white"
-                    : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
-                }`}
-              >
-                {cat.nombre} ({cat._count.productos})
-              </button>
-            ))}
+      <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
+        {/* Category tabs - scroll horizontal en mobile */}
+        <div className="-mx-4 sm:mx-0 px-4 sm:px-0 overflow-x-auto sm:overflow-visible">
+          <div className="flex sm:flex-wrap justify-start sm:justify-center gap-2 min-w-max sm:min-w-0">
+            <button
+              onClick={() => setCategoriaId("TODAS")}
+              className={`shrink-0 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors ${
+                categoriaId === "TODAS"
+                  ? "bg-[#6B4F7A] text-white"
+                  : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
+              }`}
+            >
+              Todas ({productos.length})
+            </button>
+            {categorias
+              .filter((c) => c._count.productos > 0)
+              .map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setCategoriaId(cat.id)}
+                  className={`shrink-0 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors ${
+                    categoriaId === cat.id
+                      ? "bg-[#6B4F7A] text-white"
+                      : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
+                  }`}
+                >
+                  {cat.nombre} ({cat._count.productos})
+                </button>
+              ))}
+          </div>
         </div>
 
         {/* Search */}
@@ -105,12 +107,12 @@ export function TiendaClient({
           <p className="text-gray-500 dark:text-gray-400">No se encontraron productos con esos filtros.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
           {filtered.map((producto) => (
             <Link
               key={producto.id}
               href={`/tienda/${producto.slug}`}
-              className="group rounded-xl bg-white dark:bg-neutral-900 overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all flex flex-col"
+              className="group rounded-lg sm:rounded-xl bg-white dark:bg-neutral-900 overflow-hidden hover:shadow-lg hover:shadow-black/5 transition-all flex flex-col"
             >
               <div className="relative aspect-square bg-gray-100 dark:bg-neutral-800 overflow-hidden">
                 {producto.fotos[0] ? (
@@ -119,51 +121,51 @@ export function TiendaClient({
                     alt={producto.nombre}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full text-gray-300">
-                    <ShoppingBag className="size-12" />
+                    <ShoppingBag className="size-10 sm:size-12" />
                   </div>
                 )}
                 {producto.precioOferta && (
-                  <span className="absolute top-3 right-3 rounded-md bg-[#9B59B6] px-2.5 py-1 text-xs font-bold text-white">
+                  <span className="absolute top-2 right-2 sm:top-3 sm:right-3 rounded-md bg-[#9B59B6] px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[10px] sm:text-xs font-bold text-white">
                     OFERTA
                   </span>
                 )}
                 {producto.stock <= 0 && (
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <span className="rounded-md bg-white/90 dark:bg-neutral-900/90 px-3 py-1.5 text-sm font-semibold text-[#1A1A1A] dark:text-white">
+                    <span className="rounded-md bg-white/90 dark:bg-neutral-900/90 px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold text-[#1A1A1A] dark:text-white">
                       Sin stock
                     </span>
                   </div>
                 )}
               </div>
-              <div className="p-5 flex flex-col flex-1">
-                <p className="text-xs font-medium text-[#8B6F9A] uppercase tracking-wider">
+              <div className="p-3 sm:p-4 lg:p-5 flex flex-col flex-1">
+                <p className="text-[10px] sm:text-xs font-medium text-[#8B6F9A] uppercase tracking-wider truncate">
                   {producto.categoria.nombre}
                 </p>
-                <h3 className="mt-1 text-base font-semibold text-[#1A1A1A] dark:text-white line-clamp-2 flex-1">
+                <h3 className="mt-0.5 sm:mt-1 text-sm sm:text-base font-semibold text-[#1A1A1A] dark:text-white line-clamp-2 flex-1">
                   {producto.nombre}
                 </h3>
-                <div className="mt-3 flex items-center justify-between">
-                  <div>
+                <div className="mt-2 sm:mt-3 flex items-center justify-between gap-2">
+                  <div className="min-w-0 flex-1">
                     {producto.precioOferta ? (
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-[#6B4F7A]">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-0 sm:gap-2">
+                        <span className="text-sm sm:text-base lg:text-lg font-bold text-[#6B4F7A] truncate">
                           {formatPrice(producto.precioOferta)}
                         </span>
-                        <span className="text-sm text-gray-400 line-through">
+                        <span className="text-[11px] sm:text-sm text-gray-400 line-through truncate">
                           {formatPrice(producto.precio)}
                         </span>
                       </div>
                     ) : (
-                      <span className="text-lg font-bold text-[#6B4F7A]">
+                      <span className="text-sm sm:text-base lg:text-lg font-bold text-[#6B4F7A] truncate block">
                         {formatPrice(producto.precio)}
                       </span>
                     )}
                   </div>
-                  <span className="text-xs font-medium text-[#6B4F7A] group-hover:text-[#9B59B6] transition-colors">
+                  <span className="hidden sm:inline text-xs font-medium text-[#6B4F7A] group-hover:text-[#9B59B6] transition-colors whitespace-nowrap">
                     Ver &rarr;
                   </span>
                 </div>
