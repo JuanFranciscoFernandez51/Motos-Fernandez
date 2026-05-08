@@ -14,14 +14,16 @@ const GRAPH_API = "https://graph.facebook.com/v18.0"
 const FB_AUTH = "https://www.facebook.com/v18.0/dialog/oauth"
 
 // Permisos para publicar carruseles en IG y fotos en FB Page.
-// pages_read_engagement es requerido por FB para que el OAuth muestre
-// la pantalla de selección de páginas correctamente.
+// business_management es necesario porque la pagina vive dentro de
+// un Business Manager (lo confirmamos via /api/admin/meta/debug —
+// /me/accounts vacio + /me/businesses requiere ese permiso).
 const SCOPES = [
   "pages_show_list",
   "pages_read_engagement",
   "pages_manage_posts",
   "instagram_basic",
   "instagram_content_publish",
+  "business_management",
 ].join(",")
 
 function getEnv() {
