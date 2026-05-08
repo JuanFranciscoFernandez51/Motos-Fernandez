@@ -7,43 +7,51 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer"
 
+// Estilos compactos: el boleto debería caber en 1-2 hojas A4 incluso con
+// muchos pagos / permutas. Sin colores estridentes, padding reducido.
 const styles = StyleSheet.create({
-  page: { padding: 40, fontSize: 10, fontFamily: "Helvetica", color: "#1A1A1A" },
-  header: { borderBottom: "2px solid #6B4F7A", paddingBottom: 12, marginBottom: 16 },
+  page: { padding: 28, fontSize: 9, fontFamily: "Helvetica", color: "#1A1A1A" },
+  header: { borderBottom: "1.5px solid #6B4F7A", paddingBottom: 8, marginBottom: 10 },
   headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
-  logo: { width: 160, height: 58, objectFit: "contain" },
-  brandSub: { fontSize: 8, color: "#666", marginTop: 2 },
+  logo: { width: 130, height: 46, objectFit: "contain" },
+  brandSub: { fontSize: 7.5, color: "#666", marginTop: 1 },
   docInfo: { textAlign: "right" },
-  docTitle: { fontSize: 14, fontWeight: 700 },
-  docNumber: { fontSize: 11, color: "#6B4F7A", marginTop: 2 },
-  docDate: { fontSize: 8, color: "#666", marginTop: 2 },
+  docTitle: { fontSize: 12, fontWeight: 700 },
+  docNumber: { fontSize: 10, color: "#6B4F7A", marginTop: 1 },
+  docDate: { fontSize: 7.5, color: "#666", marginTop: 1 },
   h2: {
-    fontSize: 11, fontWeight: 700, color: "#6B4F7A",
-    textTransform: "uppercase", marginTop: 14, marginBottom: 6,
-    borderBottom: "1px solid #E5E5E5", paddingBottom: 3,
+    fontSize: 9.5, fontWeight: 700, color: "#6B4F7A",
+    textTransform: "uppercase", marginTop: 8, marginBottom: 3,
+    borderBottom: "1px solid #E5E5E5", paddingBottom: 2,
   },
-  row: { flexDirection: "row", marginBottom: 4 },
-  label: { width: 120, color: "#666", fontWeight: 700 },
+  row: { flexDirection: "row", marginBottom: 2 },
+  label: { width: 100, color: "#666", fontWeight: 700 },
   value: { flex: 1 },
-  twoCol: { flexDirection: "row", justifyContent: "space-between", gap: 20 },
+  twoCol: { flexDirection: "row", justifyContent: "space-between", gap: 16 },
   col: { flex: 1 },
-  priceBox: {
-    marginTop: 10, padding: 12, backgroundColor: "#6B4F7A", color: "#fff",
-    borderRadius: 4,
+  // Línea de precio: ahora va inline, no banner gigante
+  priceLine: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 6,
+    backgroundColor: "#F3EEF7",
+    borderLeft: "3px solid #6B4F7A",
+    borderRadius: 2,
   },
-  priceLabel: { fontSize: 9, textTransform: "uppercase", opacity: 0.8 },
-  priceValue: { fontSize: 18, fontWeight: 700, marginTop: 2 },
+  priceLineLabel: { fontSize: 9, fontWeight: 700, color: "#6B4F7A" },
+  priceLineValue: { fontSize: 11, fontWeight: 700, color: "#6B4F7A" },
   // Tabla de pagos
   tableHeader: {
     flexDirection: "row",
     backgroundColor: "#F3EEF7",
-    borderTopLeftRadius: 3,
-    borderTopRightRadius: 3,
-    padding: 6,
-    marginTop: 4,
+    padding: 4,
+    marginTop: 3,
   },
   tableHeaderCell: {
-    fontSize: 8,
+    fontSize: 7.5,
     fontWeight: 700,
     color: "#6B4F7A",
     textTransform: "uppercase",
@@ -51,87 +59,79 @@ const styles = StyleSheet.create({
   tableRow: {
     flexDirection: "row",
     borderBottom: "1px solid #EFEFEF",
-    padding: 6,
+    padding: 4,
   },
-  tableCell: { fontSize: 9 },
+  tableCell: { fontSize: 8.5 },
   tableTotalRow: {
     flexDirection: "row",
     backgroundColor: "#F8F5FA",
-    padding: 6,
-    marginTop: 2,
+    padding: 4,
   },
-  tableTotalCell: { fontSize: 9, fontWeight: 700, color: "#6B4F7A" },
+  tableTotalCell: { fontSize: 8.5, fontWeight: 700, color: "#6B4F7A" },
   // Permuta - cuadro detallado por cada permuta
   permutaBox: {
-    marginTop: 6,
-    padding: 8,
+    marginTop: 4,
+    padding: 6,
     backgroundColor: "#FAF5FE",
-    borderLeft: "3px solid #9333EA",
-    borderRadius: 3,
+    borderLeft: "2px solid #9333EA",
+    borderRadius: 2,
   },
   permutaTitle: {
-    fontSize: 9,
-    fontWeight: 700,
-    color: "#7E22CE",
-    marginBottom: 3,
+    fontSize: 8.5, fontWeight: 700, color: "#7E22CE", marginBottom: 2,
   },
-  permutaSubrow: { flexDirection: "row", marginBottom: 2 },
-  permutaLabel: { width: 70, color: "#7E22CE", fontSize: 8 },
-  permutaValue: { flex: 1, fontSize: 8 },
+  permutaSubrow: { flexDirection: "row", marginBottom: 1 },
+  permutaLabel: { width: 60, color: "#7E22CE", fontSize: 7.5 },
+  permutaValue: { flex: 1, fontSize: 7.5 },
   // Financiación
   finBox: {
-    marginTop: 10, padding: 10, backgroundColor: "#EFF6FF",
-    borderLeft: "3px solid #2563EB", borderRadius: 3,
+    marginTop: 6, padding: 6, backgroundColor: "#EFF6FF",
+    borderLeft: "2px solid #2563EB", borderRadius: 2,
   },
-  finTitle: {
-    fontSize: 10, fontWeight: 700, color: "#1E40AF", marginBottom: 6,
-  },
-  finRow: { flexDirection: "row", marginBottom: 3 },
-  finLabel: { width: 120, color: "#1E40AF", fontWeight: 700 },
+  finTitle: { fontSize: 9, fontWeight: 700, color: "#1E40AF", marginBottom: 3 },
+  finRow: { flexDirection: "row", marginBottom: 2 },
+  finLabel: { width: 110, color: "#1E40AF", fontWeight: 700 },
   finValue: { flex: 1 },
   finHighlight: {
-    marginTop: 6, padding: 6, backgroundColor: "#DBEAFE",
+    marginTop: 3, padding: 4, backgroundColor: "#DBEAFE",
     borderRadius: 2, flexDirection: "row", justifyContent: "space-between",
   },
-  finHighlightLabel: { fontWeight: 700, color: "#1E3A8A" },
-  finHighlightValue: { fontWeight: 700, color: "#1E3A8A" },
+  finHighlightLabel: { fontWeight: 700, color: "#1E3A8A", fontSize: 8.5 },
+  finHighlightValue: { fontWeight: 700, color: "#1E3A8A", fontSize: 8.5 },
   garanteBox: {
-    marginTop: 8, padding: 8, backgroundColor: "#F0FDF4",
-    borderLeft: "3px solid #16A34A", borderRadius: 3,
+    marginTop: 4, padding: 5, backgroundColor: "#F0FDF4",
+    borderLeft: "2px solid #16A34A", borderRadius: 2,
   },
-  garanteTitle: {
-    fontSize: 9, fontWeight: 700, color: "#15803D", marginBottom: 4,
-  },
-  garanteRow: { flexDirection: "row", marginBottom: 2 },
-  garanteLabel: { width: 80, color: "#15803D", fontSize: 8, fontWeight: 700 },
-  garanteValue: { flex: 1, fontSize: 8 },
+  garanteTitle: { fontSize: 8.5, fontWeight: 700, color: "#15803D", marginBottom: 2 },
+  garanteRow: { flexDirection: "row", marginBottom: 1 },
+  garanteLabel: { width: 75, color: "#15803D", fontSize: 7.5, fontWeight: 700 },
+  garanteValue: { flex: 1, fontSize: 7.5 },
   // Resumen totales
   resumenBox: {
-    marginTop: 10, padding: 8, backgroundColor: "#F8F5FA",
-    borderRadius: 3,
+    marginTop: 6, padding: 6, backgroundColor: "#F8F5FA",
+    borderRadius: 2,
   },
   resumenRow: {
-    flexDirection: "row", justifyContent: "space-between", marginBottom: 2,
+    flexDirection: "row", justifyContent: "space-between", marginBottom: 1,
   },
-  resumenLabel: { fontSize: 9, color: "#666" },
-  resumenValue: { fontSize: 9, fontWeight: 700 },
+  resumenLabel: { fontSize: 8.5, color: "#666" },
+  resumenValue: { fontSize: 8.5, fontWeight: 700 },
   resumenTotalRow: {
     flexDirection: "row", justifyContent: "space-between",
-    borderTop: "1px solid #6B4F7A", paddingTop: 4, marginTop: 4,
+    borderTop: "1px solid #6B4F7A", paddingTop: 3, marginTop: 3,
   },
-  resumenTotalLabel: { fontSize: 10, fontWeight: 700, color: "#6B4F7A" },
-  resumenTotalValue: { fontSize: 10, fontWeight: 700, color: "#6B4F7A" },
-  terms: { marginTop: 18, padding: 10, backgroundColor: "#F8F5FA", fontSize: 8, lineHeight: 1.5 },
-  termsTitle: { fontWeight: 700, marginBottom: 4, fontSize: 9, color: "#6B4F7A" },
-  termsItem: { marginBottom: 3 },
-  signatures: { flexDirection: "row", justifyContent: "space-between", marginTop: 30, gap: 30 },
-  signBox: { flex: 1, textAlign: "center", borderTop: "1px solid #1A1A1A", paddingTop: 5 },
+  resumenTotalLabel: { fontSize: 9.5, fontWeight: 700, color: "#6B4F7A" },
+  resumenTotalValue: { fontSize: 9.5, fontWeight: 700, color: "#6B4F7A" },
+  terms: { marginTop: 8, padding: 6, backgroundColor: "#F8F5FA", fontSize: 7.5, lineHeight: 1.3 },
+  termsTitle: { fontWeight: 700, marginBottom: 2, fontSize: 8.5, color: "#6B4F7A" },
+  termsItem: { marginBottom: 2 },
+  signatures: { flexDirection: "row", justifyContent: "space-between", marginTop: 22, gap: 24 },
+  signBox: { flex: 1, textAlign: "center", borderTop: "1px solid #1A1A1A", paddingTop: 4 },
   signLabel: { fontSize: 8, fontWeight: 700 },
-  signSub: { fontSize: 7, color: "#666", marginTop: 2 },
+  signSub: { fontSize: 7, color: "#666", marginTop: 1 },
   footer: {
-    position: "absolute", bottom: 20, left: 40, right: 40,
-    textAlign: "center", fontSize: 7, color: "#999",
-    borderTop: "1px solid #E5E5E5", paddingTop: 6,
+    position: "absolute", bottom: 12, left: 28, right: 28,
+    textAlign: "center", fontSize: 6.5, color: "#999",
+    borderTop: "1px solid #E5E5E5", paddingTop: 4,
   },
 })
 
@@ -350,9 +350,9 @@ export function OCPDF({ data }: { data: OCPDFData }) {
           </View>
         </View>
 
-        <View style={styles.priceBox}>
-          <Text style={styles.priceLabel}>Precio total de venta</Text>
-          <Text style={styles.priceValue}>
+        <View style={styles.priceLine}>
+          <Text style={styles.priceLineLabel}>PRECIO TOTAL DE VENTA</Text>
+          <Text style={styles.priceLineValue}>
             {money(data.economico.precioVenta, moneda)}
           </Text>
         </View>
