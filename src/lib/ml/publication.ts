@@ -164,6 +164,14 @@ export async function publicarOActualizar(modeloId: string): Promise<{
     const fotosPublicas = m.fotos
       .filter((url) => /^https?:\/\//i.test(url))
       .slice(0, 12)
+      // Cloudinary: forzar JPG optimizado max 1600px. Necesario porque
+      // muchas fotos del catalogo son HEIC del iPhone que ML no procesa
+      // bien sin conversion.
+      .map((url) =>
+        url.includes("res.cloudinary.com")
+          ? url.replace(/\/upload\//, "/upload/f_jpg,q_auto:good,w_1600,c_limit/")
+          : url
+      )
 
     // Si el color es multi (ej "Negra, azul y roja"), tomamos solo el primero
     // y lo normalizamos a la lista válida de ML (capitalizando primera letra).
