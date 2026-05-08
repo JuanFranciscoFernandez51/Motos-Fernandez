@@ -119,7 +119,7 @@ export function ModeloForm({
   )
   const [observaciones, setObservaciones] = useState(initialData?.observaciones || "")
   const [cilindrada, setCilindrada] = useState(initialData?.cilindrada || "")
-  const [transmision, setTransmision] = useState(initialData?.transmision || "")
+  const [transmision, setTransmision] = useState(initialData?.transmision || "Manual")
   const [combustible, setCombustible] = useState(initialData?.combustible || "Nafta")
   const [color, setColor] = useState(initialData?.color || "")
   const [precio, setPrecio] = useState(
