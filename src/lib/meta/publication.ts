@@ -29,7 +29,7 @@ function urlIG(url: string): string {
   )
 }
 
-async function generarCaption(moto: {
+type MotoCaption = {
   marca: string
   nombre: string
   anio: number | null
@@ -39,53 +39,114 @@ async function generarCaption(moto: {
   moneda: string
   kilometros: number | null
   potenciaHp: number | null
-}): Promise<string> {
+  tipoMotor: string | null
+  frenos: string | null
+  combustible: string | null
+  transmision: string | null
+}
+
+/** Genera SOLO la descripción atractiva (2-3 oraciones) con IA. */
+async function generarDescripcion(moto: MotoCaption): Promise<string> {
   const titulo = `${moto.marca} ${moto.nombre}${moto.anio ? ` ${moto.anio}` : ""}`
   const condicion = moto.condicion === "0KM" ? "0 km a estrenar" : "usada"
-  const km =
-    moto.kilometros != null ? `${moto.kilometros.toLocaleString("es-AR")} km` : ""
-  const precio =
-    moto.precio != null
-      ? `${moto.moneda === "USD" ? "USD " : "$"}${moto.precio.toLocaleString("es-AR")}`
-      : null
 
   const prompt = `Sos copywriter para Instagram de una concesionaria de motos en Bahía Blanca, Argentina.
 
 MOTO: ${titulo}
-Condición: ${condicion}${km ? ` (${km})` : ""}
+Condición: ${condicion}
 Cilindrada: ${moto.cilindrada || "—"}
 Potencia: ${moto.potenciaHp ? moto.potenciaHp + " HP" : "—"}
-Precio: ${precio || "consultar"}
+Frenos: ${moto.frenos || "—"}
 
-Generá un caption para Instagram. ESTRUCTURA EXACTA:
-
-Línea 1: hook con emoji al inicio, máx 8 palabras (ej "🏁 Llega la nueva XXX")
-Línea 2: en blanco
-Líneas 3-5: descripción seductora (2-3 oraciones cortas, mencioná specs clave traducidas a beneficios)
-Línea 6: en blanco
-Línea 7: precio + cuotas (ej "💰 Desde ${precio || "$consultar"} | 36 cuotas")
-Línea 8: en blanco
-Línea 9: CTA con emoji (ej "📲 Consultanos por WhatsApp +54 9 291 578 8671")
-Línea 10: en blanco
-Línea 11: hashtags (8-12 hashtags relevantes en una sola línea)
-
-REGLAS:
-- Tono: argentino informal pero profesional, vos en lugar de tú
-- Usá emojis pero sin exagerar (max 1 por línea)
-- Hashtags relevantes: marca de la moto, modelo, tipo (#enduro/#deportiva/etc), #motos, #bahiablanca, #motosfernandez, #motosbahia
-- NO inventes specs que no te di
-- Total: máximo 200 palabras
-
-Devolvé SOLO el caption, sin comentarios ni comillas envolventes.`
+Generá un párrafo BREVE y ATRACTIVO (2-3 oraciones, máx 50 palabras) que invite a consultar.
+Tono: argentino, vos en lugar de tú, profesional pero cercano.
+NO uses emojis. NO menciones precio, contacto, hashtags ni datos del negocio (eso lo agrego yo).
+NO inventes specs que no te di.
+Devolvé SOLO el párrafo, sin comillas, sin títulos, sin nada más.`
 
   const response = await anthropic.messages.create({
     model: "claude-sonnet-4-5",
-    max_tokens: 600,
+    max_tokens: 200,
     messages: [{ role: "user", content: prompt }],
   })
   const block = response.content[0]
-  if (block.type !== "text") throw new Error("Respuesta IA inválida")
+  if (block.type !== "text") return ""
   return block.text.trim().replace(/^["']|["']$/g, "")
+}
+
+/** Genera hashtags específicos para la moto. */
+function generarHashtags(moto: MotoCaption): string[] {
+  const slug = (s: string) =>
+    s.toLowerCase()
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]/g, "")
+  const tags = new Set<string>([
+    "motosfernandez",
+    "motosbahia",
+    "bahiablanca",
+    "motos",
+    "motoargentina",
+    "motoscompralocal",
+  ])
+  if (moto.marca) tags.add(slug(moto.marca))
+  if (moto.nombre) tags.add(slug(moto.marca + moto.nombre).slice(0, 30))
+  if (moto.condicion === "0KM") tags.add("0km")
+  return Array.from(tags).slice(0, 12).map((t) => "#" + t)
+}
+
+/** Arma el caption completo con estructura fija. */
+async function generarCaption(moto: MotoCaption): Promise<string> {
+  const titulo = `${moto.marca} ${moto.nombre}${moto.anio ? ` ${moto.anio}` : ""}`
+  const precio =
+    moto.precio != null
+      ? `${moto.moneda === "USD" ? "USD " : "$"}${moto.precio.toLocaleString("es-AR")}`
+      : "Consultar"
+  const km =
+    moto.kilometros != null
+      ? moto.kilometros.toLocaleString("es-AR") + " km"
+      : moto.condicion === "0KM"
+        ? "0 km (a estrenar)"
+        : "—"
+
+  // Generamos solo el cuerpo descriptivo con IA — el resto programático
+  const descripcion = await generarDescripcion(moto).catch(() => "")
+
+  // Ficha técnica con bullets
+  const ficha: string[] = [
+    `• Marca: ${moto.marca}`,
+    `• Modelo: ${moto.nombre}`,
+  ]
+  if (moto.anio) ficha.push(`• Año: ${moto.anio}`)
+  ficha.push(`• Kilómetros: ${km}`)
+  if (moto.cilindrada) ficha.push(`• Cilindrada: ${moto.cilindrada}`)
+  if (moto.potenciaHp) ficha.push(`• Potencia: ${moto.potenciaHp} HP`)
+  if (moto.tipoMotor) ficha.push(`• Motor: ${moto.tipoMotor}`)
+  if (moto.frenos) ficha.push(`• Frenos: ${moto.frenos}`)
+  if (moto.transmision) ficha.push(`• Transmisión: ${moto.transmision}`)
+
+  const hashtags = generarHashtags(moto).join(" ")
+
+  return [
+    `🏁 ${titulo}`,
+    "",
+    descripcion || `${moto.marca} ${moto.nombre} disponible en stock.`,
+    "",
+    "📋 Ficha técnica:",
+    ...ficha,
+    "",
+    `💰 Precio: ${precio}`,
+    "💳 Hasta 36 cuotas | Aceptamos tu moto en parte de pago",
+    "",
+    "━━━━━━━━━━━━━━━",
+    "📍 MOTOS FERNÁNDEZ",
+    "Brown 1052, Bahía Blanca",
+    "📞 WhatsApp +54 9 291 578 8671",
+    "🕐 Lunes a Viernes de 9 a 17 hs",
+    "🌐 motosfernandez.com.ar",
+    "",
+    hashtags,
+  ].join("\n")
 }
 
 type IGMediaResponse = { id: string }
@@ -155,6 +216,10 @@ export async function publicarEnMeta(
       moneda: true,
       kilometros: true,
       potenciaHp: true,
+      tipoMotor: true,
+      frenos: true,
+      combustible: true,
+      transmision: true,
       fotos: true,
       igPostId: true,
     },
@@ -181,7 +246,10 @@ export async function publicarEnMeta(
 
   try {
     const caption = await generarCaption(m).catch(
-      () => `${m.marca} ${m.nombre}${m.anio ? ` ${m.anio}` : ""}`
+      (e) => {
+        console.warn("[Meta] generarCaption falló, usando fallback:", e)
+        return `${m.marca} ${m.nombre}${m.anio ? ` ${m.anio}` : ""}\n\nMotos Fernández - Bahía Blanca\nWhatsApp +54 9 291 578 8671`
+      }
     )
 
     // 1) Subir cada foto como carousel_item → recibimos creation_ids
