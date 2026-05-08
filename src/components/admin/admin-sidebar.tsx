@@ -118,6 +118,7 @@ const navEntries: NavEntry[] = [
       { href: "/admin/cupones", label: "Cupones", icon: Ticket },
       { href: "/admin/promociones", label: "Promociones", icon: Megaphone },
       { href: "/admin/financiacion", label: "Planes financiación", icon: CreditCard },
+      { href: "/admin/ml", label: "Mercado Libre", icon: ShoppingBag },
     ],
   },
 

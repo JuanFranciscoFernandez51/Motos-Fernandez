@@ -23,6 +23,10 @@ export async function middleware(request: NextRequest) {
       "/api/admin/backup",
       "/api/admin/backup-sheets",
       "/api/admin/backup-check",
+      // Mercado Libre: callback (lo llama ML al volver del OAuth, sin cookie)
+      // y webhook (lo llama ML al haber novedades en items/orders/questions).
+      "/api/admin/ml/callback",
+      "/api/admin/ml/webhook",
     ]
     if (bearerAuthPaths.some((p) => pathname === p || pathname.startsWith(p + "/"))) {
       return NextResponse.next()

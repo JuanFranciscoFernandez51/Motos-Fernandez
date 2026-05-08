@@ -79,6 +79,13 @@ model Modelo {
   ocComoMotoRecibida OrdenCompra[] @relation("MotoRecibidaOC")
   ocPermuta      OCPermuta? @relation("OCPermutaMotoRecibida")
   ordenesTrabajo OrdenTrabajo[]
+
+  // Mercado Libre
+  mlListingId   String?    @unique  // MLA1234567890
+  mlPermalink   String?              // url publica de la publicacion
+  mlEstado      String?              // "active" | "paused" | "closed"
+  mlUltimaSync  DateTime?            // ultima vez que sincronizamos
+  mlError       String?    @db.Text  // si hubo error en la ultima sync
 }
 
 enum CategoriaVehiculo {
@@ -935,6 +942,27 @@ enum EstadoPresupuesto {
   ACEPTADO     // cliente aprobó (idealmente se convierte en OT)
   RECHAZADO    // cliente rechazó
   VENCIDO      // pasó la validezDias sin respuesta
+}
+
+// ==================== MERCADO LIBRE ====================
+// Tabla de configuracion: una sola fila (id="default") con el token OAuth.
+// El token expira cada 6h pero se renueva con el refreshToken automaticamente.
+
+model MLConfig {
+  id            String    @id @default("default")
+  userId        String?              // ID del usuario en ML (despues del OAuth)
+  nickname      String?              // nombre de usuario en ML
+  email         String?
+  accessToken   String?   @db.Text
+  refreshToken  String?   @db.Text
+  expiresAt     DateTime?
+  scope         String?
+  // Site (MLA = Argentina)
+  siteId        String    @default("MLA")
+  // Webhook log: ultimo received para diagnosticar
+  ultimoWebhook DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 }
 
 // ==================== TIPOS DE SERVICIO (TALLER) ====================
