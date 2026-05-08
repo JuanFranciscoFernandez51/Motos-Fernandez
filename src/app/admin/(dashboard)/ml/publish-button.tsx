@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
-import { Loader2, RefreshCw, AlertCircle, RotateCcw } from "lucide-react"
+import { Loader2, RefreshCw, AlertCircle, RotateCcw, Trash2 } from "lucide-react"
 
 const TIPO_LABELS: Record<string, string> = {
   free: "Gratis",
@@ -91,6 +91,34 @@ export function PublishButton({
     }
   }
 
+  const handleEliminar = async () => {
+    if (
+      !confirm(
+        "Va a CERRAR la publicación en Mercado Libre y la moto va a quedar como 'no publicada' en el admin.\n\nDespués podés volver a publicarla cuando quieras.\n\n¿Confirmás?"
+      )
+    ) {
+      return
+    }
+    setError(null)
+    setLoading(true)
+    try {
+      const res = await fetch(
+        `/api/admin/ml/publish/${modeloId}?action=delete`,
+        { method: "POST" }
+      )
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data.ok) {
+        setError(data.error || `Error ${res.status}`)
+        return
+      }
+      startTransition(() => router.refresh())
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error de conexión")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="inline-flex flex-col items-end gap-1 max-w-[300px]">
       <div className="inline-flex items-center gap-1">
@@ -119,15 +147,26 @@ export function PublishButton({
           {yaPublicada ? "Actualizar" : "Publicar"}
         </button>
         {yaPublicada && (
-          <button
-            type="button"
-            onClick={handleRepublicar}
-            disabled={loading || isPending}
-            className="inline-flex items-center justify-center size-7 rounded-md border border-gray-200 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-900 disabled:opacity-50"
-            title="Re-publicar (cierra la actual y crea una nueva con datos actualizados). Pierde antigüedad — usar solo si necesitás cambiar descripción."
-          >
-            <RotateCcw className="size-3" />
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={handleRepublicar}
+              disabled={loading || isPending}
+              className="inline-flex items-center justify-center size-7 rounded-md border border-gray-200 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-900 disabled:opacity-50"
+              title="Re-publicar (cierra la actual y crea una nueva con datos actualizados). Pierde antigüedad — usar solo si necesitás cambiar descripción."
+            >
+              <RotateCcw className="size-3" />
+            </button>
+            <button
+              type="button"
+              onClick={handleEliminar}
+              disabled={loading || isPending}
+              className="inline-flex items-center justify-center size-7 rounded-md border border-red-200 dark:border-red-900/50 text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 disabled:opacity-50"
+              title="Borrar publicación de ML (la moto queda 'no publicada' en el admin)"
+            >
+              <Trash2 className="size-3" />
+            </button>
+          </>
         )}
         {error && (
           <button

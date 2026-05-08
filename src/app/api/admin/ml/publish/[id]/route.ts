@@ -4,6 +4,7 @@ import {
   publicarOActualizar,
   pausarPublicacion,
   cerrarPublicacion,
+  eliminarPublicacion,
   republicar,
 } from "@/lib/ml/publication"
 
@@ -33,6 +34,7 @@ export async function POST(
   let result
   if (action === "pause") result = await pausarPublicacion(id)
   else if (action === "close") result = await cerrarPublicacion(id)
+  else if (action === "delete") result = await eliminarPublicacion(id)
   else if (action === "republish") result = await republicar(id)
   else result = await publicarOActualizar(id)
 

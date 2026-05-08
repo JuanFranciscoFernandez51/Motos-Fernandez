@@ -571,6 +571,43 @@ export async function pausarPublicacion(modeloId: string) {
 }
 
 /**
+ * Borra la publicación: la cierra en ML y resetea los campos ML en
+ * nuestro DB para que la moto quede como "no publicada". Eso libera el
+ * botón "Publicar" para crear una nueva publicación más tarde.
+ *
+ * Distinto de cerrarPublicacion() que solo cierra pero deja el listing
+ * marcado en DB.
+ */
+export async function eliminarPublicacion(modeloId: string) {
+  const m = await prisma.modelo.findUnique({
+    where: { id: modeloId },
+    select: { mlListingId: true },
+  })
+  if (!m?.mlListingId) {
+    return { ok: false, error: "No tiene publicación en ML" }
+  }
+  // Intentar cerrar en ML. Si falla (ej. ya estaba closed o ML no responde)
+  // seguimos igual con el reset del DB — la idea es que la moto quede
+  // limpia desde nuestra perspectiva.
+  try {
+    await mlPut(`/items/${m.mlListingId}`, { status: "closed" })
+  } catch (e) {
+    console.warn("[ML] No se pudo cerrar la publicación:", e)
+  }
+  await prisma.modelo.update({
+    where: { id: modeloId },
+    data: {
+      mlListingId: null,
+      mlPermalink: null,
+      mlEstado: null,
+      mlError: null,
+      mlUltimaSync: new Date(),
+    },
+  })
+  return { ok: true }
+}
+
+/**
  * Cierra (despublica) la publicación. status=closed.
  */
 export async function cerrarPublicacion(modeloId: string) {
