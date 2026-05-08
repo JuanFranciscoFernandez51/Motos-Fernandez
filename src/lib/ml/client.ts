@@ -11,12 +11,11 @@ function getEnv() {
   if (!clientId || !clientSecret) {
     throw new Error("Faltan ML_CLIENT_ID o ML_CLIENT_SECRET en env vars")
   }
-  // Redirect URI: tiene que coincidir EXACTO con la que pegaste en developers.ml
-  // Por defecto la armamos del NEXTAUTH_URL o un override.
-  const baseUrl =
-    process.env.ML_REDIRECT_BASE ||
-    process.env.NEXTAUTH_URL ||
-    "https://www.motosfernandez.com.ar"
+  // Redirect URI: tiene que coincidir EXACTO con el que pegaste en
+  // developers.ml. Hardcodeado al dominio bueno (NEXTAUTH_URL apunta al
+  // viejo de Vercel y rompia el OAuth con redirect_uri_mismatch).
+  // Override con env var ML_REDIRECT_BASE si algun dia cambias dominio.
+  const baseUrl = process.env.ML_REDIRECT_BASE || "https://www.motosfernandez.com.ar"
   const redirectUri = `${baseUrl}/api/admin/ml/callback`
   return { clientId, clientSecret, redirectUri }
 }
