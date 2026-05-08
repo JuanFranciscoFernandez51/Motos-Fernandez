@@ -105,20 +105,23 @@ const navEntries: NavEntry[] = [
       { href: "/admin/tesoreria/financiaciones", label: "Financiaciones", icon: CreditCard },
     ],
   },
+  // CRM y Mercado Libre quedan como entradas top-level (fuera de Marketing)
+  // porque son herramientas operativas, no campañas.
+  { href: "/admin/crm", label: "CRM / Leads", icon: Users },
+  { href: "/admin/ml", label: "Mercado Libre", icon: ShoppingBag },
+
   // Marketing y comunicación
   {
     id: "marketing",
     label: "Marketing",
     icon: Megaphone,
     items: [
-      { href: "/admin/crm", label: "CRM / Leads", icon: Users },
       { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
       { href: "/admin/noticias", label: "Noticias", icon: Newspaper },
       { href: "/admin/testimonios", label: "Testimonios", icon: MessageCircleHeart },
       { href: "/admin/cupones", label: "Cupones", icon: Ticket },
       { href: "/admin/promociones", label: "Promociones", icon: Megaphone },
       { href: "/admin/financiacion", label: "Planes financiación", icon: CreditCard },
-      { href: "/admin/ml", label: "Mercado Libre", icon: ShoppingBag },
     ],
   },
 

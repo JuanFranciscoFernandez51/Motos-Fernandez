@@ -9,6 +9,7 @@ import { formatDate, formatMoney } from "@/lib/admin-helpers"
 import { PublishButton } from "./publish-button"
 import { BulkPublishButton } from "./bulk-publish-button"
 import { RefreshStatusButton } from "./refresh-status-button"
+import { ClearErrorsButton } from "./clear-errors-button"
 
 export const dynamic = "force-dynamic"
 
@@ -152,7 +153,12 @@ export default async function MLAdminPage({
       {conError.length > 0 && (
         <Card className="border-red-200">
           <CardHeader>
-            <CardTitle className="text-red-700 dark:text-red-300">Motos con error en la última sincronización ({conError.length})</CardTitle>
+            <div className="flex items-center justify-between gap-3 flex-wrap">
+              <CardTitle className="text-red-700 dark:text-red-300">
+                Motos con error en la última sincronización ({conError.length})
+              </CardTitle>
+              <ClearErrorsButton count={conError.length} />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
