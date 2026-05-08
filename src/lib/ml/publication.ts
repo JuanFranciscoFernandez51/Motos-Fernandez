@@ -125,14 +125,57 @@ export async function publicarOActualizar(modeloId: string): Promise<{
   try {
     // Si ya existe la publicación, hacemos UPDATE
     if (m.mlListingId) {
-      const update = await mlPut<{ id: string; permalink: string; status: string }>(
-        `/items/${m.mlListingId}`,
-        {
-          price: m.precio,
-          // available_quantity: 1 (motos son piezas únicas; se infiere)
-          // Para cambiar fotos, ML requiere endpoint diferente; lo dejamos para futuro
-        }
-      )
+      // 1) Consultamos el estado actual real en ML. Nuestro DB puede estar
+      //    desactualizado: una moto que dejamos como "paused" puede haber
+      //    pasado a "under_review" (ML revisando) y en ese estado NO se
+      //    puede modificar nada (tira "item.price.not_modifiable").
+      let estadoActual: string | undefined
+      try {
+        const cur = await mlGet<{ status: string }>(
+          `/items/${m.mlListingId}?attributes=status`
+        )
+        estadoActual = cur?.status
+      } catch {
+        // si la GET falla, seguimos al PUT y veremos el error real ahí
+      }
+
+      // 2) Estados en los que ML no permite editar el item.
+      const NO_EDITABLE = new Set([
+        "under_review",
+        "payment_required",
+        "inactive",
+      ])
+      if (estadoActual && NO_EDITABLE.has(estadoActual)) {
+        const msg =
+          estadoActual === "under_review"
+            ? "Mercado Libre está revisando esta publicación (under_review). No se puede modificar hasta que ML termine la revisión, puede tardar varias horas."
+            : `La publicación está en estado "${estadoActual}" y ML no permite modificarla.`
+        await prisma.modelo
+          .update({
+            where: { id: m.id },
+            data: {
+              mlEstado: estadoActual,
+              mlError: msg.slice(0, 500),
+              mlUltimaSync: new Date(),
+            },
+          })
+          .catch(() => null)
+        return { ok: false, error: msg }
+      }
+
+      // 3) Construir payload. Si está pausada, la reactivamos en el mismo
+      //    PUT (intent del usuario al hacer click en "Actualizar" suele ser
+      //    relistarla). Si está active, solo cambiamos lo que cambió.
+      const payload: Record<string, unknown> = { price: m.precio }
+      if (estadoActual === "paused" || estadoActual === "closed") {
+        payload.status = "active"
+      }
+
+      const update = await mlPut<{
+        id: string
+        permalink: string
+        status: string
+      }>(`/items/${m.mlListingId}`, payload)
       // Actualizar descripción si cambió
       if (m.descripcion) {
         await mlPut(`/items/${m.mlListingId}/description`, {
@@ -275,6 +318,66 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       .catch(() => null)
     return { ok: false, error: msg }
   }
+}
+
+/**
+ * Refresca el estado de las motos publicadas en ML sin modificarlas.
+ * Útil cuando ML cambió el estado por su lado (ej: under_review → active,
+ * o paused por baja calidad de fotos) y nuestro cache quedó desactualizado.
+ * Si modeloIds es undefined, refresca todas las que tengan mlListingId.
+ */
+export async function refrescarEstadoML(modeloIds?: string[]): Promise<{
+  ok: boolean
+  total: number
+  actualizadas: number
+  errores: number
+}> {
+  const motos = await prisma.modelo.findMany({
+    where: {
+      mlListingId: { not: null },
+      ...(modeloIds && modeloIds.length > 0 ? { id: { in: modeloIds } } : {}),
+    },
+    select: { id: true, mlListingId: true, mlEstado: true },
+  })
+  let actualizadas = 0
+  let errores = 0
+  for (const m of motos) {
+    if (!m.mlListingId) continue
+    try {
+      const cur = await mlGet<{ status: string; permalink?: string }>(
+        `/items/${m.mlListingId}?attributes=status,permalink`
+      )
+      if (cur?.status) {
+        await prisma.modelo.update({
+          where: { id: m.id },
+          data: {
+            mlEstado: cur.status,
+            mlPermalink: cur.permalink ?? undefined,
+            mlUltimaSync: new Date(),
+            // Si volvió a estado bueno, limpiamos el último error
+            ...(cur.status === "active" || cur.status === "paused"
+              ? { mlError: null }
+              : {}),
+          },
+        })
+        actualizadas++
+      }
+    } catch (e) {
+      errores++
+      await prisma.modelo
+        .update({
+          where: { id: m.id },
+          data: {
+            mlError: (e instanceof Error ? e.message : "Error refrescando estado").slice(0, 500),
+            mlUltimaSync: new Date(),
+          },
+        })
+        .catch(() => null)
+    }
+    // pausa breve para no saturar a ML
+    await new Promise((r) => setTimeout(r, 300))
+  }
+  return { ok: true, total: motos.length, actualizadas, errores }
 }
 
 /**

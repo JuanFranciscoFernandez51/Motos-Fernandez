@@ -8,6 +8,7 @@ import { CheckCircle2, AlertCircle, Link as LinkIcon, ExternalLink, RefreshCw } 
 import { formatDate, formatMoney } from "@/lib/admin-helpers"
 import { PublishButton } from "./publish-button"
 import { BulkPublishButton } from "./bulk-publish-button"
+import { RefreshStatusButton } from "./refresh-status-button"
 
 export const dynamic = "force-dynamic"
 
@@ -173,7 +174,10 @@ export default async function MLAdminPage({
         <Card>
           <CardHeader>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <CardTitle>Motos del catálogo</CardTitle>
+              <div className="flex items-center gap-3 flex-wrap">
+                <CardTitle>Motos del catálogo</CardTitle>
+                <RefreshStatusButton />
+              </div>
               {sinPublicar.length > 0 && (
                 <BulkPublishButton
                   pendientes={sinPublicar.map((m) => ({
