@@ -330,19 +330,16 @@ export async function publicarOActualizar(modeloId: string): Promise<{
         ...(m.potenciaHp != null
           ? [{ id: "POWER", value_name: `${m.potenciaHp} HP` }]
           : []),
-        // Booleans (Sí/No) — ML usa value_name capitalizado con tilde
-        { id: "HAS_MANUFACTURER_WARRANTY", value_name: m.garantiaFabrica ? "Sí" : "No" },
+        // ACCEPTS_TRADE y HAS_ALARM sí existen en MLA1763.
+        // Los siguientes los descartamos porque ML los rechaza con
+        // "Attribute X was dropped because does not exists" en MLA1763:
+        // HAS_MANUFACTURER_WARRANTY, IS_PRICE_NEGOTIABLE, HAS_SINGLE_OWNER,
+        // HAS_USB_INPUT, NUMBER_OF_SPEEDS, FUEL_CONSUMPTION, WHEEL_BASE.
+        // Los mantenemos en nuestro DB y form para uso interno / web pública,
+        // pero no los enviamos a ML.
         { id: "ACCEPTS_TRADE", value_name: m.aceptaPermuta ? "Sí" : "No" },
-        { id: "IS_PRICE_NEGOTIABLE", value_name: m.precioNegociable ? "Sí" : "No" },
-        ...(condition === "used"
-          ? [{ id: "HAS_SINGLE_OWNER", value_name: m.unicoDueno ? "Sí" : "No" }]
-          : []),
         { id: "HAS_ALARM", value_name: m.tieneAlarma ? "Sí" : "No" },
-        { id: "HAS_USB_INPUT", value_name: m.entradaUsb ? "Sí" : "No" },
         // Dimensiones/peso (van con value_name "<n> <unidad>")
-        ...(m.distanciaEjesCm != null
-          ? [{ id: "WHEEL_BASE", value_name: `${m.distanciaEjesCm} cm` }]
-          : []),
         ...(m.largoMm != null ? [{ id: "LENGTH", value_name: `${m.largoMm} mm` }] : []),
         ...(m.alturaMm != null ? [{ id: "HEIGHT", value_name: `${m.alturaMm} mm` }] : []),
         ...(m.anchoMm != null ? [{ id: "WIDTH", value_name: `${m.anchoMm} mm` }] : []),
@@ -358,16 +355,12 @@ export async function publicarOActualizar(modeloId: string): Promise<{
         ...(m.velocidadMaxima != null
           ? [{ id: "MAX_SPEED", value_name: `${m.velocidadMaxima} km/h` }]
           : []),
-        ...(m.numeroVelocidades != null
-          ? [{ id: "NUMBER_OF_SPEEDS", value_name: String(m.numeroVelocidades) }]
-          : []),
+        // NUMBER_OF_SPEEDS y FUEL_CONSUMPTION no existen en MLA1763
+        // (ML los rechaza). Se omiten del payload.
         ...(m.alturaAsiento != null
           ? [{ id: "SEAT_HEIGHT", value_name: `${m.alturaAsiento} cm` }]
           : []),
         { id: "HAS_GPS", value_name: m.gps ? "Sí" : "No" },
-        ...(m.eficienciaKmL != null
-          ? [{ id: "FUEL_CONSUMPTION", value_name: `${m.eficienciaKmL} km/l` }]
-          : []),
         // Batería (eléctricas)
         ...(m.tipoBateria
           ? [{ id: "BATTERY_TYPE", value_name: m.tipoBateria }]
@@ -431,6 +424,10 @@ export async function publicarOActualizar(modeloId: string): Promise<{
  *
  * IMPORTANTE: pierde antigüedad, visitas acumuladas, posición en búsquedas
  * y favoritos. Solo usar cuando el cambio amerita.
+ *
+ * Rollback safety: primero crea la nueva publicación. Solo si OK, cierra
+ * la vieja. Si la creación falla, dejamos la vieja como estaba para no
+ * perder la publicación.
  */
 export async function republicar(modeloId: string): Promise<{
   ok: boolean
@@ -440,21 +437,16 @@ export async function republicar(modeloId: string): Promise<{
 }> {
   const m = await prisma.modelo.findUnique({
     where: { id: modeloId },
-    select: { id: true, mlListingId: true },
+    select: { id: true, mlListingId: true, mlPermalink: true, mlEstado: true },
   })
   if (!m) return { ok: false, error: "Moto no encontrada" }
-  // Si ya tiene una publicación, la cerramos primero. Si la cerrada falla
-  // (ej. ya estaba cerrada, o ML no responde), seguimos igual — el listing
-  // viejo queda zombie pero el nuevo se crea OK.
-  if (m.mlListingId) {
-    try {
-      await mlPut(`/items/${m.mlListingId}`, { status: "closed" })
-    } catch (e) {
-      console.warn("[ML] No se pudo cerrar la publicación vieja:", e)
-    }
-  }
-  // Reseteamos los campos ML para que publicarOActualizar() entre por la
-  // rama de "publicación nueva" y cree todo desde cero.
+
+  const listingViejo = m.mlListingId
+  const permalinkViejo = m.mlPermalink
+  const estadoViejo = m.mlEstado
+
+  // 1) Resetear los campos ML temporalmente para que publicarOActualizar()
+  //    entre por la rama "create new" en lugar de update.
   await prisma.modelo.update({
     where: { id: modeloId },
     data: {
@@ -464,7 +456,38 @@ export async function republicar(modeloId: string): Promise<{
       mlError: null,
     },
   })
-  return publicarOActualizar(modeloId)
+
+  // 2) Intentar crear la NUEVA publicación.
+  const result = await publicarOActualizar(modeloId)
+
+  // 3a) Si la creación falló, restaurar el estado anterior del DB para que
+  //     la publicación vieja siga siendo la "actual" desde nuestra perspectiva.
+  //     ML todavía tiene la vieja activa porque NUNCA la cerramos.
+  if (!result.ok) {
+    await prisma.modelo
+      .update({
+        where: { id: modeloId },
+        data: {
+          mlListingId: listingViejo,
+          mlPermalink: permalinkViejo,
+          mlEstado: estadoViejo,
+          mlError: `Re-publicación falló (la publicación vieja sigue activa): ${result.error || "error"}`,
+          mlUltimaSync: new Date(),
+        },
+      })
+      .catch(() => null)
+    return result
+  }
+
+  // 3b) La nueva se creó OK. Ahora sí cerramos la vieja.
+  if (listingViejo) {
+    try {
+      await mlPut(`/items/${listingViejo}`, { status: "closed" })
+    } catch (e) {
+      console.warn("[ML] No se pudo cerrar la publicación vieja:", e)
+    }
+  }
+  return result
 }
 
 /**
