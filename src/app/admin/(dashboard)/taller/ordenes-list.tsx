@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Search, X, Pencil, FileText, Wrench, MessageCircle, Loader2 } from "lucide-react"
+import { Search, X, Pencil, Download, Wrench, MessageCircle, Loader2 } from "lucide-react"
 import {
   formatDate,
   formatMoney,
@@ -276,12 +276,10 @@ export function OrdenesList({
                       </Button>
                       <a
                         href={`/api/pdf/orden-trabajo/${o.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
                         className="inline-flex items-center justify-center rounded-md h-9 px-2 text-sm hover:bg-gray-100 dark:hover:bg-neutral-800"
-                        title="PDF"
+                        title="Descargar PDF de la OT"
                       >
-                        <FileText className="h-4 w-4" />
+                        <Download className="h-4 w-4" />
                       </a>
                     </div>
                   </TableCell>

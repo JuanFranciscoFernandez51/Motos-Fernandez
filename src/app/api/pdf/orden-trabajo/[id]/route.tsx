@@ -15,10 +15,12 @@ type OTItemRaw = {
 }
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
+  const url = new URL(request.url)
+  const dispositionMode = url.searchParams.get("inline") === "1" ? "inline" : "attachment"
 
   const ot = await prisma.ordenTrabajo.findUnique({
     where: { id },
@@ -89,7 +91,7 @@ export async function GET(
   return new NextResponse(new Uint8Array(pdfBuffer), {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": `inline; filename="OT-${numeroFormateado}.pdf"`,
+      "Content-Disposition": `${dispositionMode}; filename="${numeroFormateado}.pdf"`,
     },
   })
 }

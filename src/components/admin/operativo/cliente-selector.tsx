@@ -32,14 +32,17 @@ export function ClienteSelector({
   const selected = clientes.find((c) => c.id === value) ?? null
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
+    const norm = (s: string) =>
+      s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+    const q = norm(query.trim())
     if (!q) return clientes.slice(0, 15)
     return clientes
       .filter((c) => {
-        const hay = [c.nombre, c.apellido, c.dni, c.telefono, c.email]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase()
+        const hay = norm(
+          [c.nombre, c.apellido, c.dni, c.telefono, c.email]
+            .filter(Boolean)
+            .join(" ")
+        )
         return hay.includes(q)
       })
       .slice(0, 15)

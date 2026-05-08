@@ -11,7 +11,7 @@ import {
   ESTADO_OT_STYLES,
   ESTADO_OT_LABELS,
 } from "@/lib/admin-helpers"
-import { FileText, Trash2 } from "lucide-react"
+import { FileText, Trash2, Download, Printer } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -153,11 +153,19 @@ export default async function EditarOTPage({
           <div className="flex items-center gap-2">
             <a
               href={`/api/pdf/orden-trabajo/${ot.id}`}
+              className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white px-3 py-1.5 text-sm font-medium"
+              title="Descargar PDF para imprimir o entregar al cliente"
+            >
+              <Download className="size-4" /> Descargar PDF
+            </a>
+            <a
+              href={`/api/pdf/orden-trabajo/${ot.id}?inline=1`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-neutral-900"
+              title="Ver/imprimir en pestaña nueva"
             >
-              <FileText className="size-4" /> PDF
+              <Printer className="size-4" /> Imprimir
             </a>
             <form action={deleteOT.bind(null, ot.id)}>
               <Button

@@ -33,6 +33,17 @@ type Cliente = {
 }
 
 /**
+ * Quita acentos / diacríticos para comparar strings sin importar
+ * "fernandez" vs "fernández", "gomez" vs "gómez", "nuñez" vs "núñez".
+ */
+function sinAcentos(s: string): string {
+  return s
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .toLowerCase()
+}
+
+/**
  * Normaliza un teléfono argentino al formato wa.me (E.164 sin +).
  * - Saca espacios, guiones, puntos.
  * - Si arranca con 0 (código de área local), lo saca.
@@ -63,23 +74,17 @@ export function ClientesList({ clientes }: { clientes: Cliente[] }) {
   const [query, setQuery] = useState("")
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase()
+    const q = sinAcentos(query.trim())
     if (!q) return clientes
     return clientes.filter((c) => {
       // Incluye notasInternas: alli vive el historial de motos (ej buscar "versys 650"
       // y que aparezcan los clientes que la tuvieron).
-      const hay = [
-        c.nombre,
-        c.apellido,
-        c.dni,
-        c.email,
-        c.telefono,
-        c.ciudad,
-        c.notasInternas,
-      ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase()
+      // sinAcentos: matchea "fernandez" con "Fernández", "muñoz" con "munoz", etc.
+      const hay = sinAcentos(
+        [c.nombre, c.apellido, c.dni, c.email, c.telefono, c.ciudad, c.notasInternas]
+          .filter(Boolean)
+          .join(" ")
+      )
       return hay.includes(q)
     })
   }, [clientes, query])
