@@ -1,6 +1,7 @@
 // Helpers para publicar/actualizar/despublicar motos en Mercado Libre.
 import { prisma } from "@/lib/prisma"
 import { mlGet, mlPost, mlPut } from "./client"
+import { BUSINESS, HORARIOS } from "@/lib/constants"
 
 // Categoría de Motos en MLA (Argentina): MLA1747 (Motos)
 // Para subcategorías ML tiene un endpoint /sites/MLA/category_predictor/predict
@@ -105,6 +106,14 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       unicoDueno: true, tieneAlarma: true, entradaUsb: true,
       distanciaEjesCm: true, largoMm: true, alturaMm: true,
       anchoMm: true, pesoKg: true,
+      // equipamiento extra
+      marcaMotor: true, capacidadTanque: true, sistemaArranque: true,
+      velocidadMaxima: true, numeroVelocidades: true, alturaAsiento: true,
+      gps: true, eficienciaKmL: true,
+      // bateria (electricas)
+      tipoBateria: true, cantidadBaterias: true, capacidadBateria: true,
+      voltajeBateria: true, autonomiaKm: true, tiempoCarga: true,
+      pesoBateriaG: true, tipoCargador: true,
       mlListingId: true, mlListingType: true,
     },
   })
@@ -262,12 +271,28 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       listing_type_id: m.mlListingType || "free",
       condition,
       pictures: fotosPublicas.map((url) => ({ source: url })),
-      // Ubicación obligatoria para clasificados
+      // Ubicación obligatoria para clasificados — usa los datos de BUSINESS
       location: {
         country: { id: "AR", name: "Argentina" },
         state: { id: "AR-B", name: "Buenos Aires" },
-        city: { name: "Bahía Blanca" },
-        address_line: "",
+        city: { name: BUSINESS.city },
+        neighborhood: { name: "Centro" },
+        address_line: BUSINESS.address,
+        zip_code: BUSINESS.postalCode,
+        latitude: BUSINESS.coordinates.lat,
+        longitude: BUSINESS.coordinates.lng,
+      },
+      // Datos de contacto que ML muestra en la publicación clasificada.
+      // Phone format: "+54 291 578 8671" → area_code "291", number "5788671"
+      seller_contact: {
+        contact: BUSINESS.name,
+        other_info: `Lun a Vie ${HORARIOS.lunesViernes} | Sáb ${HORARIOS.sabados}`,
+        area_code: "291",
+        phone: "5788671",
+        area_code2: "291",
+        phone2: "5788671",
+        email: BUSINESS.email,
+        webpage: "https://www.motosfernandez.com.ar",
       },
       attributes: [
         { id: "MOTO_TYPE", value_name: motoType },
@@ -313,6 +338,52 @@ export async function publicarOActualizar(modeloId: string): Promise<{
         ...(m.alturaMm != null ? [{ id: "HEIGHT", value_name: `${m.alturaMm} mm` }] : []),
         ...(m.anchoMm != null ? [{ id: "WIDTH", value_name: `${m.anchoMm} mm` }] : []),
         ...(m.pesoKg != null ? [{ id: "WEIGHT", value_name: `${m.pesoKg} kg` }] : []),
+        // Equipamiento adicional
+        ...(m.marcaMotor ? [{ id: "ENGINE_BRAND", value_name: m.marcaMotor }] : []),
+        ...(m.capacidadTanque != null
+          ? [{ id: "FUEL_TANK_CAPACITY", value_name: `${m.capacidadTanque} cc` }]
+          : []),
+        ...(m.sistemaArranque
+          ? [{ id: "STARTER_TYPE", value_name: m.sistemaArranque }]
+          : []),
+        ...(m.velocidadMaxima != null
+          ? [{ id: "MAX_SPEED", value_name: `${m.velocidadMaxima} km/h` }]
+          : []),
+        ...(m.numeroVelocidades != null
+          ? [{ id: "NUMBER_OF_SPEEDS", value_name: String(m.numeroVelocidades) }]
+          : []),
+        ...(m.alturaAsiento != null
+          ? [{ id: "SEAT_HEIGHT", value_name: `${m.alturaAsiento} cm` }]
+          : []),
+        { id: "HAS_GPS", value_name: m.gps ? "Sí" : "No" },
+        ...(m.eficienciaKmL != null
+          ? [{ id: "FUEL_CONSUMPTION", value_name: `${m.eficienciaKmL} km/l` }]
+          : []),
+        // Batería (eléctricas)
+        ...(m.tipoBateria
+          ? [{ id: "BATTERY_TYPE", value_name: m.tipoBateria }]
+          : []),
+        ...(m.cantidadBaterias != null
+          ? [{ id: "BATTERY_QUANTITY", value_name: String(m.cantidadBaterias) }]
+          : []),
+        ...(m.capacidadBateria != null
+          ? [{ id: "BATTERY_CAPACITY", value_name: `${m.capacidadBateria} Ah` }]
+          : []),
+        ...(m.voltajeBateria != null
+          ? [{ id: "BATTERY_VOLTAGE", value_name: `${m.voltajeBateria} V` }]
+          : []),
+        ...(m.autonomiaKm != null
+          ? [{ id: "BATTERY_AUTONOMY", value_name: `${m.autonomiaKm} km` }]
+          : []),
+        ...(m.tiempoCarga != null
+          ? [{ id: "CHARGING_TIME", value_name: `${m.tiempoCarga} h` }]
+          : []),
+        ...(m.pesoBateriaG != null
+          ? [{ id: "BATTERY_WEIGHT", value_name: `${m.pesoBateriaG} g` }]
+          : []),
+        ...(m.tipoCargador
+          ? [{ id: "CHARGER_TYPE", value_name: m.tipoCargador }]
+          : []),
       ],
     }
 

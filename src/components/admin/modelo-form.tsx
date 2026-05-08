@@ -66,6 +66,24 @@ type ModeloData = {
   alturaMm?: number | null
   anchoMm?: number | null
   pesoKg?: number | null
+  // Equipamiento extra
+  marcaMotor?: string | null
+  capacidadTanque?: number | null
+  sistemaArranque?: string | null
+  velocidadMaxima?: number | null
+  numeroVelocidades?: number | null
+  alturaAsiento?: number | null
+  gps?: boolean | null
+  eficienciaKmL?: number | null
+  // Batería (eléctricas)
+  tipoBateria?: string | null
+  cantidadBaterias?: number | null
+  capacidadBateria?: number | null
+  voltajeBateria?: number | null
+  autonomiaKm?: number | null
+  tiempoCarga?: number | null
+  pesoBateriaG?: number | null
+  tipoCargador?: string | null
   anio: number | null
   kilometros: number | null
   observaciones: string
@@ -164,6 +182,46 @@ export function ModeloForm({
   const [pesoKg, setPesoKg] = useState(
     initialData?.pesoKg != null ? String(initialData.pesoKg) : ""
   )
+  // Equipamiento extra
+  const [marcaMotor, setMarcaMotor] = useState(initialData?.marcaMotor || "")
+  const [capacidadTanque, setCapacidadTanque] = useState(
+    initialData?.capacidadTanque != null ? String(initialData.capacidadTanque) : ""
+  )
+  const [sistemaArranque, setSistemaArranque] = useState(initialData?.sistemaArranque || "")
+  const [velocidadMaxima, setVelocidadMaxima] = useState(
+    initialData?.velocidadMaxima != null ? String(initialData.velocidadMaxima) : ""
+  )
+  const [numeroVelocidades, setNumeroVelocidades] = useState(
+    initialData?.numeroVelocidades != null ? String(initialData.numeroVelocidades) : ""
+  )
+  const [alturaAsiento, setAlturaAsiento] = useState(
+    initialData?.alturaAsiento != null ? String(initialData.alturaAsiento) : ""
+  )
+  const [gps, setGps] = useState(initialData?.gps ?? false)
+  const [eficienciaKmL, setEficienciaKmL] = useState(
+    initialData?.eficienciaKmL != null ? String(initialData.eficienciaKmL) : ""
+  )
+  // Bateria (eléctricas)
+  const [tipoBateria, setTipoBateria] = useState(initialData?.tipoBateria || "")
+  const [cantidadBaterias, setCantidadBaterias] = useState(
+    initialData?.cantidadBaterias != null ? String(initialData.cantidadBaterias) : ""
+  )
+  const [capacidadBateria, setCapacidadBateria] = useState(
+    initialData?.capacidadBateria != null ? String(initialData.capacidadBateria) : ""
+  )
+  const [voltajeBateria, setVoltajeBateria] = useState(
+    initialData?.voltajeBateria != null ? String(initialData.voltajeBateria) : ""
+  )
+  const [autonomiaKm, setAutonomiaKm] = useState(
+    initialData?.autonomiaKm != null ? String(initialData.autonomiaKm) : ""
+  )
+  const [tiempoCarga, setTiempoCarga] = useState(
+    initialData?.tiempoCarga != null ? String(initialData.tiempoCarga) : ""
+  )
+  const [pesoBateriaG, setPesoBateriaG] = useState(
+    initialData?.pesoBateriaG != null ? String(initialData.pesoBateriaG) : ""
+  )
+  const [tipoCargador, setTipoCargador] = useState(initialData?.tipoCargador || "")
   const [showMLFields, setShowMLFields] = useState(false)
   const [precio, setPrecio] = useState(
     initialData?.precio != null ? String(initialData.precio) : ""
@@ -284,6 +342,23 @@ export function ModeloForm({
     formData.append("alturaMm", alturaMm)
     formData.append("anchoMm", anchoMm)
     formData.append("pesoKg", pesoKg)
+    // Equipamiento extra
+    formData.append("marcaMotor", marcaMotor)
+    formData.append("capacidadTanque", capacidadTanque)
+    formData.append("sistemaArranque", sistemaArranque)
+    formData.append("velocidadMaxima", velocidadMaxima)
+    formData.append("numeroVelocidades", numeroVelocidades)
+    formData.append("alturaAsiento", alturaAsiento)
+    formData.append("gps", String(gps))
+    formData.append("eficienciaKmL", eficienciaKmL)
+    formData.append("tipoBateria", tipoBateria)
+    formData.append("cantidadBaterias", cantidadBaterias)
+    formData.append("capacidadBateria", capacidadBateria)
+    formData.append("voltajeBateria", voltajeBateria)
+    formData.append("autonomiaKm", autonomiaKm)
+    formData.append("tiempoCarga", tiempoCarga)
+    formData.append("pesoBateriaG", pesoBateriaG)
+    formData.append("tipoCargador", tipoCargador)
     formData.append("moneda", moneda)
     formData.append("precio", precio)
     formData.append("descripcion", descripcion)
@@ -664,6 +739,181 @@ export function ModeloForm({
                     </label>
                   </div>
                 </div>
+
+                {/* Equipamiento */}
+                <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-neutral-800">
+                  <h3 className="text-sm font-semibold">Equipamiento</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="marcaMotor" className="text-xs">Marca del motor</Label>
+                      <Input
+                        id="marcaMotor"
+                        value={marcaMotor}
+                        onChange={(e) => setMarcaMotor(e.target.value)}
+                        placeholder="Honda"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="capacidadTanque" className="text-xs">Capacidad del tanque (cc)</Label>
+                      <Input
+                        id="capacidadTanque"
+                        type="number"
+                        value={capacidadTanque}
+                        onChange={(e) => setCapacidadTanque(e.target.value)}
+                        placeholder="12000"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="sistemaArranque" className="text-xs">Sistema de arranque</Label>
+                      <select
+                        id="sistemaArranque"
+                        value={sistemaArranque}
+                        onChange={(e) => setSistemaArranque(e.target.value)}
+                        className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 text-sm"
+                      >
+                        <option value="">— Sin especificar —</option>
+                        <option value="Eléctrico">Eléctrico</option>
+                        <option value="A patada">A patada</option>
+                        <option value="Eléctrico y a patada">Eléctrico y a patada</option>
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="velocidadMaxima" className="text-xs">Velocidad máxima (km/h)</Label>
+                      <Input
+                        id="velocidadMaxima"
+                        type="number"
+                        value={velocidadMaxima}
+                        onChange={(e) => setVelocidadMaxima(e.target.value)}
+                        placeholder="130"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="numeroVelocidades" className="text-xs">N° de velocidades</Label>
+                      <Input
+                        id="numeroVelocidades"
+                        type="number"
+                        value={numeroVelocidades}
+                        onChange={(e) => setNumeroVelocidades(e.target.value)}
+                        placeholder="6"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="alturaAsiento" className="text-xs">Altura del asiento (cm)</Label>
+                      <Input
+                        id="alturaAsiento"
+                        type="number"
+                        value={alturaAsiento}
+                        onChange={(e) => setAlturaAsiento(e.target.value)}
+                        placeholder="85"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="eficienciaKmL" className="text-xs">Consumo (km/l)</Label>
+                      <Input
+                        id="eficienciaKmL"
+                        type="number"
+                        step="0.1"
+                        value={eficienciaKmL}
+                        onChange={(e) => setEficienciaKmL(e.target.value)}
+                        placeholder="35"
+                      />
+                    </div>
+                    <label className="flex items-center justify-between rounded-md border border-gray-200 dark:border-neutral-800 px-3 py-2 self-end h-10">
+                      <span className="text-sm">GPS</span>
+                      <Switch checked={gps} onCheckedChange={setGps} />
+                    </label>
+                  </div>
+                </div>
+
+                {/* Bateria - solo si combustible es Eléctrica */}
+                {combustible === "Eléctrica" && (
+                  <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-neutral-800">
+                    <h3 className="text-sm font-semibold">Batería</h3>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="space-y-2">
+                        <Label htmlFor="tipoBateria" className="text-xs">Tipo</Label>
+                        <Input
+                          id="tipoBateria"
+                          value={tipoBateria}
+                          onChange={(e) => setTipoBateria(e.target.value)}
+                          placeholder="Litio"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="cantidadBaterias" className="text-xs">Cantidad</Label>
+                        <Input
+                          id="cantidadBaterias"
+                          type="number"
+                          value={cantidadBaterias}
+                          onChange={(e) => setCantidadBaterias(e.target.value)}
+                          placeholder="1"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="capacidadBateria" className="text-xs">Capacidad (Ah)</Label>
+                        <Input
+                          id="capacidadBateria"
+                          type="number"
+                          step="0.1"
+                          value={capacidadBateria}
+                          onChange={(e) => setCapacidadBateria(e.target.value)}
+                          placeholder="20"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="voltajeBateria" className="text-xs">Voltaje (V)</Label>
+                        <Input
+                          id="voltajeBateria"
+                          type="number"
+                          step="0.1"
+                          value={voltajeBateria}
+                          onChange={(e) => setVoltajeBateria(e.target.value)}
+                          placeholder="72"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="autonomiaKm" className="text-xs">Autonomía (km)</Label>
+                        <Input
+                          id="autonomiaKm"
+                          type="number"
+                          value={autonomiaKm}
+                          onChange={(e) => setAutonomiaKm(e.target.value)}
+                          placeholder="80"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="tiempoCarga" className="text-xs">Tiempo carga (h)</Label>
+                        <Input
+                          id="tiempoCarga"
+                          type="number"
+                          step="0.5"
+                          value={tiempoCarga}
+                          onChange={(e) => setTiempoCarga(e.target.value)}
+                          placeholder="4"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="pesoBateriaG" className="text-xs">Peso batería (g)</Label>
+                        <Input
+                          id="pesoBateriaG"
+                          type="number"
+                          value={pesoBateriaG}
+                          onChange={(e) => setPesoBateriaG(e.target.value)}
+                          placeholder="8000"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="tipoCargador" className="text-xs">Tipo cargador</Label>
+                        <Input
+                          id="tipoCargador"
+                          value={tipoCargador}
+                          onChange={(e) => setTipoCargador(e.target.value)}
+                          placeholder="Estándar 220V"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 {/* Dimensiones */}
                 <div className="space-y-3 pt-3 border-t border-gray-100 dark:border-neutral-800">

@@ -51,6 +51,24 @@ model Modelo {
   alturaMm          Int?              // altura en mm
   anchoMm           Int?              // ancho en mm
   pesoKg            Int?              // peso en kg
+  // Equipamiento (atributos opcionales adicionales de ML)
+  marcaMotor        String?           // marca del motor (ej "Honda")
+  capacidadTanque   Int?              // capacidad del tanque en cc
+  sistemaArranque   String?           // "Eléctrico" | "A patada" | "Eléctrico y a patada"
+  velocidadMaxima   Int?              // km/h
+  numeroVelocidades Int?              // cantidad de marchas (5, 6...)
+  alturaAsiento     Int?              // cm
+  gps               Boolean           @default(false)
+  eficienciaKmL     Float?            // km/l (consumo)
+  // Solo aplica a motos eléctricas
+  tipoBateria       String?
+  cantidadBaterias  Int?
+  capacidadBateria  Float?            // Ah
+  voltajeBateria    Float?            // V
+  autonomiaKm       Int?              // km de autonomía con batería
+  tiempoCarga       Float?            // horas
+  pesoBateriaG      Int?              // peso de batería en gramos
+  tipoCargador      String?
   precio            Int?              // valor numérico, null = "consultar"
   moneda            String            @default("ARS")  // "ARS" o "USD"
   descripcion       String?           @db.Text

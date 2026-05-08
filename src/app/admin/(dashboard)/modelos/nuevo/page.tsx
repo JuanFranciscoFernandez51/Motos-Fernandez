@@ -36,6 +36,23 @@ async function createModelo(formData: FormData) {
     const alturaMmStr = formData.get("alturaMm") as string
     const anchoMmStr = formData.get("anchoMm") as string
     const pesoKgStr = formData.get("pesoKg") as string
+    // Equipamiento extra
+    const marcaMotor = formData.get("marcaMotor") as string
+    const capacidadTanqueStr = formData.get("capacidadTanque") as string
+    const sistemaArranque = formData.get("sistemaArranque") as string
+    const velocidadMaximaStr = formData.get("velocidadMaxima") as string
+    const numeroVelocidadesStr = formData.get("numeroVelocidades") as string
+    const alturaAsientoStr = formData.get("alturaAsiento") as string
+    const gps = formData.get("gps") === "true"
+    const eficienciaKmLStr = formData.get("eficienciaKmL") as string
+    const tipoBateria = formData.get("tipoBateria") as string
+    const cantidadBateriasStr = formData.get("cantidadBaterias") as string
+    const capacidadBateriaStr = formData.get("capacidadBateria") as string
+    const voltajeBateriaStr = formData.get("voltajeBateria") as string
+    const autonomiaKmStr = formData.get("autonomiaKm") as string
+    const tiempoCargaStr = formData.get("tiempoCarga") as string
+    const pesoBateriaGStr = formData.get("pesoBateriaG") as string
+    const tipoCargador = formData.get("tipoCargador") as string
     const precioStr = formData.get("precio") as string
     const moneda = formData.get("moneda") as string || "ARS"
     const descripcion = formData.get("descripcion") as string
@@ -91,6 +108,22 @@ async function createModelo(formData: FormData) {
         alturaMm: alturaMmStr ? parseInt(alturaMmStr) : null,
         anchoMm: anchoMmStr ? parseInt(anchoMmStr) : null,
         pesoKg: pesoKgStr ? parseInt(pesoKgStr) : null,
+        marcaMotor: marcaMotor || null,
+        capacidadTanque: capacidadTanqueStr ? parseInt(capacidadTanqueStr) : null,
+        sistemaArranque: sistemaArranque || null,
+        velocidadMaxima: velocidadMaximaStr ? parseInt(velocidadMaximaStr) : null,
+        numeroVelocidades: numeroVelocidadesStr ? parseInt(numeroVelocidadesStr) : null,
+        alturaAsiento: alturaAsientoStr ? parseInt(alturaAsientoStr) : null,
+        gps,
+        eficienciaKmL: eficienciaKmLStr ? parseFloat(eficienciaKmLStr) : null,
+        tipoBateria: tipoBateria || null,
+        cantidadBaterias: cantidadBateriasStr ? parseInt(cantidadBateriasStr) : null,
+        capacidadBateria: capacidadBateriaStr ? parseFloat(capacidadBateriaStr) : null,
+        voltajeBateria: voltajeBateriaStr ? parseFloat(voltajeBateriaStr) : null,
+        autonomiaKm: autonomiaKmStr ? parseInt(autonomiaKmStr) : null,
+        tiempoCarga: tiempoCargaStr ? parseFloat(tiempoCargaStr) : null,
+        pesoBateriaG: pesoBateriaGStr ? parseInt(pesoBateriaGStr) : null,
+        tipoCargador: tipoCargador || null,
         precio: precioStr ? parseInt(precioStr) : null,
         moneda,
         descripcion: descripcion || null,
