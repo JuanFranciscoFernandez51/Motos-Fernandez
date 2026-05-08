@@ -330,14 +330,13 @@ export async function publicarOActualizar(modeloId: string): Promise<{
         ...(m.potenciaHp != null
           ? [{ id: "POWER", value_name: `${m.potenciaHp} HP` }]
           : []),
-        // ACCEPTS_TRADE y HAS_ALARM sí existen en MLA1763.
-        // Los siguientes los descartamos porque ML los rechaza con
-        // "Attribute X was dropped because does not exists" en MLA1763:
+        // ML rechaza varios attributes en MLA1763 con
+        // "Attribute X was dropped because does not exists":
         // HAS_MANUFACTURER_WARRANTY, IS_PRICE_NEGOTIABLE, HAS_SINGLE_OWNER,
-        // HAS_USB_INPUT, NUMBER_OF_SPEEDS, FUEL_CONSUMPTION, WHEEL_BASE.
+        // HAS_USB_INPUT, NUMBER_OF_SPEEDS, FUEL_CONSUMPTION, WHEEL_BASE,
+        // ACCEPTS_TRADE.
         // Los mantenemos en nuestro DB y form para uso interno / web pública,
-        // pero no los enviamos a ML.
-        { id: "ACCEPTS_TRADE", value_name: m.aceptaPermuta ? "Sí" : "No" },
+        // pero no los enviamos a ML. HAS_ALARM sí existe.
         { id: "HAS_ALARM", value_name: m.tieneAlarma ? "Sí" : "No" },
         // Dimensiones/peso (van con value_name "<n> <unidad>")
         ...(m.largoMm != null ? [{ id: "LENGTH", value_name: `${m.largoMm} mm` }] : []),
@@ -406,7 +405,16 @@ export async function publicarOActualizar(modeloId: string): Promise<{
     })
     return { ok: true, listingId: created.id, permalink: created.permalink }
   } catch (e) {
-    const msg = e instanceof Error ? e.message : "Error desconocido"
+    const rawMsg = e instanceof Error ? e.message : "Error desconocido"
+    // Traducir errores comunes a un mensaje accionable en castellano
+    let msg = rawMsg
+    if (rawMsg.includes("listing_type_id.unavailable")) {
+      msg = `Cupo de "Gratis" agotado para el mes en motos. Cambiá el dropdown a Plata, Oro u Oro Premium y volvé a intentar. (Solo se cobra comisión cuando se vende — publicar es gratis igual).`
+    } else if (rawMsg.includes("under_review")) {
+      msg = `Mercado Libre está revisando una publicación tuya. Esperá unas horas y volvé a intentar.`
+    } else if (rawMsg.includes("DESCRIPTION_PLAIN_TEXT_NOT_ALLOWED")) {
+      msg = `ML no permite modificar la descripción de items publicados. Usá "Re-publicar" (icono ↺) si querés actualizarla.`
+    }
     await prisma.modelo
       .update({
         where: { id: m.id },
