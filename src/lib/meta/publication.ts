@@ -12,12 +12,7 @@
 //   POST /{page-id}/photos con url + caption + published=true
 import { prisma } from "@/lib/prisma"
 import { metaPost, metaGet } from "./client"
-import Anthropic from "@anthropic-ai/sdk"
 import { BUSINESS } from "@/lib/constants"
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY!,
-})
 
 // Cloudinary: forzar JPG cuadrado de calidad media para que IG lo acepte.
 // IG quiere fotos en aspect ratios entre 4:5 y 1.91:1. Lo más seguro es 1:1.
@@ -33,45 +28,10 @@ type MotoCaption = {
   marca: string
   nombre: string
   anio: number | null
-  cilindrada: string | null
   condicion: string
   precio: number | null
   moneda: string
   kilometros: number | null
-  potenciaHp: number | null
-  tipoMotor: string | null
-  frenos: string | null
-  combustible: string | null
-  transmision: string | null
-}
-
-/** Genera SOLO la descripción atractiva (2-3 oraciones) con IA. */
-async function generarDescripcion(moto: MotoCaption): Promise<string> {
-  const titulo = `${moto.marca} ${moto.nombre}${moto.anio ? ` ${moto.anio}` : ""}`
-  const condicion = moto.condicion === "0KM" ? "0 km a estrenar" : "usada"
-
-  const prompt = `Sos copywriter para Instagram de una concesionaria de motos en Bahía Blanca, Argentina.
-
-MOTO: ${titulo}
-Condición: ${condicion}
-Cilindrada: ${moto.cilindrada || "—"}
-Potencia: ${moto.potenciaHp ? moto.potenciaHp + " HP" : "—"}
-Frenos: ${moto.frenos || "—"}
-
-Generá un párrafo BREVE y ATRACTIVO (2-3 oraciones, máx 50 palabras) que invite a consultar.
-Tono: argentino, vos en lugar de tú, profesional pero cercano.
-NO uses emojis. NO menciones precio, contacto, hashtags ni datos del negocio (eso lo agrego yo).
-NO inventes specs que no te di.
-Devolvé SOLO el párrafo, sin comillas, sin títulos, sin nada más.`
-
-  const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-5",
-    max_tokens: 200,
-    messages: [{ role: "user", content: prompt }],
-  })
-  const block = response.content[0]
-  if (block.type !== "text") return ""
-  return block.text.trim().replace(/^["']|["']$/g, "")
 }
 
 /** Genera hashtags específicos para la moto. */
@@ -87,7 +47,6 @@ function generarHashtags(moto: MotoCaption): string[] {
     "bahiablanca",
     "motos",
     "motoargentina",
-    "motoscompralocal",
   ])
   if (moto.marca) tags.add(slug(moto.marca))
   if (moto.nombre) tags.add(slug(moto.marca + moto.nombre).slice(0, 30))
@@ -95,8 +54,12 @@ function generarHashtags(moto: MotoCaption): string[] {
   return Array.from(tags).slice(0, 12).map((t) => "#" + t)
 }
 
-/** Arma el caption completo con estructura fija. */
-async function generarCaption(moto: MotoCaption): Promise<string> {
+/**
+ * Arma el caption con estructura fija minimal: solo titulo, datos
+ * basicos (marca/modelo/año/km), precio, datos del negocio y hashtags.
+ * Sin descripcion IA ni ficha tecnica — Francisco prefiere asi.
+ */
+function generarCaption(moto: MotoCaption): string {
   const titulo = `${moto.marca} ${moto.nombre}${moto.anio ? ` ${moto.anio}` : ""}`
   const precio =
     moto.precio != null
@@ -109,42 +72,24 @@ async function generarCaption(moto: MotoCaption): Promise<string> {
         ? "0 km (a estrenar)"
         : "—"
 
-  // Generamos solo el cuerpo descriptivo con IA — el resto programático
-  const descripcion = await generarDescripcion(moto).catch(() => "")
-
-  // Ficha técnica con bullets
-  const ficha: string[] = [
-    `• Marca: ${moto.marca}`,
-    `• Modelo: ${moto.nombre}`,
-  ]
-  if (moto.anio) ficha.push(`• Año: ${moto.anio}`)
-  ficha.push(`• Kilómetros: ${km}`)
-  if (moto.cilindrada) ficha.push(`• Cilindrada: ${moto.cilindrada}`)
-  if (moto.potenciaHp) ficha.push(`• Potencia: ${moto.potenciaHp} HP`)
-  if (moto.tipoMotor) ficha.push(`• Motor: ${moto.tipoMotor}`)
-  if (moto.frenos) ficha.push(`• Frenos: ${moto.frenos}`)
-  if (moto.transmision) ficha.push(`• Transmisión: ${moto.transmision}`)
-
   const hashtags = generarHashtags(moto).join(" ")
 
   return [
     `🏁 ${titulo}`,
     "",
-    descripcion || `${moto.marca} ${moto.nombre} disponible en stock.`,
-    "",
-    "📋 Ficha técnica:",
-    ...ficha,
+    `• Marca: ${moto.marca}`,
+    `• Modelo: ${moto.nombre}`,
+    ...(moto.anio ? [`• Año: ${moto.anio}`] : []),
+    `• Kilómetros: ${km}`,
     "",
     `💰 Precio: ${precio}`,
-    "💳 Hasta 36 cuotas | Aceptamos tu moto en parte de pago",
-    "",
+    "💳 Hasta 24 cuotas | Aceptamos tu moto en parte de pago",
     "━━━━━━━━━━━━━━━",
     "📍 MOTOS FERNÁNDEZ",
     "Brown 1052, Bahía Blanca",
     "📞 WhatsApp +54 9 291 578 8671",
     "🕐 Lunes a Viernes de 9 a 17 hs",
     "🌐 motosfernandez.com.ar",
-    "",
     hashtags,
   ].join("\n")
 }
@@ -210,16 +155,10 @@ export async function publicarEnMeta(
       marca: true,
       nombre: true,
       anio: true,
-      cilindrada: true,
       condicion: true,
       precio: true,
       moneda: true,
       kilometros: true,
-      potenciaHp: true,
-      tipoMotor: true,
-      frenos: true,
-      combustible: true,
-      transmision: true,
       fotos: true,
       igPostId: true,
     },
@@ -245,12 +184,7 @@ export async function publicarEnMeta(
   }
 
   try {
-    const caption = await generarCaption(m).catch(
-      (e) => {
-        console.warn("[Meta] generarCaption falló, usando fallback:", e)
-        return `${m.marca} ${m.nombre}${m.anio ? ` ${m.anio}` : ""}\n\nMotos Fernández - Bahía Blanca\nWhatsApp +54 9 291 578 8671`
-      }
-    )
+    const caption = generarCaption(m)
 
     // 1) Subir cada foto como carousel_item → recibimos creation_ids
     const creationIds: string[] = []
