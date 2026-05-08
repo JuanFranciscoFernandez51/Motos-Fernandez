@@ -12,6 +12,35 @@ type CategoryPrediction = {
   shipping_modes?: string[]
 }
 
+/**
+ * Infiere el MOTO_TYPE (atributo obligatorio en MLA1763 motos) desde el
+ * nombre/marca de la moto. Valores válidos en ML:
+ * On-Off, Mini Motos, Custom, Chopper, Touring, Scooters, Enduro, Trial,
+ * Cuatriciclos, Naked, Doble propósito, Crucero, Triciclos, Deportivas,
+ * Motocarros, Street.
+ */
+function inferirMotoType(nombreCompleto: string): string {
+  const n = nombreCompleto.toLowerCase()
+  // Off-road / Doble propósito (CRF, XR, WR, KX, KLX, TTR, YZ, EXC, DR)
+  if (/\b(crf|xr|xrl|wr|kx|klx|ttr|yz|exc|enduro|husqvarna|gas\s*gas)\b/i.test(n)) return "Enduro"
+  // Doble propósito / On-Off (GS, Tenere, Versys, V-Strom, TRK, Adventure, Himalayan, Africa, Tornado)
+  if (/\b(gs|tener[eé]|versys|v-?strom|trk|adventure|himalayan|africa|tornado|rally|dr\s?\d|dakar)\b/i.test(n)) return "On-Off"
+  // Deportivas (Ninja, GSXR, GSX-R, CBR, R1, R6, ZX, Panigale, RR, RC)
+  if (/\b(ninja|gsxr|gsx-?r|cbr|\br[16]\b|zx|panigale|\brr\b|\brc\b|rsv|rc8|streetfighter|h2)\b/i.test(n)) return "Deportivas"
+  // Custom / Cruiser (Vulcan, Harley, Iron, Sportster, Bobber, Diavel, V-Rod)
+  if (/\b(vulcan|harley|sportster|iron|bobber|diavel|v-?rod|fat\s*boy|softail|chopper)\b/i.test(n)) return "Custom"
+  // Touring (Goldwing, K1600, Pan America, Multistrada touring)
+  if (/\b(goldwing|gold\s*wing|k1600|pan\s*america|multistrada)\b/i.test(n)) return "Touring"
+  // Scooters (Vespa, Beverly, Tmax, T-Max, SXR, MP3, Sym, Kymco, Sundown, Address, Lambretta, GTS, VXL)
+  if (/\b(vespa|beverly|t-?max|sxr|mp3|sym|kymco|sundown|address|lambretta|gts|vxl|scoot)\b/i.test(n)) return "Scooters"
+  // Cuatriciclos (Raptor, YFM, TRX, Sportsman, RZR, Outlander, Polaris, ATV)
+  if (/\b(raptor|yfm|trx|sportsman|rzr|outlander|polaris|atv|cuatri)\b/i.test(n)) return "Cuatriciclos"
+  // Mini cross
+  if (/\bmini\s*cross\b/i.test(n)) return "Mini Motos"
+  // Default Naked (calle estándar)
+  return "Naked"
+}
+
 async function predecirCategoria(titulo: string): Promise<string> {
   // Intento 1: domain_discovery/search (mas moderno, devuelve array)
   try {
@@ -126,9 +155,9 @@ export async function publicarOActualizar(modeloId: string): Promise<{
     const categoryId = await predecirCategoria(titulo)
     const condition = m.condicion === "0KM" ? "new" : "used"
 
-    // family_name: agrupador de productos similares en ML (requerido en v2).
-    // Mismo dedup de marca que el titulo (sin repetir "Honda Honda").
-    const familyName = tituloBase.slice(0, 60)
+    // Mapear nombre de la moto a MOTO_TYPE (atributo obligatorio para vehículos en MLA)
+    // Heurística simple por palabras clave del nombre.
+    const motoType = inferirMotoType(`${m.marca} ${m.nombre}`)
 
     // Filtrar fotos: solo URLs públicas absolutas (ML necesita poder descargarlas).
     // Saca el placeholder /images/logo-clasico.png y cualquier otra ruta relativa.
@@ -161,24 +190,33 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       return { ok: false, error: "La moto no tiene fotos con URL pública (Cloudinary)" }
     }
 
+    // Para vehículos en MLA, ML requiere modo "classified" (clasificados/avisos).
+    // El comprador no compra directo, te contacta para coordinar.
     const body = {
       title: titulo,
-      family_name: familyName,
       category_id: categoryId,
       price: m.precio,
       currency_id: m.moneda === "USD" ? "USD" : "ARS",
       available_quantity: 1,
-      buying_mode: "buy_it_now",
-      listing_type_id: "gold_special", // Clásica gratis. Otros: "gold_pro" (Premium pago)
+      buying_mode: "classified",
+      listing_type_id: "gold_premium", // Oro Premium para clasificados de motos
       condition,
       pictures: fotosPublicas.map((url) => ({ source: url })),
+      // Ubicación obligatoria para clasificados
+      location: {
+        country: { id: "AR", name: "Argentina" },
+        state: { id: "AR-B", name: "Buenos Aires" },
+        city: { name: "Bahía Blanca" },
+        address_line: "",
+      },
       attributes: [
-        { id: "BRAND", value_name: m.marca },
-        { id: "MODEL", value_name: m.nombre },
+        { id: "MOTO_TYPE", value_name: motoType },
+        { id: "BRAND", value_name: m.marca.trim() },
+        { id: "MODEL", value_name: m.nombre.trim() },
         { id: "ITEM_CONDITION", value_name: condition === "new" ? "Nuevo" : "Usado" },
         ...(m.anio ? [{ id: "VEHICLE_YEAR", value_name: String(m.anio) }] : []),
         ...(m.kilometros != null
-          ? [{ id: "KILOMETERS", value_struct: { number: m.kilometros, unit: "km" } }]
+          ? [{ id: "KILOMETERS", value_name: `${m.kilometros} km` }]
           : []),
         ...(m.cilindrada
           ? [{ id: "ENGINE_DISPLACEMENT", value_name: m.cilindrada }]
