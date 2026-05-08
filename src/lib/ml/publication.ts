@@ -181,9 +181,15 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       // 3) Construir payload. Si está pausada, la reactivamos en el mismo
       //    PUT (intent del usuario al hacer click en "Actualizar" suele ser
       //    relistarla). Si está active, solo cambiamos lo que cambió.
+      //    La descripción va INLINE en el body del item (antes la mandábamos
+      //    al endpoint /items/X/description con plain_text pero ML responde
+      //    DESCRIPTION_PLAIN_TEXT_NOT_ALLOWED para vehículos clasificados).
       const payload: Record<string, unknown> = { price: m.precio }
       if (estadoActual === "paused" || estadoActual === "closed") {
         payload.status = "active"
+      }
+      if (m.descripcion) {
+        payload.description = { plain_text: m.descripcion.slice(0, 50000) }
       }
 
       const update = await mlPut<{
@@ -192,39 +198,15 @@ export async function publicarOActualizar(modeloId: string): Promise<{
         status: string
       }>(`/items/${m.mlListingId}`, payload)
 
-      // Actualizar descripción. Antes esto tenía un .catch(() => null) que
-      // silenciaba todos los errores → si ML rechazaba la nueva descripción
-      // no nos enterábamos. Ahora capturamos el error y lo guardamos como
-      // warning en mlError, pero NO rompemos la operación completa porque
-      // el precio/status ya se actualizaron OK.
-      let descripcionWarning: string | null = null
-      if (m.descripcion) {
-        try {
-          await mlPut(`/items/${m.mlListingId}/description`, {
-            plain_text: m.descripcion.slice(0, 50000),
-          })
-        } catch (e) {
-          descripcionWarning = `Precio actualizado OK pero la descripción NO se pudo actualizar: ${
-            e instanceof Error ? e.message : "error"
-          }`
-          console.warn("[ML] Descripción rechazada:", e)
-        }
-      }
-
       await prisma.modelo.update({
         where: { id: m.id },
         data: {
           mlEstado: update.status,
           mlPermalink: update.permalink,
           mlUltimaSync: new Date(),
-          mlError: descripcionWarning,
+          mlError: null,
         },
       })
-      // Si la descripción falló, devolvemos ok:false para que el botón rojo
-      // y la card de errores los muestren — así no queda silenciosamente roto.
-      if (descripcionWarning) {
-        return { ok: false, error: descripcionWarning }
-      }
       return { ok: true, listingId: update.id, permalink: update.permalink }
     }
 
@@ -289,6 +271,13 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       // bronze/gold_special/gold_pro NO aplican a MLA1763.
       listing_type_id: m.mlListingType || "free",
       condition,
+      // Descripción inline en el body. Antes la mandábamos por separado al
+      // endpoint /items/X/description con plain_text pero ML responde
+      // DESCRIPTION_PLAIN_TEXT_NOT_ALLOWED para vehículos clasificados al
+      // hacer update. Inline funciona tanto para create como update.
+      ...(m.descripcion
+        ? { description: { plain_text: m.descripcion.slice(0, 50000) } }
+        : {}),
       pictures: fotosPublicas.map((url) => ({ source: url })),
       // Ubicación obligatoria para clasificados — usa los datos de BUSINESS
       location: {
@@ -411,12 +400,7 @@ export async function publicarOActualizar(modeloId: string): Promise<{
       "/items",
       body
     )
-    // Crear descripción
-    if (m.descripcion) {
-      await mlPost(`/items/${created.id}/description`, {
-        plain_text: m.descripcion.slice(0, 50000),
-      }).catch(() => null)
-    }
+    // La descripción ya se mandó inline en el body del POST.
     await prisma.modelo.update({
       where: { id: m.id },
       data: {
