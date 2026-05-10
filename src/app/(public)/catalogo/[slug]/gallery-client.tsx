@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState, useCallback } from "react"
+import { useEffect, useState, useCallback, useRef } from "react"
 import Image from "next/image"
 import { Bike, ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react"
 
@@ -13,6 +13,9 @@ export function ModelGallery({
 }) {
   const [current, setCurrent] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
+  // Refs para gestionar swipe en mobile
+  const touchStartX = useRef<number | null>(null)
+  const touchStartY = useRef<number | null>(null)
 
   const next = useCallback(
     () => setCurrent((p) => (p === fotos.length - 1 ? 0 : p + 1)),
@@ -39,6 +42,29 @@ export function ModelGallery({
       document.body.style.overflow = prevOverflow
     }
   }, [lightboxOpen, next, prev])
+
+  // Swipe handlers (mobile): horizontal navega, vertical hacia abajo cierra
+  const onTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX
+    touchStartY.current = e.touches[0].clientY
+  }
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return
+    const dx = e.changedTouches[0].clientX - touchStartX.current
+    const dy = e.changedTouches[0].clientY - touchStartY.current
+    const absX = Math.abs(dx)
+    const absY = Math.abs(dy)
+    const THRESHOLD = 50
+    if (absX > absY && absX > THRESHOLD) {
+      if (dx < 0) next()
+      else prev()
+    } else if (absY > absX && dy > THRESHOLD) {
+      // swipe down cierra
+      setLightboxOpen(false)
+    }
+    touchStartX.current = null
+    touchStartY.current = null
+  }
 
   if (fotos.length === 0) {
     return (
@@ -144,8 +170,10 @@ export function ModelGallery({
       {/* Lightbox modal */}
       {lightboxOpen && (
         <div
-          className="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center"
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center"
           onClick={() => setLightboxOpen(false)}
+          onTouchStart={onTouchStart}
+          onTouchEnd={onTouchEnd}
         >
           {/* Close button */}
           <button
@@ -184,7 +212,7 @@ export function ModelGallery({
 
           {/* Image (object-contain para ver completa) */}
           <div
-            className="relative w-full h-full max-w-7xl max-h-[90vh] m-4"
+            className="relative w-[95vw] h-[90vh] max-w-[95vw] max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
             <Image
@@ -192,7 +220,7 @@ export function ModelGallery({
               alt={`${nombre} - Foto ${current + 1}`}
               fill
               className="object-contain"
-              sizes="100vw"
+              sizes="95vw"
               quality={95}
               priority
             />
