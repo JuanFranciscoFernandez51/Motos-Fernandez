@@ -628,6 +628,47 @@ export async function pausarPublicacion(modeloId: string) {
 }
 
 /**
+ * Despublica automáticamente al vender. Se llama desde markVendida.
+ * NO falla si la moto no tiene publicación o si ML no responde — el
+ * objetivo es no bloquear el flujo de venta.
+ *
+ * Best-effort: si funciona genial, si no queda el mlError para que
+ * Francisco pueda cerrar manualmente desde /admin/ml.
+ */
+export async function despublicarAlVender(modeloId: string): Promise<void> {
+  try {
+    const m = await prisma.modelo.findUnique({
+      where: { id: modeloId },
+      select: { mlListingId: true, mlEstado: true },
+    })
+    if (!m?.mlListingId) return // sin publicación → nada que hacer
+    if (m.mlEstado === "closed") return // ya cerrada
+
+    await mlPut(`/items/${m.mlListingId}`, { status: "closed" })
+    await prisma.modelo.update({
+      where: { id: modeloId },
+      data: {
+        mlEstado: "closed",
+        mlUltimaSync: new Date(),
+        mlError: null,
+      },
+    })
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Error cerrando ML"
+    console.warn("[ML] despublicarAlVender falló:", msg)
+    await prisma.modelo
+      .update({
+        where: { id: modeloId },
+        data: {
+          mlError: `Auto-cierre tras venta falló: ${msg.slice(0, 400)}. Cerrá manualmente desde /admin/ml.`,
+          mlUltimaSync: new Date(),
+        },
+      })
+      .catch(() => null)
+  }
+}
+
+/**
  * Borra la publicación: la cierra en ML y resetea los campos ML en
  * nuestro DB para que la moto quede como "no publicada". Eso libera el
  * botón "Publicar" para crear una nueva publicación más tarde.

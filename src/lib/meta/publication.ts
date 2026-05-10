@@ -278,6 +278,47 @@ export async function publicarEnMeta(
 }
 
 /**
+ * Cuando una moto se vende, marcamos visualmente el post de IG y FB
+ * editando el caption para que diga VENDIDA. NO borramos los posts
+ * porque IG/FB no permiten editar carruseles (la única forma es
+ * borrar y republicar). En su lugar editamos solo el caption con un
+ * prefijo "✅ VENDIDA".
+ *
+ * Best-effort: nunca falla la operación de venta principal.
+ */
+export async function marcarVendidaEnMeta(modeloId: string): Promise<void> {
+  try {
+    const m = await prisma.modelo.findUnique({
+      where: { id: modeloId },
+      select: { igPostId: true, fbPostId: true, marca: true, nombre: true, anio: true },
+    })
+    if (!m?.igPostId && !m?.fbPostId) return
+
+    const titulo = `${m.marca} ${m.nombre}${m.anio ? ` ${m.anio}` : ""}`
+    const captionNuevo = `✅ VENDIDA — ${titulo}\n\n¡Gracias por tu confianza! Esta moto ya tiene nuevo dueño.\n\nMotos Fernández\nWhatsApp +54 9 291 578 8671`
+
+    // IG: editar caption del post
+    if (m.igPostId) {
+      try {
+        await metaPost(`/${m.igPostId}`, { caption: captionNuevo })
+      } catch (e) {
+        console.warn("[Meta] No pude editar caption IG:", e)
+      }
+    }
+    // FB: el endpoint es distinto, /{post_id} con message
+    if (m.fbPostId) {
+      try {
+        await metaPost(`/${m.fbPostId}`, { message: captionNuevo })
+      } catch (e) {
+        console.warn("[Meta] No pude editar caption FB:", e)
+      }
+    }
+  } catch (e) {
+    console.warn("[Meta] marcarVendidaEnMeta falló:", e)
+  }
+}
+
+/**
  * Limpia los igError de las motos que fallaron antes (no afecta los posts
  * existentes en IG/FB).
  */

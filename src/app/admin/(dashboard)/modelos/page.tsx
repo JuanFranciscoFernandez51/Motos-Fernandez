@@ -100,7 +100,15 @@ async function markVendida(id: string, vendida: boolean) {
       ? { vendida: true, fechaVenta: new Date(), activo: false }
       : { vendida: false, fechaVenta: null },
   })
+  // Side-effects en redes — best effort, no bloquean si fallan
+  if (vendida) {
+    const { despublicarAlVender } = await import("@/lib/ml/publication")
+    const { marcarVendidaEnMeta } = await import("@/lib/meta/publication")
+    await Promise.allSettled([despublicarAlVender(id), marcarVendidaEnMeta(id)])
+  }
   revalidatePath("/admin/modelos")
+  revalidatePath("/admin/ml")
+  revalidatePath("/admin/meta")
   revalidatePath("/catalogo")
   revalidatePath("/")
   invalidateModelos()

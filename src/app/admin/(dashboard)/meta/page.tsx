@@ -13,6 +13,7 @@ import { InstagramIcon, FacebookIcon } from "@/components/icons/social"
 import { formatDate, formatMoney } from "@/lib/admin-helpers"
 import { MetaPublishButton } from "./publish-button"
 import { MetaClearErrorsButton } from "./clear-errors-button"
+import { MetaBulkPublishButton } from "./bulk-publish-button"
 
 export const dynamic = "force-dynamic"
 
@@ -187,7 +188,18 @@ export default async function MetaAdminPage({
       {status.connected && (
         <Card>
           <CardHeader>
-            <CardTitle>Motos del catálogo</CardTitle>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <CardTitle>Motos del catálogo</CardTitle>
+              {sinPublicar.length > 0 && (
+                <MetaBulkPublishButton
+                  pendientes={sinPublicar.map((m) => ({
+                    id: m.id,
+                    marca: m.marca,
+                    nombre: m.nombre,
+                  }))}
+                />
+              )}
+            </div>
           </CardHeader>
           <CardContent>
             <div className="overflow-x-auto">
