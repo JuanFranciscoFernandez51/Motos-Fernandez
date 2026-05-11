@@ -285,7 +285,6 @@ export function OrdenesList({
                       <DeleteWithConfirmButton
                         deleteUrl={`/api/admin/taller/${o.id}`}
                         label={`${formatNumero("OT", o.numero)} — ${o.motoMarca} ${o.motoModelo}`}
-                        confirmText={formatNumero("OT", o.numero)}
                       />
                     </div>
                   </TableCell>

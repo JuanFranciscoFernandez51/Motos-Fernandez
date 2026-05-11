@@ -327,7 +327,6 @@ export function MandatosListFilters({
                         <DeleteWithConfirmButton
                           deleteUrl={`/api/admin/mandatos/${m.id}`}
                           label={`${formatNumero("MV", m.numero)} — ${m.marca} ${m.modelo}`}
-                          confirmText={formatNumero("MV", m.numero)}
                           extraWarning="Si el mandato ya creó una moto en stock, esa moto queda sin vínculo pero no se borra."
                         />
                       </div>

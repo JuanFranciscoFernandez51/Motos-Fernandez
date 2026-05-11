@@ -221,7 +221,6 @@ export function ClientesList({ clientes }: { clientes: Cliente[] }) {
                       <DeleteWithConfirmButton
                         deleteUrl={`/api/admin/clientes/${c.id}`}
                         label={nombreCompleto(c)}
-                        confirmText={nombreCompleto(c)}
                         extraWarning="Si el cliente tiene OCs, mandatos, financiaciones u órdenes de taller asociadas, el sistema NO va a permitir eliminarlo."
                       />
                     </div>

@@ -196,7 +196,6 @@ export function OCList({ ordenes }: { ordenes: Row[] }) {
                       <DeleteWithConfirmButton
                         deleteUrl={`/api/admin/ordenes-compra/${o.id}`}
                         label={`${formatNumero("OC", o.numero)} — ${o.motoDescripcion}`}
-                        confirmText={formatNumero("OC", o.numero)}
                         extraWarning="Esta acción borra también las permutas, pagos y financiación asociados."
                       />
                     </div>

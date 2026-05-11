@@ -5,45 +5,35 @@ import { useRouter } from "next/navigation"
 import { AlertTriangle, Loader2, Trash2, X } from "lucide-react"
 
 /**
- * Botón rojo "Eliminar" con doble confirmación tipo modal.
+ * Botón "Eliminar" con confirmación tipo modal.
  *
  * Flujo:
- *  1. Click → abre modal con texto de advertencia + input de confirmación.
- *  2. Usuario tiene que escribir el `confirmText` exacto (ej: "OC-0042"
- *     o "JUAN PEREZ") para habilitar el botón rojo.
- *  3. Click confirmar → DELETE al endpoint + refresh.
+ *  1. Click → abre modal con mensaje de advertencia.
+ *  2. Click "Sí, eliminar" → DELETE al endpoint + refresh.
+ *  3. Click "Cancelar" → cierra modal.
  *
  * Reusable para clientes, OCs, mandatos, OTs.
  */
 export function DeleteWithConfirmButton({
   deleteUrl,
   label,
-  confirmText,
   extraWarning,
   variant = "icon",
   redirectTo,
 }: {
   deleteUrl: string
   label: string // ej "OC-0042 — Honda CRF 250"
-  confirmText: string // lo que el usuario tiene que escribir para confirmar
   extraWarning?: string // mensaje adicional (ej "Esta acción borra también las permutas asociadas")
-  variant?: "icon" | "button" // ícono solo (lista) o botón con texto (detalle)
-  redirectTo?: string // a dónde ir después de borrar (default: refresh)
+  variant?: "icon" | "button"
+  redirectTo?: string
 }) {
   const router = useRouter()
   const [open, setOpen] = useState(false)
-  const [input, setInput] = useState("")
   const [error, setError] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
   const [loading, setLoading] = useState(false)
 
-  const matches = input.trim() === confirmText.trim()
-
   const handleDelete = async () => {
-    if (!matches) {
-      setError("La confirmación no coincide")
-      return
-    }
     setError(null)
     setLoading(true)
     try {
@@ -72,7 +62,6 @@ export function DeleteWithConfirmButton({
         <button
           type="button"
           onClick={() => {
-            setInput("")
             setError(null)
             setOpen(true)
           }}
@@ -85,7 +74,6 @@ export function DeleteWithConfirmButton({
         <button
           type="button"
           onClick={() => {
-            setInput("")
             setError(null)
             setOpen(true)
           }}
@@ -108,7 +96,7 @@ export function DeleteWithConfirmButton({
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-neutral-800 px-5 py-3">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="size-5 text-red-600" />
-                <h3 className="font-semibold">Confirmar eliminación</h3>
+                <h3 className="font-semibold">¿Estás seguro?</h3>
               </div>
               <button
                 onClick={() => !loading && setOpen(false)}
@@ -129,24 +117,11 @@ export function DeleteWithConfirmButton({
                   ⚠ {extraWarning}
                 </p>
               )}
-              <div className="space-y-1.5">
-                <label className="text-xs text-gray-500 dark:text-gray-400">
-                  Para confirmar, escribí <code className="rounded bg-gray-100 dark:bg-neutral-800 px-1.5 py-0.5 text-xs font-mono">{confirmText}</code>:
-                </label>
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => {
-                    setInput(e.target.value)
-                    setError(null)
-                  }}
-                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm"
-                  autoFocus
-                />
-                {error && (
-                  <p className="text-xs text-red-600">{error}</p>
-                )}
-              </div>
+              {error && (
+                <p className="rounded bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 px-3 py-2 text-xs text-red-700 dark:text-red-300">
+                  {error}
+                </p>
+              )}
             </div>
             <div className="flex items-center justify-end gap-2 border-t border-gray-100 dark:border-neutral-800 px-5 py-3">
               <button
@@ -155,12 +130,12 @@ export function DeleteWithConfirmButton({
                 disabled={loading}
                 className="rounded-md border border-gray-200 dark:border-neutral-800 px-3 py-1.5 text-sm hover:bg-gray-50 dark:hover:bg-neutral-900"
               >
-                Cancelar
+                No, cancelar
               </button>
               <button
                 type="button"
                 onClick={handleDelete}
-                disabled={!matches || loading || isPending}
+                disabled={loading || isPending}
                 className="inline-flex items-center gap-1.5 rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {loading || isPending ? (
@@ -168,7 +143,7 @@ export function DeleteWithConfirmButton({
                 ) : (
                   <Trash2 className="size-4" />
                 )}
-                Eliminar definitivamente
+                Sí, eliminar
               </button>
             </div>
           </div>
