@@ -3,7 +3,6 @@
 import { useMemo, useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
   Table,
@@ -21,6 +20,12 @@ import {
   ESTADO_OC_STYLES,
   ESTADO_OC_LABELS,
 } from "@/lib/admin-helpers"
+import { InlineEstadoSelect, type EstadoOption } from "@/components/admin/inline-estado-select"
+import { DeleteWithConfirmButton } from "@/components/admin/delete-with-confirm-button"
+
+const ESTADOS_OC: EstadoOption[] = ["BORRADOR", "RESERVADA", "CONCRETADA", "CANCELADA"].map(
+  (v) => ({ value: v, label: ESTADO_OC_LABELS[v], className: ESTADO_OC_STYLES[v] })
+)
 
 type Row = {
   id: string
@@ -167,9 +172,11 @@ export function OCList({ ordenes }: { ordenes: Row[] }) {
                   </TableCell>
                   <TableCell className="text-xs text-gray-600 dark:text-gray-300">{o.formaPago || "—"}</TableCell>
                   <TableCell>
-                    <Badge variant="secondary" className={ESTADO_OC_STYLES[o.estado]}>
-                      {ESTADO_OC_LABELS[o.estado]}
-                    </Badge>
+                    <InlineEstadoSelect
+                      estadoActual={o.estado}
+                      options={ESTADOS_OC}
+                      patchUrl={`/api/admin/ordenes-compra/${o.id}/estado`}
+                    />
                   </TableCell>
                   <TableCell className="text-xs text-gray-500 dark:text-gray-400">{formatDate(o.fecha)}</TableCell>
                   <TableCell>
@@ -186,6 +193,12 @@ export function OCList({ ordenes }: { ordenes: Row[] }) {
                       >
                         <FileText className="h-4 w-4" />
                       </a>
+                      <DeleteWithConfirmButton
+                        deleteUrl={`/api/admin/ordenes-compra/${o.id}`}
+                        label={`${formatNumero("OC", o.numero)} — ${o.motoDescripcion}`}
+                        confirmText={formatNumero("OC", o.numero)}
+                        extraWarning="Esta acción borra también las permutas, pagos y financiación asociados."
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

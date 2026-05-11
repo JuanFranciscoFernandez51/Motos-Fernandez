@@ -3,7 +3,6 @@
 import { useMemo, useState, useTransition } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import {
   Table,
@@ -31,6 +30,20 @@ import {
   ESTADO_MANDATO_LABELS,
 } from "@/lib/admin-helpers"
 import { FotosModal } from "../modelos/fotos-modal"
+import { InlineEstadoSelect, type EstadoOption } from "@/components/admin/inline-estado-select"
+import { DeleteWithConfirmButton } from "@/components/admin/delete-with-confirm-button"
+
+const ESTADOS_MANDATO: EstadoOption[] = [
+  "PENDIENTE",
+  "ACTIVO",
+  "VENDIDO",
+  "CANCELADO",
+  "VENCIDO",
+].map((v) => ({
+  value: v,
+  label: ESTADO_MANDATO_LABELS[v],
+  className: ESTADO_MANDATO_STYLES[v],
+}))
 
 type MandatoRow = {
   id: string
@@ -245,12 +258,11 @@ export function MandatosListFilters({
                       {formatMoney(m.precioVenta, m.moneda)}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant="secondary"
-                        className={ESTADO_MANDATO_STYLES[m.estado]}
-                      >
-                        {ESTADO_MANDATO_LABELS[m.estado]}
-                      </Badge>
+                      <InlineEstadoSelect
+                        estadoActual={m.estado}
+                        options={ESTADOS_MANDATO}
+                        patchUrl={`/api/admin/mandatos/${m.id}/estado`}
+                      />
                     </TableCell>
                     <TableCell>
                       {m.publicado ? (
@@ -312,6 +324,12 @@ export function MandatosListFilters({
                         >
                           <FileText className="h-4 w-4" />
                         </a>
+                        <DeleteWithConfirmButton
+                          deleteUrl={`/api/admin/mandatos/${m.id}`}
+                          label={`${formatNumero("MV", m.numero)} — ${m.marca} ${m.modelo}`}
+                          confirmText={formatNumero("MV", m.numero)}
+                          extraWarning="Si el mandato ya creó una moto en stock, esa moto queda sin vínculo pero no se borra."
+                        />
                       </div>
                     </TableCell>
                   </TableRow>

@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table"
 import { Search, X, Pencil, User, Phone, Mail, MessageCircle } from "lucide-react"
 import { formatDate, nombreCompleto } from "@/lib/admin-helpers"
+import { DeleteWithConfirmButton } from "@/components/admin/delete-with-confirm-button"
 
 type Cliente = {
   id: string
@@ -209,13 +210,21 @@ export function ClientesList({ clientes }: { clientes: Cliente[] }) {
                     {formatDate(c.createdAt)}
                   </TableCell>
                   <TableCell>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      render={<Link href={`/admin/clientes/${c.id}`} />}
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-0.5">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        render={<Link href={`/admin/clientes/${c.id}`} />}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <DeleteWithConfirmButton
+                        deleteUrl={`/api/admin/clientes/${c.id}`}
+                        label={nombreCompleto(c)}
+                        confirmText={nombreCompleto(c)}
+                        extraWarning="Si el cliente tiene OCs, mandatos, financiaciones u órdenes de taller asociadas, el sistema NO va a permitir eliminarlo."
+                      />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

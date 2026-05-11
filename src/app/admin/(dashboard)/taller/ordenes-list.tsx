@@ -5,6 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { DeleteWithConfirmButton } from "@/components/admin/delete-with-confirm-button"
 import {
   Table,
   TableBody,
@@ -281,6 +282,11 @@ export function OrdenesList({
                       >
                         <Download className="h-4 w-4" />
                       </a>
+                      <DeleteWithConfirmButton
+                        deleteUrl={`/api/admin/taller/${o.id}`}
+                        label={`${formatNumero("OT", o.numero)} — ${o.motoMarca} ${o.motoModelo}`}
+                        confirmText={formatNumero("OT", o.numero)}
+                      />
                     </div>
                   </TableCell>
                 </TableRow>
