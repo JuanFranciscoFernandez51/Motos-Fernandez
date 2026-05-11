@@ -630,23 +630,10 @@ export function OCDrawer({
                             />
                           </div>
                         </div>
-                        <label className="flex items-start gap-2 cursor-pointer rounded-md bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-900/40 p-2.5">
-                          <input
-                            type="checkbox"
-                            checked={pp.subirAlStock}
-                            onChange={(e) => updatePermuta({ subirAlStock: e.target.checked })}
-                            className="mt-0.5"
-                          />
-                          <div className="text-xs">
-                            <p className="font-medium text-gray-900 dark:text-gray-100">
-                              Subir esta moto al stock como usada
-                            </p>
-                            <p className="text-gray-500 dark:text-gray-400 mt-0.5">
-                              Crea un modelo nuevo en el catálogo (inactivo, slug mf-XXXX
-                              continuando la numeración).
-                            </p>
-                          </div>
-                        </label>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 italic px-1">
+                          Esta moto se va a cargar al catálogo como usada (inactiva
+                          hasta que la actives desde /admin/modelos).
+                        </p>
                       </div>
                     )
                   })}

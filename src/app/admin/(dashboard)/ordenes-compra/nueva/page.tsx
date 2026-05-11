@@ -121,7 +121,8 @@ async function createOrdenCompra(formData: FormData) {
 
         for (const p of permutasInput) {
           let motoRecibidaId: string | null = null
-          if (p.subirAlStock && p.marca && p.modelo) {
+          // Siempre cargar al catalogo si hay marca + modelo (la moto queda inactiva)
+          if (p.marca && p.modelo) {
             const slug = `mf-${String(proximoMF).padStart(4, "0")}`
             proximoMF++
             const motoRecibida = await tx.modelo.create({

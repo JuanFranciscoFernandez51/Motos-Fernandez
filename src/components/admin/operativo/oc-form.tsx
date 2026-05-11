@@ -35,7 +35,7 @@ export type PermutaForm = {
 
 const permutaVacia = (): PermutaForm => ({
   marca: "", modelo: "", anio: "", kilometros: "", patente: "",
-  chasis: "", motor: "", descripcion: "", valor: "", subirAlStock: false,
+  chasis: "", motor: "", descripcion: "", valor: "", subirAlStock: true,
 })
 
 export type OCData = {
@@ -553,25 +553,14 @@ export function OCForm({
                         />
                       </div>
                     </div>
-                    {/* Solo permutas NUEVAS (sin id) pueden marcarse para subir al stock */}
+                    {/* Las permutas se suben SIEMPRE al catalogo como inactivas
+                        (slug mf-XXXX). El admin puede activarlas mas tarde desde
+                        /admin/modelos cuando complete fotos y precio. */}
                     {!pp.id && !yaEnStock && (
-                      <label className="flex items-start gap-2 cursor-pointer rounded-md bg-white dark:bg-neutral-900 border border-purple-200 dark:border-purple-900/40 p-2.5">
-                        <input
-                          type="checkbox"
-                          checked={!!pp.subirAlStock}
-                          onChange={(e) => upd({ subirAlStock: e.target.checked })}
-                          className="mt-0.5"
-                        />
-                        <div className="text-xs">
-                          <p className="font-medium text-gray-900 dark:text-gray-100">
-                            Subir esta moto al stock como usada
-                          </p>
-                          <p className="text-gray-500 dark:text-gray-400 mt-0.5">
-                            Crea un modelo nuevo en el catálogo (slug mf-XXXX
-                            consecutivo, inactivo).
-                          </p>
-                        </div>
-                      </label>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+                        Esta moto se va a cargar al catálogo como usada (inactiva
+                        hasta que la actives desde la lista de motos).
+                      </p>
                     )}
                   </div>
                 )

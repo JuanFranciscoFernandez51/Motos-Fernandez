@@ -171,9 +171,10 @@ async function updateOrden(formData: FormData) {
             },
           })
         } else {
-          // Permuta nueva. Si subirAlStock, crear primero la moto y linkearla.
+          // Permuta nueva. Siempre cargar al catalogo si hay marca + modelo
+          // (la moto queda inactiva hasta que el admin la habilite).
           let motoRecibidaId: string | null = null
-          if (p.subirAlStock && p.marca && p.modelo) {
+          if (p.marca && p.modelo) {
             const slug = `mf-${String(proximoMF).padStart(4, "0")}`
             proximoMF++
             const motoRecibida = await tx.modelo.create({
