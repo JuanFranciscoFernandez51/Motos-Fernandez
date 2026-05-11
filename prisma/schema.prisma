@@ -98,12 +98,25 @@ model Modelo {
   proveedor         Proveedor?        @relation(fields: [proveedorId], references: [id])
 
   // Origen de la unidad (trazabilidad de stock)
-  origen            String?           @default("STOCK_PROPIO")  // STOCK_PROPIO | PARTE_DE_PAGO | MANDATO
+  origen            String?           @default("STOCK_PROPIO")  // STOCK_PROPIO | PARTE_DE_PAGO | MANDATO | UNIDAD_VENDIDA_0KM
   // Si vino por parte de pago: cliente que la entregó + OC en la que ingresó
   clienteEntregaId    String?
   clienteEntrega      Cliente?        @relation("ClienteEntregaModelo", fields: [clienteEntregaId], references: [id])
   ordenCompraOrigenId String?
   ordenCompraOrigen   OrdenCompra?    @relation("OCOrigenModelo", fields: [ordenCompraOrigenId], references: [id])
+
+  // Para "unidades vendidas" de modelos 0KM: este Modelo es un CLON del
+  // "modeloOrigen" (modelo padre que sigue activo en stock). Lo creamos
+  // automáticamente al concretar una venta de 0KM, con el chasis/motor
+  // específicos de la unidad entregada, vendida=true y clienteId del
+  // comprador. El modelo padre NO se marca como vendido — sigue
+  // disponible en el catálogo porque hay más stock.
+  modeloOrigenId      String?
+  modeloOrigen        Modelo?         @relation("UnidadesVendidas", fields: [modeloOrigenId], references: [id])
+  unidadesVendidas    Modelo[]        @relation("UnidadesVendidas")
+  // Si el modelo es una unidad vendida, OC que generó la venta
+  ordenCompraVentaId  String?         @unique
+  ordenCompraVenta    OrdenCompra?    @relation("OCVentaUnidad", fields: [ordenCompraVentaId], references: [id], onDelete: SetNull)
 
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
@@ -806,6 +819,11 @@ model OrdenCompra {
 
   // Relación inversa: motos en stock que entraron por esta OC (parte de pago)
   motosOrigen     Modelo[] @relation("OCOrigenModelo")
+
+  // Unidad 0KM vendida en esta OC (clon del modelo padre con
+  // chasis/motor de la unidad entregada). 1-1: una OC puede vender
+  // como mucho una unidad 0KM (la moto principal de la OC).
+  unidadVendida   Modelo? @relation("OCVentaUnidad")
 
   // Financiación vinculada (si la OC tiene cuotas)
   financiacion    FinanciacionOC?

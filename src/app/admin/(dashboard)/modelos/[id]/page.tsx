@@ -7,6 +7,7 @@ import { invalidateModelos } from "@/lib/cached-queries"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 import { checklistPermutaTexto } from "@/lib/admin-helpers"
 import { crearMandatoDesdePermuta } from "@/lib/mandato-helpers"
+import { manejarVentaDeMoto } from "@/lib/venta-moto-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -174,17 +175,23 @@ async function updateModelo(formData: FormData) {
 
 async function markVendida(id: string, vendida: boolean) {
   "use server"
-  await prisma.modelo.update({
-    where: { id },
-    data: vendida
-      ? { vendida: true, fechaVenta: new Date(), activo: false }
-      : { vendida: false, fechaVenta: null },
-  })
-  // Side-effects en redes — best effort, no bloquean si fallan
   if (vendida) {
-    const { despublicarAlVender } = await import("@/lib/ml/publication")
-    const { marcarVendidaEnMeta } = await import("@/lib/meta/publication")
-    await Promise.allSettled([despublicarAlVender(id), marcarVendidaEnMeta(id)])
+    const { modeloIdFinal, esClon } = await prisma.$transaction(async (tx) =>
+      manejarVentaDeMoto(tx, { modeloId: id })
+    )
+    if (!esClon) {
+      const { despublicarAlVender } = await import("@/lib/ml/publication")
+      const { marcarVendidaEnMeta } = await import("@/lib/meta/publication")
+      await Promise.allSettled([
+        despublicarAlVender(modeloIdFinal),
+        marcarVendidaEnMeta(modeloIdFinal),
+      ])
+    }
+  } else {
+    await prisma.modelo.update({
+      where: { id },
+      data: { vendida: false, fechaVenta: null },
+    })
   }
   revalidatePath("/admin/modelos")
   revalidatePath(`/admin/modelos/${id}`)
@@ -420,9 +427,11 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
       }
 
       if (input.estado === "CONCRETADA") {
-        await tx.modelo.update({
-          where: { id: input.modeloId },
-          data: { vendida: true, fechaVenta: new Date(), activo: false },
+        await manejarVentaDeMoto(tx, {
+          modeloId: input.modeloId,
+          clienteId: input.clienteId,
+          ordenCompraId: orden.id,
+          fechaVenta: orden.fecha,
         })
       } else if (input.estado === "RESERVADA") {
         await tx.modelo.update({
@@ -494,7 +503,7 @@ export default async function EditModeloPage({
 }) {
   const { id } = await params
 
-  const [modelo, clientes, proveedores] = await Promise.all([
+  const [modelo, clientes, proveedores, unidadesVendidas] = await Promise.all([
     prisma.modelo.findUnique({
       where: { id },
       include: { colores: true },
@@ -513,6 +522,25 @@ export default async function EditModeloPage({
     prisma.proveedor.findMany({
       orderBy: { nombre: "asc" },
       select: { id: true, nombre: true },
+    }),
+    // Unidades vendidas (clones) si este modelo es padre de alguna venta 0KM
+    prisma.modelo.findMany({
+      where: { modeloOrigenId: id },
+      orderBy: { fechaVenta: "desc" },
+      select: {
+        id: true,
+        chasis: true,
+        motor: true,
+        patente: true,
+        fechaVenta: true,
+        ordenCompraVentaId: true,
+        ordenCompraVenta: {
+          select: {
+            numero: true,
+            cliente: { select: { nombre: true, apellido: true } },
+          },
+        },
+      },
     }),
   ])
 
@@ -615,20 +643,83 @@ export default async function EditModeloPage({
   }
 
   return (
-    <ModeloForm
-      initialData={initialData}
-      saveAction={updateModelo}
-      clientes={clientes}
-      proveedores={proveedores}
-      extraActions={
-        <ModeloEditActions
-          modelo={modeloAVender}
-          clientes={clientes}
-          markVendida={markVendida}
-          crearOCDesdeModelo={crearOCDesdeModelo}
-          deleteModelo={deleteModelo}
-        />
-      }
-    />
+    <div className="space-y-6">
+      <ModeloForm
+        initialData={initialData}
+        saveAction={updateModelo}
+        clientes={clientes}
+        proveedores={proveedores}
+        extraActions={
+          <ModeloEditActions
+            modelo={modeloAVender}
+            clientes={clientes}
+            markVendida={markVendida}
+            crearOCDesdeModelo={crearOCDesdeModelo}
+            deleteModelo={deleteModelo}
+          />
+        }
+      />
+
+      {/* Histórico de unidades vendidas (solo si este modelo es padre de alguna venta 0KM) */}
+      {unidadesVendidas.length > 0 && (
+        <div className="rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100 mb-1">
+            Unidades vendidas ({unidadesVendidas.length})
+          </h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+            Histórico de unidades 0KM vendidas de este modelo. Cada una tiene
+            sus propios datos de chasis/motor/patente.
+          </p>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                <tr className="border-b border-gray-100 dark:border-neutral-800">
+                  <th className="text-left px-2 py-2">Fecha</th>
+                  <th className="text-left px-2 py-2">Cliente</th>
+                  <th className="text-left px-2 py-2">Chasis</th>
+                  <th className="text-left px-2 py-2">Motor</th>
+                  <th className="text-left px-2 py-2">Patente</th>
+                  <th className="text-left px-2 py-2">OC</th>
+                </tr>
+              </thead>
+              <tbody>
+                {unidadesVendidas.map((u) => (
+                  <tr
+                    key={u.id}
+                    className="border-b border-gray-50 dark:border-neutral-900 last:border-0"
+                  >
+                    <td className="px-2 py-2 text-xs text-gray-500 dark:text-gray-400">
+                      {u.fechaVenta
+                        ? new Date(u.fechaVenta).toLocaleDateString("es-AR")
+                        : "—"}
+                    </td>
+                    <td className="px-2 py-2">
+                      {u.ordenCompraVenta?.cliente
+                        ? `${u.ordenCompraVenta.cliente.apellido}, ${u.ordenCompraVenta.cliente.nombre}`
+                        : "—"}
+                    </td>
+                    <td className="px-2 py-2 font-mono text-xs">{u.chasis || "—"}</td>
+                    <td className="px-2 py-2 font-mono text-xs">{u.motor || "—"}</td>
+                    <td className="px-2 py-2 font-mono text-xs">{u.patente || "—"}</td>
+                    <td className="px-2 py-2">
+                      {u.ordenCompraVentaId ? (
+                        <a
+                          href={`/admin/ordenes-compra/${u.ordenCompraVentaId}`}
+                          className="text-[#6B4F7A] hover:underline font-mono text-xs"
+                        >
+                          OC-{String(u.ordenCompraVenta?.numero ?? "").padStart(4, "0")}
+                        </a>
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }

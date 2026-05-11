@@ -5,6 +5,7 @@ import { invalidateModelos } from "@/lib/cached-queries"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 import { checklistPermutaTexto } from "@/lib/admin-helpers"
 import { crearMandatoDesdePermuta } from "@/lib/mandato-helpers"
+import { manejarVentaDeMoto } from "@/lib/venta-moto-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -229,12 +230,19 @@ async function createOrdenCompra(formData: FormData) {
         })
       }
 
-      // Side effects según estado
+      // Side effects según estado.
+      // Para 0KM concretada: clona como unidad vendida (padre queda activo).
+      // Para USADA concretada: marca el modelo original como vendida.
       if (orden.modeloId) {
         if (orden.estado === "CONCRETADA") {
-          await tx.modelo.update({
-            where: { id: orden.modeloId },
-            data: { vendida: true, fechaVenta: orden.fecha, activo: false },
+          await manejarVentaDeMoto(tx, {
+            modeloId: orden.modeloId,
+            clienteId: orden.clienteId,
+            ordenCompraId: orden.id,
+            fechaVenta: orden.fecha,
+            chasis: orden.motoChasis,
+            motor: orden.motoMotor,
+            patente: orden.motoPatente,
           })
         } else if (orden.estado === "RESERVADA") {
           await tx.modelo.update({

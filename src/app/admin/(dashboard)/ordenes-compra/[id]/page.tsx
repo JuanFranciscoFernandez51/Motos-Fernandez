@@ -15,6 +15,7 @@ import { invalidateModelos } from "@/lib/cached-queries"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 import { checklistPermutaTexto } from "@/lib/admin-helpers"
 import { crearMandatoDesdePermuta } from "@/lib/mandato-helpers"
+import { manejarVentaDeMoto } from "@/lib/venta-moto-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -321,9 +322,14 @@ async function updateOrden(formData: FormData) {
 
       if (orden.modeloId) {
         if (orden.estado === "CONCRETADA") {
-          await tx.modelo.update({
-            where: { id: orden.modeloId },
-            data: { vendida: true, fechaVenta: orden.fecha, activo: false },
+          await manejarVentaDeMoto(tx, {
+            modeloId: orden.modeloId,
+            clienteId: orden.clienteId,
+            ordenCompraId: orden.id,
+            fechaVenta: orden.fecha,
+            chasis: orden.motoChasis,
+            motor: orden.motoMotor,
+            patente: orden.motoPatente,
           })
         } else if (orden.estado === "RESERVADA") {
           await tx.modelo.update({
@@ -381,18 +387,25 @@ async function marcarConcretada(id: string) {
   const orden = await prisma.ordenCompra.findUnique({ where: { id } })
   if (!orden) return
 
-  await prisma.ordenCompra.update({
-    where: { id },
-    data: { estado: "CONCRETADA" },
-  })
-
-  // Si hay moto del catálogo, marcarla como vendida
-  if (orden.modeloId) {
-    await prisma.modelo.update({
-      where: { id: orden.modeloId },
-      data: { vendida: true, fechaVenta: new Date(), activo: false },
+  await prisma.$transaction(async (tx) => {
+    await tx.ordenCompra.update({
+      where: { id },
+      data: { estado: "CONCRETADA" },
     })
-  }
+    // Para 0KM: clona como unidad vendida. Para USADA: marca el modelo
+    // original como vendida. El padre 0KM queda activo en stock.
+    if (orden.modeloId) {
+      await manejarVentaDeMoto(tx, {
+        modeloId: orden.modeloId,
+        clienteId: orden.clienteId,
+        ordenCompraId: orden.id,
+        fechaVenta: new Date(),
+        chasis: orden.motoChasis,
+        motor: orden.motoMotor,
+        patente: orden.motoPatente,
+      })
+    }
+  })
 
   revalidatePath("/admin/ordenes-compra")
   revalidatePath(`/admin/ordenes-compra/${id}`)

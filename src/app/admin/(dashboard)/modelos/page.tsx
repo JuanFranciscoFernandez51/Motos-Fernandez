@@ -8,6 +8,7 @@ import { invalidateModelos } from "@/lib/cached-queries"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 import { checklistPermutaTexto } from "@/lib/admin-helpers"
 import { crearMandatoDesdePermuta } from "@/lib/mandato-helpers"
+import { manejarVentaDeMoto } from "@/lib/venta-moto-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -96,17 +97,29 @@ async function updateFotos(id: string, fotos: string[]) {
 
 async function markVendida(id: string, vendida: boolean) {
   "use server"
-  await prisma.modelo.update({
-    where: { id },
-    data: vendida
-      ? { vendida: true, fechaVenta: new Date(), activo: false }
-      : { vendida: false, fechaVenta: null },
-  })
-  // Side-effects en redes — best effort, no bloquean si fallan
   if (vendida) {
-    const { despublicarAlVender } = await import("@/lib/ml/publication")
-    const { marcarVendidaEnMeta } = await import("@/lib/meta/publication")
-    await Promise.allSettled([despublicarAlVender(id), marcarVendidaEnMeta(id)])
+    // 0KM clona como unidad vendida; USADA se marca directamente.
+    // El padre 0KM queda activo en stock.
+    const { modeloIdFinal, esClon } = await prisma.$transaction(async (tx) =>
+      manejarVentaDeMoto(tx, { modeloId: id })
+    )
+    // Side-effects en redes: solo despublicar si la moto vendida es la
+    // visible en catálogo (= no es 0KM, o sea el padre se mantiene).
+    if (!esClon) {
+      const { despublicarAlVender } = await import("@/lib/ml/publication")
+      const { marcarVendidaEnMeta } = await import("@/lib/meta/publication")
+      await Promise.allSettled([
+        despublicarAlVender(modeloIdFinal),
+        marcarVendidaEnMeta(modeloIdFinal),
+      ])
+    }
+  } else {
+    // Desmarcar: solo aplica al modelo que está marcado como vendida.
+    // Si era un clon, mejor borrarlo manual desde la lista.
+    await prisma.modelo.update({
+      where: { id },
+      data: { vendida: false, fechaVenta: null },
+    })
   }
   revalidatePath("/admin/modelos")
   revalidatePath("/admin/ml")
@@ -342,11 +355,15 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
         })
       }
 
-      // 3) Side effects sobre la moto vendida según estado
+      // 3) Side effects sobre la moto vendida según estado.
+      // Para 0KM: el helper clona como unidad vendida (el padre queda activo).
+      // Para USADA: marca el modelo original como vendida.
       if (input.estado === "CONCRETADA") {
-        await tx.modelo.update({
-          where: { id: input.modeloId },
-          data: { vendida: true, fechaVenta: new Date(), activo: false },
+        await manejarVentaDeMoto(tx, {
+          modeloId: input.modeloId,
+          clienteId: input.clienteId,
+          ordenCompraId: orden.id,
+          fechaVenta: orden.fecha,
         })
       } else if (input.estado === "RESERVADA") {
         await tx.modelo.update({
