@@ -1,9 +1,10 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Search, User, Plus, X, Check } from "lucide-react"
+import { Search, User, Plus, X, Check, Pencil } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { ClienteQuickCreateModal } from "./cliente-quick-create-modal"
+import { ClienteQuickEditModal } from "./cliente-quick-edit-modal"
 
 export type ClienteOption = {
   id: string
@@ -28,8 +29,15 @@ export function ClienteSelector({
   const [query, setQuery] = useState("")
   const [open, setOpen] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
 
   const selected = clientes.find((c) => c.id === value) ?? null
+
+  const handleUpdated = (c: ClienteOption) => {
+    // Reemplazar in-place el cliente actualizado para que el selector
+    // muestre los datos nuevos sin recargar.
+    setClientes((prev) => prev.map((x) => (x.id === c.id ? c : x)))
+  }
 
   const filtered = useMemo(() => {
     const norm = (s: string) =>
@@ -72,17 +80,34 @@ export function ClienteSelector({
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              onChange("")
-              setQuery("")
-            }}
-            className="text-xs text-gray-500 dark:text-gray-400 hover:text-red-600 px-2 py-1 rounded"
-          >
-            Cambiar
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => setEditOpen(true)}
+              className="inline-flex items-center gap-1 text-xs text-[#6B4F7A] hover:bg-[#6B4F7A]/10 px-2 py-1 rounded"
+              title="Editar datos del cliente"
+            >
+              <Pencil className="size-3" />
+              Editar
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                onChange("")
+                setQuery("")
+              }}
+              className="text-xs text-gray-500 dark:text-gray-400 hover:text-red-600 px-2 py-1 rounded"
+            >
+              Cambiar
+            </button>
+          </div>
         </div>
+        <ClienteQuickEditModal
+          open={editOpen}
+          onClose={() => setEditOpen(false)}
+          onUpdated={handleUpdated}
+          clienteId={selected.id}
+        />
       </>
     )
   }
