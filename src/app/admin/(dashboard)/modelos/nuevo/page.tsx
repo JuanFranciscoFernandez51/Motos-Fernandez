@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { ModeloForm } from "@/components/admin/modelo-form"
 import { invalidateModelos } from "@/lib/cached-queries"
+import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -80,10 +81,13 @@ async function createModelo(formData: FormData) {
       if (s.key.trim()) specs[s.key] = s.value
     }
 
-    await prisma.modelo.create({
+    await prisma.$transaction(async (tx) => {
+      const codigo = await generarCodigoModelo(tx, { condicion })
+      await tx.modelo.create({
       data: {
         nombre,
         slug,
+        codigo,
         marca,
         categoriaVehiculo: categoriaVehiculo as "MOTOCICLETA" | "CUATRICICLO" | "UTV" | "MOTO_DE_AGUA",
         condicion,
@@ -148,6 +152,7 @@ async function createModelo(formData: FormData) {
             .map((c) => ({ nombre: c.nombre, hex: c.hex, foto: c.foto || null })),
         },
       },
+    })
     })
 
     revalidatePath("/admin/modelos")

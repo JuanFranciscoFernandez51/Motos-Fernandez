@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { requireAdmin } from "@/lib/admin-auth"
 import { revalidatePath } from "next/cache"
 import { invalidateModelos } from "@/lib/cached-queries"
+import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
@@ -64,38 +65,42 @@ export async function POST(request: Request) {
 
   const placeholderFoto = "/images/logo-clasico.png"
   try {
-    const m = await prisma.modelo.create({
-      data: {
-        nombre,
-        slug,
-        marca,
-        condicion,
-        anio,
-        kilometros,
-        chasis,
-        motor,
-        patente,
-        precio,
-        moneda,
-        activo: false, // siempre inactiva al crearla rápido desde OC
-        fotos: [placeholderFoto],
-      },
-      select: {
-        id: true,
-        slug: true,
-        nombre: true,
-        marca: true,
-        anio: true,
-        kilometros: true,
-        condicion: true,
-        chasis: true,
-        motor: true,
-        patente: true,
-        precio: true,
-        moneda: true,
-        fotos: true,
-        vendida: true,
-      },
+    const m = await prisma.$transaction(async (tx) => {
+      const codigo = await generarCodigoModelo(tx, { condicion })
+      return tx.modelo.create({
+        data: {
+          nombre,
+          slug,
+          codigo,
+          marca,
+          condicion,
+          anio,
+          kilometros,
+          chasis,
+          motor,
+          patente,
+          precio,
+          moneda,
+          activo: false, // siempre inactiva al crearla rápido desde OC
+          fotos: [placeholderFoto],
+        },
+        select: {
+          id: true,
+          slug: true,
+          nombre: true,
+          marca: true,
+          anio: true,
+          kilometros: true,
+          condicion: true,
+          chasis: true,
+          motor: true,
+          patente: true,
+          precio: true,
+          moneda: true,
+          fotos: true,
+          vendida: true,
+        },
+      })
     })
     revalidatePath("/admin/modelos")
     invalidateModelos()

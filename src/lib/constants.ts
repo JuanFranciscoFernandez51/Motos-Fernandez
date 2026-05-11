@@ -36,6 +36,7 @@ export const HORARIOS = {
 
 export const ETIQUETAS_MODELO = [
   { value: "DISPONIBLE", label: "Disponible", color: "bg-emerald-500" },
+  { value: "ENTREGA_INMEDIATA", label: "Entrega inmediata", color: "bg-cyan-500" },
   { value: "ULTIMA_UNIDAD", label: "Última unidad", color: "bg-orange-500" },
   { value: "RECIEN_INGRESADA", label: "Recién ingresada", color: "bg-blue-500" },
   { value: "CONSULTAR_STOCK", label: "Consultá stock", color: "bg-gray-500" },

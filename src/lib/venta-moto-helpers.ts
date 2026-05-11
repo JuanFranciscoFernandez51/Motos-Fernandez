@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client"
+import { generarCodigoModelo } from "./codigo-modelo-helpers"
 
 /**
  * Maneja la venta de un Modelo del catálogo. Comportamiento distinto
@@ -87,11 +88,16 @@ export async function manejarVentaDeMoto(
       .filter((n) => n > 0)
     const proximoN = numeros.length > 0 ? Math.max(...numeros) + 1 : 1
     const slugClon = `${baseSlug}${proximoN}`
+    const codigoClon = await generarCodigoModelo(tx, {
+      condicion: m.condicion,
+      esClon: true,
+    })
 
     const clon = await tx.modelo.create({
       data: {
         nombre: m.nombre,
         slug: slugClon,
+        codigo: codigoClon,
         marca: m.marca,
         categoriaVehiculo: m.categoriaVehiculo,
         condicion: m.condicion,

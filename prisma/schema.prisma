@@ -25,6 +25,10 @@ model Modelo {
   id                String            @id @default(cuid())
   nombre            String
   slug              String            @unique
+  // Código interno operativo (MF-0KM-0001 para 0KM padres, MF-0001 para
+  // usadas/permutas/unidades vendidas). El slug se mantiene atado a la
+  // URL pública. Se asigna automático en el helper de creación.
+  codigo            String?           @unique
   marca             String            // Campo libre: "Honda", "Yamaha", "Suzuki", etc.
   categoriaVehiculo CategoriaVehiculo @default(MOTOCICLETA)
   condicion         String            @default("0KM")  // "0KM" o "USADA"

@@ -42,6 +42,7 @@ type Modelo = {
   id: string
   nombre: string
   slug: string
+  codigo: string | null
   marca: string
   categoriaVehiculo: string
   condicion: string
@@ -175,6 +176,7 @@ export function ModelosList({
         m.nombre,
         m.marca,
         m.slug,
+        m.codigo,
         m.cilindrada,
         m.anio?.toString(),
       ]
@@ -189,7 +191,7 @@ export function ModelosList({
     const q = queryVendidas.trim().toLowerCase()
     if (!q) return modelosVendidas
     return modelosVendidas.filter((m) => {
-      const hay = [m.nombre, m.marca, m.slug, m.anio?.toString()]
+      const hay = [m.nombre, m.marca, m.slug, m.codigo, m.anio?.toString()]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
@@ -378,7 +380,7 @@ export function ModelosList({
                       className={isPlaceholder ? "bg-orange-50/40 dark:bg-orange-950/30" : undefined}
                     >
                       <TableCell className="font-mono text-xs uppercase text-[#6B4F7A] font-semibold">
-                        {modelo.slug}
+                        {modelo.codigo || modelo.slug}
                       </TableCell>
                       <TableCell>
                         {sinFoto ? (
@@ -741,7 +743,7 @@ export function ModelosList({
                         filteredVendidas.map((modelo) => (
                           <TableRow key={modelo.id}>
                             <TableCell className="font-mono text-xs uppercase text-[#6B4F7A] font-semibold">
-                              {modelo.slug}
+                              {modelo.codigo || modelo.slug}
                             </TableCell>
                             <TableCell>
                               {modelo.fotos[0] ? (

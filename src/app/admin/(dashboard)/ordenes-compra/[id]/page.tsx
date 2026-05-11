@@ -16,6 +16,7 @@ import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 import { checklistPermutaTexto } from "@/lib/admin-helpers"
 import { crearMandatoDesdePermuta } from "@/lib/mandato-helpers"
 import { manejarVentaDeMoto } from "@/lib/venta-moto-helpers"
+import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -199,10 +200,12 @@ async function updateOrden(formData: FormData) {
           if (p.marca && p.modelo) {
             const slug = `mf-${String(proximoMF).padStart(4, "0")}`
             proximoMF++
+            const codigo = await generarCodigoModelo(tx, { condicion: "USADA" })
             const motoRecibida = await tx.modelo.create({
               data: {
                 nombre: p.modelo,
                 slug,
+                codigo,
                 marca: p.marca,
                 condicion: "USADA",
                 anio: p.anio,
