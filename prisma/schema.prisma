@@ -881,6 +881,19 @@ model OCPermuta {
   descripcion   String?     @db.Text
   valor         Int         // valor tomado por esta permuta
 
+  // Checklist de qué entrega el cliente con la moto. Se copia a las
+  // notasInternas de la moto al subirla al stock para que el vendedor
+  // sepa qué accesorios trae cuando va a venderla.
+  tieneTitulo        Boolean @default(false)
+  tieneManual        Boolean @default(false)
+  tieneSegundaLlave  Boolean @default(false)
+  tieneCasco         Boolean @default(false)
+  tieneVtv           Boolean @default(false)
+  tieneSeguro        Boolean @default(false)
+  tieneFactura       Boolean @default(false) // factura de compra original
+  tieneFichaTecnica  Boolean @default(false)
+  accesoriosExtra    String? @db.Text // texto libre: "Maleta lateral, GPS, etc"
+
   // Si se subió al stock como moto usada → linkeo
   motoRecibidaId String?    @unique
   motoRecibida   Modelo?    @relation("OCPermutaMotoRecibida", fields: [motoRecibidaId], references: [id])

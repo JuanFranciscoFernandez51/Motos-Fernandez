@@ -31,11 +31,24 @@ export type PermutaForm = {
   motoRecibidaId?: string | null
   // Solo para permutas nuevas (sin id): si se sube al stock como usada
   subirAlStock?: boolean
+  // Checklist de accesorios que entrega el cliente con la moto
+  tieneTitulo?: boolean
+  tieneManual?: boolean
+  tieneSegundaLlave?: boolean
+  tieneCasco?: boolean
+  tieneVtv?: boolean
+  tieneSeguro?: boolean
+  tieneFactura?: boolean
+  tieneFichaTecnica?: boolean
+  accesoriosExtra?: string
 }
 
 const permutaVacia = (): PermutaForm => ({
   marca: "", modelo: "", anio: "", kilometros: "", patente: "",
   chasis: "", motor: "", descripcion: "", valor: "", subirAlStock: true,
+  tieneTitulo: false, tieneManual: false, tieneSegundaLlave: false,
+  tieneCasco: false, tieneVtv: false, tieneSeguro: false,
+  tieneFactura: false, tieneFichaTecnica: false, accesoriosExtra: "",
 })
 
 export type OCData = {
@@ -189,6 +202,16 @@ export function OCForm({
             valor: p.valor ? parseInt(p.valor) : 0,
             motoRecibidaId: p.motoRecibidaId ?? null,
             subirAlStock: !!p.subirAlStock,
+            // Checklist de accesorios que entrega
+            tieneTitulo: !!p.tieneTitulo,
+            tieneManual: !!p.tieneManual,
+            tieneSegundaLlave: !!p.tieneSegundaLlave,
+            tieneCasco: !!p.tieneCasco,
+            tieneVtv: !!p.tieneVtv,
+            tieneSeguro: !!p.tieneSeguro,
+            tieneFactura: !!p.tieneFactura,
+            tieneFichaTecnica: !!p.tieneFichaTecnica,
+            accesoriosExtra: (p.accesoriosExtra || "").trim() || null,
           }))
       : []
     formData.append("permutas", JSON.stringify(permutasFiltradas))
@@ -553,6 +576,46 @@ export function OCForm({
                         />
                       </div>
                     </div>
+
+                    {/* Checklist de accesorios que entrega el cliente con la moto.
+                        Importante porque la moto va a entrar a la venta y el
+                        vendedor necesita saber qué trae. */}
+                    <div className="rounded-md border border-purple-200 dark:border-purple-900/40 bg-white dark:bg-neutral-900 p-3 space-y-2">
+                      <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
+                        ✓ Qué entrega el cliente
+                      </p>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                        {[
+                          { key: "tieneTitulo" as const, label: "Título" },
+                          { key: "tieneManual" as const, label: "Manual" },
+                          { key: "tieneSegundaLlave" as const, label: "2da llave" },
+                          { key: "tieneCasco" as const, label: "Casco" },
+                          { key: "tieneVtv" as const, label: "VTV" },
+                          { key: "tieneSeguro" as const, label: "Seguro" },
+                          { key: "tieneFactura" as const, label: "Factura" },
+                          { key: "tieneFichaTecnica" as const, label: "Ficha técnica" },
+                        ].map((item) => (
+                          <label
+                            key={item.key}
+                            className="flex items-center gap-1.5 cursor-pointer text-xs hover:bg-gray-50 dark:hover:bg-neutral-800 rounded px-1.5 py-1"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={!!pp[item.key]}
+                              onChange={(e) => upd({ [item.key]: e.target.checked })}
+                            />
+                            <span>{item.label}</span>
+                          </label>
+                        ))}
+                      </div>
+                      <Input
+                        value={pp.accesoriosExtra || ""}
+                        onChange={(e) => upd({ accesoriosExtra: e.target.value })}
+                        placeholder="Otros accesorios (maleta, GPS, escape Leovince, etc.)"
+                        className="h-8 text-xs"
+                      />
+                    </div>
+
                     {/* Las permutas se suben SIEMPRE al catalogo como inactivas
                         (slug mf-XXXX). El admin puede activarlas mas tarde desde
                         /admin/modelos cuando complete fotos y precio. */}

@@ -5,6 +5,7 @@ import { ModeloForm } from "@/components/admin/modelo-form"
 import { ModeloEditActions } from "@/components/admin/modelo-edit-actions"
 import { invalidateModelos } from "@/lib/cached-queries"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
+import { checklistPermutaTexto } from "@/lib/admin-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -204,6 +205,15 @@ type PermutaInput = {
   descripcion: string | null
   valor: number | null
   subirAlStock: boolean
+  tieneTitulo?: boolean
+  tieneManual?: boolean
+  tieneSegundaLlave?: boolean
+  tieneCasco?: boolean
+  tieneVtv?: boolean
+  tieneSeguro?: boolean
+  tieneFactura?: boolean
+  tieneFichaTecnica?: boolean
+  accesoriosExtra?: string | null
 }
 
 type PagoInput = {
@@ -306,6 +316,7 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
       const motosRecibidasIds: string[] = []
       for (const p of input.permutas) {
         let motoRecibidaId: string | null = null
+        const checklistTxt = checklistPermutaTexto(p)
         // Siempre cargar al catalogo si hay marca + modelo (la moto queda inactiva)
         if (p.marca && p.modelo) {
           const slug = `mf-${String(proximoMF).padStart(4, "0")}`
@@ -329,6 +340,9 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
               clienteEntregaId: input.clienteId,
               ordenCompraOrigenId: orden.id,
               etiqueta: null,
+              notasInternas: checklistTxt
+                ? `Checklist al recibir (de OC):\n${checklistTxt}`
+                : null,
             },
           })
           motoRecibidaId = motoRecibida.id
@@ -347,6 +361,15 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
             descripcion: p.descripcion,
             valor: p.valor ?? 0,
             motoRecibidaId,
+            tieneTitulo: !!p.tieneTitulo,
+            tieneManual: !!p.tieneManual,
+            tieneSegundaLlave: !!p.tieneSegundaLlave,
+            tieneCasco: !!p.tieneCasco,
+            tieneVtv: !!p.tieneVtv,
+            tieneSeguro: !!p.tieneSeguro,
+            tieneFactura: !!p.tieneFactura,
+            tieneFichaTecnica: !!p.tieneFichaTecnica,
+            accesoriosExtra: p.accesoriosExtra || null,
           },
         })
       }

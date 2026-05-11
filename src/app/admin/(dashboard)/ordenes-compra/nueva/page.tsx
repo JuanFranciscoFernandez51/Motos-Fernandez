@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache"
 import { OCForm } from "@/components/admin/operativo/oc-form"
 import { invalidateModelos } from "@/lib/cached-queries"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
+import { checklistPermutaTexto } from "@/lib/admin-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -19,6 +20,15 @@ type PermutaFormPayload = {
   valor: number
   motoRecibidaId: string | null
   subirAlStock: boolean
+  tieneTitulo?: boolean
+  tieneManual?: boolean
+  tieneSegundaLlave?: boolean
+  tieneCasco?: boolean
+  tieneVtv?: boolean
+  tieneSeguro?: boolean
+  tieneFactura?: boolean
+  tieneFichaTecnica?: boolean
+  accesoriosExtra?: string | null
 }
 
 type PagoFormPayload = {
@@ -121,6 +131,7 @@ async function createOrdenCompra(formData: FormData) {
 
         for (const p of permutasInput) {
           let motoRecibidaId: string | null = null
+          const checklistTxt = checklistPermutaTexto(p)
           // Siempre cargar al catalogo si hay marca + modelo (la moto queda inactiva)
           if (p.marca && p.modelo) {
             const slug = `mf-${String(proximoMF).padStart(4, "0")}`
@@ -144,6 +155,9 @@ async function createOrdenCompra(formData: FormData) {
                 clienteEntregaId: orden.clienteId,
                 ordenCompraOrigenId: orden.id,
                 etiqueta: null,
+                notasInternas: checklistTxt
+                  ? `Checklist al recibir (de OC):\n${checklistTxt}`
+                  : null,
               },
             })
             motoRecibidaId = motoRecibida.id
@@ -161,6 +175,15 @@ async function createOrdenCompra(formData: FormData) {
               descripcion: p.descripcion,
               valor: p.valor,
               motoRecibidaId,
+              tieneTitulo: !!p.tieneTitulo,
+              tieneManual: !!p.tieneManual,
+              tieneSegundaLlave: !!p.tieneSegundaLlave,
+              tieneCasco: !!p.tieneCasco,
+              tieneVtv: !!p.tieneVtv,
+              tieneSeguro: !!p.tieneSeguro,
+              tieneFactura: !!p.tieneFactura,
+              tieneFichaTecnica: !!p.tieneFichaTecnica,
+              accesoriosExtra: p.accesoriosExtra || null,
             },
           })
         }

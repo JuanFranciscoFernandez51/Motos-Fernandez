@@ -47,6 +47,16 @@ export type PermutaInput = {
   descripcion: string | null
   valor: number | null
   subirAlStock: boolean
+  // Checklist de accesorios que entrega
+  tieneTitulo?: boolean
+  tieneManual?: boolean
+  tieneSegundaLlave?: boolean
+  tieneCasco?: boolean
+  tieneVtv?: boolean
+  tieneSeguro?: boolean
+  tieneFactura?: boolean
+  tieneFichaTecnica?: boolean
+  accesoriosExtra?: string | null
 }
 
 // Un pago directo (efectivo, transfer, tarjeta, etc). La OC puede tener N pagos.
@@ -122,10 +132,22 @@ export function OCDrawer({
     valor: string
     descripcion: string
     subirAlStock: boolean
+    tieneTitulo: boolean
+    tieneManual: boolean
+    tieneSegundaLlave: boolean
+    tieneCasco: boolean
+    tieneVtv: boolean
+    tieneSeguro: boolean
+    tieneFactura: boolean
+    tieneFichaTecnica: boolean
+    accesoriosExtra: string
   }
   const permutaVacia = (): PermutaForm => ({
     marca: "", modelo: "", anio: "", km: "", patente: "",
     chasis: "", motor: "", valor: "", descripcion: "", subirAlStock: true,
+    tieneTitulo: false, tieneManual: false, tieneSegundaLlave: false,
+    tieneCasco: false, tieneVtv: false, tieneSeguro: false,
+    tieneFactura: false, tieneFichaTecnica: false, accesoriosExtra: "",
   })
   const [permutas, setPermutas] = useState<PermutaForm[]>([permutaVacia()])
   const [pagos, setPagos] = useState<PagoForm[]>([pagoVacio()])
@@ -243,6 +265,15 @@ export function OCDrawer({
             descripcion: pp.descripcion.trim() || null,
             valor: num(pp.valor),
             subirAlStock: pp.subirAlStock,
+            tieneTitulo: pp.tieneTitulo,
+            tieneManual: pp.tieneManual,
+            tieneSegundaLlave: pp.tieneSegundaLlave,
+            tieneCasco: pp.tieneCasco,
+            tieneVtv: pp.tieneVtv,
+            tieneSeguro: pp.tieneSeguro,
+            tieneFactura: pp.tieneFactura,
+            tieneFichaTecnica: pp.tieneFichaTecnica,
+            accesoriosExtra: pp.accesoriosExtra.trim() || null,
           }))
       : []
 
@@ -630,6 +661,44 @@ export function OCDrawer({
                             />
                           </div>
                         </div>
+
+                        {/* Checklist de accesorios que entrega el cliente */}
+                        <div className="rounded-md border border-purple-200 dark:border-purple-900/40 bg-white dark:bg-neutral-900 p-3 space-y-2">
+                          <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 uppercase tracking-wider">
+                            ✓ Qué entrega el cliente
+                          </p>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                            {[
+                              { key: "tieneTitulo" as const, label: "Título" },
+                              { key: "tieneManual" as const, label: "Manual" },
+                              { key: "tieneSegundaLlave" as const, label: "2da llave" },
+                              { key: "tieneCasco" as const, label: "Casco" },
+                              { key: "tieneVtv" as const, label: "VTV" },
+                              { key: "tieneSeguro" as const, label: "Seguro" },
+                              { key: "tieneFactura" as const, label: "Factura" },
+                              { key: "tieneFichaTecnica" as const, label: "Ficha técnica" },
+                            ].map((item) => (
+                              <label
+                                key={item.key}
+                                className="flex items-center gap-1.5 cursor-pointer text-xs hover:bg-gray-50 dark:hover:bg-neutral-800 rounded px-1.5 py-1"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={!!pp[item.key]}
+                                  onChange={(e) => updatePermuta({ [item.key]: e.target.checked })}
+                                />
+                                <span>{item.label}</span>
+                              </label>
+                            ))}
+                          </div>
+                          <Input
+                            value={pp.accesoriosExtra}
+                            onChange={(e) => updatePermuta({ accesoriosExtra: e.target.value })}
+                            placeholder="Otros accesorios (maleta, GPS, escape, etc)"
+                            className="h-8 text-xs"
+                          />
+                        </div>
+
                         <p className="text-xs text-gray-500 dark:text-gray-400 italic px-1">
                           Esta moto se va a cargar al catálogo como usada (inactiva
                           hasta que la actives desde /admin/modelos).

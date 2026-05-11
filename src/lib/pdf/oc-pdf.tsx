@@ -166,6 +166,16 @@ type PermutaData = {
   motor?: string | null
   descripcion?: string | null
   valor: number
+  // Checklist de qué entrega el cliente con la moto
+  tieneTitulo?: boolean
+  tieneManual?: boolean
+  tieneSegundaLlave?: boolean
+  tieneCasco?: boolean
+  tieneVtv?: boolean
+  tieneSeguro?: boolean
+  tieneFactura?: boolean
+  tieneFichaTecnica?: boolean
+  accesoriosExtra?: string | null
 }
 
 type GaranteData = {
@@ -449,6 +459,54 @@ export function OCPDF({ data }: { data: OCPDFData }) {
                     <Text style={styles.permutaValue}>{perm.descripcion}</Text>
                   </View>
                 )}
+                {(() => {
+                  const items: { ok: boolean; label: string }[] = [
+                    { ok: !!perm.tieneTitulo, label: "Título" },
+                    { ok: !!perm.tieneManual, label: "Manual" },
+                    { ok: !!perm.tieneSegundaLlave, label: "2da llave" },
+                    { ok: !!perm.tieneCasco, label: "Casco" },
+                    { ok: !!perm.tieneVtv, label: "VTV" },
+                    { ok: !!perm.tieneSeguro, label: "Seguro" },
+                    { ok: !!perm.tieneFactura, label: "Factura" },
+                    { ok: !!perm.tieneFichaTecnica, label: "Ficha técnica" },
+                  ]
+                  const algoMarcado = items.some((i) => i.ok) || !!perm.accesoriosExtra
+                  if (!algoMarcado) return null
+                  const checklistTxt = items
+                    .map((i) => `${i.ok ? "[x]" : "[ ]"} ${i.label}`)
+                    .join("   ")
+                  return (
+                    <View
+                      style={{
+                        marginTop: 4,
+                        padding: 4,
+                        backgroundColor: "#F3EEF7",
+                        borderRadius: 2,
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontSize: 7,
+                          fontWeight: 700,
+                          color: "#7E22CE",
+                          marginBottom: 2,
+                        }}
+                      >
+                        Entrega con la moto:
+                      </Text>
+                      <Text style={{ fontSize: 7, color: "#1A1A1A" }}>
+                        {checklistTxt}
+                      </Text>
+                      {perm.accesoriosExtra && (
+                        <Text
+                          style={{ fontSize: 7, color: "#1A1A1A", marginTop: 1 }}
+                        >
+                          + Otros: {perm.accesoriosExtra}
+                        </Text>
+                      )}
+                    </View>
+                  )
+                })()}
               </View>
             ))}
             <View style={styles.tableTotalRow}>

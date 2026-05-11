@@ -13,6 +13,7 @@ import {
 import { FileText, CheckCircle, Trash2, Download, PartyPopper } from "lucide-react"
 import { invalidateModelos } from "@/lib/cached-queries"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
+import { checklistPermutaTexto } from "@/lib/admin-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -29,6 +30,15 @@ type PermutaFormPayload = {
   valor: number
   motoRecibidaId: string | null
   subirAlStock: boolean
+  tieneTitulo?: boolean
+  tieneManual?: boolean
+  tieneSegundaLlave?: boolean
+  tieneCasco?: boolean
+  tieneVtv?: boolean
+  tieneSeguro?: boolean
+  tieneFactura?: boolean
+  tieneFichaTecnica?: boolean
+  accesoriosExtra?: string | null
 }
 
 type PagoFormPayload = {
@@ -168,12 +178,22 @@ async function updateOrden(formData: FormData) {
               motor: p.motor,
               descripcion: p.descripcion,
               valor: p.valor,
+              tieneTitulo: !!p.tieneTitulo,
+              tieneManual: !!p.tieneManual,
+              tieneSegundaLlave: !!p.tieneSegundaLlave,
+              tieneCasco: !!p.tieneCasco,
+              tieneVtv: !!p.tieneVtv,
+              tieneSeguro: !!p.tieneSeguro,
+              tieneFactura: !!p.tieneFactura,
+              tieneFichaTecnica: !!p.tieneFichaTecnica,
+              accesoriosExtra: p.accesoriosExtra || null,
             },
           })
         } else {
           // Permuta nueva. Siempre cargar al catalogo si hay marca + modelo
           // (la moto queda inactiva hasta que el admin la habilite).
           let motoRecibidaId: string | null = null
+          const checklistTxt = checklistPermutaTexto(p)
           if (p.marca && p.modelo) {
             const slug = `mf-${String(proximoMF).padStart(4, "0")}`
             proximoMF++
@@ -196,6 +216,9 @@ async function updateOrden(formData: FormData) {
                 clienteEntregaId: orden.clienteId,
                 ordenCompraOrigenId: orden.id,
                 etiqueta: null,
+                notasInternas: checklistTxt
+                  ? `Checklist al recibir (de OC):\n${checklistTxt}`
+                  : null,
               },
             })
             motoRecibidaId = motoRecibida.id
@@ -213,6 +236,15 @@ async function updateOrden(formData: FormData) {
               descripcion: p.descripcion,
               valor: p.valor,
               motoRecibidaId,
+              tieneTitulo: !!p.tieneTitulo,
+              tieneManual: !!p.tieneManual,
+              tieneSegundaLlave: !!p.tieneSegundaLlave,
+              tieneCasco: !!p.tieneCasco,
+              tieneVtv: !!p.tieneVtv,
+              tieneSeguro: !!p.tieneSeguro,
+              tieneFactura: !!p.tieneFactura,
+              tieneFichaTecnica: !!p.tieneFichaTecnica,
+              accesoriosExtra: p.accesoriosExtra || null,
             },
           })
         }
@@ -442,6 +474,15 @@ export default async function EditarOrdenCompraPage({
     descripcion: p.descripcion || "",
     valor: String(p.valor),
     motoRecibidaId: p.motoRecibidaId,
+    tieneTitulo: p.tieneTitulo,
+    tieneManual: p.tieneManual,
+    tieneSegundaLlave: p.tieneSegundaLlave,
+    tieneCasco: p.tieneCasco,
+    tieneVtv: p.tieneVtv,
+    tieneSeguro: p.tieneSeguro,
+    tieneFactura: p.tieneFactura,
+    tieneFichaTecnica: p.tieneFichaTecnica,
+    accesoriosExtra: p.accesoriosExtra || "",
   }))
 
   const initialPagos = orden.pagos.map((p) => ({

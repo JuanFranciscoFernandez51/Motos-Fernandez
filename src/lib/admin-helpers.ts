@@ -129,3 +129,47 @@ export function diasHasta(fecha: Date | string): number {
   t.setHours(0, 0, 0, 0)
   return Math.floor((t.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
 }
+
+// ==================== PERMUTAS / Accesorios ====================
+export type ChecklistPermuta = {
+  tieneTitulo?: boolean
+  tieneManual?: boolean
+  tieneSegundaLlave?: boolean
+  tieneCasco?: boolean
+  tieneVtv?: boolean
+  tieneSeguro?: boolean
+  tieneFactura?: boolean
+  tieneFichaTecnica?: boolean
+  accesoriosExtra?: string | null
+}
+
+const CHECKLIST_LABELS: Record<keyof Omit<ChecklistPermuta, "accesoriosExtra">, string> = {
+  tieneTitulo: "Título",
+  tieneManual: "Manual",
+  tieneSegundaLlave: "2da llave",
+  tieneCasco: "Casco",
+  tieneVtv: "VTV",
+  tieneSeguro: "Seguro",
+  tieneFactura: "Factura",
+  tieneFichaTecnica: "Ficha técnica",
+}
+
+/**
+ * Devuelve un resumen del checklist como texto para guardar en notas
+ * internas. Si nada está marcado, devuelve "" (no contamina las notas).
+ */
+export function checklistPermutaTexto(p: ChecklistPermuta): string {
+  const tiene: string[] = []
+  const noTiene: string[] = []
+  for (const key of Object.keys(CHECKLIST_LABELS) as Array<keyof typeof CHECKLIST_LABELS>) {
+    if (p[key]) tiene.push(CHECKLIST_LABELS[key])
+    else noTiene.push(CHECKLIST_LABELS[key])
+  }
+  const nadaMarcado = tiene.length === 0 && !p.accesoriosExtra?.trim()
+  if (nadaMarcado) return ""
+  const partes: string[] = []
+  if (tiene.length) partes.push(`Entrega: ${tiene.join(", ")}`)
+  if (noTiene.length && tiene.length) partes.push(`NO entrega: ${noTiene.join(", ")}`)
+  if (p.accesoriosExtra?.trim()) partes.push(`Otros: ${p.accesoriosExtra.trim()}`)
+  return partes.join("\n")
+}
