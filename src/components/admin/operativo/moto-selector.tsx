@@ -2,8 +2,9 @@
 
 import { useMemo, useState } from "react"
 import Image from "next/image"
-import { Search, Bike, X, Check } from "lucide-react"
+import { Search, Bike, X, Check, Plus } from "lucide-react"
 import { Input } from "@/components/ui/input"
+import { NuevaMotoQuickModal } from "./nueva-moto-quick-modal"
 
 export type ModeloOption = {
   id: string
@@ -27,15 +28,21 @@ export function MotoSelector({
   value,
   onChange,
   onPick,
+  onNuevaMoto,
 }: {
   modelos: ModeloOption[]
   value: string
   onChange: (id: string) => void
   // Opcional: callback que recibe el modelo completo cuando se selecciona
   onPick?: (modelo: ModeloOption) => void
+  // Opcional: si está definido, muestra el botón "Crear nueva moto" que
+  // abre un modal. Cuando el usuario crea una moto, llamamos este callback
+  // para que el form la agregue a su lista local de motos disponibles.
+  onNuevaMoto?: (modelo: ModeloOption) => void
 }) {
   const [query, setQuery] = useState("")
   const [open, setOpen] = useState(false)
+  const [showQuickCreate, setShowQuickCreate] = useState(false)
 
   const selected = modelos.find((m) => m.id === value) ?? null
 
@@ -118,11 +125,39 @@ export function MotoSelector({
         )}
       </div>
 
+      {onNuevaMoto && (
+        <NuevaMotoQuickModal
+          open={showQuickCreate}
+          onClose={() => setShowQuickCreate(false)}
+          onCreated={(m) => {
+            onNuevaMoto(m)
+            onChange(m.id)
+            onPick?.(m)
+            setQuery("")
+            setOpen(false)
+          }}
+        />
+      )}
+
       {open && (
         <div className="absolute z-40 mt-1 w-full rounded-md border bg-white dark:bg-neutral-900 shadow-lg max-h-80 overflow-y-auto">
+          {onNuevaMoto && (
+            <button
+              type="button"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => {
+                setShowQuickCreate(true)
+                setOpen(false)
+              }}
+              className="w-full text-left px-3 py-2 hover:bg-[#6B4F7A]/5 border-b border-gray-100 dark:border-neutral-800 flex items-center gap-2 text-[#6B4F7A] font-medium text-sm"
+            >
+              <Plus className="size-4" />
+              Cargar moto nueva al catálogo
+            </button>
+          )}
           {filtered.length === 0 ? (
             <p className="p-4 text-center text-sm text-gray-500 dark:text-gray-400">
-              Sin resultados
+              Sin resultados — usá el botón de arriba para cargar una moto nueva
             </p>
           ) : (
             filtered.map((m) => (

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useMemo, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -133,6 +133,14 @@ export function OCForm({
   )
   const [pagos, setPagos] = useState<PagoForm[]>(
     initialPagos.length > 0 ? initialPagos : [pagoVacio()]
+  )
+  // Motos extras creadas vía "Cargar moto nueva al catálogo" desde el
+  // MotoSelector. Se concatenan al prop modelos para que aparezcan
+  // disponibles sin recargar la página.
+  const [modelosExtras, setModelosExtras] = useState<ModeloOption[]>([])
+  const modelosDisponibles = useMemo(
+    () => [...modelosExtras, ...modelos],
+    [modelos, modelosExtras]
   )
   const [garante, setGarante] = useState({
     nombre: initialGarante?.nombre || "",
@@ -302,12 +310,15 @@ export function OCForm({
           </CardHeader>
           <CardContent className="space-y-4 overflow-visible">
             <div>
-              <Label>Elegí del catálogo (autocompleta datos)</Label>
+              <Label>Elegí del catálogo o cargá una nueva</Label>
               <MotoSelector
-                modelos={modelos}
+                modelos={modelosDisponibles}
                 value={data.modeloId}
                 onChange={(id) => set("modeloId", id)}
                 onPick={onPickMoto}
+                onNuevaMoto={(m) => {
+                  setModelosExtras((prev) => [m, ...prev])
+                }}
               />
             </div>
             <div className="border-t pt-4">
