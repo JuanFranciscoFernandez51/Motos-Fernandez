@@ -4,6 +4,7 @@ import { OCForm } from "@/components/admin/operativo/oc-form"
 import { invalidateModelos } from "@/lib/cached-queries"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 import { checklistPermutaTexto } from "@/lib/admin-helpers"
+import { crearMandatoDesdePermuta } from "@/lib/mandato-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -186,6 +187,32 @@ async function createOrdenCompra(formData: FormData) {
               accesoriosExtra: p.accesoriosExtra || null,
             },
           })
+
+          // Auto-crear MandatoVenta para trackear la venta de la moto
+          // recibida (cliente: el que entregó, precio mínimo: valor de toma).
+          await crearMandatoDesdePermuta(tx, {
+            clienteId: orden.clienteId,
+            ordenCompraId: orden.id,
+            modeloId: motoRecibidaId,
+            fecha: orden.fecha,
+            moneda: orden.moneda,
+            permuta: {
+              marca: p.marca,
+              modelo: p.modelo,
+              anio: p.anio,
+              kilometros: p.kilometros,
+              patente: p.patente,
+              chasis: p.chasis,
+              motor: p.motor,
+              descripcion: p.descripcion,
+              valor: p.valor,
+              tieneTitulo: p.tieneTitulo,
+              tieneManual: p.tieneManual,
+              tieneSegundaLlave: p.tieneSegundaLlave,
+              tieneVtv: p.tieneVtv,
+              accesoriosExtra: p.accesoriosExtra,
+            },
+          })
         }
       }
 
@@ -232,6 +259,7 @@ async function createOrdenCompra(formData: FormData) {
 
     revalidatePath("/admin/ordenes-compra")
     revalidatePath("/admin/modelos")
+    revalidatePath("/admin/mandatos")
     revalidatePath("/admin/tesoreria")
     revalidatePath("/admin/tesoreria/financiaciones")
     revalidatePath("/catalogo")

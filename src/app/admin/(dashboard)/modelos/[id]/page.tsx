@@ -6,6 +6,7 @@ import { ModeloEditActions } from "@/components/admin/modelo-edit-actions"
 import { invalidateModelos } from "@/lib/cached-queries"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 import { checklistPermutaTexto } from "@/lib/admin-helpers"
+import { crearMandatoDesdePermuta } from "@/lib/mandato-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -372,6 +373,31 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
             accesoriosExtra: p.accesoriosExtra || null,
           },
         })
+
+        // Auto-crear MandatoVenta para trackear la venta de la moto.
+        await crearMandatoDesdePermuta(tx, {
+          clienteId: orden.clienteId,
+          ordenCompraId: orden.id,
+          modeloId: motoRecibidaId,
+          fecha: orden.fecha,
+          moneda: orden.moneda,
+          permuta: {
+            marca: p.marca,
+            modelo: p.modelo,
+            anio: p.anio,
+            kilometros: p.kilometros,
+            patente: p.patente,
+            chasis: p.chasis,
+            motor: p.motor,
+            descripcion: p.descripcion,
+            valor: p.valor ?? 0,
+            tieneTitulo: p.tieneTitulo,
+            tieneManual: p.tieneManual,
+            tieneSegundaLlave: p.tieneSegundaLlave,
+            tieneVtv: p.tieneVtv,
+            accesoriosExtra: p.accesoriosExtra,
+          },
+        })
       }
       if (motosRecibidasIds.length > 0) {
         await tx.ordenCompra.update({
@@ -427,6 +453,7 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
 
     revalidatePath("/admin/modelos")
     revalidatePath("/admin/ordenes-compra")
+    revalidatePath("/admin/mandatos")
     revalidatePath("/admin/tesoreria")
     revalidatePath("/admin/tesoreria/financiaciones")
     revalidatePath("/catalogo")
