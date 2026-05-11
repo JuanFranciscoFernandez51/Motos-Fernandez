@@ -33,6 +33,7 @@ export default async function MetaAdminPage({
       slug: true,
       nombre: true,
       marca: true,
+      anio: true,
       precio: true,
       moneda: true,
       igPostId: true,
@@ -174,7 +175,7 @@ export default async function MetaAdminPage({
               {conError.map((m) => (
                 <div key={m.id} className="rounded border border-red-200 bg-red-50 dark:bg-red-950/30 p-3">
                   <Link href={`/admin/modelos/${m.id}`} className="font-medium text-sm hover:underline">
-                    {m.marca} {m.nombre} <span className="font-mono text-xs text-gray-500 dark:text-gray-400">({m.slug})</span>
+                    {m.marca} {m.nombre}{m.anio ? ` ${m.anio}` : ""} <span className="font-mono text-xs text-gray-500 dark:text-gray-400">({m.slug})</span>
                   </Link>
                   <p className="text-xs text-red-600 dark:text-red-400 mt-1 break-all">{m.igError}</p>
                 </div>
@@ -196,6 +197,7 @@ export default async function MetaAdminPage({
                     id: m.id,
                     marca: m.marca,
                     nombre: m.nombre,
+                    anio: m.anio,
                   }))}
                 />
               )}
@@ -218,7 +220,7 @@ export default async function MetaAdminPage({
                     <tr key={m.id} className="border-b border-gray-50 dark:border-neutral-900 last:border-0">
                       <td className="px-2 py-2">
                         <Link href={`/admin/modelos/${m.id}`} className="hover:underline">
-                          <p className="font-medium">{m.marca} {m.nombre}</p>
+                          <p className="font-medium">{m.marca} {m.nombre}{m.anio ? ` ${m.anio}` : ""}</p>
                           <p className="text-xs font-mono text-gray-500 dark:text-gray-400">{m.slug}</p>
                         </Link>
                       </td>

@@ -9,6 +9,7 @@ type Item = {
   id: string
   marca: string
   nombre: string
+  anio?: number | null
 }
 
 type ResultadoItem = {
@@ -67,7 +68,9 @@ export function MetaBulkPublishButton({ pendientes }: { pendientes: Item[] }) {
           const moto = pendientes.find((p) => p.id === r.id)
           return {
             id: r.id,
-            label: moto ? `${moto.marca} ${moto.nombre}` : r.id,
+            label: moto
+              ? `${moto.marca} ${moto.nombre}${moto.anio ? ` ${moto.anio}` : ""}`
+              : r.id,
             ok: r.ok,
             error: r.error,
           }

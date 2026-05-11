@@ -8,6 +8,7 @@ type Item = {
   id: string
   marca: string
   nombre: string
+  anio?: number | null
 }
 
 type ResultadoItem = {
@@ -92,7 +93,7 @@ export function BulkPublishButton({
     const acumulado: ResultadoItem[] = []
     for (let i = 0; i < pendientes.length; i++) {
       const m = pendientes[i]
-      const itemLabel = `${m.marca} ${m.nombre}`
+      const itemLabel = `${m.marca} ${m.nombre}${m.anio ? ` ${m.anio}` : ""}`
       try {
         const res = await fetch(`/api/admin/ml/publish/${m.id}`, {
           method: "POST",
