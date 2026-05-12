@@ -31,24 +31,28 @@ function toArgentinaDate(date: Date): Date {
 
 // Colors per origen for the pills
 const ORIGEN_COLORS: Record<string, string> = {
-  WEB:          "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300",
-  WHATSAPP:     "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300",
-  INSTAGRAM:    "bg-pink-100 dark:bg-pink-900/40 text-pink-800",
-  MARKETPLACE:  "bg-orange-100 dark:bg-orange-900/40 text-orange-800",
-  MERCADOLIBRE: "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300",
-  TELEFONO:     "bg-purple-100 dark:bg-purple-900/40 text-purple-800",
-  PRESENCIAL:   "bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-gray-100",
+  WEB:              "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300",
+  POPUP_BIENVENIDA: "bg-fuchsia-100 dark:bg-fuchsia-900/40 text-fuchsia-800 dark:text-fuchsia-300",
+  RECOMENDADOR:     "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-300",
+  WHATSAPP:         "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300",
+  INSTAGRAM:        "bg-pink-100 dark:bg-pink-900/40 text-pink-800",
+  MARKETPLACE:      "bg-orange-100 dark:bg-orange-900/40 text-orange-800",
+  MERCADOLIBRE:     "bg-yellow-100 dark:bg-yellow-900/40 text-yellow-800 dark:text-yellow-300",
+  TELEFONO:         "bg-purple-100 dark:bg-purple-900/40 text-purple-800",
+  PRESENCIAL:       "bg-gray-100 dark:bg-neutral-800 text-gray-800 dark:text-gray-100",
 }
 
 // Bar-only bg color (must be a full standalone class for Tailwind JIT)
 const ORIGEN_BAR_COLOR: Record<string, string> = {
-  WEB:          "bg-blue-400",
-  WHATSAPP:     "bg-green-400",
-  INSTAGRAM:    "bg-pink-400",
-  MARKETPLACE:  "bg-orange-400",
-  MERCADOLIBRE: "bg-yellow-400",
-  TELEFONO:     "bg-purple-400",
-  PRESENCIAL:   "bg-gray-400",
+  WEB:              "bg-blue-400",
+  POPUP_BIENVENIDA: "bg-fuchsia-400",
+  RECOMENDADOR:     "bg-indigo-400",
+  WHATSAPP:         "bg-green-400",
+  INSTAGRAM:        "bg-pink-400",
+  MARKETPLACE:      "bg-orange-400",
+  MERCADOLIBRE:     "bg-yellow-400",
+  TELEFONO:         "bg-purple-400",
+  PRESENCIAL:       "bg-gray-400",
 }
 
 type VentaMes = {

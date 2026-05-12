@@ -18,6 +18,11 @@ import {
   RefreshCw,
   Loader2,
   AlertCircle,
+  CheckCircle2,
+  Send,
+  Phone,
+  Mail,
+  User,
 } from "lucide-react"
 
 type Respuestas = {
@@ -423,6 +428,9 @@ export default function RecomendadorPage() {
               Hacer quiz de nuevo
             </button>
           </div>
+
+          {/* Form: dejame tus datos para contactarte */}
+          <ContactoLeadCard resultado={resultado} respuestas={respuestas} />
         </div>
       </main>
     )
@@ -626,5 +634,182 @@ export default function RecomendadorPage() {
         }
       `}</style>
     </main>
+  )
+}
+
+// =====================================================================
+// Form de contacto al final del quiz: el visitante deja sus datos y se
+// genera un Lead con origen RECOMENDADOR y temperatura CALIENTE. Incluye
+// snapshot del quiz (respuestas + moto #1 recomendada) en las notas para
+// que el admin tenga contexto al contactarlo.
+// =====================================================================
+function ContactoLeadCard({
+  resultado,
+  respuestas,
+}: {
+  resultado: Resultado
+  respuestas: Respuestas
+}) {
+  const [nombre, setNombre] = useState("")
+  const [telefono, setTelefono] = useState("")
+  const [email, setEmail] = useState("")
+  const [sending, setSending] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const handleEnviar = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(null)
+    if (!nombre.trim()) return setError("Decinos tu nombre")
+    if (!telefono.trim()) return setError("Necesitamos tu celular para contactarte")
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return setError("El email no parece válido")
+    }
+    setSending(true)
+    try {
+      const moto1 = resultado.modelos[0]
+      const resumen = Object.entries(respuestas)
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(", ")
+      const res = await fetch("/api/public/recomendador-lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: nombre.trim(),
+          telefono: telefono.trim(),
+          email: email.trim() || null,
+          modeloInteres: moto1 ? `${moto1.marca} ${moto1.nombre}` : null,
+          modeloId: moto1?.id,
+          resumenQuiz: resumen,
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setError(data.error || `Error ${res.status}`)
+        return
+      }
+      setSent(true)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Error al enviar")
+    } finally {
+      setSending(false)
+    }
+  }
+
+  if (sent) {
+    return (
+      <div className="mt-10 mx-auto max-w-2xl rounded-2xl bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/30 dark:to-green-950/30 border-2 border-emerald-200 dark:border-emerald-900/40 p-6 sm:p-8 text-center">
+        <div className="inline-flex items-center justify-center size-14 rounded-full bg-emerald-500 mb-4 shadow-lg">
+          <CheckCircle2 className="size-7 text-white" />
+        </div>
+        <h3 className="text-xl sm:text-2xl font-bold text-emerald-900 dark:text-emerald-200 font-heading">
+          ¡Listo, {nombre.split(" ")[0]}!
+        </h3>
+        <p className="mt-2 text-sm text-emerald-800 dark:text-emerald-300/80 max-w-md mx-auto">
+          Recibimos tus datos. Un asesor se va a contactar con vos a la brevedad
+          para asesorarte sobre la moto que mejor se adapta a tu perfil.
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="mt-12 mx-auto max-w-2xl rounded-2xl bg-white dark:bg-neutral-900 border border-[#6B4F7A]/20 shadow-lg overflow-hidden">
+      <div className="bg-gradient-to-r from-[#6B4F7A] to-[#9B59B6] px-6 sm:px-8 py-5 text-white">
+        <div className="flex items-start gap-3">
+          <div className="shrink-0 size-10 rounded-full bg-white/20 flex items-center justify-center">
+            <Phone className="size-5" />
+          </div>
+          <div>
+            <h3 className="text-lg sm:text-xl font-bold font-heading">
+              ¿Querés que te asesoremos personalmente?
+            </h3>
+            <p className="text-sm text-white/85 mt-1">
+              Dejanos tus datos y te contactamos para ayudarte a elegir y
+              cerrar la mejor opción.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <form onSubmit={handleEnviar} className="px-6 sm:px-8 py-6 space-y-4">
+        <div>
+          <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+            Nombre y apellido <span className="text-red-500">*</span>
+          </label>
+          <div className="relative">
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+            <input
+              type="text"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              placeholder="Juan Pérez"
+              className="w-full pl-10 pr-3 py-2.5 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+              autoComplete="name"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+              Celular <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+              <input
+                type="tel"
+                value={telefono}
+                onChange={(e) => setTelefono(e.target.value)}
+                placeholder="291 555 0000"
+                className="w-full pl-10 pr-3 py-2.5 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+                autoComplete="tel"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1.5">
+              Email <span className="text-gray-400 font-normal">(opcional)</span>
+            </label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="tu@email.com"
+                className="w-full pl-10 pr-3 py-2.5 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+                autoComplete="email"
+              />
+            </div>
+          </div>
+        </div>
+
+        {error && (
+          <div className="rounded-md bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 text-red-700 dark:text-red-300 px-3 py-2 text-sm flex items-start gap-2">
+            <AlertCircle className="size-4 shrink-0 mt-0.5" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={sending}
+          className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#6B4F7A] hover:bg-[#5a4267] px-6 py-3 text-sm font-bold text-white shadow-md transition-colors disabled:opacity-60"
+        >
+          {sending ? (
+            <Loader2 className="size-4 animate-spin" />
+          ) : (
+            <Send className="size-4" />
+          )}
+          {sending ? "Enviando..." : "Que me contacten"}
+        </button>
+
+        <p className="text-[11px] text-gray-400 text-center">
+          Solo usamos tus datos para asesorarte sobre esta consulta. No
+          recibirás spam.
+        </p>
+      </form>
+    </div>
   )
 }

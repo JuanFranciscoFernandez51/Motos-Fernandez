@@ -238,6 +238,7 @@ export const ETAPA_LABELS: Record<string, { label: string; color: string }> = {
 export const ORIGEN_LABELS: Record<string, { label: string }> = {
   WEB:              { label: "Web" },
   POPUP_BIENVENIDA: { label: "🎁 Popup bienvenida" },
+  RECOMENDADOR:     { label: "🤖 Quiz recomendador" },
   WHATSAPP:         { label: "WhatsApp" },
   INSTAGRAM:        { label: "Instagram" },
   MARKETPLACE:      { label: "Marketplace" },

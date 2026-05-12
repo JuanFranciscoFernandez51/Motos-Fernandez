@@ -347,6 +347,7 @@ model LeadReminder {
 enum OrigenLead {
   WEB
   POPUP_BIENVENIDA  // popup que captura email/tel para cupón 10%
+  RECOMENDADOR     // termino el quiz y dejo datos para que lo contacten
   WHATSAPP
   INSTAGRAM
   MARKETPLACE

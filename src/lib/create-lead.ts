@@ -83,7 +83,7 @@ export async function createOrUpdateLead(input: CreateLeadInput) {
       ciudad: input.ciudad,
       modeloInteres: input.modeloInteres,
       modeloId: input.modeloId,
-      origen: input.origen as "WEB" | "WHATSAPP" | "INSTAGRAM" | "MARKETPLACE" | "MERCADOLIBRE" | "TELEFONO" | "PRESENCIAL",
+      origen: input.origen as "WEB" | "POPUP_BIENVENIDA" | "RECOMENDADOR" | "WHATSAPP" | "INSTAGRAM" | "MARKETPLACE" | "MERCADOLIBRE" | "TELEFONO" | "PRESENCIAL",
       temperatura: (input.temperatura as "NUEVO" | "CALIENTE" | "TIBIO" | "FRIO" | "CLIENTE" | "PERDIDO") ?? "NUEVO",
       etapa: (input.etapa as "NUEVO" | "CONTACTADO" | "PRESUPUESTADO" | "NEGOCIANDO" | "VENDIDO" | "PERDIDO") ?? "NUEVO",
       notas: input.notas,
