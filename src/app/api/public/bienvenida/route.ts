@@ -82,11 +82,13 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    // 3) Crear/actualizar Lead (CRM)
+    // 3) Crear Lead en el CRM con origen específico POPUP_BIENVENIDA
+    // (para distinguir de leads de WEB genéricos).
     try {
       const partes = nombre.trim().split(/\s+/)
       const nombrePila = partes[0] || nombre
       const apellido = partes.length > 1 ? partes.slice(1).join(" ") : null
+      const hoy = new Date().toISOString().split("T")[0]
 
       await prisma.lead.create({
         data: {
@@ -94,10 +96,10 @@ export async function POST(req: NextRequest) {
           apellido,
           email,
           telefono,
-          origen: "WEB",
+          origen: "POPUP_BIENVENIDA",
           temperatura: "NUEVO",
           etapa: "NUEVO",
-          notas: "Lead capturado por popup de bienvenida (cupón 10%).",
+          notas: `🎁 Popup de bienvenida — ${hoy}\n\nSe le envió el cupón ${CODIGO_CUPON} (${PORCENTAJE}% off en tienda y servicios).\nSuscrito al newsletter.`,
         },
       })
     } catch (e) {

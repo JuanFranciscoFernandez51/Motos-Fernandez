@@ -27,7 +27,7 @@ async function crearLead(formData: FormData) {
       email: email || null,
       ciudad: ciudad || null,
       modeloInteres: modeloInteres || null,
-      origen: (origen || "PRESENCIAL") as "WEB" | "WHATSAPP" | "INSTAGRAM" | "MARKETPLACE" | "MERCADOLIBRE" | "TELEFONO" | "PRESENCIAL",
+      origen: (origen || "PRESENCIAL") as "WEB" | "POPUP_BIENVENIDA" | "WHATSAPP" | "INSTAGRAM" | "MARKETPLACE" | "MERCADOLIBRE" | "TELEFONO" | "PRESENCIAL",
       temperatura: (temperatura || "NUEVO") as "NUEVO" | "CALIENTE" | "TIBIO" | "FRIO" | "CLIENTE" | "PERDIDO",
       notas: notas || null,
     },

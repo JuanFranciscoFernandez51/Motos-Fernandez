@@ -151,13 +151,14 @@ export const ETAPA_LABELS: Record<string, { label: string; color: string }> = {
 }
 
 export const ORIGEN_LABELS: Record<string, { label: string }> = {
-  WEB:          { label: "Web" },
-  WHATSAPP:     { label: "WhatsApp" },
-  INSTAGRAM:    { label: "Instagram" },
-  MARKETPLACE:  { label: "Marketplace" },
-  MERCADOLIBRE: { label: "MercadoLibre" },
-  TELEFONO:     { label: "Teléfono" },
-  PRESENCIAL:   { label: "Presencial" },
+  WEB:              { label: "Web" },
+  POPUP_BIENVENIDA: { label: "🎁 Popup bienvenida" },
+  WHATSAPP:         { label: "WhatsApp" },
+  INSTAGRAM:        { label: "Instagram" },
+  MARKETPLACE:      { label: "Marketplace" },
+  MERCADOLIBRE:     { label: "MercadoLibre" },
+  TELEFONO:         { label: "Teléfono" },
+  PRESENCIAL:       { label: "Presencial" },
 }
 
 export const ESTADO_PEDIDO_LABELS: Record<string, { label: string; color: string }> = {
