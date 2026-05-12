@@ -1,12 +1,29 @@
 "use client"
 
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { useState, useCallback } from "react"
-import { ChevronLeft, ChevronRight, Ban, Phone, Calendar, CheckCircle, Clock } from "lucide-react"
-import { Badge } from "@/components/ui/badge"
+import {
+  ChevronLeft,
+  ChevronRight,
+  Ban,
+  Phone,
+  Calendar,
+  CheckCircle,
+  Clock,
+  Plus,
+  UserPlus,
+  Wrench,
+  X,
+  Loader2,
+} from "lucide-react"
+import { NuevoTurnoModal } from "./nuevo-turno-modal"
 
 type Turno = {
   id: string
   nombre: string
+  apellido: string | null
+  dni: string | null
   email: string | null
   telefono: string
   modeloMoto: string | null
@@ -15,6 +32,8 @@ type Turno = {
   fechaPreferida: string | null
   fechaConfirmada: string | null
   estado: string
+  clienteId: string | null
+  ordenTrabajoId: string | null
   createdAt: string
 }
 
@@ -51,6 +70,7 @@ function toLocalDateStr(date: Date) {
 }
 
 export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBloqueados, pendientes, confirmadosHoy, totalMes }: Props) {
+  const router = useRouter()
   const today = new Date()
   const [currentYear, setCurrentYear] = useState(today.getFullYear())
   const [currentMonth, setCurrentMonth] = useState(today.getMonth())
@@ -59,6 +79,7 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
   const [turnos, setTurnos] = useState<Turno[]>(initialTurnos)
   const [loadingFecha, setLoadingFecha] = useState<string | null>(null)
   const [loadingTurno, setLoadingTurno] = useState<string | null>(null)
+  const [showNuevoModal, setShowNuevoModal] = useState(false)
 
   // Build calendar grid
   const firstDay = new Date(currentYear, currentMonth, 1)
@@ -122,6 +143,54 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
     }
   }, [])
 
+  const guardarComoCliente = useCallback(async (id: string) => {
+    setLoadingTurno(id)
+    try {
+      const res = await fetch(`/api/admin/turnos/${id}/guardar-cliente`, {
+        method: "POST",
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        alert(data.error || `Error ${res.status}`)
+        return
+      }
+      setTurnos(prev =>
+        prev.map(t => (t.id === id ? { ...t, clienteId: data.clienteId } : t))
+      )
+    } finally {
+      setLoadingTurno(null)
+    }
+  }, [])
+
+  const crearOT = useCallback(async (id: string) => {
+    setLoadingTurno(id)
+    try {
+      const res = await fetch(`/api/admin/turnos/${id}/crear-ot`, {
+        method: "POST",
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        alert(data.error || `Error ${res.status}`)
+        return
+      }
+      setTurnos(prev =>
+        prev.map(t =>
+          t.id === id
+            ? {
+                ...t,
+                ordenTrabajoId: data.ordenTrabajoId,
+                estado: t.estado === "PENDIENTE" ? "CONFIRMADO" : t.estado,
+              }
+            : t
+        )
+      )
+      // Redirigir a la OT recién creada
+      router.push(`/admin/taller/${data.ordenTrabajoId}`)
+    } finally {
+      setLoadingTurno(null)
+    }
+  }, [router])
+
   const turnosFiltrados = filtroEstado
     ? turnos.filter(t => t.estado === filtroEstado)
     : turnos
@@ -131,9 +200,19 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Turnos de Servicio Técnico</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestión de turnos del taller</p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Turnos de Servicio Técnico</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestión de turnos del taller</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowNuevoModal(true)}
+          className="inline-flex items-center gap-2 rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white px-3 py-2 text-sm font-medium"
+        >
+          <Plus className="size-4" />
+          Nuevo turno
+        </button>
       </div>
 
       {/* Stats */}
@@ -327,7 +406,7 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
                     )}
                   </div>
                   {/* Actions */}
-                  <div className="flex gap-2 pt-1">
+                  <div className="flex flex-wrap gap-2 pt-1">
                     {turno.estado === "PENDIENTE" && (
                       <>
                         <button
@@ -355,6 +434,52 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
                         Completar
                       </button>
                     )}
+                    {/* Guardar como cliente: solo si todavía no se vinculó */}
+                    {!turno.clienteId && turno.estado !== "CANCELADO" && (
+                      <button
+                        onClick={() => guardarComoCliente(turno.id)}
+                        disabled={loadingTurno === turno.id}
+                        className="px-3 py-1 text-xs rounded-lg border border-[#6B4F7A]/40 text-[#6B4F7A] hover:bg-[#6B4F7A]/5 inline-flex items-center gap-1 disabled:opacity-50"
+                        title="Guardar a este contacto como cliente del CRM"
+                      >
+                        <UserPlus className="size-3" />
+                        Guardar cliente
+                      </button>
+                    )}
+                    {turno.clienteId && (
+                      <Link
+                        href={`/admin/clientes/${turno.clienteId}`}
+                        className="px-3 py-1 text-xs rounded-lg bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 inline-flex items-center gap-1 hover:bg-emerald-200"
+                      >
+                        <CheckCircle className="size-3" />
+                        Cliente
+                      </Link>
+                    )}
+                    {/* Crear OT: solo si todavía no hay */}
+                    {!turno.ordenTrabajoId && turno.estado !== "CANCELADO" && (
+                      <button
+                        onClick={() => crearOT(turno.id)}
+                        disabled={loadingTurno === turno.id}
+                        className="px-3 py-1 text-xs rounded-lg bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white inline-flex items-center gap-1 disabled:opacity-50"
+                        title="Crear OT en el taller con este turno"
+                      >
+                        {loadingTurno === turno.id ? (
+                          <Loader2 className="size-3 animate-spin" />
+                        ) : (
+                          <Wrench className="size-3" />
+                        )}
+                        Crear OT
+                      </button>
+                    )}
+                    {turno.ordenTrabajoId && (
+                      <Link
+                        href={`/admin/taller/${turno.ordenTrabajoId}`}
+                        className="px-3 py-1 text-xs rounded-lg bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 inline-flex items-center gap-1 hover:bg-blue-200"
+                      >
+                        <Wrench className="size-3" />
+                        OT abierta
+                      </Link>
+                    )}
                   </div>
                 </div>
               )
@@ -362,6 +487,16 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
           </div>
         )}
       </div>
+
+      {showNuevoModal && (
+        <NuevoTurnoModal
+          onClose={() => setShowNuevoModal(false)}
+          onCreated={(turno) => {
+            setTurnos((prev) => [turno, ...prev])
+            setShowNuevoModal(false)
+          }}
+        />
+      )}
     </div>
   )
 }

@@ -378,6 +378,8 @@ enum EtapaLead {
 model Turno {
   id              String      @id @default(cuid())
   nombre          String
+  apellido        String?
+  dni             String?     // ahora obligatorio en el form publico/admin; opcional en DB para compat con turnos viejos
   telefono        String
   email           String?
   modeloMoto      String?
@@ -388,6 +390,12 @@ model Turno {
   fechaConfirmada DateTime?
   comentarios     String?     @db.Text
   estado          EstadoTurno @default(PENDIENTE)
+  // Cliente vinculado (si se "guardó" el turno como cliente del CRM)
+  clienteId       String?
+  cliente         Cliente?    @relation(fields: [clienteId], references: [id])
+  // Orden de trabajo creada a partir del turno (si aplica)
+  ordenTrabajoId  String?     @unique
+  ordenTrabajo    OrdenTrabajo? @relation("OTDeTurno", fields: [ordenTrabajoId], references: [id])
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
 }
@@ -696,6 +704,7 @@ model Cliente {
   presupuestos    Presupuesto[]
   financiaciones  FinanciacionOC[]
   ordenesTrabajo  OrdenTrabajo[]
+  turnos          Turno[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -973,6 +982,8 @@ model OrdenTrabajo {
 
   // Si vino de un presupuesto previo
   presupuesto     Presupuesto? @relation("PresupuestoOT")
+  // Si vino de un turno agendado
+  turno           Turno? @relation("OTDeTurno")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

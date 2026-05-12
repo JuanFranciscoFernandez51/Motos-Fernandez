@@ -22,6 +22,7 @@ import {
 export default function ServicioTecnicoPage() {
   const [form, setForm] = useState({
     nombre: "",
+    dni: "",
     telefono: "",
     email: "",
     modeloMoto: "",
@@ -32,9 +33,24 @@ export default function ServicioTecnicoPage() {
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
     "idle"
   )
+  const [errorMsg, setErrorMsg] = useState("")
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setErrorMsg("")
+
+    // Validación cliente-side (el backend también valida)
+    if (
+      !form.nombre.trim() ||
+      !form.dni.trim() ||
+      !form.telefono.trim() ||
+      !form.email.trim() ||
+      !form.modeloMoto.trim() ||
+      !form.tipoServicio.trim()
+    ) {
+      setErrorMsg("Completá todos los campos obligatorios.")
+      return
+    }
     setStatus("loading")
 
     try {
@@ -48,6 +64,7 @@ export default function ServicioTecnicoPage() {
         setStatus("success")
         setForm({
           nombre: "",
+          dni: "",
           telefono: "",
           email: "",
           modeloMoto: "",
@@ -56,9 +73,12 @@ export default function ServicioTecnicoPage() {
           comentarios: "",
         })
       } else {
+        const data = await res.json().catch(() => ({}))
+        setErrorMsg(data?.error || "Error al enviar el turno.")
         setStatus("error")
       }
     } catch {
+      setErrorMsg("No pudimos conectar con el servidor.")
       setStatus("error")
     }
   }
@@ -192,7 +212,7 @@ export default function ServicioTecnicoPage() {
                         htmlFor="telefono"
                         className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5"
                       >
-                        Telefono *
+                        Celular *
                       </label>
                       <input
                         id="telefono"
@@ -206,21 +226,41 @@ export default function ServicioTecnicoPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5"
-                    >
-                      Email
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      value={form.email}
-                      onChange={(e) => update("email", e.target.value)}
-                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
-                      placeholder="tu@email.com"
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label
+                        htmlFor="dni"
+                        className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5"
+                      >
+                        DNI *
+                      </label>
+                      <input
+                        id="dni"
+                        type="text"
+                        required
+                        value={form.dni}
+                        onChange={(e) => update("dni", e.target.value)}
+                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                        placeholder="30.123.456"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-[#1A1A1A] dark:text-white mb-1.5"
+                      >
+                        Email *
+                      </label>
+                      <input
+                        id="email"
+                        type="email"
+                        required
+                        value={form.email}
+                        onChange={(e) => update("email", e.target.value)}
+                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                        placeholder="tu@email.com"
+                      />
+                    </div>
                   </div>
 
                   <div>
@@ -298,9 +338,9 @@ export default function ServicioTecnicoPage() {
                     />
                   </div>
 
-                  {status === "error" && (
+                  {errorMsg && (
                     <p className="text-sm text-red-600">
-                      Hubo un error. Intenta de nuevo o contactanos por WhatsApp.
+                      {errorMsg}
                     </p>
                   )}
 

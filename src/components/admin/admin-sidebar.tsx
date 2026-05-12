@@ -91,7 +91,6 @@ const navEntries: NavEntry[] = [
     items: [
       { href: "/admin/taller", label: "Órdenes", icon: FileText },
       { href: "/admin/presupuestos", label: "Presupuestos", icon: FileText },
-      { href: "/admin/calendario", label: "Calendario", icon: CalendarClock },
       { href: "/admin/turnos", label: "Turnos", icon: CalendarClock },
       { href: "/admin/taller/tipos-servicio", label: "Tipos de servicio", icon: Tag },
     ],
