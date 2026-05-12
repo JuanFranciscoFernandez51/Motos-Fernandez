@@ -10,6 +10,7 @@ import {
   Clock,
   ExternalLink,
   AlertTriangle,
+  RotateCw,
 } from "lucide-react"
 
 export type JobInfo = {
@@ -48,6 +49,31 @@ export function SistemaClient({
   const [resultadoJob, setResultadoJob] = useState<
     Record<string, { ok: boolean; message: string }>
   >({})
+  const [cacheBusy, setCacheBusy] = useState<string | null>(null)
+  const [cacheMsg, setCacheMsg] = useState<string | null>(null)
+
+  const limpiarCache = async (scope: string) => {
+    setCacheBusy(scope)
+    setCacheMsg(null)
+    try {
+      const res = await fetch("/api/admin/cache/revalidate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scope }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        setCacheMsg(`Error: ${data.error || `HTTP ${res.status}`}`)
+      } else {
+        setCacheMsg(`Cache limpiado: ${(data.limpiados || []).join(", ")}`)
+        router.refresh()
+      }
+    } catch (e) {
+      setCacheMsg(`Error: ${e instanceof Error ? e.message : "Error"}`)
+    } finally {
+      setCacheBusy(null)
+    }
+  }
 
   const ejecutarJob = async (key: string) => {
     setRunningJob(key)
@@ -95,6 +121,54 @@ export function SistemaClient({
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           Estado de los crons, últimas ejecuciones y disparador manual.
         </p>
+      </div>
+
+      {/* Limpiar cache público */}
+      <div className="rounded-xl border bg-white dark:bg-neutral-900 p-5 space-y-3">
+        <div>
+          <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
+            Cache del sitio público
+          </h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            Si la home, catalogo o tienda muestra datos viejos (ej: catálogo
+            destacado vacío aunque haya motos cargadas), limpiá el cache acá.
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { scope: "modelos", label: "Catálogo de motos" },
+            { scope: "productos", label: "Tienda" },
+            { scope: "noticias", label: "Noticias" },
+            { scope: "testimonios", label: "Testimonios" },
+            { scope: "todo", label: "Todo el sitio" },
+          ].map((b) => (
+            <button
+              key={b.scope}
+              type="button"
+              onClick={() => limpiarCache(b.scope)}
+              disabled={cacheBusy === b.scope}
+              className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-800 px-3 py-1.5 text-xs disabled:opacity-50"
+            >
+              {cacheBusy === b.scope ? (
+                <Loader2 className="size-3 animate-spin" />
+              ) : (
+                <RotateCw className="size-3" />
+              )}
+              {b.label}
+            </button>
+          ))}
+        </div>
+        {cacheMsg && (
+          <div
+            className={`rounded-md px-3 py-2 text-xs ${
+              cacheMsg.startsWith("Error")
+                ? "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/40"
+                : "bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-900/40"
+            }`}
+          >
+            {cacheMsg}
+          </div>
+        )}
       </div>
 
       {/* Diagnóstico de env vars */}
