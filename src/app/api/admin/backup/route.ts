@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import cloudinary from "@/lib/cloudinary"
+import { runJob } from "@/lib/job-log"
 
 export const runtime = "nodejs"
 export const maxDuration = 300 // 5 min — la DB con miles de filas tarda
@@ -31,6 +32,7 @@ export async function GET(request: Request) {
   }
 
   try {
+    const wrapped = await runJob("backup-json", async () => {
     const startedAt = new Date()
     console.log("[backup] Iniciando dump...")
 
@@ -162,9 +164,8 @@ export async function GET(request: Request) {
     const elapsedMs = Date.now() - startedAt.getTime()
     console.log(`[backup] OK — ${upload.bytes} bytes en ${elapsedMs}ms`)
 
-    return NextResponse.json({
-      ok: true,
-      createdAt: startedAt.toISOString(),
+    return {
+      startedAt,
       sizeKB,
       elapsedMs,
       counts: dump._meta.counts,
@@ -172,6 +173,21 @@ export async function GET(request: Request) {
         publicId: upload.public_id,
         url: upload.secure_url,
       },
+      metadata: {
+        sizeKB,
+        bytes: upload.bytes,
+        cloudinaryPublicId: upload.public_id,
+        counts: dump._meta.counts,
+      },
+    }
+    })  // cierra runJob
+    return NextResponse.json({
+      ok: true,
+      createdAt: wrapped.result.startedAt.toISOString(),
+      sizeKB: wrapped.result.sizeKB,
+      elapsedMs: wrapped.result.elapsedMs,
+      counts: wrapped.result.counts,
+      cloudinary: wrapped.result.cloudinary,
     })
   } catch (e) {
     console.error("[backup] Error:", e)

@@ -705,6 +705,7 @@ model Cliente {
   financiaciones  FinanciacionOC[]
   ordenesTrabajo  OrdenTrabajo[]
   turnos          Turno[]
+  outreachTareas  OutreachTarea[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -853,6 +854,9 @@ model OrdenCompra {
   // financiación (va en FinanciacionOC). El total se computa sumando
   // pagos + permutas + monto financiado y debería igualar a precioVenta.
   pagos           OCPago[]
+
+  // Tareas de outreach (service post-venta + NPS) generadas a partir de esta OC.
+  outreachTareas  OutreachTarea[]
 
   observaciones   String?   @db.Text
 
@@ -1105,6 +1109,75 @@ model MetaConfig {
   scope           String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+}
+
+// ==================== JOB LOG (crons / tareas automaticas) ====================
+// Cada ejecucion de un cron (backup, verificador, etc) graba aca su
+// resultado. Sirve para que el admin vea desde el panel si los jobs
+// estan corriendo y si hubo errores.
+model JobLog {
+  id          String   @id @default(cuid())
+  job         String   // "backup-sheets" | "backup-json" | "verificar-publicaciones" | "outreach-generator"
+  ok          Boolean
+  message     String?  @db.Text
+  durationMs  Int?
+  metadata    Json?    // datos extra: cantidad de filas, IDs procesados, etc.
+  createdAt   DateTime @default(now())
+
+  @@index([job, createdAt])
+  @@index([createdAt])
+}
+
+// ==================== OUTREACH (service post-venta + NPS) ====================
+// Cola de mensajes a enviar a clientes. Un cron diario genera las tareas
+// (ej: OC concretadas hace 6 meses → tarea SERVICE_POSTVENTA). El admin
+// las despacha desde el panel con un click "Abrir WhatsApp", que abre
+// wa.me con el mensaje pre-cargado. Cuando lo marca enviado, queda
+// registrado en la tarea.
+model OutreachTarea {
+  id              String        @id @default(cuid())
+  tipo            TipoOutreach
+  estado          EstadoOutreach @default(PROGRAMADA)
+
+  // Cliente al que se le manda
+  clienteId       String
+  cliente         Cliente       @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  // OC origen (si aplica): para post-venta sabemos qué moto compró
+  ordenCompraId   String?
+  ordenCompra     OrdenCompra?  @relation(fields: [ordenCompraId], references: [id], onDelete: SetNull)
+
+  // Snapshot del contacto al momento de generar la tarea
+  telefono        String?       // si lo modificamos en Cliente, este queda fijo (lo que se uso)
+  mensaje         String        @db.Text  // texto exacto que se manda
+
+  // Fechas
+  fechaProgramada DateTime      @default(now())  // cuando deberia mandarse
+  enviadaAt       DateTime?     // cuando el admin la marco como enviada
+  descartadaAt    DateTime?
+
+  // Resultado opcional (para NPS): texto libre de lo que respondio el cliente
+  respuesta       String?       @db.Text
+  notaInterna     String?       @db.Text
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([estado, fechaProgramada])
+  @@index([clienteId])
+  @@index([tipo, ordenCompraId])
+}
+
+enum TipoOutreach {
+  SERVICE_POSTVENTA  // recordatorio de service a los X meses de comprar
+  NPS                // encuesta de satisfaccion + pedido de review
+}
+
+enum EstadoOutreach {
+  PROGRAMADA   // generada por el cron, falta despachar
+  ENVIADA      // el admin la mando por WhatsApp
+  DESCARTADA   // el admin decidio no mandar
+  RESPONDIDA   // el cliente respondio (admin lo registra)
 }
 
 // ==================== TIPOS DE SERVICIO (TALLER) ====================

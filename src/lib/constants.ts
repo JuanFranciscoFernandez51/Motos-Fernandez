@@ -78,6 +78,54 @@ export function getWhatsAppUrl(message: string) {
   return `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(message)}`
 }
 
+/**
+ * Devuelve la URL wa.me para mandarle un mensaje a un cliente puntual.
+ * `telefono` puede venir con cualquier formato — limpia todo lo que no
+ * sea dígito y agrega +54 si no tiene código de país.
+ */
+export function getWhatsAppUrlForClient(telefono: string, message: string) {
+  let digits = (telefono || "").replace(/\D/g, "")
+  // Si no empieza con código de país, asumimos AR (54)
+  if (digits.length > 0 && !digits.startsWith("54")) {
+    // Quitar 0 inicial si lo tiene
+    if (digits.startsWith("0")) digits = digits.slice(1)
+    // Quitar 15 de movil viejo
+    if (digits.startsWith("15")) digits = digits.slice(2)
+    digits = "54" + digits
+  }
+  return `https://wa.me/${digits}?text=${encodeURIComponent(message)}`
+}
+
+// ==================== TEMPLATES DE OUTREACH (service post-venta + NPS) ====================
+// Mensajes que mandamos a clientes desde el panel de outreach. Son
+// plantillas con placeholders {nombre} y {moto} que se rellenan al
+// generar la tarea.
+
+export const OUTREACH_CONFIG = {
+  // Cuantos dias despues de la entrega disparamos el service post-venta.
+  // 180 dias = 6 meses. Es el "primer service" recomendado para motos nuevas.
+  diasServicePostVenta: 180,
+  // Cuantos dias despues de la entrega mandamos la encuesta NPS.
+  // 10 dias = el cliente ya uso la moto pero todavia tiene fresca la
+  // experiencia de la compra.
+  diasNPS: 10,
+} as const
+
+export const OUTREACH_TEMPLATES = {
+  SERVICE_POSTVENTA: (vars: { nombre: string; moto: string }) =>
+    `Hola ${vars.nombre}! Soy de Motos Fernandez. Te escribo porque ya pasaron unos meses desde que te llevaste tu ${vars.moto} y queriamos recordarte que es buen momento para hacer el primer service.
+
+Te lo agendamos? Tenemos turnos para esta semana. Saludos!`,
+  NPS: (vars: { nombre: string; moto: string }) =>
+    `Hola ${vars.nombre}! Soy de Motos Fernandez.
+
+Queremos saber como te esta yendo con tu ${vars.moto}. En una escala del 1 al 10, ¿que tan probable es que nos recomiendes a un amigo o familiar?
+
+Si te quedaste contento, te agradeceriamos un montón si nos dejas una reseña en Google: https://g.page/r/motosfernandez/review
+
+Cualquier comentario es bienvenido. Gracias!`,
+} as const
+
 // ==================== COLORES DE MARCA ====================
 
 export const BRAND_COLORS = {

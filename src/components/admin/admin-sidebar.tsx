@@ -126,7 +126,9 @@ const navEntries: NavEntry[] = [
     ],
   },
 
+  { href: "/admin/outreach", label: "Outreach", icon: MessageCircleHeart },
   { href: "/admin/asistente", label: "Asistente IA", icon: Bot },
+  { href: "/admin/sistema", label: "Sistema", icon: ListChecks },
   { href: "/admin/configuracion", label: "Config", icon: Settings },
 ]
 

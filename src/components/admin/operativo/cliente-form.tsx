@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { OcrDocButton } from "./ocr-doc-button"
 import { ArrowLeft, Save, Loader2 } from "lucide-react"
 
 export type ClienteData = {
@@ -120,7 +121,21 @@ export function ClienteForm({
         {/* Identificación */}
         <Card className="lg:col-span-2">
           <CardHeader>
-            <CardTitle>Identificación</CardTitle>
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <CardTitle>Identificación</CardTitle>
+              <OcrDocButton
+                tipo="DNI"
+                label="Scanear DNI"
+                onResult={(d) => {
+                  setData((prev) => ({
+                    ...prev,
+                    apellido: d.apellido || prev.apellido,
+                    nombre: d.nombre || prev.nombre,
+                    dni: d.dni || prev.dni,
+                  }))
+                }}
+              />
+            </div>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

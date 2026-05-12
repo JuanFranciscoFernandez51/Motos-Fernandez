@@ -7,6 +7,14 @@
     {
       "path": "/api/admin/backup-sheets",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/admin/jobs/verificar-publicaciones",
+      "schedule": "0 12 * * 1"
+    },
+    {
+      "path": "/api/admin/jobs/generar-outreach",
+      "schedule": "30 12 * * *"
     }
   ]
 }

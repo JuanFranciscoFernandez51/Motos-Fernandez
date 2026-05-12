@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { google } from "googleapis"
+import { runJob } from "@/lib/job-log"
 
 export const runtime = "nodejs"
 export const maxDuration = 300 // 5 min
@@ -66,6 +67,7 @@ export async function GET(request: Request) {
   const privateKey = privateKeyRaw.replace(/\\n/g, "\n")
 
   try {
+    const out = await runJob("backup-sheets", async () => {
     const startedAt = new Date()
     console.log("[backup-sheets] Iniciando dump...")
 
@@ -335,12 +337,25 @@ export async function GET(request: Request) {
     const elapsedMs = Date.now() - startedAt.getTime()
     console.log(`[backup-sheets] OK en ${elapsedMs}ms`)
 
-    return NextResponse.json({
-      ok: true,
-      createdAt: startedAt.toISOString(),
+    return {
+      startedAt,
       elapsedMs,
       pestanias: pestanias.map((p) => ({ nombre: p.nombre, filas: p.rows.length })),
       sheetUrl: `https://docs.google.com/spreadsheets/d/${sheetId}/edit`,
+      // metadata: lo que se guarda en JobLog
+      metadata: {
+        sheetUrl: `https://docs.google.com/spreadsheets/d/${sheetId}/edit`,
+        totalFilas: pestanias.reduce((s, p) => s + p.rows.length, 0),
+        pestanias: pestanias.length,
+      },
+    }
+    })  // cierra runJob
+    return NextResponse.json({
+      ok: true,
+      createdAt: out.result.startedAt.toISOString(),
+      elapsedMs: out.result.elapsedMs,
+      pestanias: out.result.pestanias,
+      sheetUrl: out.result.sheetUrl,
     })
   } catch (e) {
     console.error("[backup-sheets] Error:", e)

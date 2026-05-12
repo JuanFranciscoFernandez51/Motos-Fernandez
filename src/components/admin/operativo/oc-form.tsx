@@ -12,6 +12,7 @@ import { ArrowLeft, Save, Loader2, Plus, Trash2, Lock } from "lucide-react"
 import { ClienteSelector, type ClienteOption } from "./cliente-selector"
 import { MotoSelector, type ModeloOption } from "./moto-selector"
 import { PagosEditor, pagoVacio, type PagoForm } from "./pagos-editor"
+import { OcrDocButton } from "./ocr-doc-button"
 
 // Una permuta dentro de la OC (form usa strings).
 export type PermutaForm = {
@@ -310,7 +311,26 @@ export function OCForm({
 
         <Card className="lg:col-span-2 overflow-visible">
           <CardHeader>
-            <CardTitle>Moto a vender</CardTitle>
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <CardTitle>Moto a vender</CardTitle>
+              <OcrDocButton
+                tipo="CEDULA_VERDE"
+                label="Scanear cédula"
+                onResult={(d) => {
+                  setData((prev) => ({
+                    ...prev,
+                    motoDescripcion:
+                      d.marca && d.modelo
+                        ? `${d.marca} ${d.modelo}${d.anio ? ` ${d.anio}` : ""}`
+                        : prev.motoDescripcion,
+                    motoChasis: d.chasis || prev.motoChasis,
+                    motoMotor: d.motor || prev.motoMotor,
+                    motoPatente: d.patente || prev.motoPatente,
+                    motoAnio: d.anio != null ? String(d.anio) : prev.motoAnio,
+                  }))
+                }}
+              />
+            </div>
           </CardHeader>
           <CardContent className="space-y-4 overflow-visible">
             <div>
@@ -506,19 +526,37 @@ export function OCForm({
                           </span>
                         )}
                       </div>
-                      {permutas.length > 1 && !yaEnStock && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() =>
-                            setPermutas((prev) => prev.filter((_, i) => i !== idx))
-                          }
-                          className="text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="size-3.5" />
-                        </Button>
-                      )}
+                      <div className="flex items-center gap-1">
+                        {!yaEnStock && (
+                          <OcrDocButton
+                            tipo="CEDULA_VERDE"
+                            label="Scanear cédula"
+                            onResult={(d) => {
+                              upd({
+                                marca: d.marca || pp.marca,
+                                modelo: d.modelo || pp.modelo,
+                                anio: d.anio != null ? String(d.anio) : pp.anio,
+                                patente: d.patente || pp.patente,
+                                chasis: d.chasis || pp.chasis,
+                                motor: d.motor || pp.motor,
+                              })
+                            }}
+                          />
+                        )}
+                        {permutas.length > 1 && !yaEnStock && (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              setPermutas((prev) => prev.filter((_, i) => i !== idx))
+                            }
+                            className="text-red-600 hover:bg-red-50"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        )}
+                      </div>
                     </div>
                     {yaEnStock && (
                       <p className="text-[11px] text-blue-700 dark:text-blue-300">
