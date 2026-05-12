@@ -171,7 +171,7 @@ async function updateOrden(formData: FormData) {
         if (p.id) {
           // Update permuta existente — NO toco motoRecibidaId (la moto del catálogo
           // se edita aparte para no desincronizar)
-          await tx.oCPermuta.update({
+          const permutaAct = await tx.oCPermuta.update({
             where: { id: p.id },
             data: {
               marca: p.marca,
@@ -193,6 +193,32 @@ async function updateOrden(formData: FormData) {
               tieneFactura: !!p.tieneFactura,
               tieneFichaTecnica: !!p.tieneFichaTecnica,
               accesoriosExtra: p.accesoriosExtra || null,
+            },
+          })
+          // Sincronizar el mandato asociado (es idempotente: update si existe,
+          // create si no — por ej. si la permuta es vieja y nunca tuvo mandato).
+          await crearMandatoDesdePermuta(tx, {
+            ocPermutaId: permutaAct.id,
+            clienteId: orden.clienteId,
+            ordenCompraId: orden.id,
+            modeloId: permutaAct.motoRecibidaId,
+            fecha: orden.fecha,
+            moneda: permutaAct.moneda || orden.moneda || "ARS",
+            permuta: {
+              marca: p.marca,
+              modelo: p.modelo,
+              anio: p.anio,
+              kilometros: p.kilometros,
+              patente: p.patente,
+              chasis: p.chasis,
+              motor: p.motor,
+              descripcion: p.descripcion,
+              valor: p.valor,
+              tieneTitulo: p.tieneTitulo,
+              tieneManual: p.tieneManual,
+              tieneSegundaLlave: p.tieneSegundaLlave,
+              tieneVtv: p.tieneVtv,
+              accesoriosExtra: p.accesoriosExtra,
             },
           })
         } else {
@@ -232,7 +258,7 @@ async function updateOrden(formData: FormData) {
             })
             motoRecibidaId = motoRecibida.id
           }
-          await tx.oCPermuta.create({
+          const permutaCreada = await tx.oCPermuta.create({
             data: {
               ordenCompraId: orden.id,
               marca: p.marca,
@@ -258,10 +284,9 @@ async function updateOrden(formData: FormData) {
             },
           })
 
-          // Auto-crear MandatoVenta para esta permuta nueva.
-          // No se crea cuando UPDATE-amos una permuta ya existente (no
-          // queremos duplicar el mandato si el admin solo está editando).
+          // Auto-crear MandatoVenta para esta permuta nueva (idempotente).
           await crearMandatoDesdePermuta(tx, {
+            ocPermutaId: permutaCreada.id,
             clienteId: orden.clienteId,
             ordenCompraId: orden.id,
             modeloId: motoRecibidaId,

@@ -1,31 +1,36 @@
 import type { Prisma } from "@prisma/client"
 
 /**
- * Crea automáticamente un MandatoVenta cuando se toma una permuta en una
- * OC. Justificación: la moto pasa a estar en venta y necesitamos
- * trackearla con precio mínimo (= valor de toma) y precio sugerido al
- * público — exactamente el mismo flujo que cuando un cliente consigna su
- * moto.
+ * Crea (o sincroniza) automaticamente un MandatoVenta cuando se toma una
+ * permuta en una OC. Justificacion: la moto pasa al inventario y necesitamos
+ * trackearla con precio minimo (= valor de toma) y precio sugerido al
+ * publico — mismo flujo que cuando un cliente consigna su moto.
  *
- * - Estado: ACTIVO (la moto ya está disponible para venta).
- * - Cliente: el que entregó la permuta (= comprador de la nueva moto).
- * - Precio mínimo: el valor de toma (lo que se descontó de la OC).
- * - Precio venta: arranca igual al precio mínimo — el admin lo ajusta
- *   después con margen.
- * - Documentación: mapea desde el checklist de OCPermuta lo que esté.
+ * Es IDEMPOTENTE: si ya existe un mandato para esta permuta (linkeado via
+ * `ocPermutaId`), lo actualiza en lugar de crear duplicado. Esto permite
+ * llamar el helper repetidamente sin problemas (ej: al editar una OC).
  *
- * Se llama dentro del mismo $transaction de la OC para que sea atómico.
- * Si la creación falla por validación, toda la OC se cancela.
+ * - Estado: ACTIVO (la moto ya esta disponible para venta).
+ * - Cliente: el que entrego la permuta (ex-dueno, queda como traza).
+ * - Moneda: la de la permuta (puede diferir de la moneda de la OC).
+ * - Precio minimo: el valor de toma (lo que se descontó de la OC).
+ * - Precio venta: arranca igual al minimo — el admin lo ajusta despues con
+ *   margen. Si valor=0 (permuta gratis / sin valor declarado) tambien se
+ *   crea el mandato igual, con precio 0 para que el admin lo cargue a mano.
+ * - Documentacion: mapea desde el checklist de OCPermuta lo que este.
  *
- * Devuelve el mandato creado o null si no había suficientes datos
- * (sin marca/modelo no podemos crear un mandato útil).
+ * Se llama dentro del mismo $transaction de la OC para que sea atomico.
+ *
+ * Devuelve el mandato (creado o actualizado) o null si no hay datos minimos
+ * para armarlo (sin marca ni modelo no podemos crear un mandato util).
  */
 export async function crearMandatoDesdePermuta(
   tx: Prisma.TransactionClient,
   args: {
+    ocPermutaId: string  // ← obligatorio para idempotencia
     clienteId: string
     ordenCompraId: string
-    modeloId: string | null // moto del catálogo asociada (si se creó)
+    modeloId: string | null // moto del catalogo asociada (si se creó)
     fecha: Date
     moneda: string
     permuta: {
@@ -47,44 +52,70 @@ export async function crearMandatoDesdePermuta(
   }
 ) {
   const { permuta } = args
+
+  // Sin marca/modelo no podemos hacer un mandato util — saltamos.
   if (!permuta.marca || !permuta.modelo) return null
-  if (!permuta.valor || permuta.valor <= 0) return null
+
+  // El valor puede ser 0 (permuta sin valor declarado, "regalo") — igual
+  // creamos el mandato para que el admin pueda cargarle un precio despues.
+  const valor = Math.max(0, permuta.valor || 0)
 
   // Notas: copiamos el resto del checklist que no entra en los booleans
-  // específicos del schema MandatoVenta (casco, seguro, factura, etc).
+  // especificos del schema MandatoVenta (casco, seguro, factura, etc).
   const extrasTxt: string[] = []
   if (permuta.descripcion) extrasTxt.push(permuta.descripcion)
   if (permuta.accesoriosExtra) extrasTxt.push(`Accesorios: ${permuta.accesoriosExtra}`)
+  const observaciones =
+    extrasTxt.length > 0
+      ? `Generado automaticamente al tomar como parte de pago.\n\n${extrasTxt.join("\n")}`
+      : "Generado automaticamente al tomar como parte de pago."
 
-  const mandato = await tx.mandatoVenta.create({
+  // Datos comunes a create/update
+  const data = {
+    clienteId: args.clienteId,
+    fechaFirma: args.fecha,
+    estado: "ACTIVO" as const,
+    marca: permuta.marca,
+    modelo: permuta.modelo,
+    anio: permuta.anio ?? null,
+    kilometros: permuta.kilometros ?? null,
+    chasis: permuta.chasis ?? null,
+    motor: permuta.motor ?? null,
+    patente: permuta.patente ?? null,
+    tieneTitulo: !!permuta.tieneTitulo,
+    tieneManual: !!permuta.tieneManual,
+    tieneSegundaLlave: !!permuta.tieneSegundaLlave,
+    tieneVTV: !!permuta.tieneVtv,
+    precioVenta: valor,
+    precioMinimo: valor,
+    moneda: args.moneda,
+    modeloId: args.modeloId,
+    observaciones,
+  }
+
+  // Idempotente: si ya existe un mandato para esta permuta, lo updateamos.
+  const existente = await tx.mandatoVenta.findUnique({
+    where: { ocPermutaId: args.ocPermutaId },
+  })
+
+  if (existente) {
+    // No pisamos `precioVenta` si el admin lo modifico (ya no es igual al
+    // valor original = se cargo un margen). Si era igual al precioMinimo
+    // viejo, lo sincronizamos al nuevo.
+    const adminTocoPrecio =
+      existente.precioVenta !== existente.precioMinimo
+    const precioVenta = adminTocoPrecio ? existente.precioVenta : valor
+    return tx.mandatoVenta.update({
+      where: { id: existente.id },
+      data: { ...data, precioVenta },
+    })
+  }
+
+  return tx.mandatoVenta.create({
     data: {
-      clienteId: args.clienteId,
-      fechaFirma: args.fecha,
-      estado: "ACTIVO",
-      marca: permuta.marca,
-      modelo: permuta.modelo,
-      anio: permuta.anio ?? null,
-      kilometros: permuta.kilometros ?? null,
-      chasis: permuta.chasis ?? null,
-      motor: permuta.motor ?? null,
-      patente: permuta.patente ?? null,
-      tieneTitulo: !!permuta.tieneTitulo,
-      tieneManual: !!permuta.tieneManual,
-      tieneSegundaLlave: !!permuta.tieneSegundaLlave,
-      tieneVTV: !!permuta.tieneVtv,
-      precioVenta: permuta.valor, // arranca igual al mínimo — el admin lo sube
-      precioMinimo: permuta.valor, // = valor de toma
-      moneda: args.moneda,
-      modeloId: args.modeloId,
-      // Linkeo al MandatoVenta la OC sólo si el campo único @unique está
-      // disponible — si ya hay un mandato linkeado a esta OC, dejamos null
-      // para evitar P2002.
-      ordenCompraId: null,
-      observaciones: extrasTxt.length > 0
-        ? `Generado automáticamente al tomar como parte de pago.\n\n${extrasTxt.join("\n")}`
-        : "Generado automáticamente al tomar como parte de pago.",
+      ...data,
+      ocPermutaId: args.ocPermutaId,
       fotos: [],
     },
   })
-  return mandato
 }

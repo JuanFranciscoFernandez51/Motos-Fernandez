@@ -768,6 +768,13 @@ model MandatoVenta {
   ordenCompraId   String?   @unique
   ordenCompra     OrdenCompra? @relation(fields: [ordenCompraId], references: [id])
 
+  // Permuta de origen: si este mandato se creó a partir de una moto
+  // tomada como parte de pago, linkea a la OCPermuta. 1-1: cada permuta
+  // genera como mucho un mandato (el unique garantiza idempotencia y
+  // evita duplicados si se edita la OC).
+  ocPermutaId     String?   @unique
+  ocPermuta       OCPermuta? @relation("MandatoDesdePermuta", fields: [ocPermutaId], references: [id], onDelete: SetNull)
+
   observaciones   String?   @db.Text
 
   createdAt DateTime @default(now())
@@ -935,6 +942,10 @@ model OCPermuta {
   // Si se subió al stock como moto usada → linkeo
   motoRecibidaId String?    @unique
   motoRecibida   Modelo?    @relation("OCPermutaMotoRecibida", fields: [motoRecibidaId], references: [id])
+
+  // Mandato generado automaticamente al tomar esta moto en parte de pago.
+  // Sirve como ficha de venta para revenderla.
+  mandato       MandatoVenta? @relation("MandatoDesdePermuta")
 
   createdAt     DateTime    @default(now())
 

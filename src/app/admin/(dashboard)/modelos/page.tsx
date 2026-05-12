@@ -311,7 +311,7 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
           motoRecibidaId = motoRecibida.id
           motosRecibidasIds.push(motoRecibida.id)
         }
-        await tx.oCPermuta.create({
+        const permutaCreada = await tx.oCPermuta.create({
           data: {
             ordenCompraId: orden.id,
             marca: p.marca,
@@ -337,8 +337,9 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
           },
         })
 
-        // Auto-crear MandatoVenta para trackear la venta de la moto.
+        // Auto-crear MandatoVenta para trackear la venta de la moto (idempotente).
         await crearMandatoDesdePermuta(tx, {
+          ocPermutaId: permutaCreada.id,
           clienteId: orden.clienteId,
           ordenCompraId: orden.id,
           modeloId: motoRecibidaId,

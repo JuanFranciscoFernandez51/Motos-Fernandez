@@ -213,6 +213,7 @@ type PermutaInput = {
   motor: string | null
   descripcion: string | null
   valor: number | null
+  moneda?: string
   subirAlStock: boolean
   tieneTitulo?: boolean
   tieneManual?: boolean
@@ -228,6 +229,7 @@ type PermutaInput = {
 type PagoInput = {
   metodo: string
   monto: number
+  moneda?: string
   detalle: string | null
   fecha: string | null
 }
@@ -359,7 +361,8 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
           motoRecibidaId = motoRecibida.id
           motosRecibidasIds.push(motoRecibida.id)
         }
-        await tx.oCPermuta.create({
+        const monedaPermuta = p.moneda || orden.moneda || "ARS"
+        const permutaCreada = await tx.oCPermuta.create({
           data: {
             ordenCompraId: orden.id,
             marca: p.marca,
@@ -371,6 +374,7 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
             motor: p.motor,
             descripcion: p.descripcion,
             valor: p.valor ?? 0,
+            moneda: monedaPermuta,
             motoRecibidaId,
             tieneTitulo: !!p.tieneTitulo,
             tieneManual: !!p.tieneManual,
@@ -384,13 +388,14 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
           },
         })
 
-        // Auto-crear MandatoVenta para trackear la venta de la moto.
+        // Auto-crear MandatoVenta para trackear la venta de la moto (idempotente).
         await crearMandatoDesdePermuta(tx, {
+          ocPermutaId: permutaCreada.id,
           clienteId: orden.clienteId,
           ordenCompraId: orden.id,
           modeloId: motoRecibidaId,
           fecha: orden.fecha,
-          moneda: orden.moneda,
+          moneda: monedaPermuta,
           permuta: {
             marca: p.marca,
             modelo: p.modelo,
@@ -423,6 +428,7 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
             ordenCompraId: orden.id,
             metodo: p.metodo,
             monto: p.monto,
+            moneda: p.moneda || orden.moneda || "ARS",
             detalle: p.detalle,
             fecha: p.fecha ? new Date(p.fecha) : null,
           },

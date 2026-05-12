@@ -170,7 +170,7 @@ async function createOrdenCompra(formData: FormData) {
             })
             motoRecibidaId = motoRecibida.id
           }
-          await tx.oCPermuta.create({
+          const permutaCreada = await tx.oCPermuta.create({
             data: {
               ordenCompraId: orden.id,
               marca: p.marca,
@@ -199,6 +199,7 @@ async function createOrdenCompra(formData: FormData) {
           // Auto-crear MandatoVenta para trackear la venta de la moto
           // recibida (cliente: el que entregó, precio mínimo: valor de toma).
           await crearMandatoDesdePermuta(tx, {
+            ocPermutaId: permutaCreada.id,
             clienteId: orden.clienteId,
             ordenCompraId: orden.id,
             modeloId: motoRecibidaId,
