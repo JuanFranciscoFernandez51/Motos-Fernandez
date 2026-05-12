@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
-import { formatPrice, ESTADO_PEDIDO_LABELS, TEMPERATURA_LABELS, ORIGEN_LABELS } from "@/lib/constants"
+import { formatPrice, formatPriceByMoneda, ESTADO_PEDIDO_LABELS, TEMPERATURA_LABELS, ORIGEN_LABELS } from "@/lib/constants"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -53,6 +53,14 @@ const ORIGEN_BAR_COLOR: Record<string, string> = {
 
 type VentaMes = {
   mes: string      // "YYYY-MM"
+  total: bigint
+  cantidad: bigint
+}
+
+// Igual a VentaMes pero separado por moneda — para no mezclar ARS y USD.
+type VentaMesMoneda = {
+  mes: string
+  moneda: string
   total: bigint
   cantidad: bigint
 }
@@ -276,36 +284,40 @@ export default async function AdminDashboardPage() {
       },
     }),
     // ─── Métricas del negocio (motos, taller, financiación) ───
-    // OC concretadas en el mes actual
-    prisma.ordenCompra.aggregate({
+    // OC concretadas en el mes actual, agrupadas por moneda. No sumamos ARS+USD,
+    // las mostramos como totales separados para no falsear el facturado.
+    prisma.ordenCompra.groupBy({
+      by: ["moneda"],
       _sum: { precioVenta: true },
       _count: true,
       where: { estado: "CONCRETADA", fecha: { gte: monthStartUTC } },
     }),
-    // OC concretadas en los últimos 6 meses (para gráfico)
-    prisma.$queryRaw<VentaMes[]>`
+    // OC concretadas en los últimos 6 meses (para gráfico) — separado por moneda
+    prisma.$queryRaw<VentaMesMoneda[]>`
       SELECT
         TO_CHAR(fecha AT TIME ZONE 'America/Argentina/Buenos_Aires', 'YYYY-MM') AS mes,
+        moneda,
         SUM("precioVenta")::bigint AS total,
         COUNT(*)::bigint AS cantidad
       FROM "VentaMoto"
       WHERE fecha >= ${sixMonthsAgoUTC} AND estado = 'CONCRETADA'
-      GROUP BY mes
+      GROUP BY mes, moneda
       ORDER BY mes ASC
     `,
-    // Top marcas vendidas (último año, en OC concretadas)
-    prisma.$queryRaw<{ marca: string; cantidad: bigint; total: bigint }[]>`
+    // Top marcas vendidas (último año, en OC concretadas) — separado por moneda
+    prisma.$queryRaw<{ marca: string; moneda: string; cantidad: bigint; total: bigint }[]>`
       SELECT
         m.marca,
+        oc.moneda,
         COUNT(*)::bigint AS cantidad,
         SUM(oc."precioVenta")::bigint AS total
       FROM "VentaMoto" oc
       JOIN "Modelo" m ON m.id = oc."modeloId"
       WHERE oc.fecha >= ${new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)}
         AND oc.estado = 'CONCRETADA'
-      GROUP BY m.marca
+      GROUP BY m.marca, oc.moneda
       ORDER BY cantidad DESC
-      LIMIT 5
+      LIMIT 10
     `,
     // Stock de motos
     prisma.modelo.count({ where: { activo: true, vendida: false } }),
@@ -414,9 +426,29 @@ export default async function AdminDashboardPage() {
     },
   ]
 
-  // Datos para sección "Métricas del negocio"
+  // Datos para sección "Métricas del negocio".
+  // ocMesActual viene agrupado por moneda → re-armamos un total general
+  // (cantidad de motos, agregada) y los facturados separados por moneda.
+  const ocMesCantidad = ocMesActual.reduce((s, r) => s + Number(r._count), 0)
+  const ocMesPorMoneda = ocMesActual.map((r) => ({
+    moneda: r.moneda,
+    monto: Number(r._sum.precioVenta || 0),
+  }))
+
+  // Por mes: separamos las cantidades (suma de motos) y mantenemos los
+  // facturados en cada moneda para mostrarlos en línea bajo la barra.
   const ocPorMesData = (() => {
-    const map = new Map(ocPorMesRaw.map((v) => [v.mes, { total: Number(v.total), cantidad: Number(v.cantidad) }]))
+    type Entry = { totalARS: number; totalUSD: number; cantidad: number }
+    const map = new Map<string, Entry>()
+    for (const v of ocPorMesRaw) {
+      const e = map.get(v.mes) ?? { totalARS: 0, totalUSD: 0, cantidad: 0 }
+      const total = Number(v.total)
+      const cant = Number(v.cantidad)
+      if (v.moneda === "USD") e.totalUSD += total
+      else e.totalARS += total
+      e.cantidad += cant
+      map.set(v.mes, e)
+    }
     return Array.from({ length: 6 }, (_, i) => {
       const d = new Date(nowAR.getFullYear(), nowAR.getMonth() - 5 + i, 1)
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`
@@ -424,18 +456,33 @@ export default async function AdminDashboardPage() {
       return {
         mes: mesesEspanol[d.getMonth()],
         anio: d.getFullYear(),
-        total: entry?.total || 0,
+        totalARS: entry?.totalARS || 0,
+        totalUSD: entry?.totalUSD || 0,
         cantidad: entry?.cantidad || 0,
       }
     })
   })()
-  const maxOCTotal = Math.max(...ocPorMesData.map((m) => m.total), 1)
+  // El gráfico se escala por cantidad de motos (independiente de moneda),
+  // no por monto — así dos meses con monedas distintas son comparables.
+  const maxOCcantidad = Math.max(...ocPorMesData.map((m) => m.cantidad), 1)
 
-  const topMarcas = topMarcasRaw.map((m) => ({
-    marca: m.marca,
-    cantidad: Number(m.cantidad),
-    total: Number(m.total),
-  }))
+  // Top marcas: agrupamos por marca, sumamos cantidades y mantenemos
+  // los facturados separados por moneda.
+  const topMarcas = (() => {
+    type Entry = { cantidad: number; totalARS: number; totalUSD: number }
+    const map = new Map<string, Entry>()
+    for (const m of topMarcasRaw) {
+      const e = map.get(m.marca) ?? { cantidad: 0, totalARS: 0, totalUSD: 0 }
+      e.cantidad += Number(m.cantidad)
+      if (m.moneda === "USD") e.totalUSD += Number(m.total)
+      else e.totalARS += Number(m.total)
+      map.set(m.marca, e)
+    }
+    return Array.from(map.entries())
+      .map(([marca, v]) => ({ marca, ...v }))
+      .sort((a, b) => b.cantidad - a.cantidad)
+      .slice(0, 5)
+  })()
   const maxMarcaCant = Math.max(...topMarcas.map((m) => m.cantidad), 1)
 
   return (
@@ -1046,10 +1093,10 @@ export default async function AdminDashboardPage() {
             <CardContent className="p-4">
               <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Motos vendidas (mes)</p>
               <p className="text-2xl font-bold text-emerald-700 dark:text-emerald-300 mt-1">
-                {ocMesActual._count}
+                {ocMesCantidad}
               </p>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                Facturado: {formatPrice(Number(ocMesActual._sum.precioVenta || 0))}
+                Facturado: {formatPriceByMoneda(ocMesPorMoneda)}
               </p>
             </CardContent>
           </Card>
@@ -1097,7 +1144,13 @@ export default async function AdminDashboardPage() {
             <CardContent>
               <div className="space-y-2.5">
                 {ocPorMesData.map((m) => {
-                  const pct = (m.total / maxOCTotal) * 100
+                  // Escalamos por cantidad de motos (no por monto) para que
+                  // ARS y USD sean comparables entre meses.
+                  const pct = (m.cantidad / maxOCcantidad) * 100
+                  const facturado = formatPriceByMoneda([
+                    { monto: m.totalARS, moneda: "ARS" },
+                    { monto: m.totalUSD, moneda: "USD" },
+                  ])
                   return (
                     <div key={`${m.anio}-${m.mes}`} className="flex items-center gap-3">
                       <span className="w-12 text-xs font-medium text-gray-600 dark:text-gray-300 shrink-0">
@@ -1110,7 +1163,7 @@ export default async function AdminDashboardPage() {
                         />
                         {m.cantidad > 0 && (
                           <span className="absolute inset-0 flex items-center px-2 text-xs font-semibold text-gray-900 dark:text-gray-100">
-                            {m.cantidad} {m.cantidad === 1 ? "moto" : "motos"} · {formatPrice(m.total)}
+                            {m.cantidad} {m.cantidad === 1 ? "moto" : "motos"} · {facturado}
                           </span>
                         )}
                       </div>
@@ -1139,6 +1192,10 @@ export default async function AdminDashboardPage() {
                 <div className="space-y-2.5">
                   {topMarcas.map((m) => {
                     const pct = (m.cantidad / maxMarcaCant) * 100
+                    const facturado = formatPriceByMoneda([
+                      { monto: m.totalARS, moneda: "ARS" },
+                      { monto: m.totalUSD, moneda: "USD" },
+                    ])
                     return (
                       <div key={m.marca} className="flex items-center gap-3">
                         <span className="w-24 text-xs font-medium text-gray-700 dark:text-gray-200 shrink-0 truncate">
@@ -1150,10 +1207,10 @@ export default async function AdminDashboardPage() {
                             style={{ width: `${Math.max(pct, 4)}%`, backgroundColor: "#6B4F7A" }}
                           />
                         </div>
-                        <span className="w-28 text-right text-xs text-gray-700 dark:text-gray-300 shrink-0">
+                        <span className="w-36 text-right text-xs text-gray-700 dark:text-gray-300 shrink-0">
                           <span className="font-semibold">{m.cantidad}</span>
                           <span className="text-gray-400 ml-1">·</span>
-                          <span className="ml-1 font-mono text-[10px]">{formatPrice(m.total)}</span>
+                          <span className="ml-1 font-mono text-[10px]">{facturado}</span>
                         </span>
                       </div>
                     )

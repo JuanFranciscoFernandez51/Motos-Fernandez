@@ -46,6 +46,7 @@ export type PermutaInput = {
   motor: string | null
   descripcion: string | null
   valor: number | null
+  moneda?: string
   subirAlStock: boolean
   // Checklist de accesorios que entrega
   tieneTitulo?: boolean
@@ -63,6 +64,7 @@ export type PermutaInput = {
 export type PagoInput = {
   metodo: string
   monto: number
+  moneda?: string
   detalle: string | null
   fecha: string | null  // ISO YYYY-MM-DD o null
 }
@@ -130,6 +132,7 @@ export function OCDrawer({
     chasis: string
     motor: string
     valor: string
+    moneda: string
     descripcion: string
     subirAlStock: boolean
     tieneTitulo: boolean
@@ -142,15 +145,16 @@ export function OCDrawer({
     tieneFichaTecnica: boolean
     accesoriosExtra: string
   }
-  const permutaVacia = (): PermutaForm => ({
+  const monedaModelo = modelo?.moneda || "ARS"
+  const permutaVacia = (mon: string = monedaModelo): PermutaForm => ({
     marca: "", modelo: "", anio: "", km: "", patente: "",
-    chasis: "", motor: "", valor: "", descripcion: "", subirAlStock: true,
+    chasis: "", motor: "", valor: "", moneda: mon, descripcion: "", subirAlStock: true,
     tieneTitulo: false, tieneManual: false, tieneSegundaLlave: false,
     tieneCasco: false, tieneVtv: false, tieneSeguro: false,
     tieneFactura: false, tieneFichaTecnica: false, accesoriosExtra: "",
   })
   const [permutas, setPermutas] = useState<PermutaForm[]>([permutaVacia()])
-  const [pagos, setPagos] = useState<PagoForm[]>([pagoVacio()])
+  const [pagos, setPagos] = useState<PagoForm[]>([pagoVacio(monedaModelo)])
 
   // Financiación
   const [entrega, setEntrega] = useState("")
@@ -179,7 +183,8 @@ export function OCDrawer({
       setSena("")
       setSaldo("")
       setDetallePago("")
-      setPermutas([permutaVacia()])
+      setPermutas([permutaVacia(modelo?.moneda || "ARS")])
+      setPagos([pagoVacio(modelo?.moneda || "ARS")])
       setEntrega("")
       setCuotas("")
       setValorCuota("")
@@ -264,6 +269,7 @@ export function OCDrawer({
             motor: pp.motor.trim() || null,
             descripcion: pp.descripcion.trim() || null,
             valor: num(pp.valor),
+            moneda: pp.moneda || monedaModelo,
             subirAlStock: pp.subirAlStock,
             tieneTitulo: pp.tieneTitulo,
             tieneManual: pp.tieneManual,
@@ -301,6 +307,7 @@ export function OCDrawer({
       .map((p) => ({
         metodo: p.metodo,
         monto: parseInt(p.monto),
+        moneda: p.moneda || monedaModelo,
         detalle: p.detalle.trim() || null,
         fecha: p.fecha || null,
       }))
@@ -534,7 +541,21 @@ export function OCDrawer({
                   pagos={pagos}
                   setPagos={setPagos}
                   precioVenta={parseInt(precioVenta || "0") || 0}
+                  monedaOC={monedaModelo}
                   totalPermutas={hayPermuta ? totalPermutas : 0}
+                  permutasPorMoneda={
+                    hayPermuta
+                      ? permutas.reduce(
+                          (acc, pp) => {
+                            const v = parseInt(pp.valor || "0") || 0
+                            const m = (pp.moneda || monedaModelo) as "ARS" | "USD"
+                            acc[m] = (acc[m] || 0) + v
+                            return acc
+                          },
+                          { ARS: 0, USD: 0 }
+                        )
+                      : { ARS: 0, USD: 0 }
+                  }
                   montoFinanciado={
                     hayFinanciacion
                       ? (parseInt(cuotas || "0") || 0) *
@@ -554,7 +575,7 @@ export function OCDrawer({
                     </h3>
                     <button
                       type="button"
-                      onClick={() => setPermutas((prev) => [...prev, permutaVacia()])}
+                      onClick={() => setPermutas((prev) => [...prev, permutaVacia(monedaModelo)])}
                       className="text-xs font-semibold text-purple-700 dark:text-purple-300 hover:underline"
                     >
                       + Agregar otra
@@ -631,11 +652,22 @@ export function OCDrawer({
                           </div>
                           <div>
                             <Label>Valor tomado *</Label>
-                            <Input
-                              type="number"
-                              value={pp.valor}
-                              onChange={(e) => updatePermuta({ valor: e.target.value })}
-                            />
+                            <div className="flex gap-2">
+                              <Input
+                                type="number"
+                                value={pp.valor}
+                                onChange={(e) => updatePermuta({ valor: e.target.value })}
+                                className="flex-1"
+                              />
+                              <select
+                                value={pp.moneda || monedaModelo}
+                                onChange={(e) => updatePermuta({ moneda: e.target.value })}
+                                className="w-20 h-10 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-2 text-sm"
+                              >
+                                <option value="ARS">ARS</option>
+                                <option value="USD">USD</option>
+                              </select>
+                            </div>
                           </div>
                           <div>
                             <Label>Nº chasis</Label>

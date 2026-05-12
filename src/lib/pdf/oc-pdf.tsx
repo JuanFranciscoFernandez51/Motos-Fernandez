@@ -152,6 +152,7 @@ const METODO_LABELS: Record<string, string> = {
 type PagoData = {
   metodo: string
   monto: number
+  moneda?: string
   detalle?: string | null
   fecha?: Date | null
 }
@@ -166,6 +167,7 @@ type PermutaData = {
   motor?: string | null
   descripcion?: string | null
   valor: number
+  moneda?: string
   // Checklist de qué entrega el cliente con la moto
   tieneTitulo?: boolean
   tieneManual?: boolean
@@ -236,6 +238,19 @@ type OCPDFData = {
 const money = (n: number | null | undefined, moneda = "ARS") =>
   n == null ? "—" : `${moneda === "USD" ? "USD " : "$ "}${n.toLocaleString("es-AR")}`
 
+// Formatea totales mezclando monedas: "USD 5.000 + $ 200.000"
+function moneyMix(
+  ars: number,
+  usd: number,
+  monedaDefault = "ARS"
+): string {
+  if (ars === 0 && usd === 0) return money(0, monedaDefault)
+  const partes: string[] = []
+  if (usd !== 0) partes.push(money(usd, "USD"))
+  if (ars !== 0) partes.push(money(ars, "ARS"))
+  return partes.join(" + ")
+}
+
 const dateStr = (d: Date | null | undefined) =>
   !d ? "—" : new Date(d).toLocaleDateString("es-AR")
 
@@ -243,15 +258,39 @@ export function OCPDF({ data }: { data: OCPDFData }) {
   const numeroFormateado = `OC-${String(data.numero).padStart(4, "0")}`
   const moneda = data.economico.moneda
 
-  // Cómputo de totales para el resumen
-  const totalPagos = (data.pagos || []).reduce((s, p) => s + (p.monto || 0), 0)
-  const totalPermutas = (data.permutas || []).reduce((s, p) => s + (p.valor || 0), 0)
+  // Sumas separadas por moneda — pagos directos
+  const pagosPorMoneda = (data.pagos || []).reduce(
+    (acc, p) => {
+      const m = p.moneda || moneda
+      if (m === "USD") acc.USD += p.monto || 0
+      else acc.ARS += p.monto || 0
+      return acc
+    },
+    { ARS: 0, USD: 0 }
+  )
+  const totalPagosOC =
+    moneda === "USD" ? pagosPorMoneda.USD : pagosPorMoneda.ARS
+
+  // Sumas separadas por moneda — permutas
+  const permutasPorMoneda = (data.permutas || []).reduce(
+    (acc, p) => {
+      const m = p.moneda || moneda
+      if (m === "USD") acc.USD += p.valor || 0
+      else acc.ARS += p.valor || 0
+      return acc
+    },
+    { ARS: 0, USD: 0 }
+  )
+  const totalPermutasOC =
+    moneda === "USD" ? permutasPorMoneda.USD : permutasPorMoneda.ARS
+
   const totalFinanciado =
     data.economico.cuotas && data.economico.valorCuota
       ? data.economico.cuotas * data.economico.valorCuota +
         (data.economico.entrega || 0)
       : 0
-  const totalCubierto = totalPagos + totalPermutas + totalFinanciado
+  // El cubierto en la moneda de la OC. Lo que está en otra moneda no se mezcla.
+  const totalCubierto = totalPagosOC + totalPermutasOC + totalFinanciado
   const restante = data.economico.precioVenta - totalCubierto
 
   const tieneFinanciacion =
@@ -391,7 +430,7 @@ export function OCPDF({ data }: { data: OCPDFData }) {
                   {p.detalle || "—"}
                 </Text>
                 <Text style={[styles.tableCell, { flex: 1.5, textAlign: "right" }]}>
-                  {money(p.monto, moneda)}
+                  {money(p.monto, p.moneda || moneda)}
                 </Text>
               </View>
             ))}
@@ -400,7 +439,7 @@ export function OCPDF({ data }: { data: OCPDFData }) {
                 Subtotal pagos directos
               </Text>
               <Text style={[styles.tableTotalCell, { flex: 1.5, textAlign: "right" }]}>
-                {money(totalPagos, moneda)}
+                {moneyMix(pagosPorMoneda.ARS, pagosPorMoneda.USD, moneda)}
               </Text>
             </View>
           </>
@@ -413,7 +452,7 @@ export function OCPDF({ data }: { data: OCPDFData }) {
             {data.permutas.map((perm, i) => (
               <View key={i} style={styles.permutaBox}>
                 <Text style={styles.permutaTitle}>
-                  Permuta #{i + 1} — {money(perm.valor, moneda)}
+                  Permuta #{i + 1} — {money(perm.valor, perm.moneda || moneda)}
                 </Text>
                 <View style={styles.twoCol}>
                   <View style={styles.col}>
@@ -514,7 +553,7 @@ export function OCPDF({ data }: { data: OCPDFData }) {
                 Subtotal permutas ({data.permutas.length})
               </Text>
               <Text style={[styles.tableTotalCell, { flex: 1.5, textAlign: "right" }]}>
-                {money(totalPermutas, moneda)}
+                {moneyMix(permutasPorMoneda.ARS, permutasPorMoneda.USD, moneda)}
               </Text>
             </View>
           </>
@@ -607,16 +646,20 @@ export function OCPDF({ data }: { data: OCPDFData }) {
           (data.permutas && data.permutas.length > 0) ||
           tieneFinanciacion) && (
           <View style={styles.resumenBox}>
-            {totalPagos > 0 && (
+            {(pagosPorMoneda.ARS > 0 || pagosPorMoneda.USD > 0) && (
               <View style={styles.resumenRow}>
                 <Text style={styles.resumenLabel}>Pagos directos</Text>
-                <Text style={styles.resumenValue}>{money(totalPagos, moneda)}</Text>
+                <Text style={styles.resumenValue}>
+                  {moneyMix(pagosPorMoneda.ARS, pagosPorMoneda.USD, moneda)}
+                </Text>
               </View>
             )}
-            {totalPermutas > 0 && (
+            {(permutasPorMoneda.ARS > 0 || permutasPorMoneda.USD > 0) && (
               <View style={styles.resumenRow}>
                 <Text style={styles.resumenLabel}>Permutas</Text>
-                <Text style={styles.resumenValue}>{money(totalPermutas, moneda)}</Text>
+                <Text style={styles.resumenValue}>
+                  {moneyMix(permutasPorMoneda.ARS, permutasPorMoneda.USD, moneda)}
+                </Text>
               </View>
             )}
             {totalFinanciado > 0 && (
@@ -626,7 +669,9 @@ export function OCPDF({ data }: { data: OCPDFData }) {
               </View>
             )}
             <View style={styles.resumenTotalRow}>
-              <Text style={styles.resumenTotalLabel}>Total cubierto</Text>
+              <Text style={styles.resumenTotalLabel}>
+                Total cubierto ({moneda})
+              </Text>
               <Text style={styles.resumenTotalValue}>{money(totalCubierto, moneda)}</Text>
             </View>
             {restante !== 0 && (
@@ -637,7 +682,9 @@ export function OCPDF({ data }: { data: OCPDFData }) {
                     { color: restante > 0 ? "#B91C1C" : "#B45309" },
                   ]}
                 >
-                  {restante > 0 ? "Falta cubrir" : "Cubre de más"}
+                  {restante > 0
+                    ? `Falta cubrir (${moneda})`
+                    : `Cubre de más (${moneda})`}
                 </Text>
                 <Text
                   style={[
@@ -647,6 +694,18 @@ export function OCPDF({ data }: { data: OCPDFData }) {
                 >
                   {money(Math.abs(restante), moneda)}
                 </Text>
+              </View>
+            )}
+            {/* Aviso si hay sumas en la moneda secundaria que no contribuyen
+                al cuadre en moneda principal */}
+            {((moneda === "USD" && (pagosPorMoneda.ARS > 0 || permutasPorMoneda.ARS > 0)) ||
+              (moneda !== "USD" && (pagosPorMoneda.USD > 0 || permutasPorMoneda.USD > 0))) && (
+              <View style={[styles.resumenRow, { marginTop: 4 }]}>
+                <Text style={[styles.resumenLabel, { color: "#92400E", fontStyle: "italic" }]}>
+                  Nota: hay pagos/permutas en moneda distinta a la principal,
+                  evaluar con tipo de cambio.
+                </Text>
+                <Text> </Text>
               </View>
             )}
           </View>

@@ -31,6 +31,7 @@ type PermutaFormPayload = {
   motor: string | null
   descripcion: string | null
   valor: number
+  moneda?: string
   motoRecibidaId: string | null
   subirAlStock: boolean
   tieneTitulo?: boolean
@@ -48,6 +49,7 @@ type PagoFormPayload = {
   id: string | null
   metodo: string
   monto: number
+  moneda?: string
   detalle: string | null
   fecha: string | null
 }
@@ -181,6 +183,7 @@ async function updateOrden(formData: FormData) {
               motor: p.motor,
               descripcion: p.descripcion,
               valor: p.valor,
+              moneda: p.moneda || orden.moneda || "ARS",
               tieneTitulo: !!p.tieneTitulo,
               tieneManual: !!p.tieneManual,
               tieneSegundaLlave: !!p.tieneSegundaLlave,
@@ -197,6 +200,7 @@ async function updateOrden(formData: FormData) {
           // (la moto queda inactiva hasta que el admin la habilite).
           let motoRecibidaId: string | null = null
           const checklistTxt = checklistPermutaTexto(p)
+          const monedaPermuta = p.moneda || orden.moneda || "ARS"
           if (p.marca && p.modelo) {
             const slug = `mf-${String(proximoMF).padStart(4, "0")}`
             proximoMF++
@@ -214,7 +218,7 @@ async function updateOrden(formData: FormData) {
                 chasis: p.chasis,
                 motor: p.motor,
                 precio: p.valor,
-                moneda: orden.moneda,
+                moneda: monedaPermuta,
                 activo: false,
                 fotos: [placeholderFoto],
                 origen: "PARTE_DE_PAGO",
@@ -240,6 +244,7 @@ async function updateOrden(formData: FormData) {
               motor: p.motor,
               descripcion: p.descripcion,
               valor: p.valor,
+              moneda: monedaPermuta,
               motoRecibidaId,
               tieneTitulo: !!p.tieneTitulo,
               tieneManual: !!p.tieneManual,
@@ -261,7 +266,7 @@ async function updateOrden(formData: FormData) {
             ordenCompraId: orden.id,
             modeloId: motoRecibidaId,
             fecha: orden.fecha,
-            moneda: orden.moneda,
+            moneda: monedaPermuta,
             permuta: {
               marca: p.marca,
               modelo: p.modelo,
@@ -300,12 +305,14 @@ async function updateOrden(formData: FormData) {
       }
       for (const p of pagosInput) {
         const fecha = p.fecha ? new Date(p.fecha) : null
+        const monedaPago = p.moneda || orden.moneda || "ARS"
         if (p.id) {
           await tx.oCPago.update({
             where: { id: p.id },
             data: {
               metodo: p.metodo,
               monto: p.monto,
+              moneda: monedaPago,
               detalle: p.detalle,
               fecha,
             },
@@ -316,6 +323,7 @@ async function updateOrden(formData: FormData) {
               ordenCompraId: orden.id,
               metodo: p.metodo,
               monto: p.monto,
+              moneda: monedaPago,
               detalle: p.detalle,
               fecha,
             },
@@ -518,6 +526,7 @@ export default async function EditarOrdenCompraPage({
     motor: p.motor || "",
     descripcion: p.descripcion || "",
     valor: String(p.valor),
+    moneda: p.moneda || orden.moneda || "ARS",
     motoRecibidaId: p.motoRecibidaId,
     tieneTitulo: p.tieneTitulo,
     tieneManual: p.tieneManual,
@@ -534,6 +543,7 @@ export default async function EditarOrdenCompraPage({
     id: p.id,
     metodo: p.metodo,
     monto: String(p.monto),
+    moneda: p.moneda || orden.moneda || "ARS",
     detalle: p.detalle || "",
     fecha: p.fecha ? p.fecha.toISOString().split("T")[0] : "",
   }))

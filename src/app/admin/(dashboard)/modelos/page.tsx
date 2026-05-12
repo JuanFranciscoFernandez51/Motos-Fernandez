@@ -141,6 +141,7 @@ type PermutaInput = {
   motor: string | null
   descripcion: string | null
   valor: number | null
+  moneda?: string  // si no viene, hereda la de la OC
   subirAlStock: boolean
   tieneTitulo?: boolean
   tieneManual?: boolean
@@ -151,6 +152,14 @@ type PermutaInput = {
   tieneFactura?: boolean
   tieneFichaTecnica?: boolean
   accesoriosExtra?: string | null
+}
+
+type PagoInput = {
+  metodo: string
+  monto: number
+  moneda?: string  // si no viene, hereda la de la OC
+  detalle: string | null
+  fecha: string | null
 }
 
 type CrearOCDesdeModeloInput = {
@@ -166,6 +175,8 @@ type CrearOCDesdeModeloInput = {
   observaciones: string | null
   // Permutas (N) — cada una puede o no subirse al stock
   permutas: PermutaInput[]
+  // Pagos directos (N) — combinables, cada uno con su propia moneda
+  pagos?: PagoInput[]
   // Financiación
   cuotas: number | null
   valorCuota: number | null
@@ -266,6 +277,7 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
       for (const p of input.permutas) {
         let motoRecibidaId: string | null = null
         const checklistTxt = checklistPermutaTexto(p)
+        const monedaPermuta = p.moneda || input.moneda || "ARS"
         // Siempre cargar al catalogo si hay marca + modelo (la moto queda inactiva)
         if (p.marca && p.modelo) {
           const slug = `mf-${String(proximoMF).padStart(4, "0")}`
@@ -284,7 +296,7 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
               chasis: p.chasis,
               motor: p.motor,
               precio: p.valor,
-              moneda: input.moneda,
+              moneda: monedaPermuta,
               activo: false,
               fotos: [placeholderFoto],
               origen: "PARTE_DE_PAGO",
@@ -311,6 +323,7 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
             motor: p.motor,
             descripcion: p.descripcion,
             valor: p.valor ?? 0,
+            moneda: monedaPermuta,
             motoRecibidaId,
             tieneTitulo: !!p.tieneTitulo,
             tieneManual: !!p.tieneManual,
@@ -330,7 +343,7 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
           ordenCompraId: orden.id,
           modeloId: motoRecibidaId,
           fecha: orden.fecha,
-          moneda: orden.moneda,
+          moneda: monedaPermuta,
           permuta: {
             marca: p.marca,
             modelo: p.modelo,
@@ -355,6 +368,21 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
         await tx.ordenCompra.update({
           where: { id: orden.id },
           data: { motoRecibidaId: motosRecibidasIds[0] },
+        })
+      }
+
+      // 2.bis) Crear los pagos directos (efectivo, transfer, tarjeta, etc).
+      // Cada pago lleva su propia moneda — pueden ser distintas a la de la OC.
+      for (const pago of input.pagos ?? []) {
+        await tx.oCPago.create({
+          data: {
+            ordenCompraId: orden.id,
+            metodo: pago.metodo,
+            monto: pago.monto,
+            moneda: pago.moneda || input.moneda || "ARS",
+            detalle: pago.detalle,
+            fecha: pago.fecha ? new Date(pago.fecha) : null,
+          },
         })
       }
 

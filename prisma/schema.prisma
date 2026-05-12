@@ -886,6 +886,7 @@ model OCPago {
   // MERCADO_PAGO | CHEQUE | DEPOSITO | DOLARES | OTRO
   metodo        String
   monto         Int
+  moneda        String      @default("ARS")  // "ARS" o "USD". Cada pago lleva su propia moneda — una OC puede tener mezcla.
   detalle       String?     // texto libre opcional ("Visa 12 sin interés", "Cheque 30 días", etc)
   fecha         DateTime?   // opcional: cuándo se acreditó (default = fecha de OC)
 
@@ -912,6 +913,7 @@ model OCPermuta {
   motor         String?
   descripcion   String?     @db.Text
   valor         Int         // valor tomado por esta permuta
+  moneda        String      @default("ARS")  // "ARS" o "USD". Una OC puede tomar permutas valuadas en moneda distinta a la del precio de venta.
 
   // Checklist de qué entrega el cliente con la moto. Se copia a las
   // notasInternas de la moto al subirla al stock para que el vendedor

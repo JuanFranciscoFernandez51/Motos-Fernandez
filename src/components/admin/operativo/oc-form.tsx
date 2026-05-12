@@ -26,6 +26,7 @@ export type PermutaForm = {
   motor: string
   descripcion: string
   valor: string
+  moneda: string  // "ARS" | "USD"
   // ID de la moto en stock asociada (si ya se subió). Si esta seteado,
   // significa que la permuta ya fue procesada y no se puede editar libremente.
   motoRecibidaId?: string | null
@@ -43,9 +44,9 @@ export type PermutaForm = {
   accesoriosExtra?: string
 }
 
-const permutaVacia = (): PermutaForm => ({
+const permutaVacia = (moneda: string = "ARS"): PermutaForm => ({
   marca: "", modelo: "", anio: "", kilometros: "", patente: "",
-  chasis: "", motor: "", descripcion: "", valor: "", subirAlStock: true,
+  chasis: "", motor: "", descripcion: "", valor: "", moneda, subirAlStock: true,
   tieneTitulo: false, tieneManual: false, tieneSegundaLlave: false,
   tieneCasco: false, tieneVtv: false, tieneSeguro: false,
   tieneFactura: false, tieneFichaTecnica: false, accesoriosExtra: "",
@@ -128,11 +129,12 @@ export function OCForm({
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [data, setData] = useState<OCData>({ ...EMPTY, ...initialData })
+  const monedaOCInit = (initialData?.moneda as string) || "ARS"
   const [permutas, setPermutas] = useState<PermutaForm[]>(
-    initialPermutas.length > 0 ? initialPermutas : [permutaVacia()]
+    initialPermutas.length > 0 ? initialPermutas : [permutaVacia(monedaOCInit)]
   )
   const [pagos, setPagos] = useState<PagoForm[]>(
-    initialPagos.length > 0 ? initialPagos : [pagoVacio()]
+    initialPagos.length > 0 ? initialPagos : [pagoVacio(monedaOCInit)]
   )
   // Motos extras creadas vía "Cargar moto nueva al catálogo" desde el
   // MotoSelector. Se concatenan al prop modelos para que aparezcan
@@ -208,6 +210,7 @@ export function OCForm({
             motor: p.motor.trim() || null,
             descripcion: p.descripcion.trim() || null,
             valor: p.valor ? parseInt(p.valor) : 0,
+            moneda: p.moneda || data.moneda || "ARS",
             motoRecibidaId: p.motoRecibidaId ?? null,
             subirAlStock: !!p.subirAlStock,
             // Checklist de accesorios que entrega
@@ -235,6 +238,7 @@ export function OCForm({
         id: p.id ?? null,
         metodo: p.metodo,
         monto: parseInt(p.monto),
+        moneda: p.moneda || data.moneda || "ARS",
         detalle: p.detalle.trim() || null,
         fecha: p.fecha || null,
       }))
@@ -428,10 +432,24 @@ export function OCForm({
               pagos={pagos}
               setPagos={setPagos}
               precioVenta={parseInt(data.precioVenta || "0") || 0}
+              monedaOC={data.moneda || "ARS"}
               totalPermutas={
                 data.formaPago === "Permuta" || data.formaPago === "Mixta"
                   ? permutas.reduce((s, p) => s + (parseInt(p.valor || "0") || 0), 0)
                   : 0
+              }
+              permutasPorMoneda={
+                data.formaPago === "Permuta" || data.formaPago === "Mixta"
+                  ? permutas.reduce(
+                      (acc, p) => {
+                        const v = parseInt(p.valor || "0") || 0
+                        const m = (p.moneda || data.moneda || "ARS") as "ARS" | "USD"
+                        acc[m] = (acc[m] || 0) + v
+                        return acc
+                      },
+                      { ARS: 0, USD: 0 }
+                    )
+                  : { ARS: 0, USD: 0 }
               }
               montoFinanciado={
                 data.formaPago === "Financiado" || data.formaPago === "Mixta"
@@ -453,7 +471,7 @@ export function OCForm({
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setPermutas((prev) => [...prev, permutaVacia()])}
+                  onClick={() => setPermutas((prev) => [...prev, permutaVacia(data.moneda || "ARS")])}
                 >
                   <Plus className="h-3.5 w-3.5 mr-1" />
                   Agregar otra
@@ -556,11 +574,22 @@ export function OCForm({
                       </div>
                       <div>
                         <Label>Valor tomado</Label>
-                        <Input
-                          type="number"
-                          value={pp.valor}
-                          onChange={(e) => upd({ valor: e.target.value })}
-                        />
+                        <div className="flex gap-2">
+                          <Input
+                            type="number"
+                            value={pp.valor}
+                            onChange={(e) => upd({ valor: e.target.value })}
+                            className="flex-1"
+                          />
+                          <select
+                            value={pp.moneda || "ARS"}
+                            onChange={(e) => upd({ moneda: e.target.value })}
+                            className="w-20 h-10 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-2 text-sm"
+                          >
+                            <option value="ARS">ARS</option>
+                            <option value="USD">USD</option>
+                          </select>
+                        </div>
                       </div>
                       <div>
                         <Label>Nº chasis</Label>

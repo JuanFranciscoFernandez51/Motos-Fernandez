@@ -23,61 +23,118 @@ export type PagoForm = {
   id: string | null
   metodo: string
   monto: string
+  moneda: string  // "ARS" | "USD"
   detalle: string
   fecha: string // ISO YYYY-MM-DD o ""
 }
 
-export const pagoVacio = (): PagoForm => ({
+export const pagoVacio = (moneda: string = "ARS"): PagoForm => ({
   id: null,
   metodo: "EFECTIVO",
   monto: "",
+  moneda,
   detalle: "",
   fecha: "",
 })
 
+// Etiqueta cortita por moneda para mostrar en montos
+function simboloMoneda(m: string): string {
+  return m === "USD" ? "USD" : "$"
+}
+
+// Tipo de cada subtotal por moneda
+type Subtotal = { ARS: number; USD: number }
+
+function emptySubtotal(): Subtotal {
+  return { ARS: 0, USD: 0 }
+}
+
+function sumPagos(pagos: PagoForm[]): Subtotal {
+  const acc = emptySubtotal()
+  for (const p of pagos) {
+    const n = parseInt(p.monto || "0")
+    if (!Number.isFinite(n) || n === 0) continue
+    const m = (p.moneda || "ARS") as "ARS" | "USD"
+    acc[m] = (acc[m] ?? 0) + n
+  }
+  return acc
+}
+
 /**
- * Editor de pagos combinables. Muestra una fila por pago con método,
- * monto y detalle libre. Permite agregar y borrar pagos. Muestra el
- * total acumulado abajo y un comparativo contra el precio de venta
- * (resta permutas/financiación que se manejan aparte).
+ * Editor de pagos combinables. Cada pago lleva su propia moneda — el
+ * resumen muestra subtotales por moneda separados (no mezclamos ARS y USD).
+ *
+ * `precioVenta` y `totalPermutas` / `montoFinanciado` se pasan junto con la
+ * moneda principal de la OC. Si todo está en una sola moneda, el cuadre
+ * se muestra como antes; si hay mezcla, mostramos la línea por moneda.
  */
 export function PagosEditor({
   pagos,
   setPagos,
   precioVenta,
+  monedaOC,
   totalPermutas,
+  permutasPorMoneda,
   montoFinanciado,
 }: {
   pagos: PagoForm[]
   setPagos: React.Dispatch<React.SetStateAction<PagoForm[]>>
   precioVenta: number
+  monedaOC: string
+  // Total de permutas en la moneda principal de la OC (legacy). Si vienen
+  // permutas en otras monedas, se usa `permutasPorMoneda`.
   totalPermutas: number
+  // Subtotales de permutas separados por moneda. Si no se pasa, se asume
+  // todo en `monedaOC` por compat.
+  permutasPorMoneda?: Subtotal
   montoFinanciado: number
 }) {
-  const totalPagos = pagos.reduce((s, p) => {
-    const n = parseInt(p.monto || "0")
-    return s + (Number.isFinite(n) ? n : 0)
-  }, 0)
-  const totalCubierto = totalPagos + totalPermutas + montoFinanciado
-  const restante = precioVenta - totalCubierto
+  const totalPagos = sumPagos(pagos)
+
+  // Subtotales por moneda: pagos + permutas + financiación
+  const subPermutas = permutasPorMoneda ?? {
+    ARS: monedaOC === "ARS" ? totalPermutas : 0,
+    USD: monedaOC === "USD" ? totalPermutas : 0,
+  }
+  const subFin: Subtotal = {
+    ARS: monedaOC === "ARS" ? montoFinanciado : 0,
+    USD: monedaOC === "USD" ? montoFinanciado : 0,
+  }
+
+  const cubierto: Subtotal = {
+    ARS: totalPagos.ARS + subPermutas.ARS + subFin.ARS,
+    USD: totalPagos.USD + subPermutas.USD + subFin.USD,
+  }
+
+  // Compara contra el precio en la moneda principal de la OC
+  const precioMonedaOC = monedaOC === "USD" ? cubierto.USD : cubierto.ARS
+  const restante = precioVenta - precioMonedaOC
+
+  // Hay mezcla cuando algún monto en la moneda "secundaria" (la otra) es > 0
+  const monedaSecundaria = monedaOC === "USD" ? "ARS" : "USD"
+  const haySecundaria =
+    (cubierto as Record<string, number>)[monedaSecundaria] > 0
 
   const update = (i: number, patch: Partial<PagoForm>) =>
     setPagos((prev) => prev.map((p, idx) => (idx === i ? { ...p, ...patch } : p)))
 
   const remove = (i: number) =>
-    setPagos((prev) => (prev.length <= 1 ? [pagoVacio()] : prev.filter((_, idx) => idx !== i)))
+    setPagos((prev) =>
+      prev.length <= 1 ? [pagoVacio(monedaOC)] : prev.filter((_, idx) => idx !== i)
+    )
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2 flex-wrap">
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Podés combinar varios métodos: efectivo + transferencia + cheque, etc.
+          Podés combinar varios métodos y monedas: efectivo en ARS + transferencia
+          en USD + cheque, etc.
         </p>
         <Button
           type="button"
           variant="outline"
           size="sm"
-          onClick={() => setPagos((prev) => [...prev, pagoVacio()])}
+          onClick={() => setPagos((prev) => [...prev, pagoVacio(monedaOC)])}
         >
           <Plus className="size-3.5 mr-1" />
           Agregar pago
@@ -88,7 +145,7 @@ export function PagosEditor({
         {pagos.map((p, i) => (
           <div
             key={p.id || `new-${i}`}
-            className="grid grid-cols-1 md:grid-cols-[200px_140px_1fr_140px_auto] gap-2 items-end rounded-md border border-gray-200 dark:border-neutral-800 p-3"
+            className="grid grid-cols-1 md:grid-cols-[180px_120px_90px_1fr_130px_auto] gap-2 items-end rounded-md border border-gray-200 dark:border-neutral-800 p-3"
           >
             <div className="space-y-1">
               <Label htmlFor={`pago-metodo-${i}`} className="text-xs">
@@ -119,6 +176,20 @@ export function PagosEditor({
                 placeholder="0"
                 className="h-9"
               />
+            </div>
+            <div className="space-y-1">
+              <Label htmlFor={`pago-moneda-${i}`} className="text-xs">
+                Moneda
+              </Label>
+              <select
+                id={`pago-moneda-${i}`}
+                value={p.moneda || "ARS"}
+                onChange={(e) => update(i, { moneda: e.target.value })}
+                className="w-full h-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-2 text-sm"
+              >
+                <option value="ARS">ARS</option>
+                <option value="USD">USD</option>
+              </select>
             </div>
             <div className="space-y-1">
               <Label htmlFor={`pago-detalle-${i}`} className="text-xs">
@@ -160,19 +231,78 @@ export function PagosEditor({
 
       {/* Resumen */}
       <div className="rounded-md bg-gray-50 dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 p-3 space-y-1 text-sm">
-        <Linea label="Total pagos directos" valor={totalPagos} />
-        {totalPermutas > 0 && <Linea label="Total permutas" valor={totalPermutas} />}
-        {montoFinanciado > 0 && <Linea label="Monto financiado" valor={montoFinanciado} />}
+        {/* Pagos directos por moneda */}
+        {totalPagos.ARS > 0 && (
+          <Linea label="Pagos en ARS" valor={totalPagos.ARS} moneda="ARS" />
+        )}
+        {totalPagos.USD > 0 && (
+          <Linea label="Pagos en USD" valor={totalPagos.USD} moneda="USD" />
+        )}
+        {totalPagos.ARS === 0 && totalPagos.USD === 0 && (
+          <Linea label="Pagos directos" valor={0} moneda={monedaOC} />
+        )}
+
+        {/* Permutas por moneda */}
+        {subPermutas.ARS > 0 && (
+          <Linea label="Permutas en ARS" valor={subPermutas.ARS} moneda="ARS" />
+        )}
+        {subPermutas.USD > 0 && (
+          <Linea label="Permutas en USD" valor={subPermutas.USD} moneda="USD" />
+        )}
+
+        {/* Financiación */}
+        {(subFin.ARS > 0 || subFin.USD > 0) && (
+          <Linea
+            label="Monto financiado"
+            valor={subFin.ARS + subFin.USD}
+            moneda={monedaOC}
+          />
+        )}
+
         <div className="border-t border-gray-200 dark:border-neutral-700 pt-1 mt-1" />
-        <Linea label="Total cubierto" valor={totalCubierto} bold />
-        <Linea label="Precio de venta" valor={precioVenta} bold />
+
+        {/* Cubierto en la moneda de la OC */}
+        <Linea
+          label={`Cubierto en ${monedaOC}`}
+          valor={precioMonedaOC}
+          moneda={monedaOC}
+          bold
+        />
+        <Linea
+          label={`Precio (${monedaOC})`}
+          valor={precioVenta}
+          moneda={monedaOC}
+          bold
+        />
         {precioVenta > 0 && (
           <Linea
-            label={restante === 0 ? "Cuadrado ✓" : restante > 0 ? "Falta cubrir" : "Cubre de más"}
+            label={
+              restante === 0
+                ? "Cuadrado ✓"
+                : restante > 0
+                  ? `Falta cubrir (${monedaOC})`
+                  : `Cubre de más (${monedaOC})`
+            }
             valor={Math.abs(restante)}
-            color={restante === 0 ? "text-green-700" : restante > 0 ? "text-red-700" : "text-amber-700"}
+            moneda={monedaOC}
+            color={
+              restante === 0
+                ? "text-green-700"
+                : restante > 0
+                  ? "text-red-700"
+                  : "text-amber-700"
+            }
             bold
           />
+        )}
+
+        {/* Aviso si hay pagos/permutas en moneda secundaria */}
+        {haySecundaria && (
+          <p className="pt-2 text-[11px] text-amber-700 dark:text-amber-300 leading-snug">
+            ⚠ Hay {monedaSecundaria === "USD" ? "dólares" : "pesos"} sueltos
+            (combinaste monedas). Convertilos manualmente o usá tipo de cambio
+            para evaluar el cuadre total.
+          </p>
         )}
       </div>
     </div>
@@ -182,18 +312,24 @@ export function PagosEditor({
 function Linea({
   label,
   valor,
+  moneda,
   bold,
   color,
 }: {
   label: string
   valor: number
+  moneda: string
   bold?: boolean
   color?: string
 }) {
   return (
-    <div className={`flex items-center justify-between ${bold ? "font-semibold" : ""} ${color || ""}`}>
+    <div
+      className={`flex items-center justify-between ${bold ? "font-semibold" : ""} ${color || ""}`}
+    >
       <span>{label}</span>
-      <span className="font-mono">${valor.toLocaleString("es-AR")}</span>
+      <span className="font-mono">
+        {simboloMoneda(moneda)} {valor.toLocaleString("es-AR")}
+      </span>
     </div>
   )
 }

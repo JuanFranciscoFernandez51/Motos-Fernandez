@@ -76,6 +76,7 @@ export async function GET(
         pagos: orden.pagos.map((p) => ({
           metodo: p.metodo,
           monto: p.monto,
+          moneda: p.moneda,
           detalle: p.detalle,
           fecha: p.fecha,
         })),
@@ -89,6 +90,7 @@ export async function GET(
           motor: p.motor,
           descripcion: p.descripcion,
           valor: p.valor,
+          moneda: p.moneda,
           tieneTitulo: p.tieneTitulo,
           tieneManual: p.tieneManual,
           tieneSegundaLlave: p.tieneSegundaLlave,

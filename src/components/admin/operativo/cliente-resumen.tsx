@@ -69,17 +69,28 @@ const TIPO_DOT = {
 
 export function ClienteResumen({
   cliente,
-  totalCompras,
+  totalComprasARS,
+  totalComprasUSD,
   totalTaller,
   ultimoEvento,
   eventos,
 }: {
   cliente: Cliente
-  totalCompras: number
+  // Totales separados por moneda para no mezclar ARS y USD en el header
+  totalComprasARS: number
+  totalComprasUSD: number
   totalTaller: number
   ultimoEvento: Evento | null
   eventos: Evento[]
 }) {
+  // Total formateado: si hay mezcla muestra ambos, sino sólo el que tiene valor
+  const totalComprasLabel = (() => {
+    if (totalComprasARS === 0 && totalComprasUSD === 0) return "—"
+    const partes: string[] = []
+    if (totalComprasUSD > 0) partes.push(formatMoney(totalComprasUSD, "USD"))
+    if (totalComprasARS > 0) partes.push(formatMoney(totalComprasARS, "ARS"))
+    return partes.join(" + ")
+  })()
   const diasDesdeUltimo = ultimoEvento
     ? Math.floor((Date.now() - new Date(ultimoEvento.fecha).getTime()) / (1000 * 60 * 60 * 24))
     : null
@@ -162,7 +173,7 @@ export function ClienteResumen({
           <Stat
             icon={<TrendingUp className="size-4 text-emerald-600" />}
             label="Total facturado"
-            value={totalCompras > 0 ? formatMoney(totalCompras) : "—"}
+            value={totalComprasLabel}
           />
           <Stat
             icon={<Clock className="size-4 text-amber-600" />}

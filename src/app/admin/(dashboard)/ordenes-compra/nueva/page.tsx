@@ -21,6 +21,7 @@ type PermutaFormPayload = {
   motor: string | null
   descripcion: string | null
   valor: number
+  moneda?: string
   motoRecibidaId: string | null
   subirAlStock: boolean
   tieneTitulo?: boolean
@@ -38,6 +39,7 @@ type PagoFormPayload = {
   id: string | null
   metodo: string
   monto: number
+  moneda?: string
   detalle: string | null
   fecha: string | null
 }
@@ -136,6 +138,7 @@ async function createOrdenCompra(formData: FormData) {
           let motoRecibidaId: string | null = null
           const checklistTxt = checklistPermutaTexto(p)
           // Siempre cargar al catalogo si hay marca + modelo (la moto queda inactiva)
+          const monedaPermuta = p.moneda || orden.moneda || "ARS"
           if (p.marca && p.modelo) {
             const slug = `mf-${String(proximoMF).padStart(4, "0")}`
             proximoMF++
@@ -153,7 +156,7 @@ async function createOrdenCompra(formData: FormData) {
                 chasis: p.chasis,
                 motor: p.motor,
                 precio: p.valor,
-                moneda: orden.moneda,
+                moneda: monedaPermuta,
                 activo: false,
                 fotos: [placeholderFoto],
                 origen: "PARTE_DE_PAGO",
@@ -179,6 +182,7 @@ async function createOrdenCompra(formData: FormData) {
               motor: p.motor,
               descripcion: p.descripcion,
               valor: p.valor,
+              moneda: monedaPermuta,
               motoRecibidaId,
               tieneTitulo: !!p.tieneTitulo,
               tieneManual: !!p.tieneManual,
@@ -199,7 +203,7 @@ async function createOrdenCompra(formData: FormData) {
             ordenCompraId: orden.id,
             modeloId: motoRecibidaId,
             fecha: orden.fecha,
-            moneda: orden.moneda,
+            moneda: monedaPermuta,
             permuta: {
               marca: p.marca,
               modelo: p.modelo,
@@ -227,6 +231,7 @@ async function createOrdenCompra(formData: FormData) {
             ordenCompraId: orden.id,
             metodo: p.metodo,
             monto: p.monto,
+            moneda: p.moneda || orden.moneda || "ARS",
             detalle: p.detalle,
             fecha: p.fecha ? new Date(p.fecha) : null,
           },

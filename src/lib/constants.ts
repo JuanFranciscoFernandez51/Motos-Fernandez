@@ -121,13 +121,50 @@ export const SERVICIOS_TALLER = [
 
 // ==================== FORMATO PRECIO ====================
 
-export function formatPrice(price: number): string {
+/**
+ * Formatea un monto con su moneda. Default ARS.
+ * - ARS → "$ 1.234.567"
+ * - USD → "USD 1.234"
+ */
+export function formatPrice(price: number, moneda: string = "ARS"): string {
+  if (moneda === "USD") {
+    const n = price.toLocaleString("es-AR", { maximumFractionDigits: 0 })
+    return `USD ${n}`
+  }
   return new Intl.NumberFormat("es-AR", {
     style: "currency",
     currency: "ARS",
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(price)
+}
+
+/**
+ * Recibe pares { monto, moneda } y devuelve una cadena que junta los
+ * subtotales por moneda separados por " + ". Ejemplo: "USD 5.000 + $ 1.500.000".
+ * Sirve para mostrar métricas/totales donde no queremos mezclar pesos con dólares.
+ */
+export function formatPriceByMoneda(
+  items: { monto: number; moneda: string }[]
+): string {
+  const map = new Map<string, number>()
+  for (const it of items) {
+    const m = it.moneda || "ARS"
+    map.set(m, (map.get(m) ?? 0) + (it.monto || 0))
+  }
+  if (map.size === 0) return formatPrice(0, "ARS")
+  // Mostrar primero USD (suele ser el monto mas relevante en venta de motos)
+  const orden = ["USD", "ARS"]
+  const partes: string[] = []
+  for (const mon of orden) {
+    const v = map.get(mon)
+    if (v != null && v !== 0) partes.push(formatPrice(v, mon))
+    map.delete(mon)
+  }
+  for (const [mon, v] of map.entries()) {
+    if (v !== 0) partes.push(formatPrice(v, mon))
+  }
+  return partes.length > 0 ? partes.join(" + ") : formatPrice(0, "ARS")
 }
 
 // ==================== LABELS ====================

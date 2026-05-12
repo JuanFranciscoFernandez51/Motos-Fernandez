@@ -181,10 +181,18 @@ export default async function EditarClientePage({
     })),
   ].sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime())
 
-  // Totales para los stats
-  const totalCompras = cliente.ordenesCompra
+  // Totales para los stats. Separamos compras por moneda para no mezclar
+  // ARS con USD — el cliente puede haber comprado motos en distintas monedas.
+  const comprasPorMoneda = cliente.ordenesCompra
     .filter((o) => o.estado === "CONCRETADA")
-    .reduce((sum, o) => sum + (o.precioVenta || 0), 0)
+    .reduce(
+      (acc, o) => {
+        const m = (o.moneda || "ARS") as "ARS" | "USD"
+        acc[m] = (acc[m] || 0) + (o.precioVenta || 0)
+        return acc
+      },
+      { ARS: 0, USD: 0 }
+    )
   const totalTaller = cliente.ordenesTrabajo.reduce((sum, ot) => sum + (ot.total || 0), 0)
 
   return (
@@ -203,7 +211,8 @@ export default async function EditarClientePage({
           ocupacion: cliente.ocupacion,
           createdAt: cliente.createdAt,
         }}
-        totalCompras={totalCompras}
+        totalComprasARS={comprasPorMoneda.ARS}
+        totalComprasUSD={comprasPorMoneda.USD}
         totalTaller={totalTaller}
         ultimoEvento={eventos[0] || null}
         eventos={eventos}
