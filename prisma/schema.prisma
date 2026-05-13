@@ -12,9 +12,18 @@ datasource db {
 model User {
   id             String   @id @default(cuid())
   name           String
+  // email se usa como username de login (NO necesariamente es un email real).
+  // Se conserva el nombre del campo por compatibilidad con NextAuth.
   email          String   @unique
   hashedPassword String
-  role           String   @default("admin")
+  // "admin" = acceso total + puede gestionar usuarios
+  // "usuario" = acceso restringido por `permisos`
+  role           String   @default("usuario")
+  // Lista de IDs de seccion permitidas (ver SECCIONES_ADMIN en lib/secciones.ts).
+  // Solo aplica a role="usuario". Los admin tienen acceso a todo automaticamente.
+  permisos       String[]
+  // Si false, el usuario no puede loguearse pero queda en el historial.
+  activo         Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 }

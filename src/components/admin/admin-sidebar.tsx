@@ -40,11 +40,15 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { ThemeToggleSegmented } from "@/components/theme-toggle"
+import type { SeccionId } from "@/lib/secciones"
 
 type LucideIcon = typeof LayoutDashboard
 
-// Estructura: items planos + grupos con submenú
-type NavItem = { href: string; label: string; icon: LucideIcon }
+// Estructura: items planos + grupos con submenú.
+// `seccion` es opcional: si está, filtra el item según permisos del usuario.
+// Si no está (ej: dashboard genérico, /admin/usuarios para admin), tiene
+// otra logica de visibilidad.
+type NavItem = { href: string; label: string; icon: LucideIcon; seccion?: SeccionId; soloAdmin?: boolean }
 type NavGroup = {
   id: string
   label: string
@@ -56,10 +60,10 @@ type NavEntry = NavItem | NavGroup
 const isGroup = (e: NavEntry): e is NavGroup => "items" in e
 
 const navEntries: NavEntry[] = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin", label: "Dashboard", icon: LayoutDashboard, seccion: "DASHBOARD" },
 
   // Pedidos online — acceso directo de primer nivel
-  { href: "/admin/pedidos", label: "Pedidos", icon: Package },
+  { href: "/admin/pedidos", label: "Pedidos", icon: Package, seccion: "PEDIDOS" },
 
   // Operaciones diarias del negocio
   {
@@ -67,10 +71,10 @@ const navEntries: NavEntry[] = [
     label: "Operaciones",
     icon: ListChecks,
     items: [
-      { href: "/admin/mandatos", label: "Mandatos de venta", icon: FileText },
-      { href: "/admin/ordenes-compra", label: "Órdenes de compra", icon: Receipt },
-      { href: "/admin/clientes", label: "Clientes", icon: UserCircle },
-      { href: "/admin/proveedores", label: "Proveedores", icon: TruckIcon },
+      { href: "/admin/mandatos", label: "Mandatos de venta", icon: FileText, seccion: "MANDATOS" },
+      { href: "/admin/ordenes-compra", label: "Órdenes de compra", icon: Receipt, seccion: "ORDENES_COMPRA" },
+      { href: "/admin/clientes", label: "Clientes", icon: UserCircle, seccion: "CLIENTES" },
+      { href: "/admin/proveedores", label: "Proveedores", icon: TruckIcon, seccion: "PROVEEDORES" },
     ],
   },
   // Catálogo y stock
@@ -79,8 +83,8 @@ const navEntries: NavEntry[] = [
     label: "Catálogo",
     icon: Bike,
     items: [
-      { href: "/admin/modelos", label: "Modelos", icon: Bike },
-      { href: "/admin/productos", label: "Productos de tienda", icon: ShoppingBag },
+      { href: "/admin/modelos", label: "Modelos", icon: Bike, seccion: "MODELOS" },
+      { href: "/admin/productos", label: "Productos de tienda", icon: ShoppingBag, seccion: "PRODUCTOS" },
     ],
   },
   // Taller
@@ -89,10 +93,10 @@ const navEntries: NavEntry[] = [
     label: "Taller",
     icon: Wrench,
     items: [
-      { href: "/admin/taller", label: "Órdenes", icon: FileText },
-      { href: "/admin/presupuestos", label: "Presupuestos", icon: FileText },
-      { href: "/admin/turnos", label: "Turnos", icon: CalendarClock },
-      { href: "/admin/taller/tipos-servicio", label: "Tipos de servicio", icon: Tag },
+      { href: "/admin/taller", label: "Órdenes", icon: FileText, seccion: "TALLER" },
+      { href: "/admin/presupuestos", label: "Presupuestos", icon: FileText, seccion: "PRESUPUESTOS" },
+      { href: "/admin/turnos", label: "Turnos", icon: CalendarClock, seccion: "TURNOS" },
+      { href: "/admin/taller/tipos-servicio", label: "Tipos de servicio", icon: Tag, seccion: "TALLER" },
     ],
   },
   // Tesorería: cobranzas, financiaciones
@@ -101,15 +105,15 @@ const navEntries: NavEntry[] = [
     label: "Tesorería",
     icon: Wallet,
     items: [
-      { href: "/admin/tesoreria", label: "Resumen", icon: LayoutDashboard },
-      { href: "/admin/tesoreria/financiaciones", label: "Financiaciones", icon: CreditCard },
+      { href: "/admin/tesoreria", label: "Resumen", icon: LayoutDashboard, seccion: "TESORERIA" },
+      { href: "/admin/tesoreria/financiaciones", label: "Financiaciones", icon: CreditCard, seccion: "TESORERIA" },
     ],
   },
   // CRM y Mercado Libre quedan como entradas top-level (fuera de Marketing)
   // porque son herramientas operativas, no campañas.
-  { href: "/admin/crm", label: "CRM / Leads", icon: Users },
-  { href: "/admin/ml", label: "Mercado Libre", icon: ShoppingBag },
-  { href: "/admin/meta", label: "Instagram + FB", icon: InstagramIcon as LucideIcon },
+  { href: "/admin/crm", label: "CRM / Leads", icon: Users, seccion: "CRM" },
+  { href: "/admin/ml", label: "Mercado Libre", icon: ShoppingBag, seccion: "ML" },
+  { href: "/admin/meta", label: "Instagram + FB", icon: InstagramIcon as LucideIcon, seccion: "META" },
 
   // Marketing y comunicación
   {
@@ -117,20 +121,59 @@ const navEntries: NavEntry[] = [
     label: "Marketing",
     icon: Megaphone,
     items: [
-      { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
-      { href: "/admin/noticias", label: "Noticias", icon: Newspaper },
-      { href: "/admin/testimonios", label: "Testimonios", icon: MessageCircleHeart },
-      { href: "/admin/cupones", label: "Cupones", icon: Ticket },
-      { href: "/admin/promociones", label: "Promociones", icon: Megaphone },
-      { href: "/admin/financiacion", label: "Planes financiación", icon: CreditCard },
+      { href: "/admin/newsletter", label: "Newsletter", icon: Mail, seccion: "NEWSLETTER" },
+      { href: "/admin/noticias", label: "Noticias", icon: Newspaper, seccion: "NOTICIAS" },
+      { href: "/admin/testimonios", label: "Testimonios", icon: MessageCircleHeart, seccion: "TESTIMONIOS" },
+      { href: "/admin/cupones", label: "Cupones", icon: Ticket, seccion: "CUPONES" },
+      { href: "/admin/promociones", label: "Promociones", icon: Megaphone, seccion: "PROMOCIONES" },
+      { href: "/admin/financiacion", label: "Planes financiación", icon: CreditCard, seccion: "FINANCIACION_PLANES" },
     ],
   },
 
-  { href: "/admin/outreach", label: "Outreach", icon: MessageCircleHeart },
-  { href: "/admin/asistente", label: "Asistente IA", icon: Bot },
-  { href: "/admin/sistema", label: "Sistema", icon: ListChecks },
-  { href: "/admin/configuracion", label: "Config", icon: Settings },
+  { href: "/admin/outreach", label: "Outreach", icon: MessageCircleHeart, seccion: "OUTREACH" },
+  { href: "/admin/asistente", label: "Asistente IA", icon: Bot, seccion: "ASISTENTE_IA" },
+  { href: "/admin/sistema", label: "Sistema", icon: ListChecks, seccion: "SISTEMA" },
+  { href: "/admin/usuarios", label: "Usuarios", icon: Users, soloAdmin: true },
+  { href: "/admin/configuracion", label: "Config", icon: Settings, seccion: "CONFIGURACION" },
 ]
+
+/**
+ * Decide si un item debe mostrarse para un usuario con el role + permisos
+ * indicados. Reglas:
+ *  - admins ven todo
+ *  - items con `soloAdmin: true` solo se muestran a admins
+ *  - items sin `seccion` ni `soloAdmin` se ven a todos los logueados
+ *  - items con `seccion` se muestran si la seccion esta en `permisos`
+ */
+function puedeVerItem(
+  item: NavItem,
+  role: string,
+  permisos: string[]
+): boolean {
+  if (role === "admin") return true
+  if (item.soloAdmin) return false
+  if (!item.seccion) return true
+  return permisos.includes(item.seccion)
+}
+
+function filtrarEntries(
+  entries: NavEntry[],
+  role: string,
+  permisos: string[]
+): NavEntry[] {
+  const out: NavEntry[] = []
+  for (const e of entries) {
+    if (isGroup(e)) {
+      const visibles = e.items.filter((it) => puedeVerItem(it, role, permisos))
+      if (visibles.length > 0) {
+        out.push({ ...e, items: visibles })
+      }
+    } else {
+      if (puedeVerItem(e, role, permisos)) out.push(e)
+    }
+  }
+  return out
+}
 
 function NavLink({
   item,
@@ -233,10 +276,20 @@ function NavGroupItem({
   )
 }
 
-export function AdminSidebar({ userName }: { userName: string }) {
+export function AdminSidebar({
+  userName,
+  role = "admin",
+  permisos = [],
+}: {
+  userName: string
+  role?: string
+  permisos?: string[]
+}) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const router = useRouter()
+  // Filtramos las entradas segun permisos del usuario. Los admin ven todo.
+  const visibleEntries = filtrarEntries(navEntries, role, permisos)
 
   const handleLogout = async () => {
     await signOut({ redirect: false })
@@ -282,7 +335,7 @@ export function AdminSidebar({ userName }: { userName: string }) {
 
       <ScrollArea className="flex-1 px-3 py-4">
         <nav className="flex flex-col gap-1">
-          {navEntries.map((entry) =>
+          {visibleEntries.map((entry) =>
             isGroup(entry) ? (
               <NavGroupItem
                 key={entry.id}

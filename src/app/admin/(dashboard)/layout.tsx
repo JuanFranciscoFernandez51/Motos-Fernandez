@@ -17,7 +17,11 @@ export default async function AdminDashboardLayout({
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950">
-      <AdminSidebar userName={session.user?.name || "Admin"} />
+      <AdminSidebar
+        userName={session.user?.name || "Admin"}
+        role={session.user?.role || "usuario"}
+        permisos={session.user?.permisos || []}
+      />
 
       {/* Mobile top bar spacer */}
       <div className="h-14 lg:hidden" />

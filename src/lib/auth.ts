@@ -27,6 +27,8 @@ export const authOptions: NextAuthOptions = {
         })
 
         if (!user) return null
+        // Si el usuario fue desactivado, no se puede loguear.
+        if (user.activo === false) return null
 
         const isPasswordValid = await compare(
           credentials.password,
@@ -40,6 +42,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
+          permisos: user.permisos,
         }
       },
     }),
@@ -48,6 +51,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role
+        token.permisos = (user as { permisos?: string[] }).permisos ?? []
       }
       return token
     },
@@ -55,6 +59,8 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.sub as string
         session.user.role = token.role as string
+        ;(session.user as { permisos?: string[] }).permisos =
+          (token.permisos as string[]) || []
       }
       return session
     },
