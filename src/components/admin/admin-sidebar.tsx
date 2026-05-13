@@ -75,6 +75,7 @@ const navEntries: NavEntry[] = [
       { href: "/admin/ordenes-compra", label: "Órdenes de compra", icon: Receipt, seccion: "ORDENES_COMPRA" },
       { href: "/admin/clientes", label: "Clientes", icon: UserCircle, seccion: "CLIENTES" },
       { href: "/admin/proveedores", label: "Proveedores", icon: TruckIcon, seccion: "PROVEEDORES" },
+      { href: "/admin/stock-motos", label: "Stock motos", icon: Bike, seccion: "STOCK_MOTOS" },
     ],
   },
   // Catálogo y stock

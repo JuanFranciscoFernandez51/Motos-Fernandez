@@ -16,6 +16,7 @@ export type SeccionId =
   | "ORDENES_COMPRA"
   | "CLIENTES"
   | "PROVEEDORES"
+  | "STOCK_MOTOS"
   | "MODELOS"
   | "PRODUCTOS"
   | "TALLER"
@@ -55,6 +56,7 @@ export const SECCIONES_ADMIN: SeccionInfo[] = [
   { id: "ORDENES_COMPRA", label: "Órdenes de compra",   descripcion: "Ventas de motos (OCs) con pagos y permutas",     grupo: "OPERACIONES" },
   { id: "CLIENTES",       label: "Clientes",            descripcion: "Ficha de clientes y su historial",                grupo: "OPERACIONES" },
   { id: "PROVEEDORES",    label: "Proveedores",         descripcion: "Lista de proveedores",                            grupo: "OPERACIONES" },
+  { id: "STOCK_MOTOS",    label: "Stock motos",         descripcion: "Listado administrativo de motos (chasis, motor, patente, precios). Vista paralela al catálogo público." , grupo: "OPERACIONES" },
 
   // CATALOGO
   { id: "MODELOS",   label: "Catálogo de motos", descripcion: "Modelos de motos del catálogo público", grupo: "CATALOGO" },
