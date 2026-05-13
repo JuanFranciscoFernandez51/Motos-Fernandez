@@ -5,7 +5,7 @@ import { invalidateModelos } from "@/lib/cached-queries"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 import { checklistPermutaTexto } from "@/lib/admin-helpers"
 import { crearMandatoDesdePermuta } from "@/lib/mandato-helpers"
-import { manejarVentaDeMoto } from "@/lib/venta-moto-helpers"
+import { manejarVentaDeMoto, crearModeloDesdeOCSinModelo } from "@/lib/venta-moto-helpers"
 import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
 
 export const dynamic = "force-dynamic"
@@ -242,6 +242,8 @@ async function createOrdenCompra(formData: FormData) {
       // Side effects según estado.
       // Para 0KM concretada: clona como unidad vendida (padre queda activo).
       // Para USADA concretada: marca el modelo original como vendida.
+      // Si la OC no tiene modeloId y se concreta, creamos un modelo
+      // "post-mortem" para que la venta quede registrada en stock motos.
       if (orden.modeloId) {
         if (orden.estado === "CONCRETADA") {
           await manejarVentaDeMoto(tx, {
@@ -259,6 +261,10 @@ async function createOrdenCompra(formData: FormData) {
             data: { etiqueta: "RESERVADA" },
           })
         }
+      } else if (orden.estado === "CONCRETADA") {
+        // OC concretada sin modelo del catalogo: crear modelo post-mortem
+        // (vendida=true, activo=false) para que aparezca en stock motos.
+        await crearModeloDesdeOCSinModelo(tx, orden)
       }
 
       // Auto-crear financiación con garante si corresponde

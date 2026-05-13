@@ -15,7 +15,7 @@ import { invalidateModelos } from "@/lib/cached-queries"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 import { checklistPermutaTexto } from "@/lib/admin-helpers"
 import { crearMandatoDesdePermuta } from "@/lib/mandato-helpers"
-import { manejarVentaDeMoto } from "@/lib/venta-moto-helpers"
+import { manejarVentaDeMoto, crearModeloDesdeOCSinModelo } from "@/lib/venta-moto-helpers"
 import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
 
 export const dynamic = "force-dynamic"
@@ -373,6 +373,10 @@ async function updateOrden(formData: FormData) {
             data: { etiqueta: "RESERVADA" },
           })
         }
+      } else if (orden.estado === "CONCRETADA") {
+        // OC concretada sin modelo del catalogo: crear modelo post-mortem
+        // (vendida=true, activo=false) para que aparezca en stock motos.
+        await crearModeloDesdeOCSinModelo(tx, orden)
       }
 
       // Crear o actualizar financiación. Si ya existe, solo actualizar el garante.
@@ -440,6 +444,10 @@ async function marcarConcretada(id: string) {
         motor: orden.motoMotor,
         patente: orden.motoPatente,
       })
+    } else {
+      // OC sin modelo del catálogo: crear modelo post-mortem para que
+      // aparezca en /admin/stock-motos pestaña Vendidas.
+      await crearModeloDesdeOCSinModelo(tx, { ...orden, fecha: new Date() })
     }
   })
 

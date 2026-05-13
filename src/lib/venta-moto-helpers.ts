@@ -2,6 +2,104 @@ import type { Prisma } from "@prisma/client"
 import { generarCodigoModelo } from "./codigo-modelo-helpers"
 
 /**
+ * Genera un slug único derivado de `base` que no choque con otros slugs
+ * existentes. Usa la convención `base`, `base-2`, `base-3`, etc.
+ */
+async function siguienteSlug(
+  tx: Prisma.TransactionClient,
+  base: string
+): Promise<string> {
+  const slug = base.toLowerCase().replace(/[^a-z0-9-]+/g, "-").replace(/^-+|-+$/g, "")
+  const existentes = await tx.modelo.findMany({
+    where: { slug: { startsWith: slug } },
+    select: { slug: true },
+  })
+  if (!existentes.find((e) => e.slug === slug)) return slug || "moto"
+  const numeros = existentes
+    .map((e) => {
+      const m = e.slug.match(new RegExp(`^${slug}-(\\d+)$`))
+      return m ? parseInt(m[1], 10) : 0
+    })
+    .filter((n) => n > 0)
+  const n = numeros.length > 0 ? Math.max(...numeros) + 1 : 2
+  return `${slug}-${n}`
+}
+
+/**
+ * Crea un Modelo "post-mortem" para una OC concretada que no tiene
+ * modeloId (la moto se cargó solo con motoDescripcion en la OC, sin
+ * elegir/crear modelo en el catálogo).
+ *
+ * El modelo se crea como USADA, `vendida=true`, `activo=false` (no aparece
+ * en el catálogo público) y linkeado a la OC. Esto garantiza que la
+ * venta aparezca en /admin/stock-motos pestaña "Vendidas" para que la
+ * administración la vea.
+ *
+ * Si la OC ya tiene un modelo asociado a ordenCompraVentaId, NO crea
+ * duplicado y devuelve el existente.
+ */
+export async function crearModeloDesdeOCSinModelo(
+  tx: Prisma.TransactionClient,
+  oc: {
+    id: string
+    motoDescripcion: string
+    motoAnio?: number | null
+    motoKilometros?: number | null
+    motoChasis?: string | null
+    motoMotor?: string | null
+    motoPatente?: string | null
+    precioVenta: number
+    moneda: string
+    fecha: Date
+  }
+): Promise<string> {
+  // Idempotencia: si ya hay un modelo con esta OC como ventaId, devolverlo
+  const existente = await tx.modelo.findFirst({
+    where: { ordenCompraVentaId: oc.id },
+    select: { id: true },
+  })
+  if (existente) return existente.id
+
+  const desc = (oc.motoDescripcion || "").trim()
+  const partes = desc.split(/\s+/).filter(Boolean)
+  const marca = partes[0] || "Sin marca"
+  const nombre = partes.slice(1).join(" ") || desc || "Sin modelo"
+
+  const slug = await siguienteSlug(tx, `${marca}-${nombre}-vendida`)
+  const codigo = await generarCodigoModelo(tx, { condicion: "USADA" })
+
+  const creado = await tx.modelo.create({
+    data: {
+      nombre,
+      slug,
+      codigo,
+      marca,
+      condicion: "USADA",
+      anio: oc.motoAnio ?? null,
+      kilometros: oc.motoKilometros ?? null,
+      chasis: oc.motoChasis ?? null,
+      motor: oc.motoMotor ?? null,
+      patente: oc.motoPatente ?? null,
+      precio: oc.precioVenta,
+      moneda: oc.moneda,
+      fotos: [],
+      vendida: true,
+      fechaVenta: oc.fecha,
+      activo: false,
+      origen: "STOCK_PROPIO",
+      ordenCompraVentaId: oc.id,
+    },
+    select: { id: true },
+  })
+  // Linkear la OC al nuevo modelo
+  await tx.ordenCompra.update({
+    where: { id: oc.id },
+    data: { modeloId: creado.id },
+  })
+  return creado.id
+}
+
+/**
  * Maneja la venta de un Modelo del catálogo. Comportamiento distinto
  * según condición:
  *
