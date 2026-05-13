@@ -7,7 +7,6 @@ import {
   Search,
   X,
   FileText,
-  Receipt,
   Wallet,
   Archive,
   ExternalLink,
@@ -90,7 +89,10 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
     [motos]
   )
 
-  // Stats arriba (sobre el conjunto activo, no las vendidas)
+  // Stats arriba (sobre el conjunto activo, no las vendidas).
+  // No mostramos el valor de compra/toma para que la administración solo
+  // vea precios de venta (publico). El campo precioCompra existe en los
+  // datos por si en otra vista lo necesitamos.
   const stats = useMemo(() => {
     const enInventario = motos.filter((m) => m.estado !== "VENDIDA")
     const valorListaARS = enInventario
@@ -99,18 +101,10 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
     const valorListaUSD = enInventario
       .filter((m) => m.moneda === "USD" && m.precio)
       .reduce((s, m) => s + (m.precio || 0), 0)
-    const valorCompraARS = enInventario
-      .filter((m) => m.precioCompra?.moneda === "ARS")
-      .reduce((s, m) => s + (m.precioCompra?.monto || 0), 0)
-    const valorCompraUSD = enInventario
-      .filter((m) => m.precioCompra?.moneda === "USD")
-      .reduce((s, m) => s + (m.precioCompra?.monto || 0), 0)
     return {
       enInventario: enInventario.length,
       valorListaARS,
       valorListaUSD,
-      valorCompraARS,
-      valorCompraUSD,
       vendidasHist: counts.vendidas,
     }
   }, [motos, counts.vendidas])
@@ -163,7 +157,7 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <StatCard
           icon={<Bike className="size-5" />}
           label="Motos en stock"
@@ -175,21 +169,6 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
           label="Valor en stock (lista)"
           value={formatPriceMix(stats.valorListaARS, stats.valorListaUSD)}
           color="teal"
-        />
-        <StatCard
-          icon={<Receipt className="size-5" />}
-          label="Valor de compra / toma"
-          value={
-            stats.valorCompraARS === 0 && stats.valorCompraUSD === 0
-              ? "—"
-              : formatPriceMix(stats.valorCompraARS, stats.valorCompraUSD)
-          }
-          color="purple"
-          hint={
-            stats.valorCompraARS === 0 && stats.valorCompraUSD === 0
-              ? "Sin precios de compra cargados"
-              : null
-          }
         />
         <StatCard
           icon={<Archive className="size-5" />}
@@ -295,9 +274,6 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
                 <th className="px-3 py-3 whitespace-nowrap">Año / Km</th>
                 <th className="px-3 py-3 whitespace-nowrap">Patente</th>
                 <th className="px-3 py-3">Dueño / Referencia</th>
-                <th className="px-3 py-3 whitespace-nowrap text-right">
-                  Compra / Toma
-                </th>
                 <th className="px-3 py-3 whitespace-nowrap text-right">Venta</th>
                 <th className="px-3 py-3 whitespace-nowrap">Estado</th>
                 <th className="px-3 py-3 whitespace-nowrap text-right">
@@ -309,7 +285,7 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
               {filtradas.length === 0 ? (
                 <tr>
                   <td
-                    colSpan={9}
+                    colSpan={8}
                     className="px-3 py-14 text-center text-gray-400"
                   >
                     <Bike className="size-8 mx-auto mb-2 text-gray-300" />
@@ -416,17 +392,6 @@ function FilaMoto({ m }: { m: StockMotoUI }) {
         )}
       </td>
 
-      {/* Compra / Toma */}
-      <td className="px-3 py-3 align-top text-right whitespace-nowrap">
-        {m.precioCompra ? (
-          <span className="text-sm font-semibold text-gray-900 dark:text-gray-100">
-            {formatMoney(m.precioCompra.monto, m.precioCompra.moneda)}
-          </span>
-        ) : (
-          <span className="text-gray-300 text-xs">—</span>
-        )}
-      </td>
-
       {/* Precio venta (lista en catalogo, o precio real de la OC si ya se vendio) */}
       <td className="px-3 py-3 align-top text-right whitespace-nowrap">
         {m.ocVenta ? (
@@ -506,13 +471,11 @@ function StatCard({
   label,
   value,
   color,
-  hint,
 }: {
   icon: React.ReactNode
   label: string
   value: string
   color: "emerald" | "teal" | "purple" | "gray"
-  hint?: string | null
 }) {
   const colors: Record<typeof color, string> = {
     emerald: "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300",
@@ -533,9 +496,6 @@ function StatCard({
           <p className="text-lg font-bold text-gray-900 dark:text-gray-100 mt-0.5 truncate">
             {value}
           </p>
-          {hint && (
-            <p className="text-[10px] text-gray-400 mt-0.5">{hint}</p>
-          )}
         </div>
       </div>
     </div>
