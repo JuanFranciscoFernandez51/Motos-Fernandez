@@ -241,9 +241,21 @@ function UsuarioModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       })
-      const data = await res.json().catch(() => ({}))
+      const raw = await res.text()
+      let data: Record<string, unknown> = {}
+      try {
+        data = raw ? JSON.parse(raw) : {}
+      } catch {
+        data = { error: raw }
+      }
       if (!res.ok) {
-        setError(data.error || `Error ${res.status}`)
+        const errMsg = data.error
+          ? String(data.error)
+          : `HTTP ${res.status}: ${raw.slice(0, 200) || "sin detalle"}`
+        // Loguear todo para que el admin pueda copiar/pegar si pasa de
+        // nuevo. La gente reporta mejor con un error completo a la vista.
+        console.error("[usuarios] Error al guardar:", { status: res.status, data, body })
+        setError(errMsg)
         return
       }
       onSaved()

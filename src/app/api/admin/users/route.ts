@@ -44,7 +44,15 @@ export async function POST(request: Request) {
   try {
     const body = await request.json()
     const name = String(body.name ?? "").trim()
-    const email = String(body.email ?? "").trim().toLowerCase()
+    // Sanitizamos el username: quitamos espacios, tildes y caracteres
+    // raros. Asi el admin puede tipear como quiera y guardamos un
+    // username limpio y consistente.
+    const emailRaw = String(body.email ?? "").trim().toLowerCase()
+    const email = emailRaw
+      .normalize("NFD")
+      .replace(/[̀-ͯ]/g, "") // quitar tildes
+      .replace(/\s+/g, "") // quitar espacios
+      .replace(/[^a-z0-9._@-]/g, "") // quitar caracteres no soportados
     const password = String(body.password ?? "")
     const role = body.role === "admin" ? "admin" : "usuario"
     const permisos = Array.isArray(body.permisos)
@@ -53,9 +61,11 @@ export async function POST(request: Request) {
     const activo = body.activo !== false
 
     if (!name) return NextResponse.json({ error: "Nombre obligatorio" }, { status: 400 })
-    if (!email) return NextResponse.json({ error: "Usuario obligatorio" }, { status: 400 })
-    if (!/^[a-z0-9._@-]+$/i.test(email)) {
-      return NextResponse.json({ error: "Usuario inválido (solo letras, números, ._@-)" }, { status: 400 })
+    if (!email) {
+      return NextResponse.json(
+        { error: `Usuario obligatorio o inválido (recibido: "${emailRaw}"). Usá letras, números, . _ @ -` },
+        { status: 400 }
+      )
     }
     if (password.length < 6) {
       return NextResponse.json({ error: "La contraseña debe tener al menos 6 caracteres" }, { status: 400 })
@@ -63,7 +73,12 @@ export async function POST(request: Request) {
 
     // No permitir crear duplicados
     const exist = await prisma.user.findUnique({ where: { email } })
-    if (exist) return NextResponse.json({ error: "Ya existe un usuario con ese nombre" }, { status: 400 })
+    if (exist) {
+      return NextResponse.json(
+        { error: `Ya existe un usuario con el nombre "${email}". Probá con otro.` },
+        { status: 400 }
+      )
+    }
 
     const hashedPassword = await hash(password, 10)
     const user = await prisma.user.create({
@@ -80,8 +95,10 @@ export async function POST(request: Request) {
     revalidatePath("/admin/usuarios")
     return NextResponse.json(user, { status: 201 })
   } catch (e) {
+    console.error("[users.POST] Error:", e)
+    const msg = e instanceof Error ? e.message : String(e)
     return NextResponse.json(
-      { error: e instanceof Error ? e.message : "Error al crear" },
+      { error: `Error al crear usuario: ${msg}` },
       { status: 500 }
     )
   }
