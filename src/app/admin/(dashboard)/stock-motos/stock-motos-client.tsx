@@ -13,8 +13,11 @@ import {
   AlertCircle,
   Tag as TagIcon,
   Plus,
+  Pencil,
 } from "lucide-react"
 import { formatMoney } from "@/lib/admin-helpers"
+import { EditStockModal } from "./edit-stock-modal"
+import type { ClienteOption } from "@/components/admin/operativo/cliente-selector"
 import { NuevaMotoQuickModal } from "@/components/admin/operativo/nueva-moto-quick-modal"
 
 export type StockMotoUI = {
@@ -38,6 +41,7 @@ export type StockMotoUI = {
   origen: string | null
   proveedor: string | null
   clienteEntrega: string | null
+  clienteEntregaId: string | null
   ocVentaNumero: number | null
   ocVentaId: string | null
   fotoPrincipal: string | null
@@ -56,13 +60,21 @@ const ORIGEN_LABEL: Record<string, { label: string; color: string }> = {
 
 type Filtro = "DISPONIBLES" | "VENDIDAS" | "TODAS"
 
-export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
+export function StockMotosClient({
+  motos,
+  clientes,
+}: {
+  motos: StockMotoUI[]
+  clientes: ClienteOption[]
+}) {
   const router = useRouter()
   const [query, setQuery] = useState("")
   const [filtro, setFiltro] = useState<Filtro>("DISPONIBLES")
   const [condicion, setCondicion] = useState<"TODAS" | "0KM" | "USADA">("TODAS")
   const [origenFiltro, setOrigenFiltro] = useState<string>("TODOS")
   const [showNuevaModal, setShowNuevaModal] = useState(false)
+  // Modal de edicion rapida (campos administrativos: chasis, motor, etc)
+  const [editando, setEditando] = useState<StockMotoUI | null>(null)
 
   const counts = useMemo(
     () => ({
@@ -249,11 +261,9 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
                   return (
                     <tr
                       key={m.id}
-                      onDoubleClick={() =>
-                        router.push(`/admin/modelos/${m.id}?volver=stock`)
-                      }
+                      onDoubleClick={() => setEditando(m)}
                       className="border-t border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-900/50 cursor-pointer select-none"
-                      title="Doble click para editar"
+                      title="Doble click para editar datos administrativos"
                     >
                       <td className="px-3 py-2.5 font-mono text-xs font-semibold text-[#6B4F7A] whitespace-nowrap">
                         {m.codigo || "—"}
@@ -369,13 +379,25 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
                               OC-{String(m.ocVentaNumero).padStart(4, "0")}
                             </Link>
                           )}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              setEditando(m)
+                            }}
+                            className="inline-flex items-center gap-1 text-xs text-[#6B4F7A] hover:underline px-1.5"
+                            title="Editar datos administrativos"
+                          >
+                            <Pencil className="size-3" />
+                            Editar
+                          </button>
                           <Link
                             href={`/admin/modelos/${m.id}?volver=stock`}
-                            className="inline-flex items-center gap-1 text-xs text-[#6B4F7A] hover:underline px-1.5"
-                            title="Ver ficha completa"
+                            className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:underline px-1.5"
+                            title="Ver ficha completa (fotos, descripción, etc.)"
                           >
                             <Eye className="size-3" />
-                            Ver
+                            Ficha
                           </Link>
                         </div>
                       </td>
@@ -396,7 +418,20 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
         onClose={() => setShowNuevaModal(false)}
         onCreated={() => {
           setShowNuevaModal(false)
-          // Refresh server-side para que aparezca en la tabla.
+          router.refresh()
+        }}
+      />
+
+      {/* Modal de edicion rapida (campos administrativos) — abre con doble
+          click en la fila o boton "Editar". Para fotos / descripcion / SEO
+          el admin va a "Ficha" que sigue llevando al form completo. */}
+      <EditStockModal
+        open={!!editando}
+        moto={editando}
+        clientes={clientes}
+        onClose={() => setEditando(null)}
+        onSaved={() => {
+          setEditando(null)
           router.refresh()
         }}
       />

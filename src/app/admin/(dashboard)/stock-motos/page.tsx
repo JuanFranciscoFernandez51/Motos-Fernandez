@@ -9,6 +9,19 @@ export default async function StockMotosPage() {
   const session = await requireSection("STOCK_MOTOS")
   if (!session) redirect("/admin")
 
+  // Cargamos clientes para el ClienteSelector del modal de edicion rapida.
+  const clientes = await prisma.cliente.findMany({
+    orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
+    select: {
+      id: true,
+      nombre: true,
+      apellido: true,
+      dni: true,
+      telefono: true,
+      email: true,
+    },
+  })
+
   const motos = await prisma.modelo.findMany({
     orderBy: [{ codigo: "desc" }, { createdAt: "desc" }],
     select: {
@@ -33,6 +46,7 @@ export default async function StockMotosPage() {
       createdAt: true,
       fotos: true,
       proveedor: { select: { nombre: true } },
+      clienteEntregaId: true,
       clienteEntrega: { select: { nombre: true, apellido: true } },
       ordenCompraVenta: { select: { id: true, numero: true } },
       // Mandato: la moto está en consignación y nos la trajo este cliente.
@@ -76,6 +90,7 @@ export default async function StockMotosPage() {
       origen: m.origen,
       proveedor: m.proveedor?.nombre || null,
       clienteEntrega: clienteDueno,
+      clienteEntregaId: m.clienteEntregaId,
       ocVentaNumero: m.ordenCompraVenta?.numero ?? null,
       ocVentaId: m.ordenCompraVenta?.id ?? null,
       fotoPrincipal: m.fotos?.[0] || null,
@@ -83,5 +98,5 @@ export default async function StockMotosPage() {
     }
   })
 
-  return <StockMotosClient motos={ui} />
+  return <StockMotosClient motos={ui} clientes={clientes} />
 }
