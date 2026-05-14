@@ -4,7 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
 import { signOut } from "next-auth/react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import {
   LayoutDashboard,
   Bike,
@@ -290,6 +290,25 @@ export function AdminSidebar({
   const router = useRouter()
   // Filtramos las entradas segun permisos del usuario. Los admin ven todo.
   const visibleEntries = filtrarEntries(navEntries, role, permisos)
+
+  // Persistir el estado collapsed en localStorage y reflejarlo como clase
+  // en <body> para que el <main> del layout pueda ajustar su padding-left.
+  // El layout es server component asi que no puede leer el state directamente.
+  // Inicializamos desde localStorage al montar para no perder la preferencia
+  // en cada navegacion.
+  useEffect(() => {
+    const saved = localStorage.getItem("admin-sidebar-collapsed")
+    if (saved === "true") setCollapsed(true)
+  }, [])
+  useEffect(() => {
+    if (typeof document === "undefined") return
+    document.body.classList.toggle("admin-sidebar-collapsed", collapsed)
+    try {
+      localStorage.setItem("admin-sidebar-collapsed", collapsed ? "true" : "false")
+    } catch {
+      // ignore quota errors
+    }
+  }, [collapsed])
 
   const handleLogout = async () => {
     await signOut({ redirect: false })

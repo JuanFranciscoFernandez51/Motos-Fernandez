@@ -449,6 +449,22 @@ html {
   text-wrap: balance;
 }
 
+/* Layout del admin: el <main> se ajusta segun si la sidebar esta
+   colapsada (clase `admin-sidebar-collapsed` en body) o expandida.
+   El sidebar mide w-64 (16rem) expandido o w-20 (5rem) colapsado.
+   En mobile (< 1024px) la sidebar es un drawer y el main no necesita pl. */
+.admin-main {
+  padding-left: 0;
+}
+@media (min-width: 1024px) {
+  .admin-main {
+    padding-left: 16rem;
+  }
+  body.admin-sidebar-collapsed .admin-main {
+    padding-left: 5rem;
+  }
+}
+
 /* Scrollbar custom para la sidebar del admin (oscura, delgada).
    En Firefox usa scrollbar-color; en WebKit/Chromium ::-webkit-scrollbar. */
 .admin-sidebar-scroll {

@@ -26,8 +26,10 @@ export default async function AdminDashboardLayout({
       {/* Mobile top bar spacer */}
       <div className="h-14 lg:hidden" />
 
-      {/* Main content */}
-      <main className="lg:pl-64 transition-all duration-200">
+      {/* Main content — el padding-left se ajusta dinamicamente segun si la
+          sidebar esta colapsada (clase admin-sidebar-collapsed en body) o
+          expandida. Las reglas estan en globals.css. */}
+      <main className="admin-main transition-[padding] duration-200">
         <div className="p-4 md:p-6 lg:p-8">{children}</div>
       </main>
 
