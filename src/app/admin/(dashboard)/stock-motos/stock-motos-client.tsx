@@ -249,7 +249,11 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
                   return (
                     <tr
                       key={m.id}
-                      className="border-t border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-900/50"
+                      onDoubleClick={() =>
+                        router.push(`/admin/modelos/${m.id}?volver=stock`)
+                      }
+                      className="border-t border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-900/50 cursor-pointer select-none"
+                      title="Doble click para editar"
                     >
                       <td className="px-3 py-2.5 font-mono text-xs font-semibold text-[#6B4F7A] whitespace-nowrap">
                         {m.codigo || "—"}

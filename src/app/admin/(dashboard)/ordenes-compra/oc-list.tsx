@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -41,6 +42,7 @@ type Row = {
 }
 
 export function OCList({ ordenes }: { ordenes: Row[] }) {
+  const router = useRouter()
   const [query, setQuery] = useState("")
   const [estadoFilter, setEstadoFilter] = useState("")
 
@@ -158,7 +160,12 @@ export function OCList({ ordenes }: { ordenes: Row[] }) {
               </TableRow>
             ) : (
               filtered.map((o) => (
-                <TableRow key={o.id}>
+                <TableRow
+                  key={o.id}
+                  onDoubleClick={() => router.push(`/admin/ordenes-compra/${o.id}`)}
+                  className="cursor-pointer select-none"
+                  title="Doble click para editar"
+                >
                   <TableCell className="font-mono text-xs font-semibold text-[#6B4F7A]">
                     {formatNumero("OC", o.numero)}
                   </TableCell>
