@@ -35,37 +35,53 @@ export default async function StockMotosPage() {
       proveedor: { select: { nombre: true } },
       clienteEntrega: { select: { nombre: true, apellido: true } },
       ordenCompraVenta: { select: { id: true, numero: true } },
+      // Mandato: la moto está en consignación y nos la trajo este cliente.
+      // Si el origen=MANDATO el "dueño" sale del mandato.cliente.
+      mandato: {
+        select: {
+          cliente: { select: { nombre: true, apellido: true } },
+        },
+      },
     },
   })
 
-  const ui: StockMotoUI[] = motos.map((m) => ({
-    id: m.id,
-    codigo: m.codigo,
-    slug: m.slug,
-    marca: m.marca,
-    nombre: m.nombre,
-    condicion: m.condicion || "0KM",
-    anio: m.anio,
-    kilometros: m.kilometros,
-    chasis: m.chasis,
-    motor: m.motor,
-    patente: m.patente,
-    precio: m.precio,
-    moneda: m.moneda,
-    activo: m.activo,
-    vendida: m.vendida,
-    fechaVenta: m.fechaVenta ? m.fechaVenta.toISOString() : null,
-    etiqueta: m.etiqueta,
-    origen: m.origen,
-    proveedor: m.proveedor?.nombre || null,
-    clienteEntrega: m.clienteEntrega
-      ? `${m.clienteEntrega.apellido}, ${m.clienteEntrega.nombre}`
-      : null,
-    ocVentaNumero: m.ordenCompraVenta?.numero ?? null,
-    ocVentaId: m.ordenCompraVenta?.id ?? null,
-    fotoPrincipal: m.fotos?.[0] || null,
-    createdAt: m.createdAt.toISOString(),
-  }))
+  const ui: StockMotoUI[] = motos.map((m) => {
+    // Unificamos el "cliente dueño" según el origen: para PARTE_DE_PAGO
+    // viene en clienteEntrega; para MANDATO sale del mandato relacionado.
+    const clienteDueno =
+      m.clienteEntrega
+        ? `${m.clienteEntrega.apellido}, ${m.clienteEntrega.nombre}`
+        : m.mandato?.cliente
+          ? `${m.mandato.cliente.apellido}, ${m.mandato.cliente.nombre}`
+          : null
+
+    return {
+      id: m.id,
+      codigo: m.codigo,
+      slug: m.slug,
+      marca: m.marca,
+      nombre: m.nombre,
+      condicion: m.condicion || "0KM",
+      anio: m.anio,
+      kilometros: m.kilometros,
+      chasis: m.chasis,
+      motor: m.motor,
+      patente: m.patente,
+      precio: m.precio,
+      moneda: m.moneda,
+      activo: m.activo,
+      vendida: m.vendida,
+      fechaVenta: m.fechaVenta ? m.fechaVenta.toISOString() : null,
+      etiqueta: m.etiqueta,
+      origen: m.origen,
+      proveedor: m.proveedor?.nombre || null,
+      clienteEntrega: clienteDueno,
+      ocVentaNumero: m.ordenCompraVenta?.numero ?? null,
+      ocVentaId: m.ordenCompraVenta?.id ?? null,
+      fotoPrincipal: m.fotos?.[0] || null,
+      createdAt: m.createdAt.toISOString(),
+    }
+  })
 
   return <StockMotosClient motos={ui} />
 }

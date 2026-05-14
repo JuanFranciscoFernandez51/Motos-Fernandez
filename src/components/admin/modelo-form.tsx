@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -135,6 +135,13 @@ export function ModeloForm({
   extraActions?: React.ReactNode
 }) {
   const router = useRouter()
+  // Si el usuario llego desde Stock motos (con ?volver=stock), al guardar
+  // / cancelar volvemos ahi en vez de a /admin/modelos.
+  const searchParams = useSearchParams()
+  const volverA =
+    searchParams?.get("volver") === "stock"
+      ? "/admin/stock-motos"
+      : "/admin/modelos"
   const [isPending, startTransition] = useTransition()
 
   const [nombre, setNombre] = useState(initialData?.nombre || "")
@@ -397,7 +404,7 @@ export function ModeloForm({
       if (result?.error) {
         setError(result.error)
       } else {
-        router.push("/admin/modelos")
+        router.push(volverA)
         router.refresh()
       }
     })
@@ -407,7 +414,7 @@ export function ModeloForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" render={<Link href="/admin/modelos" />}>
+          <Button variant="ghost" size="icon" render={<Link href={volverA} />}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">

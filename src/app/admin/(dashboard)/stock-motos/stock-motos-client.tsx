@@ -47,7 +47,10 @@ export type StockMotoUI = {
 const ORIGEN_LABEL: Record<string, { label: string; color: string }> = {
   STOCK_PROPIO: { label: "Stock propio", color: "bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300" },
   PARTE_DE_PAGO: { label: "Parte de pago", color: "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300" },
-  MANDATO: { label: "Mandato", color: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300" },
+  // MANDATO = moto que un cliente nos consigno para que vendamos. En la
+  // UI le decimos "Cliente" porque es mas claro para la administracion:
+  // la moto la trajo un cliente, abajo aparece "de XXXXX" con el nombre.
+  MANDATO: { label: "Cliente", color: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300" },
   UNIDAD_VENDIDA_0KM: { label: "Unidad vendida (0KM)", color: "bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-300" },
 }
 
@@ -198,7 +201,7 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
           <option value="TODOS">Todos los orígenes</option>
           <option value="STOCK_PROPIO">Stock propio</option>
           <option value="PARTE_DE_PAGO">Parte de pago</option>
-          <option value="MANDATO">Mandato</option>
+          <option value="MANDATO">Cliente (consignación)</option>
           <option value="UNIDAD_VENDIDA_0KM">Unidad vendida 0KM</option>
         </select>
         <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -363,7 +366,7 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
                             </Link>
                           )}
                           <Link
-                            href={`/admin/modelos/${m.id}`}
+                            href={`/admin/modelos/${m.id}?volver=stock`}
                             className="inline-flex items-center gap-1 text-xs text-[#6B4F7A] hover:underline px-1.5"
                             title="Ver ficha completa"
                           >
