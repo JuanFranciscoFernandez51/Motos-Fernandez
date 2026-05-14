@@ -49,19 +49,28 @@ export async function POST(request: Request) {
     ? String(body.patente).trim().toUpperCase()
     : null
 
-  // Slug auto-incremental tipo mf-0XXX, mismo formato que las permutas.
-  const ultimosMF = await prisma.modelo.findMany({
-    where: { slug: { startsWith: "mf-" } },
+  // Slug auto-incremental. La convención dominante en la DB es `mfNNN`
+  // (sin guión, padded a 3 dígitos) pero coexisten variantes con guión
+  // `mf-NNNN` por flujos antiguos. Detectamos el próximo número
+  // considerando AMBOS formatos asi nunca chocamos con uno existente.
+  // El slug nuevo siempre se genera en el formato moderno `mfNNN`.
+  const todosMF = await prisma.modelo.findMany({
+    where: { slug: { startsWith: "mf" } },
     select: { slug: true },
   })
-  const numerosMF = ultimosMF
+  const numerosMF = todosMF
     .map((m) => {
-      const match = m.slug.match(/^mf-(\d+)$/i)
+      // Matchea: mf001, mf-0001, mf999, mf-9999. Ignora clones (-u1) y otros.
+      const match = m.slug.match(/^mf-?(\d+)(?:$|-)/i)
       return match ? parseInt(match[1], 10) : 0
     })
     .filter((n) => n > 0)
   const proximoMF = numerosMF.length > 0 ? Math.max(...numerosMF) + 1 : 1
-  const slug = `mf-${String(proximoMF).padStart(4, "0")}`
+  // Slug en formato moderno: mfNNN (3 dígitos si N <= 999, 4 si es mayor)
+  const slug =
+    proximoMF < 1000
+      ? `mf${String(proximoMF).padStart(3, "0")}`
+      : `mf${String(proximoMF).padStart(4, "0")}`
 
   const placeholderFoto = "/images/logo-clasico.png"
   try {

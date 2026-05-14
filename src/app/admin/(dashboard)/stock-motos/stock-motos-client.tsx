@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { useRouter } from "next/navigation"
 import Link from "next/link"
 import {
   Bike,
@@ -11,8 +12,10 @@ import {
   CheckCircle2,
   AlertCircle,
   Tag as TagIcon,
+  Plus,
 } from "lucide-react"
 import { formatMoney } from "@/lib/admin-helpers"
+import { NuevaMotoQuickModal } from "@/components/admin/operativo/nueva-moto-quick-modal"
 
 export type StockMotoUI = {
   id: string
@@ -51,10 +54,12 @@ const ORIGEN_LABEL: Record<string, { label: string; color: string }> = {
 type Filtro = "DISPONIBLES" | "VENDIDAS" | "TODAS"
 
 export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
+  const router = useRouter()
   const [query, setQuery] = useState("")
   const [filtro, setFiltro] = useState<Filtro>("DISPONIBLES")
   const [condicion, setCondicion] = useState<"TODAS" | "0KM" | "USADA">("TODAS")
   const [origenFiltro, setOrigenFiltro] = useState<string>("TODOS")
+  const [showNuevaModal, setShowNuevaModal] = useState(false)
 
   const counts = useMemo(
     () => ({
@@ -199,6 +204,14 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
         <span className="text-xs text-gray-500 dark:text-gray-400">
           {filtradas.length} de {motos.length} motos
         </span>
+        <button
+          type="button"
+          onClick={() => setShowNuevaModal(true)}
+          className="ml-auto inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white px-3 py-2 text-sm font-medium shadow-sm"
+        >
+          <Plus className="size-4" />
+          Nueva moto
+        </button>
       </div>
 
       {/* Tabla */}
@@ -367,6 +380,19 @@ export function StockMotosClient({ motos }: { motos: StockMotoUI[] }) {
           </table>
         </div>
       </div>
+
+      {/* Modal nueva moto — reusa el mismo flujo que el form de OC.
+          La moto se crea con activo=false: aparece en stock motos pero
+          NO en el catalogo publico hasta que la actives desde /admin/modelos. */}
+      <NuevaMotoQuickModal
+        open={showNuevaModal}
+        onClose={() => setShowNuevaModal(false)}
+        onCreated={() => {
+          setShowNuevaModal(false)
+          // Refresh server-side para que aparezca en la tabla.
+          router.refresh()
+        }}
+      />
     </div>
   )
 }
