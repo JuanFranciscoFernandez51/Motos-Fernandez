@@ -270,6 +270,8 @@ async function createOrdenCompra(formData: FormData) {
       // Auto-crear financiación con garante si corresponde
       await crearFinanciacionDesdeOC(tx, {
         ...orden,
+        // Capital explicito (si el admin lo cargo en el form)
+        montoFinanciado: num("montoFinanciado"),
         garanteNombre: get("garanteNombre") || null,
         garanteApellido: get("garanteApellido") || null,
         garanteDni: get("garanteDni") || null,

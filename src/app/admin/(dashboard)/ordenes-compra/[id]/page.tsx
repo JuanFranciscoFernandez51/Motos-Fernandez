@@ -85,8 +85,19 @@ async function updateOrden(formData: FormData) {
     }
 
     const formaPago = get("formaPago") || null
-    const hayPermuta = formaPago === "Permuta" || formaPago === "Mixta"
-    const hayFin = formaPago === "Financiado" || formaPago === "Mixta"
+    // formaPago llega calculada por el cliente (no hay select), pero
+    // mantenemos lectura defensiva: permutas/financiacion se determinan
+    // por la presencia real de los datos para no depender solo del label.
+    const hayPermuta =
+      permutasInput.length > 0 ||
+      formaPago === "Permuta" ||
+      formaPago === "Mixta"
+    const cuotasInput = num("cuotas")
+    const valorCuotaInput = num("valorCuota")
+    const hayFin =
+      (cuotasInput && cuotasInput > 0 && valorCuotaInput && valorCuotaInput > 0) ||
+      formaPago === "Financiado" ||
+      formaPago === "Mixta"
 
     // Resumen agregado de permutas para campos legacy
     const sumaPermutas = hayPermuta
@@ -383,10 +394,20 @@ async function updateOrden(formData: FormData) {
       const finExistente = await tx.financiacionOC.findUnique({
         where: { ordenCompraId: orden.id },
       })
+      const montoFinanciadoInput = num("montoFinanciado")
       if (finExistente && hayFin) {
+        // Update solo lo que viene del form (garante + capital si cambio)
         await tx.financiacionOC.update({
           where: { id: finExistente.id },
           data: {
+            // Solo actualizamos el capital si el admin cargo algo > 0.
+            // Si dejo el campo vacio, no pisamos el valor previo.
+            ...(montoFinanciadoInput && montoFinanciadoInput > 0
+              ? { montoTotal: montoFinanciadoInput }
+              : {}),
+            cantidadCuotas: cuotasInput ?? finExistente.cantidadCuotas,
+            valorCuota: valorCuotaInput ?? finExistente.valorCuota,
+            entrega: num("entrega") ?? finExistente.entrega,
             garanteNombre: get("garanteNombre") || null,
             garanteApellido: get("garanteApellido") || null,
             garanteDni: get("garanteDni") || null,
@@ -394,10 +415,12 @@ async function updateOrden(formData: FormData) {
             garanteDireccion: get("garanteDireccion") || null,
           },
         })
-      } else {
-        // No existia: la helper la crea con garante incluido
+      } else if (hayFin) {
+        // No existia y la OC tiene cuotas: crear la financiacion con
+        // capital explicito + garante.
         await crearFinanciacionDesdeOC(tx, {
           ...orden,
+          montoFinanciado: montoFinanciadoInput,
           garanteNombre: get("garanteNombre") || null,
           garanteApellido: get("garanteApellido") || null,
           garanteDni: get("garanteDni") || null,
@@ -542,6 +565,11 @@ export default async function EditarOrdenCompraPage({
     cuotas: orden.cuotas != null ? String(orden.cuotas) : "",
     valorCuota: orden.valorCuota != null ? String(orden.valorCuota) : "",
     entrega: orden.entrega != null ? String(orden.entrega) : "",
+    // El capital lo tomamos del FinanciacionOC asociado. Si no hay, queda "".
+    montoFinanciado:
+      orden.financiacion?.montoTotal != null
+        ? String(orden.financiacion.montoTotal)
+        : "",
     fecha: toDateInput(orden.fecha),
     estado: orden.estado,
     observaciones: orden.observaciones || "",

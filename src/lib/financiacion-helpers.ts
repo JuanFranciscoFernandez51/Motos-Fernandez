@@ -14,6 +14,10 @@ type OCParaFinanciacion = {
   cuotas: number | null
   valorCuota: number | null
   entrega: number | null
+  // Capital efectivo a financiar. Si no viene, se infiere de
+  // `cuotas * valorCuota + entrega` (comportamiento legacy).
+  // Sirve para soportar planes con intereses donde cuotas*valor != capital.
+  montoFinanciado?: number | null
   precioVenta: number
   moneda: string
   // Garante (opcional, datos texto libre)
@@ -26,12 +30,10 @@ type OCParaFinanciacion = {
 
 /**
  * Determina si una OC requiere crear una financiación.
- * Solo si formaPago es Financiado/Mixta y tiene cuotas + valorCuota válidos.
+ * Basta con que tenga cuotas y valorCuota válidos — la formaPago se
+ * calcula sola ahora, no la usamos como gate.
  */
 export function requiereFinanciacion(oc: OCParaFinanciacion): boolean {
-  if (!oc.formaPago) return false
-  const fp = oc.formaPago.toLowerCase()
-  if (!fp.includes("financ") && !fp.includes("mixta")) return false
   if (!oc.cuotas || oc.cuotas <= 0) return false
   if (!oc.valorCuota || oc.valorCuota <= 0) return false
   return true
@@ -74,7 +76,13 @@ export async function crearFinanciacionDesdeOC(
   const cantidadCuotas = oc.cuotas as number
   const valorCuota = oc.valorCuota as number
   const entrega = oc.entrega ?? 0
-  const montoTotal = valorCuota * cantidadCuotas
+  // Capital (lo que efectivamente cuadra contra el precio): si el admin
+  // lo cargo explicito, usamos ese. Si no, fallback a cuotas*valor + entrega
+  // (= asumimos sin intereses).
+  const montoTotal =
+    oc.montoFinanciado && oc.montoFinanciado > 0
+      ? oc.montoFinanciado
+      : valorCuota * cantidadCuotas + entrega
   const fechaInicio = new Date()
   const fechaFin = calcularVencimientoCuota(fechaInicio, cantidadCuotas, diaVencimiento)
 

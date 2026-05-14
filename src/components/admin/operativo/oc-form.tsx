@@ -65,15 +65,26 @@ export type OCData = {
   motoKilometros: string
   precioVenta: string
   moneda: string
+  // formaPago se sigue calculando y guardando en DB, pero ya no se elige
+  // a mano en el UI nuevo — se infiere de lo cargado (pagos + permutas
+  // + financiacion). Lo dejamos en OCData por compatibilidad.
   formaPago: string
+  // Campos legacy: ya no se editan desde el form nuevo, pero los mantenemos
+  // para no romper OCs viejas que los tengan poblados. Los seteamos en
+  // null al guardar desde el form nuevo.
   sena: string
   saldo: string
   detallePago: string
   permutaDescripcion: string
   permutaValor: string
+  // Financiacion: cuotas y valorCuota describen el plan de pago al
+  // cliente (puede incluir intereses → cuotas*valorCuota >= capital).
+  // montoFinanciado es el CAPITAL — lo que se descuenta del precio para
+  // cuadrar el balance. Es independiente de cuotas*valorCuota.
   cuotas: string
   valorCuota: string
   entrega: string
+  montoFinanciado: string
   fecha: string
   estado: string
   observaciones: string
@@ -99,6 +110,7 @@ const EMPTY: OCData = {
   cuotas: "",
   valorCuota: "",
   entrega: "",
+  montoFinanciado: "",
   fecha: new Date().toISOString().split("T")[0],
   estado: "BORRADOR",
   observaciones: "",
@@ -174,6 +186,36 @@ export function OCForm({
     }))
   }
 
+  // Calculo derivado: hay permutas / hay financiacion? Se computa segun
+  // los datos cargados — no necesitamos preguntar formaPago al usuario.
+  const hayPermutaActiva = permutas.some(
+    (p) => p.marca.trim() || p.modelo.trim() || p.valor.trim()
+  )
+  const hayFinanciacionActiva =
+    (parseInt(data.cuotas || "0") || 0) > 0 &&
+    (parseInt(data.valorCuota || "0") || 0) > 0
+  // Capital financiado: si el admin no lo cargo a mano, fallback al
+  // calculo legacy (cuotas * valorCuota + entrega) — para retrocompat con
+  // OCs viejas sin intereses.
+  const capitalFinanciado = (() => {
+    const explicito = parseInt(data.montoFinanciado || "0") || 0
+    if (explicito > 0) return explicito
+    if (!hayFinanciacionActiva) return 0
+    return (
+      (parseInt(data.cuotas || "0") || 0) *
+        (parseInt(data.valorCuota || "0") || 0) +
+      (parseInt(data.entrega || "0") || 0)
+    )
+  })()
+
+  // Forma de pago = derivada de lo que se cargo
+  const formaPagoCalculada = (() => {
+    if (hayPermutaActiva && hayFinanciacionActiva) return "Mixta"
+    if (hayPermutaActiva) return "Permuta"
+    if (hayFinanciacionActiva) return "Financiado"
+    return "Contado"
+  })()
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
@@ -192,40 +234,39 @@ export function OCForm({
 
     const formData = new FormData()
     if (initialData?.id) formData.append("id", initialData.id)
-    Object.entries(data).forEach(([k, v]) => formData.append(k, String(v ?? "")))
+    // Inyectamos la forma de pago calculada en lugar de la del state
+    const dataAGuardar = { ...data, formaPago: formaPagoCalculada }
+    Object.entries(dataAGuardar).forEach(([k, v]) =>
+      formData.append(k, String(v ?? ""))
+    )
 
-    // Serializar permutas (filtrar las vacías) y garante
-    const hayPermuta = data.formaPago === "Permuta" || data.formaPago === "Mixta"
-    const hayFin = data.formaPago === "Financiado" || data.formaPago === "Mixta"
-    const permutasFiltradas = hayPermuta
-      ? permutas
-          .filter((p) => p.marca.trim() || p.modelo.trim() || p.valor.trim())
-          .map((p) => ({
-            id: p.id ?? null,
-            marca: p.marca.trim() || null,
-            modelo: p.modelo.trim() || null,
-            anio: p.anio ? parseInt(p.anio) : null,
-            kilometros: p.kilometros ? parseInt(p.kilometros) : null,
-            patente: p.patente.trim().toUpperCase() || null,
-            chasis: p.chasis.trim() || null,
-            motor: p.motor.trim() || null,
-            descripcion: p.descripcion.trim() || null,
-            valor: p.valor ? parseInt(p.valor) : 0,
-            moneda: p.moneda || data.moneda || "ARS",
-            motoRecibidaId: p.motoRecibidaId ?? null,
-            subirAlStock: !!p.subirAlStock,
-            // Checklist de accesorios que entrega
-            tieneTitulo: !!p.tieneTitulo,
-            tieneManual: !!p.tieneManual,
-            tieneSegundaLlave: !!p.tieneSegundaLlave,
-            tieneCasco: !!p.tieneCasco,
-            tieneVtv: !!p.tieneVtv,
-            tieneSeguro: !!p.tieneSeguro,
-            tieneFactura: !!p.tieneFactura,
-            tieneFichaTecnica: !!p.tieneFichaTecnica,
-            accesoriosExtra: (p.accesoriosExtra || "").trim() || null,
-          }))
-      : []
+    // Serializar permutas siempre (no condicional a formaPago).
+    const permutasFiltradas = permutas
+      .filter((p) => p.marca.trim() || p.modelo.trim() || p.valor.trim())
+      .map((p) => ({
+        id: p.id ?? null,
+        marca: p.marca.trim() || null,
+        modelo: p.modelo.trim() || null,
+        anio: p.anio ? parseInt(p.anio) : null,
+        kilometros: p.kilometros ? parseInt(p.kilometros) : null,
+        patente: p.patente.trim().toUpperCase() || null,
+        chasis: p.chasis.trim() || null,
+        motor: p.motor.trim() || null,
+        descripcion: p.descripcion.trim() || null,
+        valor: p.valor ? parseInt(p.valor) : 0,
+        moneda: p.moneda || data.moneda || "ARS",
+        motoRecibidaId: p.motoRecibidaId ?? null,
+        subirAlStock: !!p.subirAlStock,
+        tieneTitulo: !!p.tieneTitulo,
+        tieneManual: !!p.tieneManual,
+        tieneSegundaLlave: !!p.tieneSegundaLlave,
+        tieneCasco: !!p.tieneCasco,
+        tieneVtv: !!p.tieneVtv,
+        tieneSeguro: !!p.tieneSeguro,
+        tieneFactura: !!p.tieneFactura,
+        tieneFichaTecnica: !!p.tieneFichaTecnica,
+        accesoriosExtra: (p.accesoriosExtra || "").trim() || null,
+      }))
     formData.append("permutas", JSON.stringify(permutasFiltradas))
 
     // Pagos directos (efectivo, transferencia, etc) — combinables siempre.
@@ -245,7 +286,8 @@ export function OCForm({
       }))
     formData.append("pagos", JSON.stringify(pagosFiltrados))
 
-    if (hayFin) {
+    // Garante (solo tiene sentido si hay financiacion)
+    if (hayFinanciacionActiva) {
       formData.append("garanteNombre", garante.nombre.trim())
       formData.append("garanteApellido", garante.apellido.trim())
       formData.append("garanteDni", garante.dni.trim())
@@ -295,8 +337,37 @@ export function OCForm({
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-3 overflow-visible">
+      <div className="space-y-6 max-w-5xl mx-auto">
+        {/* Balance: precio vs cobertura, siempre visible arriba para que
+            sepas en cualquier momento si la OC esta cuadrada o no. */}
+        <BalanceCard
+          precioVenta={parseInt(data.precioVenta || "0") || 0}
+          monedaOC={data.moneda || "ARS"}
+          pagosPorMoneda={pagos.reduce(
+            (acc, p) => {
+              const v = parseInt(p.monto || "0") || 0
+              if (!Number.isFinite(v) || v <= 0) return acc
+              const m = (p.moneda || data.moneda || "ARS") as "ARS" | "USD"
+              acc[m] = (acc[m] || 0) + v
+              return acc
+            },
+            { ARS: 0, USD: 0 }
+          )}
+          permutasPorMoneda={permutas.reduce(
+            (acc, p) => {
+              const v = parseInt(p.valor || "0") || 0
+              if (!Number.isFinite(v) || v <= 0) return acc
+              const m = (p.moneda || data.moneda || "ARS") as "ARS" | "USD"
+              acc[m] = (acc[m] || 0) + v
+              return acc
+            },
+            { ARS: 0, USD: 0 }
+          )}
+          montoFinanciado={capitalFinanciado}
+          formaPagoCalculada={formaPagoCalculada}
+        />
+
+        <Card className="overflow-visible">
           <CardHeader>
             <CardTitle>Cliente comprador *</CardTitle>
           </CardHeader>
@@ -309,7 +380,7 @@ export function OCForm({
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-2 overflow-visible">
+        <Card className="overflow-visible">
           <CardHeader>
             <div className="flex items-center justify-between gap-2 flex-wrap">
               <CardTitle>Moto a vender</CardTitle>
@@ -385,60 +456,44 @@ export function OCForm({
           </CardContent>
         </Card>
 
-        {/* Económico */}
+        {/* Precio + moneda principal de la OC. El resto del dinero
+            (cuanto se paga en efectivo, en cheque, en permuta, en
+            financiacion) se carga abajo en sus secciones — la forma
+            de pago se calcula sola. */}
         <Card>
           <CardHeader>
-            <CardTitle>Pago</CardTitle>
+            <CardTitle>Precio de venta</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label htmlFor="precioVenta">Precio de venta *</Label>
-              <Input id="precioVenta" type="number" value={data.precioVenta} onChange={(e) => set("precioVenta", e.target.value)} required />
+          <CardContent>
+            <div className="grid grid-cols-[1fr_140px] gap-3">
+              <div>
+                <Label htmlFor="precioVenta">Precio *</Label>
+                <Input
+                  id="precioVenta"
+                  type="number"
+                  value={data.precioVenta}
+                  onChange={(e) => set("precioVenta", e.target.value)}
+                  placeholder="1500000"
+                  required
+                />
+              </div>
+              <div>
+                <Label htmlFor="moneda">Moneda</Label>
+                <select
+                  id="moneda"
+                  value={data.moneda}
+                  onChange={(e) => set("moneda", e.target.value)}
+                  className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 px-3 text-sm"
+                >
+                  <option value="ARS">ARS ($)</option>
+                  <option value="USD">USD</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <Label htmlFor="formaPago">Forma de pago</Label>
-              <select
-                id="formaPago"
-                value={data.formaPago}
-                onChange={(e) => set("formaPago", e.target.value)}
-                className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 px-3 text-sm"
-              >
-                <option value="Contado">Contado</option>
-                <option value="Financiado">Financiado</option>
-                <option value="Permuta">Permuta</option>
-                <option value="Mixta">Mixta (varios)</option>
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="sena">Seña entregada</Label>
-              <Input id="sena" type="number" value={data.sena} onChange={(e) => set("sena", e.target.value)} />
-            </div>
-            <div>
-              <Label htmlFor="saldo">Saldo pendiente</Label>
-              <Input id="saldo" type="number" value={data.saldo} onChange={(e) => set("saldo", e.target.value)} />
-            </div>
-            <div>
-              <Label htmlFor="moneda">Moneda</Label>
-              <select
-                id="moneda"
-                value={data.moneda}
-                onChange={(e) => set("moneda", e.target.value)}
-                className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 px-3 text-sm"
-              >
-                <option value="ARS">ARS</option>
-                <option value="USD">USD</option>
-              </select>
-            </div>
-            <div>
-              <Label htmlFor="detallePago">Detalle del pago</Label>
-              <Textarea
-                id="detallePago"
-                value={data.detallePago}
-                onChange={(e) => set("detallePago", e.target.value)}
-                placeholder="Ej: Seña $500.000 efectivo, saldo al retirar. Pendiente transferencia."
-                rows={3}
-              />
-            </div>
+            <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
+              Forma de pago: <strong>{formaPagoCalculada}</strong> (se
+              calcula segun lo que cargues abajo).
+            </p>
           </CardContent>
         </Card>
 
@@ -453,40 +508,37 @@ export function OCForm({
               setPagos={setPagos}
               precioVenta={parseInt(data.precioVenta || "0") || 0}
               monedaOC={data.moneda || "ARS"}
-              totalPermutas={
-                data.formaPago === "Permuta" || data.formaPago === "Mixta"
-                  ? permutas.reduce((s, p) => s + (parseInt(p.valor || "0") || 0), 0)
-                  : 0
-              }
-              permutasPorMoneda={
-                data.formaPago === "Permuta" || data.formaPago === "Mixta"
-                  ? permutas.reduce(
-                      (acc, p) => {
-                        const v = parseInt(p.valor || "0") || 0
-                        const m = (p.moneda || data.moneda || "ARS") as "ARS" | "USD"
-                        acc[m] = (acc[m] || 0) + v
-                        return acc
-                      },
-                      { ARS: 0, USD: 0 }
-                    )
-                  : { ARS: 0, USD: 0 }
-              }
-              montoFinanciado={
-                data.formaPago === "Financiado" || data.formaPago === "Mixta"
-                  ? (parseInt(data.cuotas || "0") || 0) *
-                      (parseInt(data.valorCuota || "0") || 0) +
-                    (parseInt(data.entrega || "0") || 0)
-                  : 0
-              }
+              totalPermutas={permutas.reduce(
+                (s, p) => s + (parseInt(p.valor || "0") || 0),
+                0
+              )}
+              permutasPorMoneda={permutas.reduce(
+                (acc, p) => {
+                  const v = parseInt(p.valor || "0") || 0
+                  const m = (p.moneda || data.moneda || "ARS") as "ARS" | "USD"
+                  acc[m] = (acc[m] || 0) + v
+                  return acc
+                },
+                { ARS: 0, USD: 0 }
+              )}
+              montoFinanciado={capitalFinanciado}
             />
           </CardContent>
         </Card>
 
-        {(data.formaPago === "Permuta" || data.formaPago === "Mixta") && (
-          <Card>
+        {/* Permutas — siempre visible. Si no hay ninguna cargada queda
+            con un slot vacío que se ignora al guardar (mismo comportamiento
+            que antes). El usuario agrega con el botón. */}
+        <Card>
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>Partes de pago ({permutas.length})</CardTitle>
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <div>
+                  <CardTitle>Permutas / Parte de pago</CardTitle>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    Motos que el cliente entrega como parte del pago. Si no
+                    hay, dejá vacío.
+                  </p>
+                </div>
                 <Button
                   type="button"
                   variant="outline"
@@ -494,7 +546,7 @@ export function OCForm({
                   onClick={() => setPermutas((prev) => [...prev, permutaVacia(data.moneda || "ARS")])}
                 >
                   <Plus className="h-3.5 w-3.5 mr-1" />
-                  Agregar otra
+                  Agregar permuta
                 </Button>
               </div>
             </CardHeader>
@@ -708,30 +760,83 @@ export function OCForm({
               })}
             </CardContent>
           </Card>
-        )}
 
-        {(data.formaPago === "Financiado" || data.formaPago === "Mixta") && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Financiación</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
+        {/* Financiacion — siempre visible. Si no hay cuotas/valor cargados,
+            no se crea financiacion al guardar. */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Financiación / Plan de cuotas</CardTitle>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              Si la venta tiene cuotas, cargá el monto a financiar (capital)
+              + el plan de pago. Si tiene intereses, el total de cuotas puede
+              ser mayor al capital.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <Label htmlFor="entrega">Entrega</Label>
-                <Input id="entrega" type="number" value={data.entrega} onChange={(e) => set("entrega", e.target.value)} />
+                <Label htmlFor="montoFinanciado">
+                  Monto a financiar (capital)
+                </Label>
+                <Input
+                  id="montoFinanciado"
+                  type="number"
+                  value={data.montoFinanciado}
+                  onChange={(e) => set("montoFinanciado", e.target.value)}
+                  placeholder="lo que se descuenta del precio"
+                />
+                <p className="text-[10px] text-gray-400 mt-0.5">
+                  El monto que el cliente financia. Cuadra el balance.
+                </p>
               </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label htmlFor="cuotas">Cuotas</Label>
-                  <Input id="cuotas" type="number" value={data.cuotas} onChange={(e) => set("cuotas", e.target.value)} />
-                </div>
-                <div>
-                  <Label htmlFor="valorCuota">Valor cuota</Label>
-                  <Input id="valorCuota" type="number" value={data.valorCuota} onChange={(e) => set("valorCuota", e.target.value)} />
-                </div>
+              <div>
+                <Label htmlFor="entrega">Entrega (anticipo, opcional)</Label>
+                <Input
+                  id="entrega"
+                  type="number"
+                  value={data.entrega}
+                  onChange={(e) => set("entrega", e.target.value)}
+                  placeholder="0"
+                />
               </div>
+              <div>
+                <Label htmlFor="cuotas">Cantidad de cuotas</Label>
+                <Input
+                  id="cuotas"
+                  type="number"
+                  value={data.cuotas}
+                  onChange={(e) => set("cuotas", e.target.value)}
+                  placeholder="12"
+                />
+              </div>
+              <div>
+                <Label htmlFor="valorCuota">
+                  Valor por cuota{" "}
+                  <span className="text-gray-400 font-normal">
+                    (puede incluir intereses)
+                  </span>
+                </Label>
+                <Input
+                  id="valorCuota"
+                  type="number"
+                  value={data.valorCuota}
+                  onChange={(e) => set("valorCuota", e.target.value)}
+                  placeholder="150000"
+                />
+              </div>
+            </div>
+            {hayFinanciacionActiva && (
+              <FinanciacionResumen
+                capital={capitalFinanciado}
+                cuotas={parseInt(data.cuotas || "0") || 0}
+                valorCuota={parseInt(data.valorCuota || "0") || 0}
+                entrega={parseInt(data.entrega || "0") || 0}
+                moneda={data.moneda || "ARS"}
+              />
+            )}
 
-              {/* Garante (sub-bloque) */}
+            {/* Garante: solo si hay financiacion activa */}
+            {hayFinanciacionActiva && (
               <div className="rounded-md border border-blue-200 dark:border-blue-900/40 bg-blue-50/30 dark:bg-blue-950/10 p-3 space-y-3">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">
                   Garante (opcional)
@@ -776,9 +881,9 @@ export function OCForm({
                   </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            )}
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
@@ -806,7 +911,7 @@ export function OCForm({
           </CardContent>
         </Card>
 
-        <Card className="lg:col-span-3">
+        <Card>
           <CardHeader>
             <CardTitle>Observaciones</CardTitle>
           </CardHeader>
@@ -821,5 +926,208 @@ export function OCForm({
         </Card>
       </div>
     </form>
+  )
+}
+
+// =====================================================================
+// Subcomponentes auxiliares del OCForm
+// =====================================================================
+
+/**
+ * Card de balance arriba del form. Muestra precio vs lo cubierto
+ * (pagos + permutas + capital financiado), separado por moneda.
+ * Se actualiza en vivo a medida que el admin carga datos.
+ */
+function BalanceCard({
+  precioVenta,
+  monedaOC,
+  pagosPorMoneda,
+  permutasPorMoneda,
+  montoFinanciado,
+  formaPagoCalculada,
+}: {
+  precioVenta: number
+  monedaOC: string
+  pagosPorMoneda: { ARS: number; USD: number }
+  permutasPorMoneda: { ARS: number; USD: number }
+  montoFinanciado: number
+  formaPagoCalculada: string
+}) {
+  const cubiertoARS = pagosPorMoneda.ARS + permutasPorMoneda.ARS
+  const cubiertoUSD = pagosPorMoneda.USD + permutasPorMoneda.USD
+  const cubiertoEnMoneda =
+    monedaOC === "USD"
+      ? cubiertoUSD + montoFinanciado
+      : cubiertoARS + montoFinanciado
+  const falta = precioVenta - cubiertoEnMoneda
+  const cuadrado = falta === 0 && precioVenta > 0
+  const haySecundaria =
+    monedaOC === "USD"
+      ? cubiertoARS > 0
+      : cubiertoUSD > 0
+
+  const fmt = (n: number, m: string) =>
+    `${m === "USD" ? "USD " : "$ "}${n.toLocaleString("es-AR")}`
+
+  return (
+    <div className="rounded-xl border-2 border-[#6B4F7A]/30 bg-gradient-to-r from-[#6B4F7A]/5 to-transparent p-4 sm:p-5">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold">
+            Balance de la OC
+          </p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            Forma de pago: <strong>{formaPagoCalculada}</strong>
+          </p>
+        </div>
+        <div className="text-right">
+          {precioVenta > 0 ? (
+            <>
+              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                {fmt(precioVenta, monedaOC)}
+              </p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400 uppercase">
+                Precio de venta
+              </p>
+            </>
+          ) : (
+            <p className="text-sm text-gray-400 italic">
+              Cargá un precio para ver el balance
+            </p>
+          )}
+        </div>
+      </div>
+
+      {precioVenta > 0 && (
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+          <div className="rounded-md bg-white dark:bg-neutral-900 border p-2.5">
+            <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Cubierto en {monedaOC}
+            </p>
+            <p className="text-base font-bold text-gray-900 dark:text-gray-100 mt-0.5">
+              {fmt(cubiertoEnMoneda, monedaOC)}
+            </p>
+            <p className="text-[10px] text-gray-400 mt-0.5">
+              {fmt(
+                monedaOC === "USD" ? pagosPorMoneda.USD : pagosPorMoneda.ARS,
+                monedaOC
+              )}{" "}
+              pagos +{" "}
+              {fmt(
+                monedaOC === "USD"
+                  ? permutasPorMoneda.USD
+                  : permutasPorMoneda.ARS,
+                monedaOC
+              )}{" "}
+              permutas
+              {montoFinanciado > 0 &&
+                ` + ${fmt(montoFinanciado, monedaOC)} financiación`}
+            </p>
+          </div>
+          <div
+            className={`rounded-md border p-2.5 ${
+              cuadrado
+                ? "bg-emerald-50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-900/40"
+                : falta > 0
+                  ? "bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-900/40"
+                  : "bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-900/40"
+            }`}
+          >
+            <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              {cuadrado ? "Estado" : falta > 0 ? "Falta cubrir" : "Sobra"}
+            </p>
+            <p
+              className={`text-base font-bold mt-0.5 ${
+                cuadrado
+                  ? "text-emerald-700 dark:text-emerald-300"
+                  : falta > 0
+                    ? "text-red-700 dark:text-red-300"
+                    : "text-amber-700 dark:text-amber-300"
+              }`}
+            >
+              {cuadrado ? "✓ Cuadrado" : fmt(Math.abs(falta), monedaOC)}
+            </p>
+          </div>
+          {haySecundaria && (
+            <div className="rounded-md bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 p-2.5">
+              <p className="text-[10px] uppercase tracking-wider text-amber-700 dark:text-amber-300 font-semibold">
+                ⚠ Hay {monedaOC === "USD" ? "pesos" : "dólares"} sueltos
+              </p>
+              <p className="text-xs text-amber-800 dark:text-amber-200 mt-0.5 leading-snug">
+                Combinaste monedas. Conviene aclararlo en observaciones con
+                el tipo de cambio aplicado.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/**
+ * Resumen del plan de financiación. Muestra el capital, el total que el
+ * cliente va a pagar (cuotas × valor) y la diferencia (intereses) si la hay.
+ */
+function FinanciacionResumen({
+  capital,
+  cuotas,
+  valorCuota,
+  entrega,
+  moneda,
+}: {
+  capital: number
+  cuotas: number
+  valorCuota: number
+  entrega: number
+  moneda: string
+}) {
+  const totalCuotas = cuotas * valorCuota
+  const totalAPagar = totalCuotas + entrega
+  const intereses = capital > 0 ? totalAPagar - capital : 0
+  const tieneIntereses = capital > 0 && intereses > 0
+  const fmt = (n: number) =>
+    `${moneda === "USD" ? "USD " : "$ "}${n.toLocaleString("es-AR")}`
+
+  return (
+    <div className="rounded-md bg-gray-50 dark:bg-neutral-900/60 border border-gray-200 dark:border-neutral-800 p-3 text-xs space-y-1">
+      {capital > 0 && (
+        <div className="flex items-center justify-between">
+          <span className="text-gray-600 dark:text-gray-300">
+            Capital a financiar
+          </span>
+          <span className="font-mono font-semibold">{fmt(capital)}</span>
+        </div>
+      )}
+      {entrega > 0 && (
+        <div className="flex items-center justify-between">
+          <span className="text-gray-600 dark:text-gray-300">Entrega / anticipo</span>
+          <span className="font-mono">{fmt(entrega)}</span>
+        </div>
+      )}
+      <div className="flex items-center justify-between">
+        <span className="text-gray-600 dark:text-gray-300">
+          Cuotas × valor ({cuotas} × {fmt(valorCuota)})
+        </span>
+        <span className="font-mono">{fmt(totalCuotas)}</span>
+      </div>
+      <div className="flex items-center justify-between pt-1 border-t border-gray-200 dark:border-neutral-700">
+        <span className="text-gray-700 dark:text-gray-200 font-semibold">
+          Total a pagar (entrega + cuotas)
+        </span>
+        <span className="font-mono font-semibold">{fmt(totalAPagar)}</span>
+      </div>
+      {tieneIntereses && (
+        <div className="flex items-center justify-between text-amber-700 dark:text-amber-300">
+          <span>Intereses (total − capital)</span>
+          <span className="font-mono font-semibold">{fmt(intereses)}</span>
+        </div>
+      )}
+      {capital > 0 && intereses < 0 && (
+        <p className="text-[10px] text-red-600 dark:text-red-300 italic">
+          ⚠ El total a pagar es menor al capital. Revisá cuotas y valor.
+        </p>
+      )}
+    </div>
   )
 }
