@@ -100,6 +100,102 @@ export async function crearModeloDesdeOCSinModelo(
 }
 
 /**
+ * Sincroniza todas las consecuencias de una venta de moto:
+ *  - Modelo: vendida=true, activo=false, fechaVenta, etiqueta=null
+ *  - Mandato asociado (si lo hay): estado=VENDIDO
+ *  - ML: si esta active → marcamos mlEstado=paused para que el cron luego
+ *    sincronice con Mercado Libre (no podemos llamar la API de ML desde
+ *    una transaccion porque tardaria mucho)
+ *  - OC vinculada: si se pasa, queda registrada como ordenCompraVentaId
+ *
+ * Es IDEMPOTENTE: si la moto ya esta vendida, igual sincroniza el resto
+ * (por si quedó algo desincronizado).
+ *
+ * Esta es la fuente unica de verdad para "marcar como vendida" — todo
+ * flujo (OC concretada, estado de mandato a VENDIDO, toggle manual en
+ * admin) debe llamar esta funcion para que las consecuencias sean
+ * consistentes.
+ */
+export async function marcarModeloComoVendido(
+  tx: Prisma.TransactionClient,
+  args: {
+    modeloId: string
+    ordenCompraId?: string | null
+    fechaVenta?: Date
+    chasis?: string | null
+    motor?: string | null
+    patente?: string | null
+  }
+): Promise<void> {
+  const m = await tx.modelo.findUnique({
+    where: { id: args.modeloId },
+    select: {
+      id: true,
+      vendida: true,
+      mlListingId: true,
+      mlEstado: true,
+      mandato: { select: { id: true, estado: true } },
+    },
+  })
+  if (!m) return
+  const fecha = args.fechaVenta || new Date()
+
+  await tx.modelo.update({
+    where: { id: m.id },
+    data: {
+      vendida: true,
+      activo: false,
+      etiqueta: null,
+      fechaVenta: fecha,
+      ...(args.chasis !== undefined ? { chasis: args.chasis } : {}),
+      ...(args.motor !== undefined ? { motor: args.motor } : {}),
+      ...(args.patente !== undefined ? { patente: args.patente } : {}),
+      ...(args.ordenCompraId ? { ordenCompraVentaId: args.ordenCompraId } : {}),
+      // Pausar publicacion ML para que el cron lo despublique
+      ...(m.mlListingId && m.mlEstado === "active"
+        ? { mlEstado: "paused" }
+        : {}),
+    },
+  })
+
+  // Sincronizar mandato a VENDIDO si tiene uno y no esta ya VENDIDO
+  if (m.mandato && m.mandato.estado !== "VENDIDO") {
+    await tx.mandatoVenta.update({
+      where: { id: m.mandato.id },
+      data: { estado: "VENDIDO" },
+    })
+  }
+}
+
+/**
+ * Sincroniza desde el lado del mandato: cuando un mandato pasa a VENDIDO,
+ * marcamos el modelo asociado como vendida con todos los side effects.
+ */
+export async function sincronizarMandatoVendido(
+  tx: Prisma.TransactionClient,
+  args: { mandatoId: string; fechaVenta?: Date }
+): Promise<void> {
+  const mv = await tx.mandatoVenta.findUnique({
+    where: { id: args.mandatoId },
+    select: { id: true, estado: true, modeloId: true, ordenCompraId: true },
+  })
+  if (!mv) return
+  if (mv.estado !== "VENDIDO") {
+    await tx.mandatoVenta.update({
+      where: { id: mv.id },
+      data: { estado: "VENDIDO" },
+    })
+  }
+  if (mv.modeloId) {
+    await marcarModeloComoVendido(tx, {
+      modeloId: mv.modeloId,
+      ordenCompraId: mv.ordenCompraId,
+      fechaVenta: args.fechaVenta,
+    })
+  }
+}
+
+/**
  * Maneja la venta de un Modelo del catálogo. Comportamiento distinto
  * según condición:
  *
@@ -229,18 +325,16 @@ export async function manejarVentaDeMoto(
     return { modeloIdFinal: clon.id, esClon: true }
   }
 
-  // Usada (o cualquier otra condición): comportamiento histórico
-  await tx.modelo.update({
-    where: { id: m.id },
-    data: {
-      vendida: true,
-      fechaVenta: fecha,
-      activo: false,
-      // Si llegó chasis/motor/patente nuevos en la OC, los guardamos en la usada
-      ...(args.chasis !== undefined ? { chasis: args.chasis } : {}),
-      ...(args.motor !== undefined ? { motor: args.motor } : {}),
-      ...(args.patente !== undefined ? { patente: args.patente } : {}),
-    },
+  // Usada (o cualquier otra condición): comportamiento histórico —
+  // ahora delegamos al helper centralizado para que tambien sincronice
+  // mandato (VENDIDO) y pause ML automaticamente.
+  await marcarModeloComoVendido(tx, {
+    modeloId: m.id,
+    ordenCompraId: args.ordenCompraId,
+    fechaVenta: fecha,
+    chasis: args.chasis,
+    motor: args.motor,
+    patente: args.patente,
   })
   return { modeloIdFinal: m.id, esClon: false }
 }

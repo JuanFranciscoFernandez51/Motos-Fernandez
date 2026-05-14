@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { MandatoForm } from "@/components/admin/operativo/mandato-form"
 import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
+import { sincronizarMandatoVendido } from "@/lib/venta-moto-helpers"
+import { invalidateModelos } from "@/lib/cached-queries"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -41,46 +43,60 @@ async function updateMandato(formData: FormData) {
     const fotosRaw = get("fotos")
     const fotos: string[] = fotosRaw ? JSON.parse(fotosRaw) : []
 
-    await prisma.mandatoVenta.update({
-      where: { id },
-      data: {
-        fotos,
-        clienteId: get("clienteId"),
-        marca: get("marca"),
-        modelo: get("modelo"),
-        anio: num("anio"),
-        kilometros: num("kilometros"),
-        cilindrada: get("cilindrada") || null,
-        color: get("color") || null,
-        chasis: get("chasis") || null,
-        motor: get("motor") || null,
-        patente: get("patente") || null,
-        tieneTitulo: bool("tieneTitulo"),
-        tituloANombreCliente: bool("tituloANombreCliente"),
-        tieneTarjetaVerde: bool("tieneTarjetaVerde"),
-        tienePrenda: bool("tienePrenda"),
-        detallePrenda: get("detallePrenda") || null,
-        tieneVTV: bool("tieneVTV"),
-        tieneManual: bool("tieneManual"),
-        tieneSegundaLlave: bool("tieneSegundaLlave"),
-        precioVenta: num("precioVenta") ?? 0,
-        precioMinimo: num("precioMinimo"),
-        comisionPorc: float("comisionPorc"),
-        comisionMonto: num("comisionMonto"),
-        moneda: get("moneda") || "ARS",
-        fechaFirma: date("fechaFirma"),
-        fechaVencimiento: date("fechaVencimiento"),
-        estado: (get("estado") || "PENDIENTE") as
-          | "PENDIENTE"
-          | "ACTIVO"
-          | "VENDIDO"
-          | "CANCELADO"
-          | "VENCIDO",
-        observaciones: get("observaciones") || null,
-      },
+    const nuevoEstado = (get("estado") || "PENDIENTE") as
+      | "PENDIENTE"
+      | "ACTIVO"
+      | "VENDIDO"
+      | "CANCELADO"
+      | "VENCIDO"
+
+    await prisma.$transaction(async (tx) => {
+      await tx.mandatoVenta.update({
+        where: { id },
+        data: {
+          fotos,
+          clienteId: get("clienteId"),
+          marca: get("marca"),
+          modelo: get("modelo"),
+          anio: num("anio"),
+          kilometros: num("kilometros"),
+          cilindrada: get("cilindrada") || null,
+          color: get("color") || null,
+          chasis: get("chasis") || null,
+          motor: get("motor") || null,
+          patente: get("patente") || null,
+          tieneTitulo: bool("tieneTitulo"),
+          tituloANombreCliente: bool("tituloANombreCliente"),
+          tieneTarjetaVerde: bool("tieneTarjetaVerde"),
+          tienePrenda: bool("tienePrenda"),
+          detallePrenda: get("detallePrenda") || null,
+          tieneVTV: bool("tieneVTV"),
+          tieneManual: bool("tieneManual"),
+          tieneSegundaLlave: bool("tieneSegundaLlave"),
+          precioVenta: num("precioVenta") ?? 0,
+          precioMinimo: num("precioMinimo"),
+          comisionPorc: float("comisionPorc"),
+          comisionMonto: num("comisionMonto"),
+          moneda: get("moneda") || "ARS",
+          fechaFirma: date("fechaFirma"),
+          fechaVencimiento: date("fechaVencimiento"),
+          estado: nuevoEstado,
+          observaciones: get("observaciones") || null,
+        },
+      })
+
+      // Si el nuevo estado es VENDIDO, sincronizamos el modelo asociado:
+      // vendida=true, activo=false, fechaVenta, pausa ML, etc.
+      if (nuevoEstado === "VENDIDO") {
+        await sincronizarMandatoVendido(tx, { mandatoId: id })
+      }
     })
 
     revalidatePath("/admin/mandatos")
+    revalidatePath("/admin/modelos")
+    revalidatePath("/admin/stock-motos")
+    revalidatePath("/catalogo")
+    invalidateModelos()
     return {}
   } catch (e: unknown) {
     const msg = e instanceof Error ? e.message : "Error al actualizar mandato"
