@@ -37,7 +37,6 @@ import {
 import { InstagramIcon } from "@/components/icons/social"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { ThemeToggleSegmented } from "@/components/theme-toggle"
 import type { SeccionId } from "@/lib/secciones"
@@ -334,27 +333,30 @@ export function AdminSidebar({
         )}
       </div>
 
-      <ScrollArea className="flex-1 px-3 py-4">
-        <nav className="flex flex-col gap-1">
-          {visibleEntries.map((entry) =>
-            isGroup(entry) ? (
-              <NavGroupItem
-                key={entry.id}
-                group={entry}
-                collapsed={collapsed && !mobile}
-                onItemClick={mobile ? () => setMobileOpen(false) : undefined}
-              />
-            ) : (
-              <NavLink
-                key={entry.href}
-                item={entry}
-                collapsed={collapsed && !mobile}
-                onClick={mobile ? () => setMobileOpen(false) : undefined}
-              />
-            )
-          )}
-        </nav>
-      </ScrollArea>
+      {/* min-h-0 es necesario para que flex-1 + overflow-y-auto funcione
+          dentro de un contenedor flex-col (sino el contenido empuja la
+          altura y el scroll nunca se activa). overscroll-contain evita
+          que el scroll de la sidebar haga scroll de la pagina cuando
+          llegas al final. */}
+      <nav className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-3 py-4 flex flex-col gap-1 admin-sidebar-scroll">
+        {visibleEntries.map((entry) =>
+          isGroup(entry) ? (
+            <NavGroupItem
+              key={entry.id}
+              group={entry}
+              collapsed={collapsed && !mobile}
+              onItemClick={mobile ? () => setMobileOpen(false) : undefined}
+            />
+          ) : (
+            <NavLink
+              key={entry.href}
+              item={entry}
+              collapsed={collapsed && !mobile}
+              onClick={mobile ? () => setMobileOpen(false) : undefined}
+            />
+          )
+        )}
+      </nav>
 
       <div className="border-t border-neutral-800 px-3 py-4">
         {(!collapsed || mobile) && (
