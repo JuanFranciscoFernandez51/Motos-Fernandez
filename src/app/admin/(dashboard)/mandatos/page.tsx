@@ -7,6 +7,7 @@ import { redirect } from "next/navigation"
 import { nombreCompleto } from "@/lib/admin-helpers"
 import { MandatosListFilters } from "./mandatos-filters"
 import { invalidateModelos } from "@/lib/cached-queries"
+import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -35,28 +36,36 @@ async function publicarDesdeLista(id: string) {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "")
 
-  const modelo = await prisma.modelo.create({
-    data: {
-      nombre: `${mandato.marca} ${mandato.modelo}`,
-      slug: baseSlug,
-      marca: mandato.marca,
-      categoriaVehiculo: "MOTOCICLETA",
-      condicion: "USADA",
-      anio: mandato.anio,
-      kilometros: mandato.kilometros,
-      cilindrada: mandato.cilindrada,
-      precio: mandato.precioVenta,
-      moneda: mandato.moneda,
-      activo: false,
-      chasis: mandato.chasis,
-      motor: mandato.motor,
-      patente: mandato.patente,
-      clienteNombre: `${mandato.cliente.apellido}, ${mandato.cliente.nombre}`,
-      clienteContacto: mandato.cliente.telefono || mandato.cliente.email,
-      notasInternas: mandato.observaciones,
-      // Si el mandato tiene fotos, las usa; sino, placeholder
-      fotos: mandato.fotos.length > 0 ? mandato.fotos : ["/images/logo-clasico.png"],
-    },
+  const modelo = await prisma.$transaction(async (tx) => {
+    const codigo = await generarCodigoModelo(tx, { condicion: "USADA" })
+    return tx.modelo.create({
+      data: {
+        nombre: `${mandato.marca} ${mandato.modelo}`,
+        slug: baseSlug,
+        codigo,
+        marca: mandato.marca,
+        categoriaVehiculo: "MOTOCICLETA",
+        condicion: "USADA",
+        anio: mandato.anio,
+        kilometros: mandato.kilometros,
+        cilindrada: mandato.cilindrada,
+        precio: mandato.precioVenta,
+        moneda: mandato.moneda,
+        activo: false,
+        chasis: mandato.chasis,
+        motor: mandato.motor,
+        patente: mandato.patente,
+        // Trazabilidad: la moto vino por consignacion (MANDATO) y el dueño
+        // que la trajo es el cliente del mandato.
+        origen: "MANDATO",
+        clienteEntregaId: mandato.clienteId,
+        clienteNombre: `${mandato.cliente.apellido}, ${mandato.cliente.nombre}`,
+        clienteContacto: mandato.cliente.telefono || mandato.cliente.email,
+        notasInternas: mandato.observaciones,
+        // Si el mandato tiene fotos, las usa; sino, placeholder
+        fotos: mandato.fotos.length > 0 ? mandato.fotos : ["/images/logo-clasico.png"],
+      },
+    })
   })
 
   await prisma.mandatoVenta.update({
