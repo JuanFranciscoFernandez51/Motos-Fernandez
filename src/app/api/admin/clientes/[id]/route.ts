@@ -41,7 +41,15 @@ export async function GET(
   if (!cliente) {
     return NextResponse.json({ error: "No encontrado" }, { status: 404 })
   }
-  return NextResponse.json({ cliente })
+  // Cuántos mandatos referencian al cliente. El quick-edit lo usa para
+  // detectar el placeholder compartido (apellido "POR COMPLETAR", nombre
+  // "Cliente") y mostrar warning antes de editar — sin esto, si el admin
+  // renombraba el placeholder, cambiaba el "dueño" de todos los mandatos
+  // que apuntaban a el.
+  const mandatosCount = await prisma.mandatoVenta.count({
+    where: { clienteId: id },
+  })
+  return NextResponse.json({ cliente, mandatosCount })
 }
 
 /**
@@ -93,6 +101,35 @@ export async function PATCH(
       { error: "Nombre y apellido no pueden quedar vacíos" },
       { status: 400 }
     )
+  }
+  // Proteccion: el cliente placeholder ("POR COMPLETAR, Cliente") está
+  // compartido por mandatos auto-generados de stock. Si lo editamos,
+  // cambiamos el dueño de todos esos mandatos a la vez (bug que ya pasó).
+  // Si el admin intenta editar este cliente, le devolvemos error con un
+  // mensaje claro de qué hacer en su lugar.
+  const actual = await prisma.cliente.findUnique({
+    where: { id },
+    select: { apellido: true, nombre: true },
+  })
+  if (
+    actual &&
+    (actual.apellido || "").toUpperCase() === "POR COMPLETAR" &&
+    (actual.nombre || "").toLowerCase() === "cliente"
+  ) {
+    // Permitimos solo actualizar notasInternas (por si hay que ajustar la nota).
+    // El resto de campos queda bloqueado.
+    const intentaTocarOtros = Object.keys(data).some((k) => k !== "notasInternas")
+    if (intentaTocarOtros) {
+      return NextResponse.json(
+        {
+          error:
+            "Este es el cliente placeholder compartido por varios mandatos de stock. " +
+            "Para asignar el dueño real a un mandato, abrí ese mandato y usá el selector " +
+            "para elegir otro cliente o crear uno nuevo desde ahí. NO edites este cliente directamente.",
+        },
+        { status: 400 }
+      )
+    }
   }
 
   try {

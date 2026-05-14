@@ -41,6 +41,12 @@ export function ClienteQuickEditModal({
   const [loadingSave, setLoadingSave] = useState(false)
   const [error, setError] = useState("")
   const [mounted, setMounted] = useState(false)
+  // Si el cliente es el "placeholder" compartido por varios mandatos,
+  // bloqueamos la edicion para evitar el bug donde un admin queria
+  // "completar el cliente del MT-07" y termino renombrando el placeholder,
+  // cambiando los datos de TODOS los otros mandatos que apuntan a el.
+  const [esPlaceholder, setEsPlaceholder] = useState(false)
+  const [mandatosCount, setMandatosCount] = useState(0)
 
   useEffect(() => {
     setMounted(true)
@@ -66,6 +72,12 @@ export function ClienteQuickEditModal({
           setCiudad(c.ciudad || "")
           setOcupacion(c.ocupacion || "")
           setNotasInternas(c.notasInternas || "")
+          // Detectar si es el placeholder por convencion
+          const placeholder =
+            (c.apellido || "").toUpperCase() === "POR COMPLETAR" &&
+            (c.nombre || "").toLowerCase() === "cliente"
+          setEsPlaceholder(placeholder)
+          setMandatosCount(typeof data.mandatosCount === "number" ? data.mandatosCount : 0)
         } else {
           setError("No se pudo cargar el cliente")
         }
@@ -159,6 +171,47 @@ export function ClienteQuickEditModal({
             <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
               Cargando datos del cliente...
             </p>
+          </div>
+        ) : esPlaceholder ? (
+          // Cliente placeholder: bloquear edicion. Editar este cliente
+          // cambiaria los datos de TODOS los mandatos que lo referencian.
+          <div className="space-y-3 px-5 py-6">
+            <div className="rounded-lg border-2 border-amber-300 bg-amber-50 dark:bg-amber-950/30 px-4 py-4">
+              <h4 className="font-semibold text-amber-900 dark:text-amber-200 mb-2">
+                ⚠ Este es el cliente placeholder
+              </h4>
+              <p className="text-sm text-amber-900 dark:text-amber-200/90 leading-relaxed">
+                Este cliente es genérico y está compartido por{" "}
+                <strong>{mandatosCount || "varios"} mandatos</strong> que
+                todavía no tienen el dueño real cargado.
+              </p>
+              <p className="text-sm text-amber-900 dark:text-amber-200/90 mt-2 leading-relaxed">
+                Si lo editás acá, vas a cambiar los datos en{" "}
+                <strong>TODOS</strong> los mandatos a la vez (no es lo que
+                querés).
+              </p>
+              <p className="text-sm font-medium text-amber-900 dark:text-amber-200 mt-3 leading-relaxed">
+                Lo que tenés que hacer:
+              </p>
+              <ol className="list-decimal ml-5 text-sm text-amber-900 dark:text-amber-200/90 mt-1 space-y-0.5">
+                <li>Cerrá este modal</li>
+                <li>
+                  En el selector de cliente, escribí el nombre real del dueño:
+                  si ya existe lo elegís, si no usá{" "}
+                  <strong>"+ Nuevo cliente"</strong> para crearlo
+                </li>
+                <li>Guardá el mandato</li>
+              </ol>
+            </div>
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white px-4 py-2 text-sm font-medium"
+              >
+                Entendido, cerrar
+              </button>
+            </div>
           </div>
         ) : (
           <div className="space-y-3 px-5 py-4">
