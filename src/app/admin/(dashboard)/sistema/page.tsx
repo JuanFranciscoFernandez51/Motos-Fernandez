@@ -45,6 +45,15 @@ const JOBS: JobInfo[] = [
     cronDescripcion: "Todos los días 9:30am AR",
     envVars: ["CRON_SECRET / BACKUP_TOKEN"],
   },
+  {
+    key: "cuotas-recordatorio",
+    titulo: "Recordatorios de cuotas (financiación)",
+    descripcion:
+      "Mantiene al día el estado de las cuotas (atrasadas), genera tareas de outreach 3 días antes del vencimiento y para las que pasan a vencidas. Manda un email al admin con el resumen.",
+    cron: "0 12 * * *",
+    cronDescripcion: "Todos los días 9am AR",
+    envVars: ["RESEND_API_KEY", "ADMIN_EMAIL", "CRON_SECRET / BACKUP_TOKEN"],
+  },
 ]
 
 export default async function SistemaPage() {

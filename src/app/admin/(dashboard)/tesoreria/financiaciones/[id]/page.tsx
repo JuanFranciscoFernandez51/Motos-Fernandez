@@ -38,6 +38,22 @@ async function pagarCuota(
     select: { financiacionId: true },
   })
 
+  // Cancelar tareas de outreach pendientes asociadas a esta cuota.
+  // Si el admin manda el aviso WhatsApp pero el cliente paga antes de
+  // verlo, igual lo seguimos teniendo registrado. Solo marcamos las
+  // PROGRAMADA como DESCARTADA con nota indicando que se pago.
+  await prisma.outreachTarea.updateMany({
+    where: {
+      cuotaId,
+      estado: "PROGRAMADA",
+    },
+    data: {
+      estado: "DESCARTADA",
+      descartadaAt: new Date(),
+      notaInterna: "Cancelada automaticamente: la cuota fue pagada.",
+    },
+  })
+
   // Si todas las cuotas están pagadas → financiación COMPLETADA
   const allCuotas = await prisma.cuotaFinanciacion.findMany({
     where: { financiacionId: cuota.financiacionId },

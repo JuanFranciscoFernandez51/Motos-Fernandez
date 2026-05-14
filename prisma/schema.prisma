@@ -659,6 +659,9 @@ model CuotaFinanciacion {
   comprobante     String?  // URL o nº de comprobante
   observaciones   String?
 
+  // Tareas de outreach (recordatorios CUOTA_PROXIMA / CUOTA_VENCIDA)
+  outreachTareas  OutreachTarea[]
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -1168,6 +1171,12 @@ model OutreachTarea {
   ordenCompraId   String?
   ordenCompra     OrdenCompra?  @relation(fields: [ordenCompraId], references: [id], onDelete: SetNull)
 
+  // Cuota origen (si aplica): para recordatorios CUOTA_PROXIMA / CUOTA_VENCIDA.
+  // Si la cuota se paga, podemos cancelar la tarea automaticamente buscando por
+  // este id. SetNull en delete para no perder la traza si la cuota se elimina.
+  cuotaId         String?
+  cuota           CuotaFinanciacion? @relation(fields: [cuotaId], references: [id], onDelete: SetNull)
+
   // Snapshot del contacto al momento de generar la tarea
   telefono        String?       // si lo modificamos en Cliente, este queda fijo (lo que se uso)
   mensaje         String        @db.Text  // texto exacto que se manda
@@ -1187,11 +1196,14 @@ model OutreachTarea {
   @@index([estado, fechaProgramada])
   @@index([clienteId])
   @@index([tipo, ordenCompraId])
+  @@index([cuotaId])
 }
 
 enum TipoOutreach {
   SERVICE_POSTVENTA  // recordatorio de service a los X meses de comprar
   NPS                // encuesta de satisfaccion + pedido de review
+  CUOTA_PROXIMA      // recordatorio 3 dias antes del vencimiento
+  CUOTA_VENCIDA      // aviso de cuota atrasada
 }
 
 enum EstadoOutreach {

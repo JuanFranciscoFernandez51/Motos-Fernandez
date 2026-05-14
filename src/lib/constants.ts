@@ -109,6 +109,8 @@ export const OUTREACH_CONFIG = {
   // 10 dias = el cliente ya uso la moto pero todavia tiene fresca la
   // experiencia de la compra.
   diasNPS: 10,
+  // Cuantos dias antes del vencimiento de cuota mandamos el recordatorio.
+  diasRecordatorioCuota: 3,
 } as const
 
 export const OUTREACH_TEMPLATES = {
@@ -124,6 +126,32 @@ Queremos saber como te esta yendo con tu ${vars.moto}. En una escala del 1 al 10
 Si te quedaste contento, te agradeceriamos un montón si nos dejas una reseña en Google: https://g.page/r/motosfernandez/review
 
 Cualquier comentario es bienvenido. Gracias!`,
+  CUOTA_PROXIMA: (vars: {
+    nombre: string
+    moto: string
+    numeroCuota: number
+    totalCuotas: number
+    monto: string
+    fechaVencimiento: string
+  }) =>
+    `Hola ${vars.nombre}! Te recordamos que la cuota ${vars.numeroCuota}/${vars.totalCuotas} de tu ${vars.moto} (${vars.monto}) vence el ${vars.fechaVencimiento}.
+
+Si ya la pagaste, ignorá este mensaje. Si necesitás coordinar el pago, respondé este WhatsApp.
+
+Motos Fernandez`,
+  CUOTA_VENCIDA: (vars: {
+    nombre: string
+    moto: string
+    numeroCuota: number
+    totalCuotas: number
+    monto: string
+    diasAtraso: number
+  }) =>
+    `Hola ${vars.nombre}! Te aviso que la cuota ${vars.numeroCuota}/${vars.totalCuotas} de tu ${vars.moto} (${vars.monto}) quedó pendiente${vars.diasAtraso > 0 ? ` (${vars.diasAtraso} día${vars.diasAtraso !== 1 ? "s" : ""} de atraso)` : ""}.
+
+Coordinemos el pago a la brevedad para no afectar a tu garante. Respondé este WhatsApp para arreglar.
+
+Motos Fernandez`,
 } as const
 
 // ==================== COLORES DE MARCA ====================

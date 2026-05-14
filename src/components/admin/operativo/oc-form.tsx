@@ -11,7 +11,13 @@ import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Save, Loader2, Plus, Trash2, Lock } from "lucide-react"
 import { ClienteSelector, type ClienteOption } from "./cliente-selector"
 import { MotoSelector, type ModeloOption } from "./moto-selector"
-import { PagosEditor, pagoVacio, type PagoForm } from "./pagos-editor"
+import {
+  PagosEditor,
+  pagoVacio,
+  type PagoForm,
+  type FinanciacionForm,
+  type GaranteForm,
+} from "./pagos-editor"
 import { OcrDocButton } from "./ocr-doc-button"
 
 // Una permuta dentro de la OC (form usa strings).
@@ -146,9 +152,53 @@ export function OCForm({
   const [permutas, setPermutas] = useState<PermutaForm[]>(
     initialPermutas.length > 0 ? initialPermutas : [permutaVacia(monedaOCInit)]
   )
-  const [pagos, setPagos] = useState<PagoForm[]>(
-    initialPagos.length > 0 ? initialPagos : [pagoVacio(monedaOCInit)]
-  )
+  const [pagos, setPagos] = useState<PagoForm[]>(() => {
+    // Si la OC ya tenia una financiacion guardada (capital + cuotas), la
+    // representamos como un pago virtual con metodo FINANCIACION para
+    // que el usuario la vea y la pueda editar dentro del editor unificado.
+    // No tocamos el OCPago real en DB — al guardar, el server lee
+    // montoFinanciado/cuotas del formData y actualiza FinanciacionOC.
+    const yaHayFinPago = initialPagos.some((p) => p.metodo === "FINANCIACION")
+    const capitalInicial = parseInt(initialData?.montoFinanciado || "0") || 0
+    const tieneFinanciacionExistente =
+      capitalInicial > 0 ||
+      (parseInt(initialData?.cuotas || "0") || 0) > 0
+    if (
+      tieneFinanciacionExistente &&
+      !yaHayFinPago &&
+      initialPagos.length > 0
+    ) {
+      // Solo agregamos el virtual si NO existe ya un pago FINANCIACION
+      // (algunas OCs ya migradas pueden tenerlo).
+      return [
+        ...initialPagos,
+        {
+          id: null,
+          metodo: "FINANCIACION",
+          monto: capitalInicial > 0 ? String(capitalInicial) : "",
+          moneda: monedaOCInit,
+          detalle: "Plan de cuotas",
+          fecha: "",
+        },
+      ]
+    }
+    if (initialPagos.length > 0) return initialPagos
+    // OC nueva sin pagos: si viene con financiación cargada (raro pero
+    // posible al editar OC vieja), arrancamos solo con el pago FINANCIACION.
+    if (tieneFinanciacionExistente) {
+      return [
+        {
+          id: null,
+          metodo: "FINANCIACION",
+          monto: capitalInicial > 0 ? String(capitalInicial) : "",
+          moneda: monedaOCInit,
+          detalle: "Plan de cuotas",
+          fecha: "",
+        },
+      ]
+    }
+    return [pagoVacio(monedaOCInit)]
+  })
   // Motos extras creadas vía "Cargar moto nueva al catálogo" desde el
   // MotoSelector. Se concatenan al prop modelos para que aparezcan
   // disponibles sin recargar la página.
@@ -157,12 +207,19 @@ export function OCForm({
     () => [...modelosExtras, ...modelos],
     [modelos, modelosExtras]
   )
-  const [garante, setGarante] = useState({
+  const [garante, setGarante] = useState<GaranteForm>({
     nombre: initialGarante?.nombre || "",
     apellido: initialGarante?.apellido || "",
     dni: initialGarante?.dni || "",
     telefono: initialGarante?.telefono || "",
     direccion: initialGarante?.direccion || "",
+  })
+  // Plan de financiacion (cuotas, valor, entrega). El capital sale del
+  // monto del pago con metodo=FINANCIACION en la lista de pagos.
+  const [financiacion, setFinanciacion] = useState<FinanciacionForm>({
+    cuotas: initialData?.cuotas || "",
+    valorCuota: initialData?.valorCuota || "",
+    entrega: initialData?.entrega || "",
   })
   const [error, setError] = useState("")
 
@@ -191,22 +248,13 @@ export function OCForm({
   const hayPermutaActiva = permutas.some(
     (p) => p.marca.trim() || p.modelo.trim() || p.valor.trim()
   )
-  const hayFinanciacionActiva =
-    (parseInt(data.cuotas || "0") || 0) > 0 &&
-    (parseInt(data.valorCuota || "0") || 0) > 0
-  // Capital financiado: si el admin no lo cargo a mano, fallback al
-  // calculo legacy (cuotas * valorCuota + entrega) — para retrocompat con
-  // OCs viejas sin intereses.
-  const capitalFinanciado = (() => {
-    const explicito = parseInt(data.montoFinanciado || "0") || 0
-    if (explicito > 0) return explicito
-    if (!hayFinanciacionActiva) return 0
-    return (
-      (parseInt(data.cuotas || "0") || 0) *
-        (parseInt(data.valorCuota || "0") || 0) +
-      (parseInt(data.entrega || "0") || 0)
-    )
-  })()
+  // El pago con metodo FINANCIACION trae el capital en su `monto`.
+  const pagoFin = pagos.find((p) => p.metodo === "FINANCIACION")
+  const hayFinanciacionActiva = !!pagoFin
+  // Capital = monto del pago FINANCIACION (no se duplica en data.montoFinanciado).
+  const capitalFinanciado = pagoFin
+    ? parseInt(pagoFin.monto || "0") || 0
+    : 0
 
   // Forma de pago = derivada de lo que se cargo
   const formaPagoCalculada = (() => {
@@ -234,8 +282,18 @@ export function OCForm({
 
     const formData = new FormData()
     if (initialData?.id) formData.append("id", initialData.id)
-    // Inyectamos la forma de pago calculada en lugar de la del state
-    const dataAGuardar = { ...data, formaPago: formaPagoCalculada }
+    // Sincronizamos los campos derivados al guardar:
+    //  - formaPago: calculada (ya no la pide el usuario)
+    //  - cuotas / valorCuota / entrega: vienen del state financiacion
+    //  - montoFinanciado: capital = monto del pago FINANCIACION (si hay)
+    const dataAGuardar = {
+      ...data,
+      formaPago: formaPagoCalculada,
+      cuotas: financiacion.cuotas,
+      valorCuota: financiacion.valorCuota,
+      entrega: financiacion.entrega,
+      montoFinanciado: pagoFin ? pagoFin.monto : "",
+    }
     Object.entries(dataAGuardar).forEach(([k, v]) =>
       formData.append(k, String(v ?? ""))
     )
@@ -363,7 +421,9 @@ export function OCForm({
             },
             { ARS: 0, USD: 0 }
           )}
-          montoFinanciado={capitalFinanciado}
+          // El capital financiado ya esta dentro de pagos (metodo FINANCIACION),
+          // no se cuenta aparte.
+          montoFinanciado={0}
           formaPagoCalculada={formaPagoCalculada}
         />
 
@@ -497,10 +557,16 @@ export function OCForm({
           </CardContent>
         </Card>
 
-        {/* Pagos directos combinables (efectivo, transferencia, tarjeta, etc) */}
+        {/* Pagos: cualquier combinación (efectivo, transferencia, tarjeta,
+            cheque, financiación, etc). Si elegís FINANCIACION en un
+            renglón se expande con el plan de cuotas + garante. */}
         <Card>
           <CardHeader>
-            <CardTitle>Pagos directos</CardTitle>
+            <CardTitle>Pagos</CardTitle>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+              Sumá los pagos que recibís. Si la venta es financiada, elegí
+              método "Financiación" y se abre el plan de cuotas inline.
+            </p>
           </CardHeader>
           <CardContent>
             <PagosEditor
@@ -521,7 +587,14 @@ export function OCForm({
                 },
                 { ARS: 0, USD: 0 }
               )}
-              montoFinanciado={capitalFinanciado}
+              // El capital financiado ya viene como un pago en la lista
+              // (metodo FINANCIACION). No lo contamos aparte para no
+              // sumar doble.
+              montoFinanciado={0}
+              financiacion={financiacion}
+              setFinanciacion={setFinanciacion}
+              garante={garante}
+              setGarante={setGarante}
             />
           </CardContent>
         </Card>
@@ -761,129 +834,9 @@ export function OCForm({
             </CardContent>
           </Card>
 
-        {/* Financiacion — siempre visible. Si no hay cuotas/valor cargados,
-            no se crea financiacion al guardar. */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Financiación / Plan de cuotas</CardTitle>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              Si la venta tiene cuotas, cargá el monto a financiar (capital)
-              + el plan de pago. Si tiene intereses, el total de cuotas puede
-              ser mayor al capital.
-            </p>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <Label htmlFor="montoFinanciado">
-                  Monto a financiar (capital)
-                </Label>
-                <Input
-                  id="montoFinanciado"
-                  type="number"
-                  value={data.montoFinanciado}
-                  onChange={(e) => set("montoFinanciado", e.target.value)}
-                  placeholder="lo que se descuenta del precio"
-                />
-                <p className="text-[10px] text-gray-400 mt-0.5">
-                  El monto que el cliente financia. Cuadra el balance.
-                </p>
-              </div>
-              <div>
-                <Label htmlFor="entrega">Entrega (anticipo, opcional)</Label>
-                <Input
-                  id="entrega"
-                  type="number"
-                  value={data.entrega}
-                  onChange={(e) => set("entrega", e.target.value)}
-                  placeholder="0"
-                />
-              </div>
-              <div>
-                <Label htmlFor="cuotas">Cantidad de cuotas</Label>
-                <Input
-                  id="cuotas"
-                  type="number"
-                  value={data.cuotas}
-                  onChange={(e) => set("cuotas", e.target.value)}
-                  placeholder="12"
-                />
-              </div>
-              <div>
-                <Label htmlFor="valorCuota">
-                  Valor por cuota{" "}
-                  <span className="text-gray-400 font-normal">
-                    (puede incluir intereses)
-                  </span>
-                </Label>
-                <Input
-                  id="valorCuota"
-                  type="number"
-                  value={data.valorCuota}
-                  onChange={(e) => set("valorCuota", e.target.value)}
-                  placeholder="150000"
-                />
-              </div>
-            </div>
-            {hayFinanciacionActiva && (
-              <FinanciacionResumen
-                capital={capitalFinanciado}
-                cuotas={parseInt(data.cuotas || "0") || 0}
-                valorCuota={parseInt(data.valorCuota || "0") || 0}
-                entrega={parseInt(data.entrega || "0") || 0}
-                moneda={data.moneda || "ARS"}
-              />
-            )}
-
-            {/* Garante: solo si hay financiacion activa */}
-            {hayFinanciacionActiva && (
-              <div className="rounded-md border border-blue-200 dark:border-blue-900/40 bg-blue-50/30 dark:bg-blue-950/10 p-3 space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300">
-                  Garante (opcional)
-                </h4>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <Label>Apellido</Label>
-                    <Input
-                      value={garante.apellido}
-                      onChange={(e) => setGarante((g) => ({ ...g, apellido: e.target.value }))}
-                    />
-                  </div>
-                  <div>
-                    <Label>Nombre</Label>
-                    <Input
-                      value={garante.nombre}
-                      onChange={(e) => setGarante((g) => ({ ...g, nombre: e.target.value }))}
-                    />
-                  </div>
-                  <div>
-                    <Label>DNI</Label>
-                    <Input
-                      value={garante.dni}
-                      onChange={(e) =>
-                        setGarante((g) => ({ ...g, dni: e.target.value.replace(/\D/g, "") }))
-                      }
-                    />
-                  </div>
-                  <div>
-                    <Label>Teléfono</Label>
-                    <Input
-                      value={garante.telefono}
-                      onChange={(e) => setGarante((g) => ({ ...g, telefono: e.target.value }))}
-                    />
-                  </div>
-                  <div className="col-span-2">
-                    <Label>Dirección</Label>
-                    <Input
-                      value={garante.direccion}
-                      onChange={(e) => setGarante((g) => ({ ...g, direccion: e.target.value }))}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        {/* Card "Financiación / Plan de cuotas" eliminada — todo se carga
+            ahora desde el editor de Pagos eligiendo método=FINANCIACION,
+            que abre un sub-panel inline con cuotas, valor, entrega y garante. */}
 
         <Card>
           <CardHeader>

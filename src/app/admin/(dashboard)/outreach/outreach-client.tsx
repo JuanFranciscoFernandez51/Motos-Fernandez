@@ -16,12 +16,20 @@ import {
   Phone,
   FileText,
   PlayCircle,
+  Clock,
+  AlertTriangle,
 } from "lucide-react"
 import { getWhatsAppUrlForClient } from "@/lib/constants"
 
+export type TipoOutreachUI =
+  | "SERVICE_POSTVENTA"
+  | "NPS"
+  | "CUOTA_PROXIMA"
+  | "CUOTA_VENCIDA"
+
 export type OutreachTareaUI = {
   id: string
-  tipo: "SERVICE_POSTVENTA" | "NPS"
+  tipo: TipoOutreachUI
   estado: "PROGRAMADA" | "ENVIADA" | "DESCARTADA" | "RESPONDIDA"
   cliente: {
     id: string
@@ -55,6 +63,16 @@ const TIPO_CONFIG = {
     color: "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300",
     icon: Star,
   },
+  CUOTA_PROXIMA: {
+    label: "Cuota próxima",
+    color: "bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300",
+    icon: Clock,
+  },
+  CUOTA_VENCIDA: {
+    label: "Cuota vencida",
+    color: "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300",
+    icon: AlertTriangle,
+  },
 } as const
 
 const ESTADO_CONFIG = {
@@ -69,7 +87,7 @@ type Filtro = "PENDIENTES" | "TODAS" | "ENVIADAS" | "DESCARTADAS"
 export function OutreachClient({ tareas }: { tareas: OutreachTareaUI[] }) {
   const router = useRouter()
   const [filtro, setFiltro] = useState<Filtro>("PENDIENTES")
-  const [tipoFiltro, setTipoFiltro] = useState<"TODOS" | "SERVICE_POSTVENTA" | "NPS">("TODOS")
+  const [tipoFiltro, setTipoFiltro] = useState<"TODOS" | TipoOutreachUI>("TODOS")
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [editandoId, setEditandoId] = useState<string | null>(null)
   const [mensajeEdit, setMensajeEdit] = useState("")
@@ -213,6 +231,8 @@ export function OutreachClient({ tareas }: { tareas: OutreachTareaUI[] }) {
           { key: "TODOS", label: "Todos" },
           { key: "SERVICE_POSTVENTA", label: "Service" },
           { key: "NPS", label: "NPS" },
+          { key: "CUOTA_PROXIMA", label: "Cuotas próximas" },
+          { key: "CUOTA_VENCIDA", label: "Cuotas vencidas" },
         ] as const).map((t) => (
           <button
             key={t.key}

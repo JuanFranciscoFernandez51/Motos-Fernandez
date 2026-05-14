@@ -9,6 +9,7 @@ const JOBS: Record<string, string> = {
   "backup-sheets": "/api/admin/backup-sheets",
   "verificar-publicaciones": "/api/admin/jobs/verificar-publicaciones",
   "generar-outreach": "/api/admin/jobs/generar-outreach",
+  "cuotas-recordatorio": "/api/admin/jobs/cuotas-recordatorio",
 }
 
 /**
