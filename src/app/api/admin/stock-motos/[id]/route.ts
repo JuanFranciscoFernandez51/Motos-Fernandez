@@ -3,8 +3,104 @@ import { prisma } from "@/lib/prisma"
 import { requireSection } from "@/lib/admin-auth"
 import { revalidatePath } from "next/cache"
 import { invalidateModelos } from "@/lib/cached-queries"
+import { marcarModeloComoVendido } from "@/lib/venta-moto-helpers"
 
 export const dynamic = "force-dynamic"
+
+/**
+ * POST /api/admin/stock-motos/[id]
+ * Acciones rapidas desde la lista de stock motos. Body: { accion: ... }
+ *
+ *  - "vender": marca como vendida (sin OC formal). Sincroniza mandato +
+ *    pausa ML automaticamente via marcarModeloComoVendido.
+ *  - "archivar": marca archivada=true. Body.motivo opcional. Sale del
+ *    listado de disponibles sin ser venta. Si tiene mandato, lo pasa a
+ *    CANCELADO.
+ *  - "desarchivar": revierte archivada=false.
+ *  - "reactivar": marca vendida=false + activo=true (por si te
+ *    equivocaste al vender).
+ */
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await requireSection("STOCK_MOTOS")
+  if (!session) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+  }
+  const { id } = await params
+  const body = await request.json().catch(() => ({}))
+  const accion = String(body.accion || "")
+  const motivo = String(body.motivo || "").trim() || null
+
+  try {
+    if (accion === "vender") {
+      await prisma.$transaction(async (tx) => {
+        await marcarModeloComoVendido(tx, {
+          modeloId: id,
+          fechaVenta: new Date(),
+        })
+      })
+    } else if (accion === "archivar") {
+      // Si tiene mandato, pasarlo a CANCELADO y dejar archivada la moto.
+      await prisma.$transaction(async (tx) => {
+        const m = await tx.modelo.findUnique({
+          where: { id },
+          select: { mandato: { select: { id: true } } },
+        })
+        await tx.modelo.update({
+          where: { id },
+          data: {
+            archivada: true,
+            fechaArchivada: new Date(),
+            motivoArchivada: motivo,
+            activo: false,
+            etiqueta: null,
+          },
+        })
+        if (m?.mandato) {
+          await tx.mandatoVenta.update({
+            where: { id: m.mandato.id },
+            data: { estado: "CANCELADO" },
+          })
+        }
+      })
+    } else if (accion === "desarchivar") {
+      await prisma.modelo.update({
+        where: { id },
+        data: {
+          archivada: false,
+          fechaArchivada: null,
+          motivoArchivada: null,
+        },
+      })
+    } else if (accion === "reactivar") {
+      await prisma.modelo.update({
+        where: { id },
+        data: {
+          vendida: false,
+          fechaVenta: null,
+          activo: true,
+          ordenCompraVentaId: null,
+        },
+      })
+    } else {
+      return NextResponse.json({ error: "Acción inválida" }, { status: 400 })
+    }
+    revalidatePath("/admin/stock-motos")
+    revalidatePath("/admin/modelos")
+    revalidatePath("/admin/mandatos")
+    revalidatePath("/catalogo")
+    invalidateModelos()
+    return NextResponse.json({ ok: true })
+  } catch (e) {
+    console.error("[stock-motos.POST] Error:", e)
+    return NextResponse.json(
+      { error: e instanceof Error ? e.message : "Error" },
+      { status: 500 }
+    )
+  }
+}
 
 /**
  * PATCH /api/admin/stock-motos/[id]

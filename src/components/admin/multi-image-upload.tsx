@@ -215,6 +215,61 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
     }
   }
 
+  // Sube una foto: comprime → firma → upload directo a Cloudinary.
+  // Devuelve { url } si OK o { error } si fallo. NO toca state.
+  const subirUna = async (
+    original: File
+  ): Promise<{ url?: string; error?: string }> => {
+    try {
+      if (original.size > 50 * 1024 * 1024) {
+        return { error: `${original.name}: la foto pesa más de 50MB` }
+      }
+      const file = await compressInBrowser(original)
+      const isHeic =
+        /heic|heif/i.test(file.type) || /\.hei[cf]$/i.test(file.name)
+      const signRes = await fetch("/api/admin/upload-sign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          folder,
+          cropMode: "preserve",
+          format: isHeic ? "jpg" : undefined,
+        }),
+      })
+      if (!signRes.ok) {
+        const err = await signRes.json().catch(() => ({}))
+        return {
+          error: `${original.name}: ${err.error || "no se pudo firmar el upload"}`,
+        }
+      }
+      const sign = await signRes.json()
+      const fd = new FormData()
+      fd.append("file", file)
+      fd.append("api_key", sign.apiKey)
+      fd.append("timestamp", String(sign.timestamp))
+      fd.append("signature", sign.signature)
+      fd.append("folder", sign.folder)
+      if (sign.transformation) fd.append("transformation", sign.transformation)
+      if (sign.format) fd.append("format", sign.format)
+      const cloudRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${sign.cloudName}/image/upload`,
+        { method: "POST", body: fd }
+      )
+      const cloudData = await cloudRes.json().catch(() => ({}))
+      if (!cloudRes.ok || cloudData.error) {
+        return {
+          error: `${original.name}: ${cloudData?.error?.message || cloudData?.error || `HTTP ${cloudRes.status}`}`,
+        }
+      }
+      if (cloudData.secure_url) return { url: cloudData.secure_url }
+      return { error: `${original.name}: respuesta sin URL de Cloudinary` }
+    } catch (e) {
+      return {
+        error: `${original.name}: ${e instanceof Error ? e.message : "error de conexión"}`,
+      }
+    }
+  }
+
   const uploadFiles = async (files: File[]) => {
     if (files.length === 0) return
     setError("")
@@ -225,66 +280,16 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
     const errores: string[] = []
     let done = 0
 
-    for (const original of files) {
-      try {
-        // Hard cap: evitar subidas absurdas (>50MB)
-        if (original.size > 50 * 1024 * 1024) {
-          errores.push(`${original.name}: la foto pesa más de 50MB`)
-          continue
-        }
-
-        // Comprime/redimensiona en el navegador (mejor calidad y mas rapido)
-        const file = await compressInBrowser(original)
-        const isHeic =
-          /heic|heif/i.test(file.type) || /\.hei[cf]$/i.test(file.name)
-
-        // 1) Pedir firma al server (no enviamos el archivo todavia)
-        const signRes = await fetch("/api/admin/upload-sign", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            folder,
-            cropMode: "preserve",
-            // Si el archivo sigue siendo HEIC (heic2any fallo), forzar
-            // conversion a JPG en Cloudinary para que se vea en cualquier browser
-            format: isHeic ? "jpg" : undefined,
-          }),
-        })
-        if (!signRes.ok) {
-          const err = await signRes.json().catch(() => ({}))
-          errores.push(`${original.name}: ${err.error || "no se pudo firmar el upload"}`)
-          continue
-        }
-        const sign = await signRes.json()
-
-        // 2) Subir DIRECTO a Cloudinary (bypassing Vercel: sin limite de 4.5MB)
-        const cloudFormData = new FormData()
-        cloudFormData.append("file", file)
-        cloudFormData.append("api_key", sign.apiKey)
-        cloudFormData.append("timestamp", String(sign.timestamp))
-        cloudFormData.append("signature", sign.signature)
-        cloudFormData.append("folder", sign.folder)
-        if (sign.transformation) cloudFormData.append("transformation", sign.transformation)
-        if (sign.format) cloudFormData.append("format", sign.format)
-
-        const cloudRes = await fetch(
-          `https://api.cloudinary.com/v1_1/${sign.cloudName}/image/upload`,
-          { method: "POST", body: cloudFormData }
-        )
-        const cloudData = await cloudRes.json().catch(() => ({}))
-        if (!cloudRes.ok || cloudData.error) {
-          const errMsg =
-            cloudData?.error?.message || cloudData?.error || `HTTP ${cloudRes.status}`
-          errores.push(`${original.name}: ${errMsg}`)
-        } else if (cloudData.secure_url) {
-          uploaded.push(cloudData.secure_url)
-        } else {
-          errores.push(`${original.name}: respuesta sin URL de Cloudinary`)
-        }
-      } catch (e) {
-        const msg = e instanceof Error ? e.message : "error de conexión"
-        errores.push(`${original.name}: ${msg}`)
-      } finally {
+    // Paralelizamos en bloques de 4: subir todo de una vez puede ahogar la
+    // conexion del cliente; subir 1 por vez (como antes) es muy lento para
+    // 4+ fotos. 4 en paralelo es buen punto medio para una conexion casera.
+    const CONCURRENCIA = 4
+    for (let i = 0; i < files.length; i += CONCURRENCIA) {
+      const bloque = files.slice(i, i + CONCURRENCIA)
+      const resultados = await Promise.all(bloque.map(subirUna))
+      for (const r of resultados) {
+        if (r.url) uploaded.push(r.url)
+        if (r.error) errores.push(r.error)
         done++
         setProgress({ current: done, total: files.length })
       }

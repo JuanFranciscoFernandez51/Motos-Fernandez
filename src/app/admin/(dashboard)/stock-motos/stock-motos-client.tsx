@@ -14,6 +14,10 @@ import {
   Tag as TagIcon,
   Plus,
   Pencil,
+  ShoppingCart,
+  Archive,
+  Undo2,
+  Loader2,
 } from "lucide-react"
 import { formatMoney } from "@/lib/admin-helpers"
 import { EditStockModal } from "./edit-stock-modal"
@@ -37,6 +41,9 @@ export type StockMotoUI = {
   activo: boolean
   vendida: boolean
   fechaVenta: string | null
+  archivada: boolean
+  fechaArchivada: string | null
+  motivoArchivada: string | null
   etiqueta: string | null
   origen: string | null
   proveedor: string | null
@@ -58,7 +65,7 @@ const ORIGEN_LABEL: Record<string, { label: string; color: string }> = {
   UNIDAD_VENDIDA_0KM: { label: "Unidad vendida (0KM)", color: "bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-300" },
 }
 
-type Filtro = "DISPONIBLES" | "VENDIDAS" | "TODAS"
+type Filtro = "DISPONIBLES" | "VENDIDAS" | "ARCHIVADAS" | "TODAS"
 
 export function StockMotosClient({
   motos,
@@ -75,14 +82,40 @@ export function StockMotosClient({
   const [showNuevaModal, setShowNuevaModal] = useState(false)
   // Modal de edicion rapida (campos administrativos: chasis, motor, etc)
   const [editando, setEditando] = useState<StockMotoUI | null>(null)
+  // Acciones rapidas en la fila (vender / archivar / reactivar)
+  const [accionLoading, setAccionLoading] = useState<string | null>(null)
+
+  const ejecutarAccion = async (
+    moto: StockMotoUI,
+    accion: "vender" | "archivar" | "desarchivar" | "reactivar",
+    motivo?: string
+  ) => {
+    setAccionLoading(moto.id)
+    try {
+      const res = await fetch(`/api/admin/stock-motos/${moto.id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ accion, motivo }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        alert(data.error || `Error ${res.status}`)
+        return
+      }
+      router.refresh()
+    } finally {
+      setAccionLoading(null)
+    }
+  }
 
   const counts = useMemo(
     () => ({
       total: motos.length,
-      disponibles: motos.filter((m) => !m.vendida).length,
+      disponibles: motos.filter((m) => !m.vendida && !m.archivada).length,
       vendidas: motos.filter((m) => m.vendida).length,
-      cero: motos.filter((m) => !m.vendida && m.condicion === "0KM").length,
-      usadas: motos.filter((m) => !m.vendida && m.condicion === "USADA").length,
+      archivadas: motos.filter((m) => m.archivada && !m.vendida).length,
+      cero: motos.filter((m) => !m.vendida && !m.archivada && m.condicion === "0KM").length,
+      usadas: motos.filter((m) => !m.vendida && !m.archivada && m.condicion === "USADA").length,
     }),
     [motos]
   )
@@ -90,8 +123,9 @@ export function StockMotosClient({
   const filtradas = useMemo(() => {
     const q = query.trim().toLowerCase()
     return motos.filter((m) => {
-      if (filtro === "DISPONIBLES" && m.vendida) return false
+      if (filtro === "DISPONIBLES" && (m.vendida || m.archivada)) return false
       if (filtro === "VENDIDAS" && !m.vendida) return false
+      if (filtro === "ARCHIVADAS" && (!m.archivada || m.vendida)) return false
       if (condicion !== "TODAS" && m.condicion !== condicion) return false
       if (origenFiltro !== "TODOS" && (m.origen || "STOCK_PROPIO") !== origenFiltro) return false
       if (!q) return true
@@ -131,7 +165,7 @@ export function StockMotosClient({
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <button
           onClick={() => setFiltro("DISPONIBLES")}
           className={`rounded-lg border p-3 text-left transition-colors ${
@@ -159,6 +193,20 @@ export function StockMotosClient({
           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Vendidas</p>
           <p className="text-2xl font-bold text-gray-700 dark:text-gray-300">
             {counts.vendidas}
+          </p>
+        </button>
+        <button
+          onClick={() => setFiltro("ARCHIVADAS")}
+          className={`rounded-lg border p-3 text-left transition-colors ${
+            filtro === "ARCHIVADAS"
+              ? "border-amber-500 bg-amber-50/50 dark:bg-amber-950/30"
+              : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-800"
+          }`}
+          title="Motos que el cliente retiró o se dieron de baja"
+        >
+          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Archivadas</p>
+          <p className="text-2xl font-bold text-amber-700 dark:text-amber-300">
+            {counts.archivadas}
           </p>
         </button>
         <button
@@ -368,12 +416,13 @@ export function StockMotosClient({
                         )}
                       </td>
                       <td className="px-3 py-2.5 text-right whitespace-nowrap">
-                        <div className="inline-flex items-center gap-1">
+                        <div className="inline-flex items-center gap-1 flex-wrap justify-end">
                           {m.ocVentaId && (
                             <Link
                               href={`/admin/ordenes-compra/${m.ocVentaId}`}
                               title={`Ver OC-${String(m.ocVentaNumero).padStart(4, "0")}`}
                               className="inline-flex items-center gap-1 text-[11px] text-blue-700 dark:text-blue-300 hover:underline px-1.5"
+                              onClick={(e) => e.stopPropagation()}
                             >
                               <FileText className="size-3" />
                               OC-{String(m.ocVentaNumero).padStart(4, "0")}
@@ -391,8 +440,92 @@ export function StockMotosClient({
                             <Pencil className="size-3" />
                             Editar
                           </button>
+
+                          {/* Acciones según estado actual */}
+                          {!m.vendida && !m.archivada && (
+                            <>
+                              <button
+                                type="button"
+                                disabled={accionLoading === m.id}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  if (
+                                    confirm(
+                                      `¿Marcar como VENDIDA la ${m.marca} ${m.nombre}?\n\nLa moto sale del stock y, si tiene mandato, pasa a VENDIDO.\nAcordate de armar la OC despues si todavia no la hiciste.`
+                                    )
+                                  ) {
+                                    ejecutarAccion(m, "vender")
+                                  }
+                                }}
+                                className="inline-flex items-center gap-1 text-xs text-emerald-700 dark:text-emerald-300 hover:underline px-1.5 disabled:opacity-50"
+                                title="Marcar como vendida (sin OC formal)"
+                              >
+                                {accionLoading === m.id ? (
+                                  <Loader2 className="size-3 animate-spin" />
+                                ) : (
+                                  <ShoppingCart className="size-3" />
+                                )}
+                                Vender
+                              </button>
+                              <button
+                                type="button"
+                                disabled={accionLoading === m.id}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  const motivo = prompt(
+                                    `¿Por qué archivás la ${m.marca} ${m.nombre}?\n\nEjemplos: "Cliente retiró", "Devuelta a proveedor", "No vendible".\n\nLa moto sale del stock pero queda registrada.`
+                                  )
+                                  if (motivo === null) return
+                                  ejecutarAccion(m, "archivar", motivo)
+                                }}
+                                className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-300 hover:underline px-1.5 disabled:opacity-50"
+                                title="Cliente la retiró o se da de baja sin venta"
+                              >
+                                <Archive className="size-3" />
+                                Archivar
+                              </button>
+                            </>
+                          )}
+                          {m.archivada && !m.vendida && (
+                            <button
+                              type="button"
+                              disabled={accionLoading === m.id}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                ejecutarAccion(m, "desarchivar")
+                              }}
+                              className="inline-flex items-center gap-1 text-xs text-amber-700 dark:text-amber-300 hover:underline px-1.5 disabled:opacity-50"
+                              title="Volver al stock disponible"
+                            >
+                              <Undo2 className="size-3" />
+                              Desarchivar
+                            </button>
+                          )}
+                          {m.vendida && (
+                            <button
+                              type="button"
+                              disabled={accionLoading === m.id}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                if (
+                                  confirm(
+                                    `¿Reactivar la ${m.marca} ${m.nombre}?\n\nVuelve al stock como disponible y desvincula la OC de venta.`
+                                  )
+                                ) {
+                                  ejecutarAccion(m, "reactivar")
+                                }
+                              }}
+                              className="inline-flex items-center gap-1 text-xs text-gray-600 dark:text-gray-300 hover:underline px-1.5 disabled:opacity-50"
+                              title="Volver al stock (si te equivocaste al marcar vendida)"
+                            >
+                              <Undo2 className="size-3" />
+                              Reactivar
+                            </button>
+                          )}
+
                           <Link
                             href={`/admin/modelos/${m.id}?volver=stock`}
+                            onClick={(e) => e.stopPropagation()}
                             className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:underline px-1.5"
                             title="Ver ficha completa (fotos, descripción, etc.)"
                           >

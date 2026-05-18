@@ -68,8 +68,11 @@ export const SECCIONES_ADMIN: SeccionInfo[] = [
   { id: "TURNOS",        label: "Turnos",          descripcion: "Turnos de servicio técnico",                     grupo: "TALLER" },
 
   // TESORERIA
-  { id: "TESORERIA",            label: "Tesorería",            descripcion: "Resumen de cobranzas y cuotas",                  grupo: "TESORERIA" },
-  { id: "FINANCIACION_PLANES",  label: "Planes financiación",  descripcion: "Planes de financiación para el sitio publico",   grupo: "TESORERIA" },
+  { id: "TESORERIA",            label: "Tesorería · Financiaciones",  descripcion: "Cobranzas, financiaciones de OCs, cuotas vencidas",          grupo: "TESORERIA" },
+  // OJO: esto NO son las financiaciones de las OCs. Son los planes
+  // que se muestran en el sitio publico para que los visitantes calculen
+  // cuotas. Por eso queda en MARKETING (no en tesoreria).
+  { id: "FINANCIACION_PLANES",  label: "Planes de financiación (web pública)",  descripcion: "Planes/calculadora de cuotas que se muestran en el sitio público — NO son las financiaciones reales de las OCs (esas están en Tesorería)",  grupo: "MARKETING" },
 
   // MARKETING
   { id: "NEWSLETTER",   label: "Newsletter",   descripcion: "Suscriptores y campañas",  grupo: "MARKETING" },

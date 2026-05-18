@@ -11,6 +11,12 @@ interface ImageUploadProps {
   className?: string
 }
 
+/**
+ * Uploader de UNA imagen. Usa el patron signed-upload: pide firma al
+ * server y sube directo a Cloudinary, bypass de Vercel. Antes usaba
+ * /api/admin/upload (que pasaba por Vercel) y era muy lento + tenia
+ * limites de payload (4.5MB) y timeout (10s sin maxDuration).
+ */
 export function ImageUpload({ value, onChange, folder = "productos", className }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState("")
@@ -20,21 +26,51 @@ export function ImageUpload({ value, onChange, folder = "productos", className }
     setError("")
     setUploading(true)
     try {
-      const formData = new FormData()
-      formData.append("file", file)
-      formData.append("folder", folder)
-      const res = await fetch("/api/admin/upload", {
-        method: "POST",
-        body: formData,
-      })
-      const data = await res.json()
-      if (!res.ok || data.error) {
-        setError(data.error || "Error al subir imagen")
-      } else {
-        onChange(data.url)
+      if (file.size > 50 * 1024 * 1024) {
+        setError("La imagen pesa mas de 50MB")
+        return
       }
-    } catch {
-      setError("Error de conexion al subir imagen")
+      // 1) Pedir firma al server
+      const signRes = await fetch("/api/admin/upload-sign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ folder }),
+      })
+      if (!signRes.ok) {
+        const err = await signRes.json().catch(() => ({}))
+        setError(err.error || "No se pudo firmar el upload")
+        return
+      }
+      const sign = await signRes.json()
+
+      // 2) Subir directo a Cloudinary
+      const fd = new FormData()
+      fd.append("file", file)
+      fd.append("api_key", sign.apiKey)
+      fd.append("timestamp", String(sign.timestamp))
+      fd.append("signature", sign.signature)
+      fd.append("folder", sign.folder)
+      if (sign.transformation) fd.append("transformation", sign.transformation)
+      if (sign.format) fd.append("format", sign.format)
+
+      const cloudRes = await fetch(
+        `https://api.cloudinary.com/v1_1/${sign.cloudName}/image/upload`,
+        { method: "POST", body: fd }
+      )
+      const cloudData = await cloudRes.json().catch(() => ({}))
+      if (!cloudRes.ok || cloudData.error) {
+        setError(
+          cloudData?.error?.message || cloudData?.error || `HTTP ${cloudRes.status}`
+        )
+        return
+      }
+      if (cloudData.secure_url) {
+        onChange(cloudData.secure_url)
+      } else {
+        setError("Respuesta de Cloudinary sin URL")
+      }
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Error al subir imagen")
     } finally {
       setUploading(false)
     }

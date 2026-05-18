@@ -98,6 +98,13 @@ model Modelo {
   vendida           Boolean           @default(false)
   fechaVenta        DateTime?
 
+  // Archivada: cuando un cliente retira su moto (no se vendio) o por
+  // cualquier motivo se da de baja del stock sin ser venta. Sale del
+  // listado activo de Stock motos. Se conserva el registro completo.
+  archivada         Boolean           @default(false)
+  fechaArchivada    DateTime?
+  motivoArchivada   String?
+
   // Datos internos (solo admin, nunca se muestran en la web pública)
   chasis            String?
   motor             String?
