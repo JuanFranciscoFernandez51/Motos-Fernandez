@@ -44,11 +44,16 @@ export const pagoVacio = (moneda: string = "ARS"): PagoForm => ({
  * con método FINANCIACION. El monto del pago FINANCIACION = capital
  * (= montoFinanciado). cuotas y valorCuota son el plan al cliente (puede
  * incluir intereses → cuotas * valorCuota >= capital).
+ *
+ * fechaPrimeraCuota (YYYY-MM-DD) controla cuándo vence la cuota 1. Las
+ * demás cuotas se calculan a +1 mes cada una desde esa fecha. Si queda
+ * vacía, se usa el default (mes siguiente día 10).
  */
 export type FinanciacionForm = {
   cuotas: string
   valorCuota: string
   entrega: string
+  fechaPrimeraCuota: string
 }
 
 export type GaranteForm = {
@@ -439,7 +444,7 @@ function FinanciacionPanel({
       <p className="text-[11px] font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">
         Plan de cuotas
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <Label htmlFor="fin-cuotas" className="text-xs">
             Cantidad de cuotas
@@ -487,6 +492,27 @@ function FinanciacionPanel({
             placeholder="0"
             className="h-9"
           />
+        </div>
+        <div>
+          <Label htmlFor="fin-fecha-primera" className="text-xs">
+            Fecha 1ª cuota
+          </Label>
+          <Input
+            id="fin-fecha-primera"
+            type="date"
+            value={financiacion.fechaPrimeraCuota}
+            onChange={(e) =>
+              setFinanciacion((prev) => ({
+                ...prev,
+                fechaPrimeraCuota: e.target.value,
+              }))
+            }
+            className="h-9"
+          />
+          <p className="text-[10px] text-gray-400 mt-0.5">
+            Si dejás vacío, vence el 10 del mes siguiente. Las demás cuotas
+            son cada +1 mes.
+          </p>
         </div>
       </div>
 

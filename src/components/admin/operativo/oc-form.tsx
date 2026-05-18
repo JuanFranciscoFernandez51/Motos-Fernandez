@@ -91,6 +91,10 @@ export type OCData = {
   valorCuota: string
   entrega: string
   montoFinanciado: string
+  // Fecha de vencimiento de la cuota 1 (YYYY-MM-DD). Si esta vacia se usa
+  // el default del helper (mes siguiente, dia 10). Las siguientes cuotas
+  // se calculan a +1 mes cada una.
+  fechaPrimeraCuota: string
   fecha: string
   estado: string
   observaciones: string
@@ -117,6 +121,7 @@ const EMPTY: OCData = {
   valorCuota: "",
   entrega: "",
   montoFinanciado: "",
+  fechaPrimeraCuota: "",
   fecha: new Date().toISOString().split("T")[0],
   estado: "BORRADOR",
   observaciones: "",
@@ -220,6 +225,7 @@ export function OCForm({
     cuotas: initialData?.cuotas || "",
     valorCuota: initialData?.valorCuota || "",
     entrega: initialData?.entrega || "",
+    fechaPrimeraCuota: initialData?.fechaPrimeraCuota || "",
   })
   const [error, setError] = useState("")
 
@@ -292,6 +298,7 @@ export function OCForm({
       cuotas: financiacion.cuotas,
       valorCuota: financiacion.valorCuota,
       entrega: financiacion.entrega,
+      fechaPrimeraCuota: financiacion.fechaPrimeraCuota,
       montoFinanciado: pagoFin ? pagoFin.monto : "",
     }
     Object.entries(dataAGuardar).forEach(([k, v]) =>

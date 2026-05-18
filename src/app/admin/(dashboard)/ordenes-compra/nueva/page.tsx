@@ -272,6 +272,9 @@ async function createOrdenCompra(formData: FormData) {
         ...orden,
         // Capital explicito (si el admin lo cargo en el form)
         montoFinanciado: num("montoFinanciado"),
+        // Fecha de la 1a cuota (opcional). Si esta vacia, el helper
+        // usa mes siguiente dia 10.
+        fechaPrimeraCuota: get("fechaPrimeraCuota") || null,
         garanteNombre: get("garanteNombre") || null,
         garanteApellido: get("garanteApellido") || null,
         garanteDni: get("garanteDni") || null,

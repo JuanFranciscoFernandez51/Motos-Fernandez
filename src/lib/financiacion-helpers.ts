@@ -18,6 +18,9 @@ type OCParaFinanciacion = {
   // `cuotas * valorCuota + entrega` (comportamiento legacy).
   // Sirve para soportar planes con intereses donde cuotas*valor != capital.
   montoFinanciado?: number | null
+  // Fecha de la cuota 1 (Date o YYYY-MM-DD). Si no viene, default = mes
+  // siguiente, dia 10. Las cuotas siguientes son +1 mes desde la 1.
+  fechaPrimeraCuota?: Date | string | null
   precioVenta: number
   moneda: string
   // Garante (opcional, datos texto libre)
@@ -83,8 +86,23 @@ export async function crearFinanciacionDesdeOC(
     oc.montoFinanciado && oc.montoFinanciado > 0
       ? oc.montoFinanciado
       : valorCuota * cantidadCuotas + entrega
+
+  // Fecha de la cuota 1: si el admin la cargó, la usamos; si no, mes
+  // siguiente a hoy con el día `diaVencimiento` (legacy, default 10).
+  // Las cuotas 2..N son +1 mes cada una desde la fecha de la 1.
   const fechaInicio = new Date()
-  const fechaFin = calcularVencimientoCuota(fechaInicio, cantidadCuotas, diaVencimiento)
+  const fecha1: Date = (() => {
+    if (oc.fechaPrimeraCuota) {
+      const d = new Date(oc.fechaPrimeraCuota)
+      if (!isNaN(d.getTime())) {
+        d.setHours(0, 0, 0, 0)
+        return d
+      }
+    }
+    return calcularVencimientoCuota(fechaInicio, 1, diaVencimiento)
+  })()
+  const diaCuota = fecha1.getDate()
+  const fechaFin = calcularVencimientoCuotaDesde(fecha1, cantidadCuotas - 1)
 
   const financiacion = await tx.financiacionOC.create({
     data: {
@@ -99,7 +117,9 @@ export async function crearFinanciacionDesdeOC(
       moneda: oc.moneda,
       fechaInicio,
       fechaFin,
-      diaVencimiento,
+      // Guardamos el día de la cuota 1 para que en re-cálculos futuros
+      // se mantenga (ej: si una cuota nueva se genera por reestructuración).
+      diaVencimiento: diaCuota,
       estado: "ACTIVA",
       // Garante (opcional)
       garanteNombre: oc.garanteNombre ?? null,
@@ -110,18 +130,29 @@ export async function crearFinanciacionDesdeOC(
     },
   })
 
-  // Crear todas las cuotas
+  // Crear todas las cuotas: 1 = fecha1, 2..N = +i meses
   const cuotasData = Array.from({ length: cantidadCuotas }, (_, i) => ({
     financiacionId: financiacion.id,
     numero: i + 1,
     monto: valorCuota,
-    fechaVencimiento: calcularVencimientoCuota(fechaInicio, i + 1, diaVencimiento),
+    fechaVencimiento: calcularVencimientoCuotaDesde(fecha1, i),
     estado: "PENDIENTE" as const,
   }))
 
   await tx.cuotaFinanciacion.createMany({ data: cuotasData })
 
   return financiacion
+}
+
+/**
+ * Suma N meses a una fecha base manteniendo el día. Se usa para generar
+ * cuotas 2..N a partir de la fecha de la cuota 1.
+ */
+function calcularVencimientoCuotaDesde(fechaBase: Date, mesesAdicionales: number): Date {
+  const f = new Date(fechaBase)
+  f.setMonth(f.getMonth() + mesesAdicionales)
+  f.setHours(0, 0, 0, 0)
+  return f
 }
 
 /**

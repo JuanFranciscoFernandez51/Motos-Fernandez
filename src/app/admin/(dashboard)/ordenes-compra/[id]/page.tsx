@@ -395,19 +395,44 @@ async function updateOrden(formData: FormData) {
         where: { ordenCompraId: orden.id },
       })
       const montoFinanciadoInput = num("montoFinanciado")
+      const fechaPrimeraCuotaInput = get("fechaPrimeraCuota") || null
       if (finExistente && hayFin) {
-        // Update solo lo que viene del form (garante + capital si cambio)
+        // Update lo que vino del form. Si la fecha o cantidad de cuotas
+        // cambio Y no hay cuotas PAGADAS aun, regeneramos el cronograma.
+        // Si ya hay alguna pagada, ignoramos el cambio de fechas (para
+        // no pisar pagos ya registrados).
+        const cuotasExistentes = await tx.cuotaFinanciacion.findMany({
+          where: { financiacionId: finExistente.id },
+          select: { id: true, numero: true, fechaVencimiento: true, estado: true },
+          orderBy: { numero: "asc" },
+        })
+        const hayPagadas = cuotasExistentes.some((c) => c.estado === "PAGADA")
+        const fecha1Nueva = fechaPrimeraCuotaInput
+          ? new Date(fechaPrimeraCuotaInput)
+          : null
+        const fecha1Vieja = cuotasExistentes[0]?.fechaVencimiento ?? null
+        const fechaCambio =
+          !!fecha1Nueva &&
+          (!fecha1Vieja ||
+            fecha1Nueva.toISOString().slice(0, 10) !==
+              fecha1Vieja.toISOString().slice(0, 10))
+        const cantCambio =
+          cuotasInput != null && cuotasInput !== finExistente.cantidadCuotas
+        const valorCambio =
+          valorCuotaInput != null && valorCuotaInput !== finExistente.valorCuota
+
         await tx.financiacionOC.update({
           where: { id: finExistente.id },
           data: {
-            // Solo actualizamos el capital si el admin cargo algo > 0.
-            // Si dejo el campo vacio, no pisamos el valor previo.
             ...(montoFinanciadoInput && montoFinanciadoInput > 0
               ? { montoTotal: montoFinanciadoInput }
               : {}),
             cantidadCuotas: cuotasInput ?? finExistente.cantidadCuotas,
             valorCuota: valorCuotaInput ?? finExistente.valorCuota,
             entrega: num("entrega") ?? finExistente.entrega,
+            ...(fecha1Nueva
+              ? { diaVencimiento: fecha1Nueva.getDate() }
+              : {}),
             garanteNombre: get("garanteNombre") || null,
             garanteApellido: get("garanteApellido") || null,
             garanteDni: get("garanteDni") || null,
@@ -415,12 +440,36 @@ async function updateOrden(formData: FormData) {
             garanteDireccion: get("garanteDireccion") || null,
           },
         })
+
+        // Regenerar cuotas si cambio algo critico Y nada esta pagado.
+        if ((fechaCambio || cantCambio || valorCambio) && !hayPagadas) {
+          const cantidadFinal = cuotasInput ?? finExistente.cantidadCuotas
+          const valorFinal = valorCuotaInput ?? finExistente.valorCuota
+          const base = fecha1Nueva ?? fecha1Vieja ?? new Date()
+          base.setHours(0, 0, 0, 0)
+          await tx.cuotaFinanciacion.deleteMany({
+            where: { financiacionId: finExistente.id },
+          })
+          const nuevasCuotas = Array.from({ length: cantidadFinal }, (_, i) => {
+            const fechaVenc = new Date(base)
+            fechaVenc.setMonth(fechaVenc.getMonth() + i)
+            return {
+              financiacionId: finExistente.id,
+              numero: i + 1,
+              monto: valorFinal,
+              fechaVencimiento: fechaVenc,
+              estado: "PENDIENTE" as const,
+            }
+          })
+          await tx.cuotaFinanciacion.createMany({ data: nuevasCuotas })
+        }
       } else if (hayFin) {
         // No existia y la OC tiene cuotas: crear la financiacion con
         // capital explicito + garante.
         await crearFinanciacionDesdeOC(tx, {
           ...orden,
           montoFinanciado: montoFinanciadoInput,
+          fechaPrimeraCuota: fechaPrimeraCuotaInput,
           garanteNombre: get("garanteNombre") || null,
           garanteApellido: get("garanteApellido") || null,
           garanteDni: get("garanteDni") || null,
@@ -505,7 +554,16 @@ export default async function EditarOrdenCompraPage({
       include: {
         permutas: { orderBy: { createdAt: "asc" } },
         pagos: { orderBy: { createdAt: "asc" } },
-        financiacion: true,
+        financiacion: {
+          // Necesitamos la fecha de la primera cuota para que el form
+          // muestre la fecha real al editar.
+          include: {
+            cuotas: {
+              where: { numero: 1 },
+              select: { fechaVencimiento: true },
+            },
+          },
+        },
       },
     }),
     prisma.cliente.findMany({
@@ -569,6 +627,11 @@ export default async function EditarOrdenCompraPage({
     montoFinanciado:
       orden.financiacion?.montoTotal != null
         ? String(orden.financiacion.montoTotal)
+        : "",
+    // Fecha de la primera cuota (vencimiento) — sale de la cuota numero 1.
+    fechaPrimeraCuota:
+      orden.financiacion?.cuotas?.[0]?.fechaVencimiento
+        ? toDateInput(orden.financiacion.cuotas[0].fechaVencimiento)
         : "",
     fecha: toDateInput(orden.fecha),
     estado: orden.estado,
