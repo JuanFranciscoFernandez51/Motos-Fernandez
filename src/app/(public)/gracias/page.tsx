@@ -14,21 +14,19 @@ import { trackEvent } from "@/lib/meta-events"
  * final, no solo con el form submit.
  */
 
-const MAP_MODELO: Record<string, string> = {
-  xr150: "Honda XR150",
-  dr650: "Suzuki DR650",
-}
-
 function GraciasContent() {
   const searchParams = useSearchParams()
-  const modeloKey = searchParams?.get("modelo") || ""
-  const modeloNombre = MAP_MODELO[modeloKey] || "tu moto"
+  const modeloParam = searchParams?.get("modelo") || ""
+  // Si el query trae slug/nombre del modelo, lo mostramos. Si no, genérico.
+  const modeloNombre = modeloParam
+    ? modeloParam.replace(/[-_]/g, " ").toUpperCase()
+    : ""
 
   useEffect(() => {
-    trackEvent({
+    void trackEvent({
       event_name: "CompleteRegistration",
       custom_data: {
-        content_name: modeloNombre,
+        content_name: modeloNombre || "consulta_generica",
         page: "thank_you",
       },
     })
@@ -44,8 +42,17 @@ function GraciasContent() {
           ¡Gracias! Te contactamos en breve.
         </h1>
         <p className="mt-3 text-base text-gray-600 dark:text-gray-300 leading-relaxed">
-          Recibimos tu consulta por la <strong>{modeloNombre}</strong>. Te
-          respondemos por WhatsApp en menos de 1 hora hábil.
+          {modeloNombre ? (
+            <>
+              Recibimos tu consulta por la <strong>{modeloNombre}</strong>. Te
+              respondemos por WhatsApp en menos de 1 hora hábil.
+            </>
+          ) : (
+            <>
+              Recibimos tu consulta. Te respondemos por WhatsApp en menos de 1
+              hora hábil.
+            </>
+          )}
         </p>
 
         <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">

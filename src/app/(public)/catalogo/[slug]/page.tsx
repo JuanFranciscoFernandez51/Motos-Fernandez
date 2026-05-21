@@ -15,6 +15,17 @@ import {
   ETIQUETAS_MAP,
 } from "@/lib/constants"
 import { getModeloBySlug, getModelosRelacionados } from "@/lib/cached-queries"
+import { calcularCuotaDesde } from "@/lib/cuota-helper"
+import {
+  ModeloViewContentTracker,
+  WhatsAppCTA,
+  PorQueComprarla,
+  BloquePermuta,
+  CTAFinal,
+  CalculadoraCTA,
+  StickyMobileCTA,
+  formatearPrecioModelo,
+} from "@/components/public/modelo-landing-extras"
 import { MessageCircle, Bike, CreditCard, ChevronRight } from "lucide-react"
 import type { Metadata } from "next"
 import { ModelGallery } from "./gallery-client"
@@ -68,6 +79,28 @@ export default async function ModeloDetailPage({ params }: Props) {
     })
   )
 
+  // Cuota mínima estimada (plazo más largo, anticipo 30%) — para mostrar
+  // "Desde X cuotas de $YY.YYY" en el hero. Solo si hay precio.
+  const cuotaDesde = model.precio
+    ? calcularCuotaDesde(model.precio, financiacion)
+    : null
+
+  // Info compacta del modelo que necesitan las islas client para tracking
+  const modeloInfo = {
+    slug: model.slug,
+    marca: model.marca,
+    nombre: model.nombre,
+    precio: model.precio,
+    moneda: model.moneda || "ARS",
+    categoria: CATEGORIA_VEHICULO_LABELS[model.categoriaVehiculo] || model.categoriaVehiculo,
+    condicion: model.condicion || "0KM",
+  }
+
+  const precioEtiqueta = formatearPrecioModelo(model.precio, model.moneda || "ARS")
+  const cuotaEtiqueta = cuotaDesde
+    ? `${cuotaDesde.plazo} cuotas de ${formatearPrecioModelo(Math.round(cuotaDesde.cuota), model.moneda || "ARS")}`
+    : null
+
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -87,6 +120,7 @@ export default async function ModeloDetailPage({ params }: Props) {
   return (
     <>
       <TrackVisita pagina="modelo-detalle" />
+      <ModeloViewContentTracker modelo={modeloInfo} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -110,7 +144,7 @@ export default async function ModeloDetailPage({ params }: Props) {
         </div>
       </div>
 
-      <section className="py-12 bg-white dark:bg-neutral-900">
+      <section className="py-12 pb-28 lg:pb-12 bg-white dark:bg-neutral-900">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {/* Gallery + calculadora */}
@@ -124,6 +158,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                     moneda={model.moneda || "ARS"}
                     financiacion={financiacion}
                   />
+                  <CalculadoraCTA modelo={modeloInfo} whatsappHref={whatsappUrl} />
                 </div>
               )}
             </div>
@@ -233,7 +268,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                 </div>
               )}
 
-              {/* Price */}
+              {/* Price + cuota desde */}
               <div className="mt-6 p-5 rounded-xl bg-[#F0F0F0] dark:bg-neutral-950">
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Precio de lista</p>
                 <p className="text-3xl font-bold text-[#6B4F7A]">
@@ -243,6 +278,21 @@ export default async function ModeloDetailPage({ params }: Props) {
                       : formatPrice(model.precio)
                     : "Consultar"}
                 </p>
+                {cuotaDesde && (
+                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                    Desde{" "}
+                    <strong className="text-[#1A1A1A] dark:text-white">
+                      {cuotaDesde.plazo} cuotas de{" "}
+                      {formatearPrecioModelo(
+                        Math.round(cuotaDesde.cuota),
+                        model.moneda || "ARS"
+                      )}
+                    </strong>
+                    <span className="text-xs text-gray-400 ml-1">
+                      · anticipo {cuotaDesde.anticipoPct}%
+                    </span>
+                  </p>
+                )}
               </div>
 
               {/* Calculadora de cuotas (mobile: debajo del precio) */}
@@ -253,6 +303,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                     moneda={model.moneda || "ARS"}
                     financiacion={financiacion}
                   />
+                  <CalculadoraCTA modelo={modeloInfo} whatsappHref={whatsappUrl} />
                 </div>
               )}
 
@@ -291,15 +342,15 @@ export default async function ModeloDetailPage({ params }: Props) {
 
               {/* CTA buttons */}
               <div className="mt-8 flex flex-col sm:flex-row gap-3">
-                <a
+                <WhatsAppCTA
                   href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  modelo={modeloInfo}
+                  source="hero_button"
                   className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#25D366] px-6 py-3.5 text-sm font-semibold text-white hover:bg-[#20BD5A] transition-colors"
                 >
                   <MessageCircle className="size-5" />
                   Consultar por este modelo
-                </a>
+                </WhatsAppCTA>
                 <Link
                   href="/financiacion"
                   className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#6B4F7A] px-6 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 transition-colors"
@@ -310,6 +361,12 @@ export default async function ModeloDetailPage({ params }: Props) {
               </div>
             </div>
           </div>
+
+          {/* Bloque "Por qué comprarla en Motos Fernandez" */}
+          <PorQueComprarla />
+
+          {/* Bloque permuta — solo si el modelo la acepta */}
+          {model.aceptaPermuta && <BloquePermuta modelo={modeloInfo} />}
 
           {/* Specs table */}
           {Object.keys(specs).length > 0 && (
@@ -372,6 +429,9 @@ export default async function ModeloDetailPage({ params }: Props) {
               </div>
             </div>
           )}
+
+          {/* CTA final antes de modelos relacionados */}
+          <CTAFinal modelo={modeloInfo} whatsappHref={whatsappUrl} />
 
           {/* Related models */}
           {related.length > 0 && (
@@ -448,6 +508,14 @@ export default async function ModeloDetailPage({ params }: Props) {
               : undefined,
           }),
         }}
+      />
+
+      {/* Barra fija mobile con CTA — solo en pagina de modelo */}
+      <StickyMobileCTA
+        modelo={modeloInfo}
+        whatsappHref={whatsappUrl}
+        precioEtiqueta={precioEtiqueta}
+        cuotaEtiqueta={cuotaEtiqueta}
       />
     </>
   )
