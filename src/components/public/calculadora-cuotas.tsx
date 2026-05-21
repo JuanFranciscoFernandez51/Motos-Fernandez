@@ -32,7 +32,8 @@ export function CalculadoraCuotas({
   const [modalidadId, setModalidadId] = useState<ModalidadFinanciacion>("tarjeta")
   const modalidad = MODALIDADES_FINANCIACION[modalidadId]
 
-  const [anticipoPct, setAnticipoPct] = useState(30)
+  // Default: anticipo mínimo de la modalidad (0% tarjeta, 50% propia)
+  const [anticipoPct, setAnticipoPct] = useState(modalidad.anticipoMinPct)
   // Plazo default = el más largo de la modalidad
   const [plazo, setPlazo] = useState<number>(
     modalidad.plazos[modalidad.plazos.length - 1]
@@ -42,6 +43,27 @@ export function CalculadoraCuotas({
   const plazoValido = modalidad.plazos.includes(plazo)
     ? plazo
     : modalidad.plazos[modalidad.plazos.length - 1]
+
+  // Si cambia la modalidad y el anticipo queda fuera de rango, clampear
+  const anticipoPctValido = Math.min(
+    modalidad.anticipoMaxPct,
+    Math.max(modalidad.anticipoMinPct, anticipoPct)
+  )
+
+  // Cambio de modalidad: clampear anticipo al rango nuevo (efecto colateral
+  // en render — uso un updater controlado en el onClick del toggle)
+  const cambiarModalidad = (nuevaId: ModalidadFinanciacion) => {
+    const nueva = MODALIDADES_FINANCIACION[nuevaId]
+    setModalidadId(nuevaId)
+    setAnticipoPct((curr) =>
+      Math.min(nueva.anticipoMaxPct, Math.max(nueva.anticipoMinPct, curr))
+    )
+    setPlazo((curr) =>
+      nueva.plazos.includes(curr)
+        ? curr
+        : nueva.plazos[nueva.plazos.length - 1]
+    )
+  }
 
   const formatear = moneda === "USD" ? formatUSD : formatARS
 
@@ -57,14 +79,14 @@ export function CalculadoraCuotas({
   }, [financiacion, plazoValido])
 
   const calculo = useMemo(() => {
-    const anticipo = (precio * anticipoPct) / 100
+    const anticipo = (precio * anticipoPctValido) / 100
     const aFinanciar = precio - anticipo
 
     let cuotaCalculada: number
     if (
       modalidadId === "propia" &&
       planMatch?.cuota &&
-      anticipoPct === 30
+      anticipoPctValido === modalidad.anticipoMinPct
     ) {
       cuotaCalculada = planMatch.cuota
     } else {
@@ -81,7 +103,7 @@ export function CalculadoraCuotas({
       cuota: cuotaCalculada,
       total: anticipo + cuotaCalculada * plazoValido,
     }
-  }, [precio, anticipoPct, plazoValido, planMatch, modalidad, modalidadId])
+  }, [precio, anticipoPctValido, plazoValido, planMatch, modalidad, modalidadId])
 
   return (
     <div className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5">
@@ -105,7 +127,7 @@ export function CalculadoraCuotas({
           <button
             key={mod.id}
             type="button"
-            onClick={() => setModalidadId(mod.id)}
+            onClick={() => cambiarModalidad(mod.id)}
             className={`rounded-lg border px-3 py-2 text-xs font-semibold transition-colors text-left ${
               modalidadId === mod.id
                 ? "border-[#6B4F7A] bg-[#6B4F7A] text-white"
@@ -126,30 +148,38 @@ export function CalculadoraCuotas({
         ))}
       </div>
 
-      {/* Anticipo */}
+      {/* Anticipo (rango depende de la modalidad) */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <label className="text-xs font-medium text-gray-600 dark:text-gray-300">
             Anticipo
           </label>
           <span className="text-xs font-bold text-[#6B4F7A]">
-            {anticipoPct}% · {formatear(calculo.anticipo)}
+            {anticipoPctValido}% · {formatear(calculo.anticipo)}
           </span>
         </div>
         <input
           type="range"
-          min={0}
-          max={80}
+          min={modalidad.anticipoMinPct}
+          max={modalidad.anticipoMaxPct}
           step={5}
-          value={anticipoPct}
+          value={anticipoPctValido}
           onChange={(e) => setAnticipoPct(Number(e.target.value))}
           className="w-full accent-[#6B4F7A]"
         />
         <div className="flex justify-between text-[10px] text-gray-400">
-          <span>0%</span>
-          <span>40%</span>
-          <span>80%</span>
+          <span>{modalidad.anticipoMinPct}%</span>
+          <span>
+            {Math.round((modalidad.anticipoMinPct + modalidad.anticipoMaxPct) / 2)}%
+          </span>
+          <span>{modalidad.anticipoMaxPct}%</span>
         </div>
+        {modalidad.anticipoMinPct > 0 && (
+          <p className="text-[10px] text-gray-400 italic">
+            Anticipo mínimo {modalidad.anticipoMinPct}% para
+            {" "}{modalidad.label.toLowerCase()}
+          </p>
+        )}
       </div>
 
       {/* Plazo */}
