@@ -162,7 +162,7 @@ export function CalculadoraCuotas({
           type="range"
           min={modalidad.anticipoMinPct}
           max={modalidad.anticipoMaxPct}
-          step={5}
+          step={1}
           value={anticipoPctValido}
           onChange={(e) => setAnticipoPct(Number(e.target.value))}
           className="w-full accent-[#6B4F7A]"

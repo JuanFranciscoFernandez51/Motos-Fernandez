@@ -42,7 +42,7 @@ export const MODALIDADES_FINANCIACION: Record<ModalidadFinanciacion, ModalidadCo
     tnaAnual: 0.6,
     tasaMensual: 0.05,
     anticipoMinPct: 50,
-    anticipoMaxPct: 80,
+    anticipoMaxPct: 90,
   },
   tarjeta: {
     id: "tarjeta",
@@ -52,7 +52,7 @@ export const MODALIDADES_FINANCIACION: Record<ModalidadFinanciacion, ModalidadCo
     tnaAnual: 0.34,
     tasaMensual: 0.34 / 12,
     anticipoMinPct: 0,
-    anticipoMaxPct: 80,
+    anticipoMaxPct: 90,
   },
 }
 
