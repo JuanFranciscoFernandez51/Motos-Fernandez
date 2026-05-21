@@ -267,6 +267,7 @@ export const ORIGEN_LABELS: Record<string, { label: string }> = {
   WEB:              { label: "Web" },
   POPUP_BIENVENIDA: { label: "🎁 Popup bienvenida" },
   RECOMENDADOR:     { label: "🤖 Quiz recomendador" },
+  META_ADS:         { label: "📣 Meta Ads (FB/IG)" },
   WHATSAPP:         { label: "WhatsApp" },
   INSTAGRAM:        { label: "Instagram" },
   MARKETPLACE:      { label: "Marketplace" },

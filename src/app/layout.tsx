@@ -150,6 +150,13 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        {/* Verificación de dominio Meta Business Manager.
+            Hardcoded en el root layout (server component) → se sirve SSR
+            en todas las páginas sin tocar JS del cliente. */}
+        <meta
+          name="facebook-domain-verification"
+          content="qhevtsqlfdifrki1x53rgn67nops7a"
+        />
       </head>
       <body className="min-h-full flex flex-col font-body bg-white dark:bg-neutral-950 text-gray-900 dark:text-gray-100 transition-colors">
         <ThemeProvider>{children}</ThemeProvider>
@@ -169,8 +176,9 @@ export default function RootLayout({
             </Script>
           </>
         )}
-        {process.env.NEXT_PUBLIC_FB_PIXEL_ID && (
-          <Script id="facebook-pixel" strategy="afterInteractive">
+        {(process.env.NEXT_PUBLIC_FB_PIXEL_ID ||
+          process.env.NEXT_PUBLIC_META_PIXEL_ID) && (
+          <Script id="meta-pixel" strategy="afterInteractive">
             {`
               !function(f,b,e,v,n,t,s)
               {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -180,7 +188,8 @@ export default function RootLayout({
               t.src=v;s=b.getElementsByTagName(e)[0];
               s.parentNode.insertBefore(t,s)}(window, document,'script',
               'https://connect.facebook.net/en_US/fbevents.js');
-              fbq('init', '${process.env.NEXT_PUBLIC_FB_PIXEL_ID}');
+              ${process.env.NEXT_PUBLIC_FB_PIXEL_ID ? `fbq('init', '${process.env.NEXT_PUBLIC_FB_PIXEL_ID}');` : ""}
+              ${process.env.NEXT_PUBLIC_META_PIXEL_ID && process.env.NEXT_PUBLIC_META_PIXEL_ID !== process.env.NEXT_PUBLIC_FB_PIXEL_ID ? `fbq('init', '${process.env.NEXT_PUBLIC_META_PIXEL_ID}');` : ""}
               fbq('track', 'PageView');
             `}
           </Script>

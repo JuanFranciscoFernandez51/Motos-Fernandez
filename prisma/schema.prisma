@@ -364,6 +364,7 @@ enum OrigenLead {
   WEB
   POPUP_BIENVENIDA  // popup que captura email/tel para cupón 10%
   RECOMENDADOR     // termino el quiz y dejo datos para que lo contacten
+  META_ADS         // landings dedicadas para campañas pagas en FB/IG
   WHATSAPP
   INSTAGRAM
   MARKETPLACE

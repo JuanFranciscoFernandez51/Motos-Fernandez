@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { BUSINESS, HORARIOS, getWhatsAppUrl, WHATSAPP_MESSAGES } from "@/lib/constants"
+import { trackEvent } from "@/lib/meta-events"
 import {
   Menu,
   X,
@@ -547,6 +548,19 @@ function Footer() {
 }
 
 function FloatingActions() {
+  const handleClick = () => {
+    // Tracking dedup browser+CAPI para que Meta Ads pueda optimizar
+    // por consultas vía WhatsApp (que son las que mejor convierten).
+    trackEvent({
+      event_name: "Contact",
+      custom_data: {
+        source: "floating_button",
+        channel: "whatsapp",
+        page:
+          typeof window !== "undefined" ? window.location.pathname : undefined,
+      },
+    })
+  }
   return (
     <>
       {/* WhatsApp flotante - solo desktop (en mobile está en la bottom bar) */}
@@ -554,6 +568,7 @@ function FloatingActions() {
         href={getWhatsAppUrl(WHATSAPP_MESSAGES.general)}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={handleClick}
         className="hidden lg:flex group fixed bottom-6 left-6 z-40 items-center justify-center size-14 rounded-full bg-[#25D366] text-white shadow-premium-lg hover:shadow-2xl transition-all hover:scale-110 animate-pulse-glow"
         aria-label="Contactar por WhatsApp"
       >
