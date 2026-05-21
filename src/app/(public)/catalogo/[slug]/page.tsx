@@ -24,7 +24,6 @@ import {
   CTAFinal,
   CalculadoraCTA,
   StickyMobileCTA,
-  formatearPrecioModelo,
 } from "@/components/public/modelo-landing-extras"
 import { MessageCircle, Bike, CreditCard, ChevronRight } from "lucide-react"
 import type { Metadata } from "next"
@@ -96,9 +95,12 @@ export default async function ModeloDetailPage({ params }: Props) {
     condicion: model.condicion || "0KM",
   }
 
-  const precioEtiqueta = formatearPrecioModelo(model.precio, model.moneda || "ARS")
+  const monedaActual = model.moneda || "ARS"
+  const precioEtiqueta = model.precio
+    ? formatPrice(model.precio, monedaActual)
+    : null
   const cuotaEtiqueta = cuotaDesde
-    ? `${cuotaDesde.plazo} cuotas de ${formatearPrecioModelo(Math.round(cuotaDesde.cuota), model.moneda || "ARS")}`
+    ? `${cuotaDesde.plazo} cuotas de ${formatPrice(Math.round(cuotaDesde.cuota), monedaActual)}`
     : null
 
   const jsonLd = {
@@ -283,10 +285,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                     Desde{" "}
                     <strong className="text-[#1A1A1A] dark:text-white">
                       {cuotaDesde.plazo} cuotas de{" "}
-                      {formatearPrecioModelo(
-                        Math.round(cuotaDesde.cuota),
-                        model.moneda || "ARS"
-                      )}
+                      {formatPrice(Math.round(cuotaDesde.cuota), monedaActual)}
                     </strong>
                     <span className="text-xs text-gray-400 ml-1">
                       · anticipo {cuotaDesde.anticipoPct}%

@@ -15,7 +15,7 @@ import {
   Calculator,
 } from "lucide-react"
 import { trackEvent } from "@/lib/meta-events"
-import { BUSINESS, formatPrice, getWhatsAppUrl } from "@/lib/constants"
+import { BUSINESS, getWhatsAppUrl } from "@/lib/constants"
 
 /**
  * Componentes client para el template de página de modelo
@@ -311,16 +311,3 @@ export function StickyMobileCTA({
   )
 }
 
-/**
- * Formatea un precio según la moneda — server-friendly, mismo helper
- * que ya tenemos pero envolvemos acá para que las islas no tengan que
- * volver a importar formatPrice.
- */
-export function formatearPrecioModelo(
-  precio: number | null,
-  moneda: string
-): string | null {
-  if (!precio) return null
-  if (moneda === "USD") return `USD ${precio.toLocaleString("es-AR")}`
-  return formatPrice(precio)
-}
