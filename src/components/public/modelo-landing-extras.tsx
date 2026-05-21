@@ -117,7 +117,10 @@ export function WhatsAppCTA({
 export function PorQueComprarla() {
   const items: { icon: React.ElementType; label: string }[] = [
     { icon: Truck, label: "Envío propio a todo el país" },
-    { icon: CreditCard, label: "Financiación propia hasta 24 cuotas" },
+    {
+      icon: CreditCard,
+      label: "Financiación propia hasta 12 cuotas + tarjeta hasta 24",
+    },
     { icon: Award, label: `+${BUSINESS.yearsInBusiness} años de experiencia` },
     { icon: Wrench, label: "Taller oficial multimarca (post-venta)" },
     { icon: Zap, label: "Entrega inmediata" },

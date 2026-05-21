@@ -288,7 +288,8 @@ export default async function ModeloDetailPage({ params }: Props) {
                       {formatPrice(Math.round(cuotaDesde.cuota), monedaActual)}
                     </strong>
                     <span className="text-xs text-gray-400 ml-1">
-                      · anticipo {cuotaDesde.anticipoPct}%
+                      · {cuotaDesde.modalidadLabel.toLowerCase()} · anticipo{" "}
+                      {cuotaDesde.anticipoPct}%
                     </span>
                   </p>
                 )}
