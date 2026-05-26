@@ -49,10 +49,19 @@ export type StockMotoUI = {
   proveedor: string | null
   clienteEntrega: string | null
   clienteEntregaId: string | null
+  clienteTelefono: string | null
   ocVentaNumero: number | null
   ocVentaId: string | null
   fotoPrincipal: string | null
   createdAt: string
+  // Tenencia: dónde está físicamente la moto + info del mandato si aplica
+  tipoTenencia: string // "EN_LOCAL" | "EN_DOMICILIO"
+  direccionTenencia: string | null
+  mandatoId: string | null
+  mandatoNumero: number | null
+  mandatoEstado: string | null
+  mandatoFechaFirma: string | null
+  mandatoVencimiento: string | null
 }
 
 const ORIGEN_LABEL: Record<string, { label: string; color: string }> = {
@@ -66,6 +75,7 @@ const ORIGEN_LABEL: Record<string, { label: string; color: string }> = {
 }
 
 type Filtro = "DISPONIBLES" | "VENDIDAS" | "ARCHIVADAS" | "TODAS"
+type Tenencia = "EN_LOCAL" | "EN_DOMICILIO" | "TODAS"
 
 export function StockMotosClient({
   motos,
@@ -79,6 +89,10 @@ export function StockMotosClient({
   const [filtro, setFiltro] = useState<Filtro>("DISPONIBLES")
   const [condicion, setCondicion] = useState<"TODAS" | "0KM" | "USADA">("TODAS")
   const [origenFiltro, setOrigenFiltro] = useState<string>("TODOS")
+  // Default EN_LOCAL para que el operador siga viendo primero el stock físico
+  // (lo que tenemos en la conce). Las EN_DOMICILIO se muestran activando
+  // el tab correspondiente.
+  const [tenencia, setTenencia] = useState<Tenencia>("EN_LOCAL")
   const [showNuevaModal, setShowNuevaModal] = useState(false)
   // Modal de edicion rapida (campos administrativos: chasis, motor, etc)
   const [editando, setEditando] = useState<StockMotoUI | null>(null)
@@ -108,21 +122,41 @@ export function StockMotosClient({
     }
   }
 
+  // Para los contadores aplicamos el filtro de tenencia (lo que estás viendo
+  // ahora), pero la fila "total/disponibles" del header sigue dependiendo
+  // del tab visible — así si filtrás "en domicilio" ves los conteos de
+  // mandatos externos, no los del local mezclados.
+  const motosVisibles = useMemo(() => {
+    if (tenencia === "TODAS") return motos
+    return motos.filter((m) => (m.tipoTenencia || "EN_LOCAL") === tenencia)
+  }, [motos, tenencia])
+
   const counts = useMemo(
     () => ({
-      total: motos.length,
-      disponibles: motos.filter((m) => !m.vendida && !m.archivada).length,
-      vendidas: motos.filter((m) => m.vendida).length,
-      archivadas: motos.filter((m) => m.archivada && !m.vendida).length,
-      cero: motos.filter((m) => !m.vendida && !m.archivada && m.condicion === "0KM").length,
-      usadas: motos.filter((m) => !m.vendida && !m.archivada && m.condicion === "USADA").length,
+      total: motosVisibles.length,
+      disponibles: motosVisibles.filter((m) => !m.vendida && !m.archivada).length,
+      vendidas: motosVisibles.filter((m) => m.vendida).length,
+      archivadas: motosVisibles.filter((m) => m.archivada && !m.vendida).length,
+      cero: motosVisibles.filter((m) => !m.vendida && !m.archivada && m.condicion === "0KM").length,
+      usadas: motosVisibles.filter((m) => !m.vendida && !m.archivada && m.condicion === "USADA").length,
+    }),
+    [motosVisibles]
+  )
+
+  // Contadores generales de tenencia (sirven para los tabs, independientes
+  // del estado vendida/archivada).
+  const tenenciaCounts = useMemo(
+    () => ({
+      enLocal: motos.filter((m) => (m.tipoTenencia || "EN_LOCAL") === "EN_LOCAL").length,
+      enDomicilio: motos.filter((m) => m.tipoTenencia === "EN_DOMICILIO").length,
+      todas: motos.length,
     }),
     [motos]
   )
 
   const filtradas = useMemo(() => {
     const q = query.trim().toLowerCase()
-    return motos.filter((m) => {
+    return motosVisibles.filter((m) => {
       if (filtro === "DISPONIBLES" && (m.vendida || m.archivada)) return false
       if (filtro === "VENDIDAS" && !m.vendida) return false
       if (filtro === "ARCHIVADAS" && (!m.archivada || m.vendida)) return false
@@ -139,13 +173,14 @@ export function StockMotosClient({
         m.patente,
         m.proveedor,
         m.clienteEntrega,
+        m.direccionTenencia,
       ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase()
       return hay.includes(q)
     })
-  }, [motos, query, filtro, condicion, origenFiltro])
+  }, [motosVisibles, query, filtro, condicion, origenFiltro])
 
   return (
     <div className="space-y-5">
@@ -162,6 +197,50 @@ export function StockMotosClient({
             catálogo público — no editás fotos, descripción ni SEO desde acá.
           </p>
         </div>
+      </div>
+
+      {/* Tabs de tenencia: separa el stock físico de las consignaciones en
+          domicilio. Default "En el local" (las motos físicas). El operador
+          cambia a "En domicilio" para ver lo que está en lo del titular,
+          con los datos a mano para armar una OC. */}
+      <div className="flex flex-wrap items-center gap-2 border-b border-gray-200 dark:border-neutral-800 pb-3">
+        <button
+          onClick={() => setTenencia("EN_LOCAL")}
+          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+            tenencia === "EN_LOCAL"
+              ? "bg-[#6B4F7A] text-white"
+              : "border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A]"
+          }`}
+        >
+          📍 En la concesionaria ({tenenciaCounts.enLocal})
+        </button>
+        <button
+          onClick={() => setTenencia("EN_DOMICILIO")}
+          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+            tenencia === "EN_DOMICILIO"
+              ? "bg-blue-600 text-white"
+              : "border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-blue-600"
+          }`}
+        >
+          🏠 En domicilio (solo web) ({tenenciaCounts.enDomicilio})
+        </button>
+        <button
+          onClick={() => setTenencia("TODAS")}
+          className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
+            tenencia === "TODAS"
+              ? "bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900"
+              : "border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-gray-700"
+          }`}
+        >
+          Todas ({tenenciaCounts.todas})
+        </button>
+        {tenencia === "EN_DOMICILIO" && (
+          <p className="text-[11px] text-blue-700 dark:text-blue-300 ml-2 italic">
+            Las motos en domicilio se publican en la web pero no las tenemos
+            físicamente. Usá esta vista para armar la OC con los datos del
+            titular.
+          </p>
+        )}
       </div>
 
       {/* Stats */}
@@ -327,9 +406,19 @@ export function StockMotosClient({
                             />
                           )}
                           <div className="min-w-0">
-                            <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
-                              {m.marca} {m.nombre}
-                            </p>
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <p className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                                {m.marca} {m.nombre}
+                              </p>
+                              {m.tipoTenencia === "EN_DOMICILIO" && (
+                                <span
+                                  className="rounded-full bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold text-white whitespace-nowrap"
+                                  title="Moto en domicilio del titular — solo se publica por la web"
+                                >
+                                  🏠 SOLO WEB
+                                </span>
+                              )}
+                            </div>
                             <p className="text-[11px] text-gray-400 flex items-center gap-1.5 truncate">
                               <span
                                 className={`inline-block size-1.5 rounded-full ${
@@ -347,6 +436,15 @@ export function StockMotosClient({
                                 </>
                               )}
                             </p>
+                            {m.tipoTenencia === "EN_DOMICILIO" &&
+                              m.direccionTenencia && (
+                                <p
+                                  className="text-[10px] text-blue-700 dark:text-blue-300 mt-0.5 truncate max-w-[220px]"
+                                  title={m.direccionTenencia}
+                                >
+                                  📍 {m.direccionTenencia}
+                                </p>
+                              )}
                           </div>
                         </div>
                       </td>
@@ -386,9 +484,23 @@ export function StockMotosClient({
                           </p>
                         )}
                         {m.clienteEntrega && (
-                          <p className="text-[10px] text-gray-400 mt-0.5 truncate max-w-[160px]">
+                          <p className="text-[10px] text-gray-400 mt-0.5 truncate max-w-[180px]">
                             de {m.clienteEntrega}
                           </p>
+                        )}
+                        {m.clienteTelefono && (
+                          <p className="text-[10px] text-gray-400 mt-0.5">
+                            tel: {m.clienteTelefono}
+                          </p>
+                        )}
+                        {m.mandatoNumero != null && (
+                          <a
+                            href={`/admin/mandatos/${m.mandatoId}`}
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-[10px] text-[#6B4F7A] hover:underline mt-0.5 inline-block"
+                          >
+                            Mandato MV-{String(m.mandatoNumero).padStart(4, "0")}
+                          </a>
                         )}
                       </td>
                       <td className="px-3 py-2.5 text-xs whitespace-nowrap">

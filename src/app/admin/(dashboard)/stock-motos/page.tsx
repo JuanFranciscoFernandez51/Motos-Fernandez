@@ -23,11 +23,11 @@ export default async function StockMotosPage() {
   })
 
   const motos = await prisma.modelo.findMany({
-    // Stock = motos que tenemos físicamente en el local. Las que están en
-    // domicilio del titular (mandato externo) NO entran a stock: se
-    // publican en la web pero no las inventariamos. Default es EN_LOCAL,
-    // así que filtra solo las explícitamente EN_DOMICILIO.
-    where: { tipoTenencia: { not: "EN_DOMICILIO" } },
+    // Stock = todo lo que podemos ofertar para vender, propio o consignado.
+    // Las EN_DOMICILIO (mandato externo) se traen también para tener los
+    // datos a mano al armar OC. Se separan visualmente en el cliente con
+    // tabs y badge SOLO WEB; el default del filtro es "EN_LOCAL" para que
+    // sigan apareciendo primero las físicas.
     orderBy: [{ codigo: "desc" }, { createdAt: "desc" }],
     select: {
       id: true,
@@ -51,17 +51,26 @@ export default async function StockMotosPage() {
       motivoArchivada: true,
       etiqueta: true,
       origen: true,
+      tipoTenencia: true,
       createdAt: true,
       fotos: true,
       proveedor: { select: { nombre: true } },
       clienteEntregaId: true,
-      clienteEntrega: { select: { nombre: true, apellido: true } },
+      clienteEntrega: { select: { nombre: true, apellido: true, telefono: true } },
       ordenCompraVenta: { select: { id: true, numero: true } },
       // Mandato: la moto está en consignación y nos la trajo este cliente.
-      // Si el origen=MANDATO el "dueño" sale del mandato.cliente.
+      // Si el origen=MANDATO el "dueño" sale del mandato.cliente. Para las
+      // EN_DOMICILIO necesitamos también fechaFirma/vencimiento y la
+      // dirección donde está la moto para ofertarla con la info a mano.
       mandato: {
         select: {
-          cliente: { select: { nombre: true, apellido: true } },
+          id: true,
+          numero: true,
+          estado: true,
+          fechaFirma: true,
+          fechaVencimiento: true,
+          direccionTenencia: true,
+          cliente: { select: { nombre: true, apellido: true, telefono: true } },
         },
       },
     },
@@ -102,10 +111,25 @@ export default async function StockMotosPage() {
       proveedor: m.proveedor?.nombre || null,
       clienteEntrega: clienteDueno,
       clienteEntregaId: m.clienteEntregaId,
+      clienteTelefono:
+        m.clienteEntrega?.telefono || m.mandato?.cliente.telefono || null,
       ocVentaNumero: m.ordenCompraVenta?.numero ?? null,
       ocVentaId: m.ordenCompraVenta?.id ?? null,
       fotoPrincipal: m.fotos?.[0] || null,
       createdAt: m.createdAt.toISOString(),
+      // Tenencia: EN_LOCAL (default) o EN_DOMICILIO. Si está en domicilio,
+      // mostramos badge SOLO WEB y la dirección donde está la moto.
+      tipoTenencia: m.tipoTenencia || "EN_LOCAL",
+      direccionTenencia: m.mandato?.direccionTenencia || null,
+      mandatoId: m.mandato?.id || null,
+      mandatoNumero: m.mandato?.numero ?? null,
+      mandatoEstado: m.mandato?.estado || null,
+      mandatoFechaFirma: m.mandato?.fechaFirma
+        ? m.mandato.fechaFirma.toISOString()
+        : null,
+      mandatoVencimiento: m.mandato?.fechaVencimiento
+        ? m.mandato.fechaVencimiento.toISOString()
+        : null,
     }
   })
 
