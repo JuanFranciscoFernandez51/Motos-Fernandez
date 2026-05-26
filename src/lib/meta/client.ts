@@ -54,13 +54,15 @@ const ORGANIC_SCOPES = [
   "business_management",
 ]
 
-const ADS_SCOPES = [
-  "ads_management",
-  "ads_read",
-  "pages_manage_ads",
-  "read_insights",
-  "leads_retrieval",
-]
+/**
+ * Scopes para Marketing API. Solo los 3 imprescindibles para crear y
+ * leer campañas. Otros que el brief listaba pero dejamos fuera por ahora:
+ * - `read_insights`: solo útil para métricas de posts orgánicos, no de
+ *   campañas pagas (esas usan ads_read). Requiere App Review aparte.
+ * - `leads_retrieval`: solo para Lead Ads (formularios integrados).
+ *   Cuando se sume Lead Ads en una fase futura, lo pedimos.
+ */
+const ADS_SCOPES = ["ads_management", "ads_read", "pages_manage_ads"]
 
 /**
  * Set "completo" — solo se pide cuando la app de Meta tiene aprobados
