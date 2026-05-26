@@ -32,18 +32,39 @@ function fbAuthUrl(version: string = DEFAULT_API_VERSION): string {
 const GRAPH_API = graphApi()
 const FB_AUTH = fbAuthUrl()
 
-// Permisos para publicar carruseles en IG y fotos en FB Page.
-// business_management es necesario porque la pagina vive dentro de
-// un Business Manager (lo confirmamos via /api/admin/meta/debug —
-// /me/accounts vacio + /me/businesses requiere ese permiso).
-const SCOPES = [
+/**
+ * Scopes que pide la app al usuario en OAuth. Se dividen en dos grupos
+ * funcionales para no confundirlos al revisar permisos:
+ *
+ * - Orgánicos: publicar a IG/FB, leer datos de páginas (lo que ya
+ *   estaba funcionando hasta Fase 1).
+ * - Ads: crear/editar campañas en Marketing API, leer insights. Se
+ *   suman en Fase 2 del brief (calendario+ads). Sin estos, los
+ *   endpoints de ads van a dar 403.
+ *
+ * El nombre `EXPECTED_SCOPES` se usa en /api/admin/meta/config/health
+ * para validar que el token tiene todos los scopes esperados.
+ */
+const ORGANIC_SCOPES = [
   "pages_show_list",
   "pages_read_engagement",
   "pages_manage_posts",
   "instagram_basic",
   "instagram_content_publish",
   "business_management",
-].join(",")
+]
+
+const ADS_SCOPES = [
+  "ads_management",
+  "ads_read",
+  "pages_manage_ads",
+  "read_insights",
+  "leads_retrieval",
+]
+
+export const EXPECTED_SCOPES = [...ORGANIC_SCOPES, ...ADS_SCOPES]
+
+const SCOPES = EXPECTED_SCOPES.join(",")
 
 function getEnv() {
   const appId = process.env.META_APP_ID
@@ -189,6 +210,29 @@ export async function getPages(userToken: string): Promise<Page[]> {
  * para entender por que no aparecen pages. Solo usar desde el endpoint
  * de debug. NO loggear el access_token completo.
  */
+/**
+ * Llama a debug_token y devuelve los scopes activos del token. Devuelve
+ * array vacío si la llamada falla — el caller decide qué hacer.
+ *
+ * Útil para guardar los scopes reales en DB tras OAuth y validar que
+ * tenemos todos los esperados (ver EXPECTED_SCOPES + endpoint /health).
+ */
+export async function fetchTokenScopes(token: string): Promise<string[]> {
+  try {
+    const url = new URL(`${graphApi()}/debug_token`)
+    url.searchParams.set("input_token", token)
+    url.searchParams.set("access_token", token)
+    const res = await fetch(url.toString())
+    if (!res.ok) return []
+    const data = (await res.json()) as {
+      data?: { scopes?: string[]; is_valid?: boolean }
+    }
+    return data.data?.scopes || []
+  } catch {
+    return []
+  }
+}
+
 export async function diagnosticoMeta(
   pageToken: string,
   pageId: string | null,
@@ -410,6 +454,17 @@ export async function getMetaStatus() {
   if (!cfg?.pageAccessToken) {
     return { connected: false as const }
   }
+  // Scopes que tenemos guardados (snapshot del último OAuth/healthcheck).
+  // Si está vacío, asumimos que es un token viejo pre-Fase 2 y no
+  // sabemos qué scopes tiene — el banner va a pedir reconectar.
+  const scopesGuardados = (cfg.adsTokenScopes as string[] | null) || []
+  const missingScopes = EXPECTED_SCOPES.filter(
+    (s) => !scopesGuardados.includes(s)
+  )
+  const adsReady =
+    scopesGuardados.includes("ads_management") &&
+    scopesGuardados.includes("ads_read")
+
   return {
     connected: true as const,
     userName: cfg.userName,
@@ -418,5 +473,11 @@ export async function getMetaStatus() {
     igUsername: cfg.igUsername,
     igUserId: cfg.igUserId,
     expiresAt: cfg.expiresAt,
+    adsReady,
+    scopesGuardados,
+    missingScopes,
+    adAccountId: cfg.adAccountId,
+    apiVersion: cfg.apiVersion,
+    lastTokenCheckAt: cfg.lastTokenCheckAt,
   }
 }

@@ -8,6 +8,8 @@ import {
   CheckCircle2,
   AlertCircle,
   RefreshCw,
+  Sparkles,
+  Megaphone,
 } from "lucide-react"
 import { InstagramIcon, FacebookIcon } from "@/components/icons/social"
 import { formatDate, formatMoney } from "@/lib/admin-helpers"
@@ -149,6 +151,60 @@ export default async function MetaAdminPage({
           )}
         </CardContent>
       </Card>
+
+      {/* Banner: si conectado pero faltan scopes de Ads → CTA para
+          habilitar Calendario + Meta Ads (Fase 2 del brief técnico). */}
+      {status.connected && !status.adsReady && (
+        <Card className="border-[#6B4F7A]/40 bg-gradient-to-r from-[#6B4F7A]/10 via-purple-50/40 to-transparent dark:from-[#6B4F7A]/20 dark:via-purple-950/20">
+          <CardContent className="p-4 sm:p-5">
+            <div className="flex items-start gap-3 flex-wrap">
+              <div className="size-10 rounded-full bg-[#6B4F7A]/15 flex items-center justify-center shrink-0">
+                <Sparkles className="size-5 text-[#6B4F7A]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-[#1A1A1A] dark:text-white flex items-center gap-2 flex-wrap">
+                  Habilitá Calendario + Meta Ads
+                  <Badge variant="secondary" className="bg-[#6B4F7A]/15 text-[#6B4F7A] text-[10px] font-bold">
+                    NUEVO
+                  </Badge>
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-300 mt-1 leading-relaxed">
+                  Tu conexión actual solo permite publicar manualmente. Para
+                  programar posts y crear campañas pagas necesitamos
+                  permisos extra de Meta.{" "}
+                  {status.missingScopes.length > 0 && (
+                    <span className="text-amber-700 dark:text-amber-300">
+                      Faltan: {status.missingScopes.join(", ")}.
+                    </span>
+                  )}
+                </p>
+              </div>
+              <Button
+                size="sm"
+                render={<a href="/api/admin/meta/connect" />}
+                className="bg-[#6B4F7A] hover:bg-[#8B6F9A] shrink-0"
+              >
+                <Megaphone className="size-4 mr-1.5" />
+                Reconectar con permisos de Ads
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {status.connected && status.adsReady && (
+        <Card className="border-emerald-200 dark:border-emerald-900/40 bg-emerald-50/40 dark:bg-emerald-950/20">
+          <CardContent className="p-3 flex items-center gap-2 text-sm">
+            <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-300" />
+            <span className="text-emerald-700 dark:text-emerald-300 font-medium">
+              Calendario + Meta Ads habilitados ✓
+            </span>
+            <span className="text-xs text-emerald-700/70 dark:text-emerald-300/70 ml-1">
+              ({status.scopesGuardados.length} scopes activos)
+            </span>
+          </CardContent>
+        </Card>
+      )}
 
       {status.connected && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

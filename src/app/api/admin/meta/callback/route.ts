@@ -6,6 +6,7 @@ import {
   getPages,
   getUserInfo,
   getIGAccountForPage,
+  fetchTokenScopes,
 } from "@/lib/meta/client"
 import { encryptToken } from "@/lib/crypto/tokens"
 
@@ -104,6 +105,12 @@ export async function GET(request: Request) {
       : null
 
     const encPageToken = encryptToken(page.access_token)
+
+    // Capturamos los scopes reales que el usuario aprobó (Meta deja al
+    // user "deseleccionar" permisos en la pantalla de consentimiento).
+    // Si faltan los de ads, la UI muestra banner pidiendo reconectar.
+    const scopesActivos = await fetchTokenScopes(page.access_token)
+
     await prisma.metaConfig.upsert({
       where: { id: "default" },
       update: {
@@ -115,6 +122,8 @@ export async function GET(request: Request) {
         igUserId: ig.id,
         igUsername: ig.username,
         expiresAt,
+        adsTokenScopes: scopesActivos,
+        lastTokenCheckAt: new Date(),
       },
       create: {
         id: "default",
@@ -126,6 +135,8 @@ export async function GET(request: Request) {
         igUserId: ig.id,
         igUsername: ig.username,
         expiresAt,
+        adsTokenScopes: scopesActivos,
+        lastTokenCheckAt: new Date(),
       },
     })
 
