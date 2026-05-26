@@ -103,28 +103,48 @@ type IGMediaStatus = { status_code?: string; status?: string }
  * Espera a que un container de IG (foto carousel item o carusel completo)
  * esté en estado FINISHED antes de seguir. IG procesa el upload async, y
  * si llamamos a media_publish antes de FINISHED tira "Media ID is not available".
+ *
+ * Si el container queda inválido (subcode 33 = "no existe / sin permiso")
+ * casi siempre es porque IG rechazó la foto al cargarla (URL inaccesible,
+ * formato no JPG, aspect ratio fuera de rango). Reintenta una consulta
+ * pidiendo `status_code,status,error_message` que a veces sí responde con
+ * el motivo concreto.
  */
 async function esperarMediaListo(
   creationId: string,
-  timeoutMs = 60000
+  timeoutMs = 60000,
+  contextoFoto?: string
 ): Promise<void> {
   const inicio = Date.now()
+  const ctx = contextoFoto ? ` (foto: ${contextoFoto})` : ""
   while (Date.now() - inicio < timeoutMs) {
-    const r = await metaGet<IGMediaStatus>(
-      `/${creationId}?fields=status_code,status`
-    )
-    const code = r.status_code || r.status
-    if (code === "FINISHED") return
-    if (code === "ERROR" || code === "EXPIRED") {
-      throw new Error(
-        `IG rechazó el media ${creationId}: status=${code} (revisá que la foto sea JPG válido y aspect ratio entre 4:5 y 1.91:1)`
+    try {
+      const r = await metaGet<IGMediaStatus & { error_message?: string }>(
+        `/${creationId}?fields=status_code,status,error_message`
       )
+      const code = r.status_code || r.status
+      if (code === "FINISHED") return
+      if (code === "ERROR" || code === "EXPIRED") {
+        const detalle = r.error_message ? ` — ${r.error_message}` : ""
+        throw new Error(
+          `IG rechazó el media ${creationId}${ctx}: status=${code}${detalle}. Causas comunes: aspect ratio fuera de 4:5 a 1.91:1, foto no es JPG, URL inaccesible.`
+        )
+      }
+      await new Promise((res) => setTimeout(res, 2000))
+    } catch (e) {
+      // Si el container "no existe" (subcode 33), IG ya lo descartó por
+      // foto rechazada. Damos error con la URL específica si la tenemos.
+      const msg = e instanceof Error ? e.message : String(e)
+      if (msg.includes("subcode") && msg.includes("33")) {
+        throw new Error(
+          `IG descartó el media ${creationId}${ctx} porque rechazó la foto al cargarla. Probá: 1) que la foto sea JPG (no PNG/WEBP/HEIC), 2) aspect ratio entre 4:5 vertical y 1.91:1 horizontal, 3) que la URL sea pública (probala en incógnito).`
+        )
+      }
+      throw e
     }
-    // IN_PROGRESS o cualquier otro → seguir esperando
-    await new Promise((res) => setTimeout(res, 2000))
   }
   throw new Error(
-    `IG tardó más de ${timeoutMs / 1000}s en procesar el media ${creationId}`
+    `IG tardó más de ${timeoutMs / 1000}s en procesar el media ${creationId}${ctx}`
   )
 }
 
@@ -187,23 +207,26 @@ export async function publicarEnMeta(
     const caption = generarCaption(m)
 
     // 1) Subir cada foto como carousel_item → recibimos creation_ids
-    const creationIds: string[] = []
+    //    Guardamos el par (id, url) para que si IG rechaza un container
+    //    sepamos cuál foto fue.
+    const creations: { id: string; url: string }[] = []
     for (const url of fotos) {
       const r = await metaPost<IGMediaResponse>(`/${cfg.igUserId}/media`, {
         image_url: url,
         is_carousel_item: true,
       })
-      if (!r.id) throw new Error("IG respondió sin id de media")
-      creationIds.push(r.id)
+      if (!r.id) throw new Error(`IG respondió sin id de media para ${url}`)
+      creations.push({ id: r.id, url })
       // Pausa breve para no saturar IG
       await new Promise((res) => setTimeout(res, 400))
     }
 
     // 1b) Esperar que cada item carousel esté FINISHED (IG los procesa
     //     async — si no, "Media ID is not available" al publicar).
-    for (const id of creationIds) {
-      await esperarMediaListo(id, 30000)
+    for (const c of creations) {
+      await esperarMediaListo(c.id, 30000, c.url)
     }
+    const creationIds = creations.map((c) => c.id)
 
     // 2) Crear el contenedor del carrusel
     const carousel = await metaPost<IGMediaResponse>(`/${cfg.igUserId}/media`, {
