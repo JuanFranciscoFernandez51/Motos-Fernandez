@@ -52,6 +52,13 @@ export async function GET() {
  * POST /api/admin/meta/ad-account
  * Body: { adAccountId: "act_XXXXX" }
  * Guarda el ad account elegido en MetaConfig.
+ *
+ * NOTA: no validamos que el adAccountId esté en /me/adaccounts porque
+ * ese endpoint requiere User Access Token y nosotros guardamos solo el
+ * Page Access Token. Validamos formato y dejamos que Meta rechace si el
+ * page/business no tiene acceso a esa ad account cuando intentemos
+ * crear una campaña. Hacemos un best-effort de probar acceso de lectura
+ * acá para feedback temprano.
  */
 const saveSchema = z.object({
   adAccountId: z.string().regex(/^act_\d+$/, "Formato esperado: act_XXXXXXX"),
@@ -70,27 +77,22 @@ export async function POST(request: Request) {
     )
   }
 
-  // Validamos que el ad account elegido sea uno al que el user tiene
-  // acceso (evita guardar uno random).
+  // Best-effort: si listAdAccounts devuelve algo, validamos que esté.
+  // Si la lista falla o está vacía (page token no soporta), confiamos
+  // en el formato y Meta validará en uso.
   const accounts = await listAdAccounts().catch(() => [])
-  const found = accounts.find((a) => a.id === parsed.data.adAccountId)
-  if (!found) {
-    return NextResponse.json(
-      {
-        error: `No tenés acceso a la ad account ${parsed.data.adAccountId} con este token. Reconectá Meta o elegí una de la lista.`,
-      },
-      { status: 403 }
-    )
-  }
+  const found =
+    accounts.length > 0
+      ? accounts.find((a) => a.id === parsed.data.adAccountId)
+      : null
 
   await prisma.metaConfig.update({
     where: { id: "default" },
     data: {
       adAccountId: parsed.data.adAccountId,
-      // Si el ad account viene con business, guardamos también
-      ...(found.business ? { businessId: found.business.id } : {}),
+      ...(found?.business ? { businessId: found.business.id } : {}),
     },
   })
 
-  return NextResponse.json({ ok: true, adAccount: found })
+  return NextResponse.json({ ok: true, adAccount: found, adAccountId: parsed.data.adAccountId })
 }

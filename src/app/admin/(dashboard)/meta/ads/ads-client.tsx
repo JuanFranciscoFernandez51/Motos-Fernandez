@@ -401,6 +401,10 @@ function CampaignRow({ campaign }: { campaign: CampaignLite }) {
 
 /**
  * Setup wizard del ad account (cuando todavía no se eligió uno).
+ *
+ * /me/adaccounts no funciona con el Page Access Token que tenemos
+ * guardado (es endpoint de User Token). Si no podemos listar, mostramos
+ * solo el input manual. Si podemos, mostramos lista + input manual.
  */
 function AdAccountSetup({ featureEnabled }: { featureEnabled: boolean }) {
   const router = useRouter()
@@ -414,8 +418,10 @@ function AdAccountSetup({ featureEnabled }: { featureEnabled: boolean }) {
       business?: { name: string }
     }>
   >([])
+  const [listWarning, setListWarning] = useState("")
   const [error, setError] = useState("")
   const [selected, setSelected] = useState("")
+  const [manualId, setManualId] = useState("")
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -426,20 +432,19 @@ function AdAccountSetup({ featureEnabled }: { featureEnabled: boolean }) {
           setError(data.error)
         } else {
           setAccounts(data.availableAccounts || [])
-          if (data.listError) setError(data.listError)
+          if (data.listError) setListWarning(data.listError)
         }
       })
       .finally(() => setLoading(false))
   }, [])
 
-  const handleSave = async () => {
-    if (!selected) return
+  const guardar = async (adAccountId: string) => {
     setSaving(true)
     try {
       const res = await fetch("/api/admin/meta/ad-account", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ adAccountId: selected }),
+        body: JSON.stringify({ adAccountId }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -450,6 +455,17 @@ function AdAccountSetup({ featureEnabled }: { featureEnabled: boolean }) {
     } finally {
       setSaving(false)
     }
+  }
+
+  const handleSaveLista = () => selected && guardar(selected)
+  const handleSaveManual = (e: React.FormEvent) => {
+    e.preventDefault()
+    const trimmed = manualId.trim()
+    if (!/^act_\d+$/.test(trimmed)) {
+      alert("Formato esperado: act_XXXXXXXXX (empieza con act_ y números)")
+      return
+    }
+    guardar(trimmed)
   }
 
   return (
@@ -476,81 +492,133 @@ function AdAccountSetup({ featureEnabled }: { featureEnabled: boolean }) {
 
       {!featureEnabled && <FeatureFlagWarning />}
 
-      <Card>
-        <CardContent className="p-5 space-y-4">
-          {loading ? (
-            <div className="flex items-center gap-2 text-sm text-gray-500">
-              <Loader2 className="size-4 animate-spin" />
-              Cargando ad accounts disponibles…
-            </div>
-          ) : error ? (
-            <div className="rounded-md bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-700 dark:text-red-300 border border-red-200">
-              <p className="font-bold">No pude listar ad accounts</p>
-              <p className="text-xs mt-1">{error}</p>
-            </div>
-          ) : accounts.length === 0 ? (
-            <div className="rounded-md bg-amber-50 dark:bg-amber-950/30 p-3 text-sm text-amber-800 dark:text-amber-300 border border-amber-200">
-              <p className="font-bold">
-                No tenés ad accounts accesibles con este token.
-              </p>
-              <p className="text-xs mt-1">
-                Asegurate de que el usuario conectado a Meta tenga rol de
-                administrador en al menos una ad account de Business
-                Manager, y reconectá desde /admin/meta.
-              </p>
-            </div>
-          ) : (
-            <>
-              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                Encontramos {accounts.length} ad account{accounts.length > 1 ? "s" : ""}:
-              </p>
-              <div className="space-y-2">
-                {accounts.map((a) => (
-                  <button
-                    key={a.id}
-                    type="button"
-                    onClick={() => setSelected(a.id)}
-                    className={`w-full text-left p-3 rounded-lg border-2 transition-colors ${selected === a.id ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/50"}`}
-                  >
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
-                        {a.name}
-                      </p>
-                      <code className="text-[10px] bg-gray-100 dark:bg-neutral-800 px-1 rounded">
-                        {a.id}
-                      </code>
-                      <span
-                        className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${a.account_status === 1 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
-                      >
-                        {a.account_status === 1 ? "Activa" : `Estado ${a.account_status}`}
-                      </span>
-                      {selected === a.id && (
-                        <CheckCircle2 className="size-4 text-[#6B4F7A] ml-auto" />
-                      )}
-                    </div>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      Moneda: {a.currency}
-                      {a.business?.name ? ` · Business: ${a.business.name}` : ""}
-                    </p>
-                  </button>
-                ))}
-              </div>
-              <Button
-                onClick={handleSave}
-                disabled={!selected || saving}
-                className="bg-[#6B4F7A] hover:bg-[#8B6F9A] w-full"
-              >
-                {saving ? (
-                  <Loader2 className="size-4 mr-2 animate-spin" />
-                ) : (
-                  <CheckCircle2 className="size-4 mr-2" />
-                )}
-                Usar este ad account
-              </Button>
-            </>
+      {loading ? (
+        <Card>
+          <CardContent className="p-5 flex items-center gap-2 text-sm text-gray-500">
+            <Loader2 className="size-4 animate-spin" />
+            Cargando ad accounts disponibles…
+          </CardContent>
+        </Card>
+      ) : (
+        <>
+          {error && (
+            <Card className="border-red-200">
+              <CardContent className="p-3 text-sm text-red-700 dark:text-red-300">
+                {error}
+              </CardContent>
+            </Card>
           )}
-        </CardContent>
-      </Card>
+
+          {/* Lista descubierta (solo si pudimos listar) */}
+          {accounts.length > 0 && (
+            <Card>
+              <CardContent className="p-5 space-y-3">
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  Detectamos {accounts.length} ad account{accounts.length > 1 ? "s" : ""}:
+                </p>
+                <div className="space-y-2">
+                  {accounts.map((a) => (
+                    <button
+                      key={a.id}
+                      type="button"
+                      onClick={() => setSelected(a.id)}
+                      className={`w-full text-left p-3 rounded-lg border-2 transition-colors ${selected === a.id ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/50"}`}
+                    >
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
+                          {a.name}
+                        </p>
+                        <code className="text-[10px] bg-gray-100 dark:bg-neutral-800 px-1 rounded">
+                          {a.id}
+                        </code>
+                        <span
+                          className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${a.account_status === 1 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
+                        >
+                          {a.account_status === 1 ? "Activa" : `Estado ${a.account_status}`}
+                        </span>
+                        {selected === a.id && (
+                          <CheckCircle2 className="size-4 text-[#6B4F7A] ml-auto" />
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        Moneda: {a.currency}
+                        {a.business?.name ? ` · Business: ${a.business.name}` : ""}
+                      </p>
+                    </button>
+                  ))}
+                </div>
+                <Button
+                  onClick={handleSaveLista}
+                  disabled={!selected || saving}
+                  className="bg-[#6B4F7A] hover:bg-[#8B6F9A] w-full"
+                >
+                  {saving ? (
+                    <Loader2 className="size-4 mr-2 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="size-4 mr-2" />
+                  )}
+                  Usar este ad account
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Input manual — siempre disponible. Si /me/adaccounts falló
+              (page token no soporta el endpoint), esta es la única forma. */}
+          <Card>
+            <CardContent className="p-5 space-y-3">
+              <div>
+                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {accounts.length > 0
+                    ? "¿No aparece la cuenta que querés?"
+                    : "Pegá el ID de tu ad account"}
+                </p>
+                {listWarning && accounts.length === 0 && (
+                  <p className="text-[11px] text-amber-700 dark:text-amber-400 mt-1 italic">
+                    No pude listar automáticamente (el page token no soporta
+                    el endpoint /me/adaccounts). Pegalo a mano abajo.
+                  </p>
+                )}
+              </div>
+              <form onSubmit={handleSaveManual} className="space-y-2">
+                <Label htmlFor="manual">ID del ad account (formato act_XXXX)</Label>
+                <Input
+                  id="manual"
+                  value={manualId}
+                  onChange={(e) => setManualId(e.target.value)}
+                  placeholder="act_123456789"
+                  className="font-mono"
+                />
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                  Lo encontrás en{" "}
+                  <a
+                    href="https://business.facebook.com/settings/ad-accounts"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline text-[#6B4F7A]"
+                  >
+                    Business Manager → Cuentas publicitarias
+                  </a>{" "}
+                  (en el header del ad account dice el ID con prefijo
+                  &quot;act_&quot;).
+                </p>
+                <Button
+                  type="submit"
+                  disabled={saving || !manualId.trim()}
+                  className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+                >
+                  {saving ? (
+                    <Loader2 className="size-4 mr-2 animate-spin" />
+                  ) : (
+                    <CheckCircle2 className="size-4 mr-2" />
+                  )}
+                  Guardar
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   )
 }
