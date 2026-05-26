@@ -260,11 +260,42 @@ export async function metaFetch(path: string, init: RequestInit = {}): Promise<R
   return fetch(u.toString(), init)
 }
 
+/**
+ * Convierte un error de Graph API en un mensaje accionable. Los códigos
+ * más comunes que vemos en producción:
+ * - code 190: token expirado/revocado → reconectar
+ * - code 100 + subcode 33: objeto no existe o sin permiso → reconectar
+ *   (también pasa con tokens viejos que perdieron alcance sobre la página)
+ * - code 100 + subcode 463: media inválido (aspect ratio, formato, etc.)
+ */
+function interpretarErrorMeta(status: number, raw: string): string {
+  try {
+    const data = JSON.parse(raw) as {
+      error?: { code?: number; error_subcode?: number; message?: string }
+    }
+    const code = data.error?.code
+    const subcode = data.error?.error_subcode
+    const msg = data.error?.message || raw
+
+    if (code === 190 || (code === 100 && subcode === 33)) {
+      return `Sesión con Meta vencida o sin permisos (code ${code}/${subcode ?? "-"}). Andá a /admin/meta y tocá "Reconectar con Meta". Detalle original: ${msg}`
+    }
+    if (code === 100 && subcode === 463) {
+      return `Meta rechazó la foto (aspect ratio fuera de 4:5 a 1.91:1, o formato no JPG). Detalle: ${msg}`
+    }
+    return `Meta error ${code ?? status}/${subcode ?? "-"}: ${msg}`
+  } catch {
+    return raw
+  }
+}
+
 export async function metaGet<T = unknown>(path: string): Promise<T> {
   const res = await metaFetch(path)
   if (!res.ok) {
     const txt = await res.text()
-    throw new Error(`Meta GET ${path} falló (${res.status}): ${txt}`)
+    throw new Error(
+      `Meta GET ${path} falló (${res.status}): ${interpretarErrorMeta(res.status, txt)}`
+    )
   }
   return res.json() as Promise<T>
 }
@@ -279,7 +310,9 @@ export async function metaPost<T = unknown>(path: string, body: unknown): Promis
   })
   if (!res.ok) {
     const txt = await res.text()
-    throw new Error(`Meta POST ${path} falló (${res.status}): ${txt}`)
+    throw new Error(
+      `Meta POST ${path} falló (${res.status}): ${interpretarErrorMeta(res.status, txt)}`
+    )
   }
   return res.json() as Promise<T>
 }
