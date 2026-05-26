@@ -8,15 +8,29 @@ import { nombreCompleto } from "@/lib/admin-helpers"
 import { MandatosListFilters } from "./mandatos-filters"
 import { invalidateModelos } from "@/lib/cached-queries"
 import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
+import { mapMandatoToModeloData } from "@/lib/mandato-helpers"
 
 export const dynamic = "force-dynamic"
 
 async function updateFotosMandato(id: string, fotos: string[]) {
   "use server"
-  await prisma.mandatoVenta.update({
+  // Guardamos las fotos en el mandato Y, si ya está publicado en el
+  // catálogo, también en el modelo asociado — sino las fotos quedaban
+  // huérfanas en el mandato y el modelo se quedaba con el placeholder.
+  const mandato = await prisma.mandatoVenta.update({
     where: { id },
     data: { fotos },
+    select: { modeloId: true },
   })
+  if (mandato.modeloId && fotos.length > 0) {
+    await prisma.modelo.update({
+      where: { id: mandato.modeloId },
+      data: { fotos },
+    })
+    revalidatePath("/admin/modelos")
+    revalidatePath("/catalogo")
+    invalidateModelos()
+  }
   revalidatePath("/admin/mandatos")
   revalidatePath(`/admin/mandatos/${id}`)
 }
@@ -46,28 +60,18 @@ async function publicarDesdeLista(id: string) {
         marca: mandato.marca,
         categoriaVehiculo: "MOTOCICLETA",
         condicion: "USADA",
-        anio: mandato.anio,
-        kilometros: mandato.kilometros,
-        cilindrada: mandato.cilindrada,
-        precio: mandato.precioVenta,
-        moneda: mandato.moneda,
         activo: false,
-        chasis: mandato.chasis,
-        motor: mandato.motor,
-        patente: mandato.patente,
         // Trazabilidad: la moto vino por consignacion (MANDATO) y el dueño
         // que la trajo es el cliente del mandato.
         origen: "MANDATO",
         clienteEntregaId: mandato.clienteId,
         clienteNombre: `${mandato.cliente.apellido}, ${mandato.cliente.nombre}`,
         clienteContacto: mandato.cliente.telefono || mandato.cliente.email,
-        notasInternas: mandato.observaciones,
-        // Si el mandato tiene fotos, las usa; sino, placeholder
+        // Resto de los campos viaja por el helper compartido (color,
+        // fotos, año, km, chasis, motor, patente, precio, etc.). Si no
+        // hay fotos cargadas en el mandato, usamos placeholder.
+        ...mapMandatoToModeloData(mandato, { incluirFotos: true }),
         fotos: mandato.fotos.length > 0 ? mandato.fotos : ["/images/logo-clasico.png"],
-        // Propaga la tenencia del mandato → si la moto está en domicilio
-        // del titular, en el catálogo público se muestra "SOLO WEB" y
-        // Stock motos no la va a listar (no la tenemos físicamente).
-        tipoTenencia: mandato.tipoTenencia,
       },
     })
   })

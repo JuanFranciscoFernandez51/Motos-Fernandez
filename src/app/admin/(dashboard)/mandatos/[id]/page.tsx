@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { MandatoForm } from "@/components/admin/operativo/mandato-form"
 import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
+import { mapMandatoToModeloData } from "@/lib/mandato-helpers"
 import { sincronizarMandatoVendido } from "@/lib/venta-moto-helpers"
 import { invalidateModelos } from "@/lib/cached-queries"
 import { Button } from "@/components/ui/button"
@@ -17,7 +18,7 @@ import {
   ESTADO_MANDATO_STYLES,
   ESTADO_MANDATO_LABELS,
 } from "@/lib/admin-helpers"
-import { FileText, Rocket, ExternalLink, Trash2 } from "lucide-react"
+import { FileText, Rocket, ExternalLink, Trash2, RefreshCw } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -133,26 +134,18 @@ async function publicarEnCatalogo(id: string) {
         marca: mandato.marca,
         categoriaVehiculo: "MOTOCICLETA",
         condicion: "USADA",
-        anio: mandato.anio,
-        kilometros: mandato.kilometros,
-        cilindrada: mandato.cilindrada,
-        precio: mandato.precioVenta,
-        moneda: mandato.moneda,
-        activo: false, // inactivo hasta que le carguen fotos
-        chasis: mandato.chasis,
-        motor: mandato.motor,
-        patente: mandato.patente,
+        activo: false, // inactivo hasta que el admin lo active
         // Trazabilidad: vino por consignacion (mandato) — el dueño es el
         // cliente del mandato.
         origen: "MANDATO",
         clienteEntregaId: mandato.clienteId,
         clienteNombre: `${mandato.cliente.apellido}, ${mandato.cliente.nombre}`,
         clienteContacto: mandato.cliente.telefono || mandato.cliente.email,
-        notasInternas: mandato.observaciones,
-        // Si el mandato tiene fotos, las usa; sino, placeholder
+        // El resto (color, fotos, año, km, chasis, motor, patente, precio,
+        // tipoTenencia, etc.) viene del helper compartido para no perder
+        // campos por el camino — bug histórico: faltaba `color`.
+        ...mapMandatoToModeloData(mandato, { incluirFotos: true }),
         fotos: mandato.fotos.length > 0 ? mandato.fotos : ["/images/logo-clasico.png"],
-        // Propaga la tenencia del mandato (EN_LOCAL / EN_DOMICILIO).
-        tipoTenencia: mandato.tipoTenencia,
       },
     })
   })
@@ -166,6 +159,30 @@ async function publicarEnCatalogo(id: string) {
   revalidatePath(`/admin/mandatos/${id}`)
   revalidatePath("/admin/modelos")
   redirect(`/admin/modelos/${modelo.id}`)
+}
+
+/**
+ * Re-aplica los datos actuales del mandato (color, fotos, año, km, etc.)
+ * al Modelo asociado del catálogo. Para usar después de editar el
+ * mandato (ej: cargar fotos, agregar color que faltaba) sin tener que
+ * tocar el modelo manualmente.
+ */
+async function resyncMandatoConModelo(id: string) {
+  "use server"
+  const mandato = await prisma.mandatoVenta.findUnique({ where: { id } })
+  if (!mandato || !mandato.modeloId) return
+
+  await prisma.modelo.update({
+    where: { id: mandato.modeloId },
+    data: mapMandatoToModeloData(mandato, { incluirFotos: true }),
+  })
+
+  revalidatePath("/admin/mandatos")
+  revalidatePath(`/admin/mandatos/${id}`)
+  revalidatePath(`/admin/modelos/${mandato.modeloId}`)
+  revalidatePath("/admin/modelos")
+  revalidatePath("/catalogo")
+  invalidateModelos()
 }
 
 async function deleteMandato(id: string) {
@@ -277,16 +294,29 @@ export default async function EditarMandatoPage({
               <FileText className="size-4" /> Generar PDF
             </a>
             {mandato.modelo_ ? (
-              <Button
-                variant="outline"
-                size="sm"
-                render={
-                  <Link href={`/admin/modelos/${mandato.modelo_.id}`} />
-                }
-              >
-                <ExternalLink className="size-4 mr-1" />
-                Ver en catálogo
-              </Button>
+              <>
+                <form action={resyncMandatoConModelo.bind(null, mandato.id)}>
+                  <Button
+                    type="submit"
+                    variant="outline"
+                    size="sm"
+                    title="Re-aplica los datos actuales del mandato (color, fotos, año, km, etc.) al modelo del catálogo."
+                  >
+                    <RefreshCw className="size-4 mr-1" />
+                    Resync catálogo
+                  </Button>
+                </form>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  render={
+                    <Link href={`/admin/modelos/${mandato.modelo_.id}`} />
+                  }
+                >
+                  <ExternalLink className="size-4 mr-1" />
+                  Ver en catálogo
+                </Button>
+              </>
             ) : (
               <form action={publicarEnCatalogo.bind(null, mandato.id)}>
                 <Button type="submit" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]">

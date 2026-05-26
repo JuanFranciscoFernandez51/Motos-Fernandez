@@ -119,3 +119,54 @@ export async function crearMandatoDesdePermuta(
     },
   })
 }
+
+/**
+ * Campos que viajan del MandatoVenta → Modelo del catálogo. Centralizado
+ * para que `publicarDesdeLista`, `publicarEnCatalogo` y los resyncs
+ * (cuando el admin edita el mandato) usen exactamente el mismo set y no
+ * se pierda nada por el camino. Bug histórico: faltaba `color`.
+ *
+ * No incluye `nombre`, `slug`, `codigo`, `categoriaVehiculo`, `condicion`,
+ * `origen` ni `clienteEntregaId` porque eso lo decide cada caller (depende
+ * del contexto: creación inicial vs sincronización).
+ */
+type MandatoSyncable = {
+  marca: string
+  modelo: string
+  anio: number | null
+  kilometros: number | null
+  cilindrada: string | null
+  color: string | null
+  chasis: string | null
+  motor: string | null
+  patente: string | null
+  precioVenta: number
+  moneda: string
+  fotos: string[]
+  observaciones: string | null
+  tipoTenencia: string
+}
+
+export function mapMandatoToModeloData(
+  mandato: MandatoSyncable,
+  opciones: { incluirFotos?: boolean } = {}
+) {
+  const incluirFotos = opciones.incluirFotos ?? true
+  return {
+    anio: mandato.anio,
+    kilometros: mandato.kilometros,
+    cilindrada: mandato.cilindrada,
+    color: mandato.color, // ← lo que faltaba al publicar
+    chasis: mandato.chasis,
+    motor: mandato.motor,
+    patente: mandato.patente,
+    precio: mandato.precioVenta,
+    moneda: mandato.moneda,
+    notasInternas: mandato.observaciones,
+    tipoTenencia: mandato.tipoTenencia,
+    ...(incluirFotos && mandato.fotos.length > 0
+      ? { fotos: mandato.fotos }
+      : {}),
+  }
+}
+
