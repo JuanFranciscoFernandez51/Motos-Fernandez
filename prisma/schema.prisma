@@ -26,6 +26,10 @@ model User {
   activo         Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  // Posts/campañas creados por este usuario (Meta — calendario y ads).
+  scheduledPostsCreated ScheduledPost[] @relation("ScheduledPostCreator")
+  adCampaignsCreated    AdCampaign[]    @relation("AdCampaignCreator")
 }
 
 // ==================== MODELOS DE VEHICULOS ====================
@@ -171,6 +175,19 @@ model Modelo {
   fbPermalink   String?              // url publica del post de FB
   igUltimaSync  DateTime?            // ultima vez que se publicó/actualizó
   igError       String?    @db.Text  // ultimo error si hubo
+
+  // Marketing flags (brief calendario/ads):
+  // - activeForMarketing: bandera para excluir esta moto de posts
+  //   programados y campañas de ads sin tener que darla de baja del
+  //   catálogo público (ej: moto reservada).
+  // - metaCatalogProductId: ID en el Catálogo de Vehicles de Meta cuando
+  //   se sume Dynamic Product Ads (roadmap futuro).
+  activeForMarketing    Boolean   @default(true)
+  metaCatalogProductId  String?
+
+  // Relaciones inversas con las tablas nuevas de calendario/ads
+  scheduledPosts ScheduledPost[] @relation("ScheduledPostMoto")
+  adCampaigns    AdCampaign[]    @relation("AdCampaignMoto")
 }
 
 enum CategoriaVehiculo {
@@ -1161,6 +1178,26 @@ model MetaConfig {
   // Última vez que se verificó que el token sigue válido. Lo setea el
   // cron check-token-health.
   lastTokenCheckAt DateTime?
+
+  // === MARKETING API (brief Fase 4 — Meta Ads) ===
+  // Ad account dedicado de Motos Fernandez en Meta Business Manager.
+  // Formato: "act_XXXXXXXXXX". Lo setea el wizard de configuración de Ads.
+  adAccountId       String?
+  // System User (recomendado por Meta para automatización server-to-server).
+  // Su token NO expira. Setup manual en Meta Business Manager.
+  adsSystemUserId    String?
+  // Encriptado con AES-256-GCM (mismo helper que pageAccessToken).
+  adsSystemUserToken String?  @db.Text
+  // Lista de scopes activos (para detectar si falta alguno tras reconectar).
+  // Ej: ["ads_management", "ads_read", "pages_manage_ads"].
+  adsTokenScopes     Json?
+  // ID del Business Manager. Sirve para llamadas a /{businessId}/...
+  businessId         String?
+  // Píxel de conversión (ya usado en CAPI, replicar acá para Ads).
+  pixelId            String?
+  // Catálogo de Vehicles para Dynamic Product Ads (roadmap futuro).
+  metaCatalogId      String?
+
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }
@@ -1259,4 +1296,130 @@ model TipoServicio {
   updatedAt DateTime @updatedAt
 
   @@index([activo])
+}
+
+// ==================== META: CALENDARIO DE PUBLICACIONES + ADS ====================
+// Brief: docs/specs/brief-tecnico-calendario-ads.md
+// Los 3 modelos arrancan vacíos: no se referencian desde el código hasta
+// que se implementen los endpoints (Fase 3 y 4 del brief). Sumarlos al
+// schema ahora es no-op para la app actual.
+
+/// Post programado para publicación orgánica en IG y/o FB. Procesado por
+/// el cron /api/cron/publish-scheduled cada 5 min.
+///
+/// Campos status:
+///   - PENDING: programado, esperando que llegue scheduledAt.
+///   - PROCESSING: el cron tomó el lock y está publicando.
+///   - PUBLISHED: publicó en todas las plataformas seleccionadas.
+///   - PARTIAL: publicó en una pero falló en otra.
+///   - FAILED: falló todo. Se reintenta hasta 3 veces, después queda así.
+///   - CANCELLED: el admin lo canceló antes de publicar.
+///
+/// Idempotencia del cron: lockedAt + lockedBy con optimistic locking. Si
+/// un worker queda muerto, lockedAt < now - 10min se considera zombi y
+/// el siguiente cron lo recupera.
+model ScheduledPost {
+  id              String   @id @default(cuid())
+  motoId          String
+  moto            Modelo   @relation("ScheduledPostMoto", fields: [motoId], references: [id], onDelete: Cascade)
+  // Array de plataformas: ["IG"], ["FB"], o ["IG","FB"]
+  platforms       String[]
+  scheduledAt     DateTime // En UTC. Se convierte a AR solo en la UI.
+  customCaption   String?  @db.Text
+  status          String   @default("PENDING")
+  publishedAt     DateTime?
+  // Estructura: { ig: { postId, permalink, publishedAt }, fb: { postId, permalink, publishedAt } }
+  publishedRefs   Json?
+  errorMessage    String?  @db.Text
+  errorCode       Int?
+  retryCount      Int      @default(0)
+  lastAttemptAt   DateTime?
+  // Optimistic locking del cron.
+  lockedAt        DateTime?
+  lockedBy        String?
+  createdById     String?
+  createdBy       User?    @relation("ScheduledPostCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status, scheduledAt])
+  @@index([motoId, scheduledAt])
+}
+
+/// Campaña de Meta Ads. El ciclo de vida es:
+///   DRAFT (solo en nuestra DB) → IN_META_PAUSED (creada en Meta, pausada)
+///   → ACTIVE (corriendo) → PAUSED_BY_USER | COMPLETED | FAILED | DELETED
+///
+/// Importante: TODA campaña arranca DRAFT/IN_META_PAUSED. La activación
+/// requiere doble-confirmación explícita del admin desde la UI.
+model AdCampaign {
+  id                    String   @id @default(cuid())
+  motoId                String
+  moto                  Modelo   @relation("AdCampaignMoto", fields: [motoId], references: [id], onDelete: Cascade)
+  // Auto-generado: "MF — {marca} {modelo} {año} — {YYYY-MM-DD}"
+  name                  String
+  // Nomenclatura ODAX (no las legacy de Meta):
+  // OUTCOME_TRAFFIC, OUTCOME_ENGAGEMENT, OUTCOME_LEADS, OUTCOME_AWARENESS
+  objective             String
+  // IDs en Meta tras creación. Quedan null mientras el status sea DRAFT.
+  metaCampaignId        String?  @unique
+  metaAdSetId           String?  @unique
+  metaAdId              String?  @unique
+  metaCreativeId        String?
+  // Presupuesto diario en CENTAVOS de ARS para evitar floats (ej 1000000 = $10000).
+  dailyBudgetCents      Int
+  startDate             DateTime
+  endDate               DateTime
+  status                String   @default("DRAFT")
+  // Validado por Zod antes de persistir. Estructura: { ageMin, ageMax,
+  // genders, locations[], interests[], languages[] }. Ver brief §6.5.
+  audienceConfig        Json
+  creativeImageUrl      String   @db.Text
+  creativeCaption       String   @db.Text
+  // CTA: LEARN_MORE | MESSAGE_PAGE | WHATSAPP_MESSAGE | GET_DIRECTIONS | etc.
+  creativeCallToAction  String
+  destinationUrl        String?  @db.Text
+  // Cache de insights: { reach, impressions, clicks, ctr, cpm, cpc, spend,
+  // results, costPerResult, syncedAt }. Actualizado por cron sync cada 6h.
+  insightsCache         Json?
+  lastSyncedAt          DateTime?
+  errorMessage          String?  @db.Text
+  errorCode             Int?
+  createdById           String?
+  createdBy             User?    @relation("AdCampaignCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@index([status, endDate])
+  @@index([motoId])
+}
+
+/// Log estructurado de cada call a Meta (Graph API + Marketing API).
+/// Sirve para debugging, auditoría y diagnóstico de errores.
+///
+/// IMPORTANTE: requestBody y responseBody deben tener el access_token
+/// redactado antes de persistir (ver lib/meta/api-log.ts cuando se cree).
+///
+/// Retención 30 días con cron de cleanup semanal.
+model MetaApiLog {
+  id                      String   @id @default(cuid())
+  // OUTBOUND: nosotros llamamos a Meta. INBOUND: webhooks de Meta (futuro).
+  direction               String   @default("OUTBOUND")
+  endpoint                String
+  method                  String
+  // Token redactado antes de guardar.
+  requestBody             Json?
+  responseStatus          Int?
+  responseBody            Json?
+  durationMs              Int?
+  errorCode               Int?
+  errorSubcode            Int?
+  relatedScheduledPostId  String?
+  relatedAdCampaignId     String?
+  createdAt               DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([relatedScheduledPostId])
+  @@index([relatedAdCampaignId])
+  @@index([errorCode])
 }
