@@ -27,7 +27,11 @@ export async function GET() {
     )
   }
 
-  const diag = await diagnosticoMeta(cfg.pageAccessToken)
+  const diag = await diagnosticoMeta(
+    cfg.pageAccessToken,
+    cfg.pageId,
+    cfg.igUserId
+  )
 
   return NextResponse.json(
     {

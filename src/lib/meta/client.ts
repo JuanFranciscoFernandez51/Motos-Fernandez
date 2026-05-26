@@ -170,13 +170,17 @@ export async function getPages(userToken: string): Promise<Page[]> {
  * para entender por que no aparecen pages. Solo usar desde el endpoint
  * de debug. NO loggear el access_token completo.
  */
-export async function diagnosticoMeta(userToken: string) {
+export async function diagnosticoMeta(
+  pageToken: string,
+  pageId: string | null,
+  igUserId: string | null
+) {
   const result: Record<string, unknown> = {}
 
   const safeFetch = async (label: string, urlBuilder: () => URL) => {
     try {
       const url = urlBuilder()
-      url.searchParams.set("access_token", userToken)
+      url.searchParams.set("access_token", pageToken)
       const res = await fetch(url.toString())
       const data = await res.json()
       result[label] = { status: res.status, body: data }
@@ -185,22 +189,45 @@ export async function diagnosticoMeta(userToken: string) {
     }
   }
 
-  await safeFetch("me", () => {
+  // 1) Con un Page Access Token, /me devuelve la PAGE, no el usuario.
+  //    Sin pedir "email" para que no falle. Si esto anda, el token está vivo.
+  await safeFetch("me_as_page", () => {
     const u = new URL(`${GRAPH_API}/me`)
-    u.searchParams.set("fields", "id,name,email")
-    return u
-  })
-  await safeFetch("permissions", () => new URL(`${GRAPH_API}/me/permissions`))
-  await safeFetch("accounts", () => {
-    const u = new URL(`${GRAPH_API}/me/accounts`)
     u.searchParams.set("fields", "id,name,category,tasks")
     return u
   })
-  await safeFetch("businesses", () => {
-    const u = new URL(`${GRAPH_API}/me/businesses`)
-    u.searchParams.set("fields", "id,name")
+
+  // 2) Inspección del token: subject, app id, scopes, expiración real.
+  //    Necesita debug_token, no /me/permissions.
+  await safeFetch("token_inspect", () => {
+    const u = new URL(`${GRAPH_API}/debug_token`)
+    u.searchParams.set("input_token", pageToken)
     return u
   })
+
+  if (pageId) {
+    // 3) La Page directamente, pidiendo si tiene IG Business linkeada.
+    //    Acá está la pista clave: ¿la Page apunta a la IG que esperamos?
+    await safeFetch("page_with_ig", () => {
+      const u = new URL(`${GRAPH_API}/${pageId}`)
+      u.searchParams.set(
+        "fields",
+        "id,name,instagram_business_account{id,username,name},access_token"
+      )
+      return u
+    })
+  }
+
+  if (igUserId) {
+    // 4) La cuenta IG por ID. Si esto falla con subcode 33, el page token
+    //    NO tiene acceso a esta cuenta IG (problema de scopes o la cuenta
+    //    no está linkeada a la Page del token).
+    await safeFetch("ig_account", () => {
+      const u = new URL(`${GRAPH_API}/${igUserId}`)
+      u.searchParams.set("fields", "id,username,name,account_type")
+      return u
+    })
+  }
 
   return result
 }
