@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireAdmin } from "@/lib/admin-auth"
 import { diagnosticoMeta } from "@/lib/meta/client"
+import { decryptToken } from "@/lib/crypto/tokens"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -27,8 +28,10 @@ export async function GET() {
     )
   }
 
+  // El token vive encriptado en DB (enc:v1:...). diagnosticoMeta espera
+  // el token plano para pegarle a Graph — lo desencriptamos acá.
   const diag = await diagnosticoMeta(
-    cfg.pageAccessToken,
+    decryptToken(cfg.pageAccessToken),
     cfg.pageId,
     cfg.igUserId
   )
