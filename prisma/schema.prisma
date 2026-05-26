@@ -1147,11 +1147,20 @@ model MetaConfig {
   userName        String?              // Nombre del user
   pageId          String?              // ID de la página de FB
   pageName        String?              // Nombre de la página
-  pageAccessToken String?   @db.Text   // Token de la página (no expira si es long-lived)
+  // pageAccessToken: encriptado con AES-256-GCM (prefijo "enc:v1:"). Si
+  // hay valores legacy en texto plano, se manejan transparentemente al
+  // leer (ver src/lib/crypto/tokens.ts).
+  pageAccessToken String?   @db.Text
   igUserId        String?              // ID de la cuenta IG Business (vinculada a la page)
   igUsername      String?              // @motosfernandez
   expiresAt       DateTime?            // del user token (page token suele no expirar)
   scope           String?
+  // Versión de Graph API que usamos para este config. Permite rollear
+  // versiones en el futuro sin redeploy de código (cambiar la fila en DB).
+  apiVersion      String    @default("v25.0")
+  // Última vez que se verificó que el token sigue válido. Lo setea el
+  // cron check-token-health.
+  lastTokenCheckAt DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 }

@@ -6,12 +6,31 @@
 //   https://developers.facebook.com/docs/facebook-login/manually-build-a-login-flow
 //   https://developers.facebook.com/docs/instagram-api/getting-started
 import { prisma } from "@/lib/prisma"
+import { decryptToken, encryptToken } from "@/lib/crypto/tokens"
 
-// v18.0 es la versión más estable y ampliamente soportada para
-// publicación. Versiones más nuevas (v22+, v23) pueden rechazar
-// scopes con "Invalid Scopes" cuando la app es Business sin verificar.
-const GRAPH_API = "https://graph.facebook.com/v18.0"
-const FB_AUTH = "https://www.facebook.com/v18.0/dialog/oauth"
+// Versión actual de la Graph API. Cambió de v18.0 → v25.0 (la v18 se
+// acerca a deprecación, Meta soporta cada versión ~2 años).
+//
+// La versión por default vive en una constante para fallback; cada
+// MetaConfig en DB puede sobreescribirla con su campo `apiVersion` para
+// rollear versiones sin redeploy.
+const DEFAULT_API_VERSION = process.env.META_API_VERSION || "v25.0"
+const GRAPH_BASE = "https://graph.facebook.com"
+const FB_AUTH_BASE = "https://www.facebook.com"
+
+function graphApi(version: string = DEFAULT_API_VERSION): string {
+  return `${GRAPH_BASE}/${version}`
+}
+
+function fbAuthUrl(version: string = DEFAULT_API_VERSION): string {
+  return `${FB_AUTH_BASE}/${version}/dialog/oauth`
+}
+
+// Compat: muchas funciones usaban el string fijo `GRAPH_API`. Lo mantengo
+// como helper que devuelve la URL default — para versiones específicas se
+// usa graphApi(version).
+const GRAPH_API = graphApi()
+const FB_AUTH = fbAuthUrl()
 
 // Permisos para publicar carruseles en IG y fotos en FB Page.
 // business_management es necesario porque la pagina vive dentro de
@@ -272,7 +291,32 @@ export async function getIGAccountForPage(
 export async function getValidPageToken(): Promise<string | null> {
   const cfg = await prisma.metaConfig.findUnique({ where: { id: "default" } })
   if (!cfg?.pageAccessToken) return null
-  return cfg.pageAccessToken
+  // El token se guarda encriptado (prefijo "enc:v1:"). decryptToken
+  // maneja transparentemente el caso legacy de texto plano para no
+  // romper datos pre-migración.
+  return decryptToken(cfg.pageAccessToken)
+}
+
+/**
+ * Persiste un nuevo page access token, encriptándolo antes de guardar.
+ * Acepta texto plano (lo encripta) o un valor ya encriptado (idempotente).
+ */
+export async function savePageAccessToken(
+  token: string,
+  extra: { igUserId?: string | null; pageId?: string | null } = {}
+): Promise<void> {
+  await prisma.metaConfig.upsert({
+    where: { id: "default" },
+    create: {
+      id: "default",
+      pageAccessToken: encryptToken(token),
+      ...extra,
+    },
+    update: {
+      pageAccessToken: encryptToken(token),
+      ...extra,
+    },
+  })
 }
 
 /** Wrapper de fetch que agrega el page access token. */

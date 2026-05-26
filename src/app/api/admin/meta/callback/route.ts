@@ -7,6 +7,7 @@ import {
   getUserInfo,
   getIGAccountForPage,
 } from "@/lib/meta/client"
+import { encryptToken } from "@/lib/crypto/tokens"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
@@ -52,6 +53,8 @@ export async function GET(request: Request) {
       const expiresAtFallback = longToken.expires_in
         ? new Date(Date.now() + longToken.expires_in * 1000)
         : null
+      // Token encriptado antes de persistir (AES-256-GCM).
+      const encUserToken = encryptToken(longToken.access_token)
       await prisma.metaConfig.upsert({
         where: { id: "default" },
         update: {
@@ -59,7 +62,7 @@ export async function GET(request: Request) {
           userName: user.name,
           // Guardamos el long-lived USER token en pageAccessToken como fallback
           // para que el endpoint de debug pueda leer /me/businesses, etc.
-          pageAccessToken: longToken.access_token,
+          pageAccessToken: encUserToken,
           pageId: null,
           pageName: null,
           igUserId: null,
@@ -70,7 +73,7 @@ export async function GET(request: Request) {
           id: "default",
           userId: user.id,
           userName: user.name,
-          pageAccessToken: longToken.access_token,
+          pageAccessToken: encUserToken,
           expiresAt: expiresAtFallback,
         },
       })
@@ -100,6 +103,7 @@ export async function GET(request: Request) {
       ? new Date(Date.now() + longToken.expires_in * 1000)
       : null
 
+    const encPageToken = encryptToken(page.access_token)
     await prisma.metaConfig.upsert({
       where: { id: "default" },
       update: {
@@ -107,7 +111,7 @@ export async function GET(request: Request) {
         userName: user.name,
         pageId: page.id,
         pageName: page.name,
-        pageAccessToken: page.access_token,
+        pageAccessToken: encPageToken,
         igUserId: ig.id,
         igUsername: ig.username,
         expiresAt,
@@ -118,7 +122,7 @@ export async function GET(request: Request) {
         userName: user.name,
         pageId: page.id,
         pageName: page.name,
-        pageAccessToken: page.access_token,
+        pageAccessToken: encPageToken,
         igUserId: ig.id,
         igUsername: ig.username,
         expiresAt,
