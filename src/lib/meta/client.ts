@@ -62,9 +62,30 @@ const ADS_SCOPES = [
   "leads_retrieval",
 ]
 
-export const EXPECTED_SCOPES = [...ORGANIC_SCOPES, ...ADS_SCOPES]
+/**
+ * Set "completo" — solo se pide cuando la app de Meta tiene aprobados
+ * los permisos de Marketing API. Si todavía no, pedirlos rebota con
+ * "Invalid Scopes" para el developer y bloquea la reconexión orgánica.
+ */
+export const FULL_SCOPES = [...ORGANIC_SCOPES, ...ADS_SCOPES]
 
-const SCOPES = EXPECTED_SCOPES.join(",")
+/**
+ * Default. Lo que SIEMPRE funciona (publicación a IG/FB). Los ads scopes
+ * se piden a través de /api/admin/meta/connect?withAds=1 cuando Meta
+ * los apruebe en el Dashboard de la app.
+ */
+export const DEFAULT_SCOPES = ORGANIC_SCOPES
+
+/**
+ * EXPECTED_SCOPES = qué consideramos "todo listo" cuando hablamos de la
+ * conexión. Si tenemos ads habilitados, esperamos FULL. Sino, ORGANIC.
+ * El banner ámbar usa esto para no marcar "faltan scopes" si todavía no
+ * tiene sentido pedirlos.
+ */
+export const EXPECTED_SCOPES = ORGANIC_SCOPES
+
+const SCOPES = DEFAULT_SCOPES.join(",")
+const SCOPES_FULL = FULL_SCOPES.join(",")
 
 function getEnv() {
   const appId = process.env.META_APP_ID
@@ -77,13 +98,24 @@ function getEnv() {
   return { appId, appSecret, redirectUri }
 }
 
-/** URL para redirigir al usuario al login de Meta y autorizar la app. */
-export function getAuthUrl(state: string = ""): string {
+/**
+ * URL para redirigir al usuario al login de Meta y autorizar la app.
+ *
+ * `mode="organic"` (default): pide solo scopes orgánicos. Funciona
+ *   siempre, lo que tenemos hoy en producción.
+ * `mode="full"`: agrega scopes de ads. Solo funciona si la app de Meta
+ *   tiene Marketing API agregada y los permisos aprobados — sino
+ *   rebota "Invalid Scopes".
+ */
+export function getAuthUrl(
+  state: string = "",
+  mode: "organic" | "full" = "organic"
+): string {
   const { appId, redirectUri } = getEnv()
   const params = new URLSearchParams({
     client_id: appId,
     redirect_uri: redirectUri,
-    scope: SCOPES,
+    scope: mode === "full" ? SCOPES_FULL : SCOPES,
     response_type: "code",
     auth_type: "rerequest",
   })

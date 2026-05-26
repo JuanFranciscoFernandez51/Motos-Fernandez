@@ -152,8 +152,10 @@ export default async function MetaAdminPage({
         </CardContent>
       </Card>
 
-      {/* Banner: si conectado pero faltan scopes de Ads → CTA para
-          habilitar Calendario + Meta Ads (Fase 2 del brief técnico). */}
+      {/* Banner Ads — informativo. Meta Ads requiere habilitar Marketing
+          API en la app de Meta antes de poder pedir los scopes. Mientras
+          tanto, el módulo de Calendario sí funciona con los scopes
+          orgánicos que ya tenés. */}
       {status.connected && !status.adsReady && (
         <Card className="border-[#6B4F7A]/40 bg-gradient-to-r from-[#6B4F7A]/10 via-purple-50/40 to-transparent dark:from-[#6B4F7A]/20 dark:via-purple-950/20">
           <CardContent className="p-4 sm:p-5">
@@ -163,29 +165,51 @@ export default async function MetaAdminPage({
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-[#1A1A1A] dark:text-white flex items-center gap-2 flex-wrap">
-                  Habilitá Calendario + Meta Ads
+                  Meta Ads — habilitación pendiente
                   <Badge variant="secondary" className="bg-[#6B4F7A]/15 text-[#6B4F7A] text-[10px] font-bold">
-                    NUEVO
+                    BLOQUEADO POR META
                   </Badge>
                 </p>
                 <p className="text-xs text-gray-600 dark:text-gray-300 mt-1 leading-relaxed">
-                  Tu conexión actual solo permite publicar manualmente. Para
-                  programar posts y crear campañas pagas necesitamos
-                  permisos extra de Meta.{" "}
-                  {status.missingScopes.length > 0 && (
-                    <span className="text-amber-700 dark:text-amber-300">
-                      Faltan: {status.missingScopes.join(", ")}.
-                    </span>
-                  )}
+                  Para crear campañas pagas desde acá, la app de Meta
+                  necesita tener <strong>Marketing API</strong> agregada
+                  como producto y los scopes (
+                  <code className="text-[10px]">ads_management</code>,{" "}
+                  <code className="text-[10px]">ads_read</code>) aprobados.
+                  Sin eso, Meta los rechaza con &quot;Invalid Scopes&quot;.
+                </p>
+                <p className="text-xs text-gray-600 dark:text-gray-300 mt-2 leading-relaxed">
+                  <strong>Pasos:</strong> entrá a{" "}
+                  <a
+                    href="https://developers.facebook.com/apps/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[#6B4F7A] underline font-medium"
+                  >
+                    developers.facebook.com/apps
+                  </a>{" "}
+                  → tu app &quot;Motos Fernandez admin&quot; → Add Product
+                  → <strong>Marketing API</strong> → completá Business
+                  Verification + App Review (1-2 semanas). Cuando esté
+                  aprobado, tocás &quot;Reconectar con Ads&quot; abajo y
+                  Meta te deja autorizar los scopes nuevos.
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 italic">
+                  Mientras tanto, el módulo de <strong>Calendario de
+                  publicaciones</strong> (Fase 3) sí va a funcionar con
+                  los scopes orgánicos que ya tenés. Lo arrancamos en
+                  paralelo.
                 </p>
               </div>
               <Button
                 size="sm"
-                render={<a href="/api/admin/meta/connect" />}
-                className="bg-[#6B4F7A] hover:bg-[#8B6F9A] shrink-0"
+                variant="outline"
+                render={<a href="/api/admin/meta/connect?withAds=1" />}
+                className="border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10 shrink-0"
+                title="Solo tocar después de habilitar Marketing API en Meta App Dashboard"
               >
                 <Megaphone className="size-4 mr-1.5" />
-                Reconectar con permisos de Ads
+                Reconectar con Ads
               </Button>
             </div>
           </CardContent>
@@ -197,7 +221,7 @@ export default async function MetaAdminPage({
           <CardContent className="p-3 flex items-center gap-2 text-sm">
             <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-300" />
             <span className="text-emerald-700 dark:text-emerald-300 font-medium">
-              Calendario + Meta Ads habilitados ✓
+              Meta Ads habilitado ✓
             </span>
             <span className="text-xs text-emerald-700/70 dark:text-emerald-300/70 ml-1">
               ({status.scopesGuardados.length} scopes activos)

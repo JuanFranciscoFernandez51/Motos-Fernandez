@@ -23,7 +23,12 @@ export async function GET(request: Request) {
     if (!session) {
       return errorRedirect("No autorizado: iniciá sesión de admin antes")
     }
-    const authUrl = getAuthUrl("admin")
+    // Por default: solo scopes orgánicos (publicación a IG/FB) — siempre
+    // funciona. Con ?withAds=1 pide también los de Marketing API, que
+    // requieren que la app de Meta los tenga aprobados/agregados como
+    // producto. Sin esa aprobación previa, Meta rebota "Invalid Scopes".
+    const withAds = url.searchParams.get("withAds") === "1"
+    const authUrl = getAuthUrl("admin", withAds ? "full" : "organic")
     return NextResponse.redirect(authUrl)
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Error desconocido"
