@@ -61,6 +61,8 @@ type MandatoRow = {
   clienteDni: string | null
   publicado: boolean
   fotos: string[]
+  /** "EN_LOCAL" (moto en la conce) | "EN_DOMICILIO" (en lo del titular) */
+  tipoTenencia: string
 }
 
 export function MandatosListFilters({
@@ -75,6 +77,8 @@ export function MandatosListFilters({
   const router = useRouter()
   const [query, setQuery] = useState("")
   const [estadoFilter, setEstadoFilter] = useState<string>("")
+  // "" = todos, "EN_LOCAL", "EN_DOMICILIO"
+  const [tenenciaFilter, setTenenciaFilter] = useState<string>("")
   const [fotosMandatoId, setFotosMandatoId] = useState<string | null>(null)
   const [publicandoId, setPublicandoId] = useState<string | null>(null)
   const [isPending, startTransition] = useTransition()
@@ -85,6 +89,8 @@ export function MandatosListFilters({
       PENDIENTE: mandatos.filter((m) => m.estado === "PENDIENTE").length,
       ACTIVO: mandatos.filter((m) => m.estado === "ACTIVO").length,
       VENDIDO: mandatos.filter((m) => m.estado === "VENDIDO").length,
+      EN_LOCAL: mandatos.filter((m) => m.tipoTenencia !== "EN_DOMICILIO").length,
+      EN_DOMICILIO: mandatos.filter((m) => m.tipoTenencia === "EN_DOMICILIO").length,
     }),
     [mandatos]
   )
@@ -93,6 +99,8 @@ export function MandatosListFilters({
     const q = query.trim().toLowerCase()
     return mandatos.filter((m) => {
       if (estadoFilter && m.estado !== estadoFilter) return false
+      if (tenenciaFilter && (m.tipoTenencia || "EN_LOCAL") !== tenenciaFilter)
+        return false
       if (!q) return true
       const hay = [
         formatNumero("MV", m.numero),
@@ -182,6 +190,43 @@ export function MandatosListFilters({
         </button>
       </div>
 
+      {/* Filtro por tenencia */}
+      <div className="flex flex-wrap items-center gap-2">
+        <span className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+          Tenencia:
+        </span>
+        <button
+          onClick={() => setTenenciaFilter("")}
+          className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+            tenenciaFilter === ""
+              ? "bg-[#6B4F7A] text-white"
+              : "border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A]"
+          }`}
+        >
+          Todas ({counts.total})
+        </button>
+        <button
+          onClick={() => setTenenciaFilter("EN_LOCAL")}
+          className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+            tenenciaFilter === "EN_LOCAL"
+              ? "bg-[#6B4F7A] text-white"
+              : "border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A]"
+          }`}
+        >
+          📍 En la conce ({counts.EN_LOCAL})
+        </button>
+        <button
+          onClick={() => setTenenciaFilter("EN_DOMICILIO")}
+          className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
+            tenenciaFilter === "EN_DOMICILIO"
+              ? "bg-blue-600 text-white"
+              : "border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-blue-600"
+          }`}
+        >
+          🏠 En domicilio ({counts.EN_DOMICILIO})
+        </button>
+      </div>
+
       {/* Buscador */}
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-gray-400" />
@@ -246,9 +291,19 @@ export function MandatosListFilters({
                       {formatNumero("MV", m.numero)}
                     </TableCell>
                     <TableCell>
-                      <p className="font-medium text-sm">
-                        {m.marca} {m.modelo}
-                      </p>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <p className="font-medium text-sm">
+                          {m.marca} {m.modelo}
+                        </p>
+                        {m.tipoTenencia === "EN_DOMICILIO" && (
+                          <span
+                            className="rounded-full bg-blue-600 px-2 py-0.5 text-[10px] font-bold text-white"
+                            title="Mandato externo — la moto está en lo del titular"
+                          >
+                            🏠 SOLO WEB
+                          </span>
+                        )}
+                      </div>
                       {m.anio && (
                         <p className="text-xs text-gray-500 dark:text-gray-400">{m.anio}</p>
                       )}

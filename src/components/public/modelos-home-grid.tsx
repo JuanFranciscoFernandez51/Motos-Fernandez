@@ -19,6 +19,8 @@ export type ModeloHomeItem = {
   moneda: string
   fotos: string[]
   destacado: boolean
+  /** "EN_LOCAL" | "EN_DOMICILIO" — usado para mostrar badge SOLO WEB. */
+  tipoTenencia?: string | null
 }
 
 const ROTATION_MS = 12000 // 12 segundos
@@ -175,15 +177,33 @@ function ModeloCard({
             Destacado
           </div>
         )}
-        <span
-          className={`absolute top-3 right-3 rounded-md px-2 py-0.5 text-[10px] font-bold ${
-            (model.condicion || "0KM") === "0KM"
-              ? "bg-emerald-500 text-white"
-              : "bg-orange-500 text-white"
-          }`}
-        >
-          {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
-        </span>
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
+          <span
+            className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
+              (model.condicion || "0KM") === "0KM"
+                ? "bg-emerald-500 text-white"
+                : "bg-orange-500 text-white"
+            }`}
+          >
+            {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
+          </span>
+          {/* Tenencia: dónde se ve/se compra la moto */}
+          {model.tipoTenencia === "EN_DOMICILIO" ? (
+            <span
+              className="rounded-md px-2 py-0.5 text-[10px] font-bold bg-blue-600 text-white"
+              title="Esta moto se publica solo por la web — coordinamos visita con el titular"
+            >
+              SOLO WEB
+            </span>
+          ) : (
+            <span
+              className="rounded-md px-2 py-0.5 text-[10px] font-bold bg-[#6B4F7A] text-white"
+              title="Disponible para ver y probar en Brown 1052"
+            >
+              EN CONCESIONARIA
+            </span>
+          )}
+        </div>
       </div>
       <div className="p-5">
         <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-[0.18em]">

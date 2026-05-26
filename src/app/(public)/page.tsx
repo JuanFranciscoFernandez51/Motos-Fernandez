@@ -252,6 +252,7 @@ export default async function HomePage() {
                   moneda: m.moneda,
                   fotos: m.fotos,
                   destacado: m.destacado,
+                  tipoTenencia: m.tipoTenencia,
                 }))}
                 rotativas={rotativas.map((m) => ({
                   id: m.id,
@@ -265,6 +266,7 @@ export default async function HomePage() {
                   moneda: m.moneda,
                   fotos: m.fotos,
                   destacado: m.destacado,
+                  tipoTenencia: m.tipoTenencia,
                 }))}
               />
 

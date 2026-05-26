@@ -85,6 +85,7 @@ export default async function ModeloDetailPage({ params }: Props) {
     : null
 
   // Info compacta del modelo que necesitan las islas client para tracking
+  // + UI condicional (ej. CTA Final cambia "visitanos" si está en domicilio).
   const modeloInfo = {
     slug: model.slug,
     marca: model.marca,
@@ -93,6 +94,7 @@ export default async function ModeloDetailPage({ params }: Props) {
     moneda: model.moneda || "ARS",
     categoria: CATEGORIA_VEHICULO_LABELS[model.categoriaVehiculo] || model.categoriaVehiculo,
     condicion: model.condicion || "0KM",
+    tipoTenencia: model.tipoTenencia || "EN_LOCAL",
   }
 
   const monedaActual = model.moneda || "ARS"
@@ -226,6 +228,16 @@ export default async function ModeloDetailPage({ params }: Props) {
                 {model.etiqueta && ETIQUETAS_MAP[model.etiqueta] && (
                   <span className={`inline-block rounded-md px-2.5 py-0.5 text-xs font-bold text-white ${ETIQUETAS_MAP[model.etiqueta].color}`}>
                     {ETIQUETAS_MAP[model.etiqueta].label}
+                  </span>
+                )}
+                {/* Tenencia: dónde se puede ver/comprar la moto */}
+                {model.tipoTenencia === "EN_DOMICILIO" ? (
+                  <span className="inline-block rounded-md px-2.5 py-0.5 text-xs font-bold text-white bg-blue-600">
+                    SOLO WEB
+                  </span>
+                ) : (
+                  <span className="inline-block rounded-md px-2.5 py-0.5 text-xs font-bold text-white bg-[#6B4F7A]">
+                    EN CONCESIONARIA
                   </span>
                 )}
                 <span className="text-sm text-gray-400">{model.anio || new Date().getFullYear()}</span>

@@ -81,6 +81,8 @@ async function updateMandato(formData: FormData) {
           fechaFirma: date("fechaFirma"),
           fechaVencimiento: date("fechaVencimiento"),
           estado: nuevoEstado,
+          tipoTenencia: get("tipoTenencia") === "EN_DOMICILIO" ? "EN_DOMICILIO" : "EN_LOCAL",
+          direccionTenencia: get("direccionTenencia") || null,
           observaciones: get("observaciones") || null,
         },
       })
@@ -149,6 +151,8 @@ async function publicarEnCatalogo(id: string) {
         notasInternas: mandato.observaciones,
         // Si el mandato tiene fotos, las usa; sino, placeholder
         fotos: mandato.fotos.length > 0 ? mandato.fotos : ["/images/logo-clasico.png"],
+        // Propaga la tenencia del mandato (EN_LOCAL / EN_DOMICILIO).
+        tipoTenencia: mandato.tipoTenencia,
       },
     })
   })
@@ -233,6 +237,8 @@ export default async function EditarMandatoPage({
     fechaFirma: toDateInput(mandato.fechaFirma),
     fechaVencimiento: toDateInput(mandato.fechaVencimiento),
     estado: mandato.estado,
+    tipoTenencia: mandato.tipoTenencia || "EN_LOCAL",
+    direccionTenencia: mandato.direccionTenencia || "",
     observaciones: mandato.observaciones || "",
     fotos: mandato.fotos,
   }

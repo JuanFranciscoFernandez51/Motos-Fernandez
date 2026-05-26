@@ -35,6 +35,8 @@ interface Modelo {
   specs?: Record<string, unknown> | null
   destacado?: boolean
   financiacion?: unknown
+  /** "EN_LOCAL" | "EN_DOMICILIO" — badge SOLO WEB en card. */
+  tipoTenencia?: string | null
 }
 
 // Parseo de cilindrada: "150cc" -> 150, "300 cc" -> 300, null si no se puede
@@ -478,6 +480,22 @@ export function CatalogoClient({
                     {model.etiqueta && ETIQUETAS_MAP[model.etiqueta] && (
                       <span className={`rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg truncate max-w-full ${ETIQUETAS_MAP[model.etiqueta].color}`}>
                         {ETIQUETAS_MAP[model.etiqueta].label.toUpperCase()}
+                      </span>
+                    )}
+                    {/* Tenencia: dónde se puede ver/comprar */}
+                    {model.tipoTenencia === "EN_DOMICILIO" ? (
+                      <span
+                        className="rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg bg-blue-600 truncate max-w-full"
+                        title="Esta moto se publica solo por la web — coordinamos visita con el titular"
+                      >
+                        SOLO WEB
+                      </span>
+                    ) : (
+                      <span
+                        className="rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg bg-[#6B4F7A] truncate max-w-full"
+                        title="Disponible para ver y probar en Brown 1052"
+                      >
+                        EN CONCESIONARIA
                       </span>
                     )}
                   </div>

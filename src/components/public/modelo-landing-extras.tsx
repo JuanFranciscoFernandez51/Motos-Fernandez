@@ -34,6 +34,8 @@ interface ModeloInfo {
   moneda: string
   categoria: string
   condicion: string
+  /** "EN_LOCAL" | "EN_DOMICILIO" — cambia el CTA "Visitala en el local" */
+  tipoTenencia?: string
 }
 
 type CtaSource =
@@ -199,6 +201,7 @@ export function CTAFinal({
   modelo: ModeloInfo
   whatsappHref: string
 }) {
+  const esEnDomicilio = modelo.tipoTenencia === "EN_DOMICILIO"
   return (
     <section className="mt-12 rounded-2xl bg-gradient-to-br from-[#15121A] to-[#0E0B12] text-white p-6 sm:p-10 text-center relative overflow-hidden">
       <div
@@ -211,7 +214,9 @@ export function CTAFinal({
           ¿Listo para llevártela?
         </h2>
         <p className="mt-2 text-gray-300 text-sm sm:text-base">
-          Te respondemos en menos de 1 hora hábil.
+          {esEnDomicilio
+            ? "Coordinamos la visita y la prueba directamente con el titular."
+            : "Te respondemos en menos de 1 hora hábil."}
         </p>
         <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
           <WhatsAppCTA
@@ -221,19 +226,25 @@ export function CTAFinal({
             className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#25D366] hover:bg-[#1ebe57] px-6 py-4 text-base font-bold text-white shadow-lg transition-all hover:-translate-y-0.5"
           >
             <MessageCircle className="size-5" />
-            Consultar por WhatsApp
+            {esEnDomicilio
+              ? "Coordinar visita por WhatsApp"
+              : "Consultar por WhatsApp"}
           </WhatsAppCTA>
-          <a
-            href={BUSINESS.googleMapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-white/20 hover:bg-white/5 px-6 py-4 text-base font-semibold text-white transition-colors"
-          >
-            <MapPin className="size-5" />
-            Visitanos en el local
-          </a>
+          {!esEnDomicilio && (
+            <a
+              href={BUSINESS.googleMapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 rounded-lg border-2 border-white/20 hover:bg-white/5 px-6 py-4 text-base font-semibold text-white transition-colors"
+            >
+              <MapPin className="size-5" />
+              Visitanos en el local
+            </a>
+          )}
         </div>
-        <p className="mt-3 text-xs text-gray-400">{BUSINESS.address}</p>
+        {!esEnDomicilio && (
+          <p className="mt-3 text-xs text-gray-400">{BUSINESS.address}</p>
+        )}
       </div>
     </section>
   )

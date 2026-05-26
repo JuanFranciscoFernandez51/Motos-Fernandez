@@ -62,6 +62,8 @@ async function createMandato(formData: FormData) {
           | "VENDIDO"
           | "CANCELADO"
           | "VENCIDO",
+        tipoTenencia: get("tipoTenencia") === "EN_DOMICILIO" ? "EN_DOMICILIO" : "EN_LOCAL",
+        direccionTenencia: get("direccionTenencia") || null,
         observaciones: get("observaciones") || null,
       },
     })

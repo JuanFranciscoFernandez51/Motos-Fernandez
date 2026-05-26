@@ -92,6 +92,12 @@ model Modelo {
   activo            Boolean           @default(true)
   destacado         Boolean           @default(false)
   etiqueta          String?           // "DISPONIBLE", "ULTIMA_UNIDAD", "RECIEN_INGRESADA", "CONSULTAR_STOCK", "RESERVADA"
+  // Dónde está físicamente la moto. EN_LOCAL = en la concesionaria
+  // (entra a stock motos, se puede visitar). EN_DOMICILIO = mandato
+  // externo, la moto está en lo del titular, NO entra a stock, la card
+  // del catálogo muestra "SOLO WEB". Default EN_LOCAL para no romper
+  // el catálogo actual.
+  tipoTenencia      String?           @default("EN_LOCAL")
   orden             Int               @default(0)
 
   // Venta (solo admin) — al marcar vendida desaparece del catálogo público
@@ -759,6 +765,13 @@ model MandatoVenta {
   chasis          String?
   motor           String?
   patente         String?
+
+  // Tenencia física: EN_LOCAL = la moto se trae a Brown 1052 (caso
+  // tradicional, entra a stock). EN_DOMICILIO = consignación externa, la
+  // moto queda en lo del titular y nosotros publicamos por la web. En la
+  // card pública se muestra "SOLO WEB". Se propaga al Modelo al publicar.
+  tipoTenencia       String  @default("EN_LOCAL")
+  direccionTenencia  String? // si está en domicilio, dónde queda
 
   // Documentación
   tieneTitulo              Boolean @default(false)

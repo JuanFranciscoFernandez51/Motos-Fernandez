@@ -23,6 +23,11 @@ export default async function StockMotosPage() {
   })
 
   const motos = await prisma.modelo.findMany({
+    // Stock = motos que tenemos físicamente en el local. Las que están en
+    // domicilio del titular (mandato externo) NO entran a stock: se
+    // publican en la web pero no las inventariamos. Default es EN_LOCAL,
+    // así que filtra solo las explícitamente EN_DOMICILIO.
+    where: { tipoTenencia: { not: "EN_DOMICILIO" } },
     orderBy: [{ codigo: "desc" }, { createdAt: "desc" }],
     select: {
       id: true,

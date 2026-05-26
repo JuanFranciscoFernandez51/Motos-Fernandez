@@ -41,6 +41,8 @@ export type MandatoData = {
   fechaFirma: string
   fechaVencimiento: string
   estado: string
+  tipoTenencia: string // "EN_LOCAL" | "EN_DOMICILIO"
+  direccionTenencia: string
   observaciones: string
   fotos: string[]
 }
@@ -72,6 +74,8 @@ const EMPTY: MandatoData = {
   fechaFirma: "",
   fechaVencimiento: "",
   estado: "PENDIENTE",
+  tipoTenencia: "EN_LOCAL",
+  direccionTenencia: "",
   observaciones: "",
   fotos: [],
 }
@@ -178,6 +182,67 @@ export function MandatoForm({
               value={data.clienteId}
               onChange={(id) => set("clienteId", id)}
             />
+          </CardContent>
+        </Card>
+
+        {/* Tenencia: dónde está físicamente la moto */}
+        <Card className="lg:col-span-3">
+          <CardHeader>
+            <CardTitle>¿Dónde está la moto?</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => set("tipoTenencia", "EN_LOCAL")}
+                className={`text-left rounded-lg border-2 p-4 transition-colors ${
+                  data.tipoTenencia === "EN_LOCAL"
+                    ? "border-[#6B4F7A] bg-[#6B4F7A]/5"
+                    : "border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/50"
+                }`}
+              >
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                  📍 En la concesionaria
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  La moto está físicamente en Brown 1052. Entra al stock,
+                  se puede visitar y probar.
+                </p>
+              </button>
+              <button
+                type="button"
+                onClick={() => set("tipoTenencia", "EN_DOMICILIO")}
+                className={`text-left rounded-lg border-2 p-4 transition-colors ${
+                  data.tipoTenencia === "EN_DOMICILIO"
+                    ? "border-[#6B4F7A] bg-[#6B4F7A]/5"
+                    : "border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/50"
+                }`}
+              >
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                  🏠 En domicilio del titular
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Consignación externa. NO entra al stock. En la web se
+                  muestra etiqueta &quot;SOLO WEB&quot; y la visita se coordina.
+                </p>
+              </button>
+            </div>
+            {data.tipoTenencia === "EN_DOMICILIO" && (
+              <div>
+                <Label htmlFor="direccionTenencia">
+                  Dirección donde se encuentra la moto
+                </Label>
+                <Input
+                  id="direccionTenencia"
+                  value={data.direccionTenencia}
+                  onChange={(e) => set("direccionTenencia", e.target.value)}
+                  placeholder="Ej: Av. Alem 1200, Bahía Blanca"
+                />
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                  Solo uso interno. No se publica en la web.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 

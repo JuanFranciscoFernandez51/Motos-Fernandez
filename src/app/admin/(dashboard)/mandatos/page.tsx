@@ -64,6 +64,10 @@ async function publicarDesdeLista(id: string) {
         notasInternas: mandato.observaciones,
         // Si el mandato tiene fotos, las usa; sino, placeholder
         fotos: mandato.fotos.length > 0 ? mandato.fotos : ["/images/logo-clasico.png"],
+        // Propaga la tenencia del mandato → si la moto está en domicilio
+        // del titular, en el catálogo público se muestra "SOLO WEB" y
+        // Stock motos no la va a listar (no la tenemos físicamente).
+        tipoTenencia: mandato.tipoTenencia,
       },
     })
   })
@@ -123,6 +127,7 @@ export default async function MandatosPage() {
           clienteDni: m.cliente.dni,
           publicado: !!m.modelo_,
           fotos: m.fotos,
+          tipoTenencia: m.tipoTenencia,
         }))}
         updateFotosMandato={updateFotosMandato}
         publicarDesdeLista={publicarDesdeLista}
