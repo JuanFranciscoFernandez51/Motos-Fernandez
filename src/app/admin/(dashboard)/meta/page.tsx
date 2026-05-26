@@ -65,14 +65,26 @@ export default async function MetaAdminPage({
           </p>
         </div>
         {status.connected && (
-          <Button
-            variant="outline"
-            render={<Link href="/admin/meta/calendario" />}
-            className="border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10"
-          >
-            <Sparkles className="size-4 mr-1.5" />
-            Calendario de publicaciones
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              render={<Link href="/admin/meta/calendario" />}
+              className="border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10"
+            >
+              <Sparkles className="size-4 mr-1.5" />
+              Calendario
+            </Button>
+            {status.adsReady && (
+              <Button
+                variant="outline"
+                render={<Link href="/admin/meta/ads" />}
+                className="border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10"
+              >
+                <Megaphone className="size-4 mr-1.5" />
+                Meta Ads
+              </Button>
+            )}
+          </div>
         )}
       </div>
 

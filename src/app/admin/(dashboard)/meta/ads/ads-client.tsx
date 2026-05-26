@@ -1,0 +1,846 @@
+"use client"
+
+import { useEffect, useMemo, useState, useTransition } from "react"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import {
+  ArrowLeft,
+  Megaphone,
+  AlertTriangle,
+  Loader2,
+  Plus,
+  Play,
+  Pause,
+  RefreshCw,
+  Trash2,
+  CheckCircle2,
+  XCircle,
+  Rocket,
+  Bike,
+  TrendingUp,
+} from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
+import { formatMoney } from "@/lib/admin-helpers"
+import { OBJECTIVE_LABELS, CTAS, CAMPAIGN_OBJECTIVES } from "@/lib/meta/ads"
+
+/**
+ * UI base de Meta Ads. Iteración 1:
+ * - Si no hay adAccountId configurado → wizard de elegir ad account.
+ * - Si hay → lista de campañas + botón "Nueva campaña" → modal con form
+ *   lineal (no wizard fancy aún).
+ *
+ * Wizard multi-step queda para iteración 2 cuando Francisco use esto
+ * unos días y veamos qué le simplifica el flujo.
+ */
+
+type MotoLite = {
+  id: string
+  slug: string
+  marca: string
+  nombre: string
+  anio: number | null
+  condicion: string
+  precio: number | null
+  moneda: string
+  fotoPrincipal: string | null
+  fotos: string[]
+}
+
+type CampaignLite = {
+  id: string
+  name: string
+  objective: string
+  status: string
+  dailyBudgetCents: number
+  startDate: string
+  endDate: string
+  insightsCache: Record<string, unknown> | null
+  errorMessage: string | null
+  moto: {
+    id: string
+    slug: string
+    marca: string
+    nombre: string
+    fotoPrincipal: string | null
+  }
+}
+
+const STATUS_STYLES: Record<string, { label: string; bg: string }> = {
+  DRAFT: {
+    label: "Borrador",
+    bg: "bg-gray-100 dark:bg-neutral-800 text-gray-700 dark:text-gray-300",
+  },
+  IN_META_PAUSED: {
+    label: "Lista para activar",
+    bg: "bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300",
+  },
+  ACTIVE: {
+    label: "Activa",
+    bg: "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300",
+  },
+  PAUSED_BY_USER: {
+    label: "Pausada",
+    bg: "bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300",
+  },
+  PAUSED_BY_META: {
+    label: "Pausada (Meta)",
+    bg: "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300",
+  },
+  COMPLETED: {
+    label: "Terminada",
+    bg: "bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300",
+  },
+  FAILED: {
+    label: "Error",
+    bg: "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300",
+  },
+}
+
+export function AdsClient({
+  featureEnabled,
+  adAccountId,
+  minBudget,
+  motos,
+  campaigns,
+}: {
+  featureEnabled: boolean
+  adAccountId: string | null
+  minBudget: number
+  motos: MotoLite[]
+  campaigns: CampaignLite[]
+}) {
+  const [showCreateModal, setShowCreateModal] = useState(false)
+
+  if (!adAccountId) {
+    return <AdAccountSetup featureEnabled={featureEnabled} />
+  }
+
+  return (
+    <div className="space-y-5">
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              render={<Link href="/admin/meta" />}
+              className="-ml-2"
+            >
+              <ArrowLeft className="size-4 mr-1" />
+              Volver
+            </Button>
+          </div>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+            <Megaphone className="size-6 text-[#6B4F7A]" />
+            Meta Ads
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Campañas pagas en Facebook + Instagram. Ad account: {" "}
+            <code className="text-xs bg-gray-100 dark:bg-neutral-800 px-1 rounded">
+              {adAccountId}
+            </code>
+          </p>
+        </div>
+        <Button
+          onClick={() => setShowCreateModal(true)}
+          className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+          disabled={!featureEnabled || motos.length === 0}
+          title={
+            !featureEnabled
+              ? "FEATURE_META_ADS_ENABLED no está en true"
+              : motos.length === 0
+                ? "No hay motos activas con fotos"
+                : ""
+          }
+        >
+          <Plus className="size-4 mr-1.5" />
+          Nueva campaña
+        </Button>
+      </div>
+
+      {!featureEnabled && <FeatureFlagWarning />}
+
+      {campaigns.length === 0 ? (
+        <Card>
+          <CardContent className="p-10 text-center text-gray-500 dark:text-gray-400">
+            <Megaphone className="size-10 mx-auto mb-3 text-gray-300" />
+            <p className="text-sm">
+              Todavía no hay campañas. Tocá &quot;Nueva campaña&quot; para crear
+              la primera (arranca en borrador, no se publica hasta que la
+              activés explícitamente).
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-3">
+          {campaigns.map((c) => (
+            <CampaignRow key={c.id} campaign={c} />
+          ))}
+        </div>
+      )}
+
+      {showCreateModal && (
+        <CreateCampaignModal
+          motos={motos}
+          minBudget={minBudget}
+          onClose={() => setShowCreateModal(false)}
+        />
+      )}
+    </div>
+  )
+}
+
+function FeatureFlagWarning() {
+  return (
+    <Card className="border-amber-300 bg-amber-50 dark:bg-amber-950/30">
+      <CardContent className="p-4 flex items-start gap-3">
+        <AlertTriangle className="size-5 text-amber-600 dark:text-amber-300 shrink-0 mt-0.5" />
+        <div className="text-sm">
+          <p className="font-bold text-amber-900 dark:text-amber-200">
+            Feature flag apagado
+          </p>
+          <p className="text-amber-800 dark:text-amber-300 mt-1">
+            Seteá{" "}
+            <code className="bg-amber-200/50 dark:bg-amber-900/40 px-1 rounded">
+              FEATURE_META_ADS_ENABLED=true
+            </code>{" "}
+            en Vercel y redeploy para habilitar crear campañas + el cron
+            de sync de insights cada 6h.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+function CampaignRow({ campaign }: { campaign: CampaignLite }) {
+  const router = useRouter()
+  const [loading, setLoading] = useState<string | null>(null)
+  const [, startTransition] = useTransition()
+  const s = STATUS_STYLES[campaign.status] || STATUS_STYLES.DRAFT
+  const insights = campaign.insightsCache as
+    | {
+        reach?: number
+        impressions?: number
+        clicks?: number
+        spend?: number
+      }
+    | null
+
+  const callApi = async (action: string, body?: unknown) => {
+    setLoading(action)
+    try {
+      const res = await fetch(
+        `/api/admin/meta/campaigns/${campaign.id}${action === "delete" ? "" : "/" + action}`,
+        {
+          method: action === "delete" ? "DELETE" : "POST",
+          headers: body ? { "Content-Type": "application/json" } : undefined,
+          body: body ? JSON.stringify(body) : undefined,
+        }
+      )
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        alert(data.error || `Error ${res.status}`)
+      }
+      startTransition(() => router.refresh())
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const handlePublish = () => callApi("publish")
+  const handleActivate = () => {
+    if (
+      !window.confirm(
+        `¿Activar campaña "${campaign.name}"?\n\nA partir de ahora va a empezar a consumir presupuesto en Meta (${formatMoney(campaign.dailyBudgetCents / 100, "ARS")}/día).`
+      )
+    )
+      return
+    callApi("activate", { confirm: true })
+  }
+  const handlePause = () => callApi("pause")
+  const handleSync = () => callApi("sync")
+  const handleDelete = () => {
+    if (!window.confirm("¿Eliminar esta campaña? (pausa en Meta + soft delete)")) return
+    callApi("delete")
+  }
+
+  return (
+    <Card>
+      <CardContent className="p-4 flex items-start gap-3 flex-wrap">
+        {campaign.moto.fotoPrincipal ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={campaign.moto.fotoPrincipal}
+            alt=""
+            className="size-14 rounded-md object-cover bg-gray-100 dark:bg-neutral-800 shrink-0"
+          />
+        ) : (
+          <div className="size-14 rounded-md bg-gray-100 dark:bg-neutral-800 flex items-center justify-center shrink-0">
+            <Bike className="size-6 text-gray-400" />
+          </div>
+        )}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              {campaign.moto.marca} {campaign.moto.nombre}
+            </p>
+            <span className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold ${s.bg}`}>
+              {s.label}
+            </span>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            {OBJECTIVE_LABELS[campaign.objective as (typeof CAMPAIGN_OBJECTIVES)[number]] || campaign.objective}
+            {" · "}
+            {formatMoney(campaign.dailyBudgetCents / 100, "ARS")}/día
+            {" · "}
+            {new Date(campaign.startDate).toLocaleDateString("es-AR")} →{" "}
+            {new Date(campaign.endDate).toLocaleDateString("es-AR")}
+          </p>
+          {insights && (
+            <div className="flex items-center gap-3 mt-2 text-xs text-gray-600 dark:text-gray-300 flex-wrap">
+              <span className="flex items-center gap-1">
+                <TrendingUp className="size-3" /> Alcance:{" "}
+                {(insights.reach || 0).toLocaleString("es-AR")}
+              </span>
+              <span>Clicks: {(insights.clicks || 0).toLocaleString("es-AR")}</span>
+              <span>
+                Gasto: {formatMoney(Number(insights.spend || 0), "ARS")}
+              </span>
+            </div>
+          )}
+          {campaign.errorMessage && (
+            <p className="text-[11px] text-red-600 dark:text-red-400 mt-1 truncate">
+              ⚠ {campaign.errorMessage}
+            </p>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-1 shrink-0">
+          {campaign.status === "DRAFT" && (
+            <Button
+              size="sm"
+              onClick={handlePublish}
+              disabled={loading !== null}
+              className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+            >
+              {loading === "publish" ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <Rocket className="size-3.5 mr-1" />
+              )}
+              Publicar a Meta
+            </Button>
+          )}
+          {(campaign.status === "IN_META_PAUSED" || campaign.status === "PAUSED_BY_USER") && (
+            <Button
+              size="sm"
+              onClick={handleActivate}
+              disabled={loading !== null}
+              className="bg-emerald-600 hover:bg-emerald-700"
+            >
+              {loading === "activate" ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <Play className="size-3.5 mr-1" />
+              )}
+              Activar
+            </Button>
+          )}
+          {campaign.status === "ACTIVE" && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handlePause}
+              disabled={loading !== null}
+            >
+              {loading === "pause" ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <Pause className="size-3.5 mr-1" />
+              )}
+              Pausar
+            </Button>
+          )}
+          {campaign.status !== "DRAFT" && (
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={handleSync}
+              disabled={loading !== null}
+              title="Refrescar métricas desde Meta"
+            >
+              {loading === "sync" ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <RefreshCw className="size-3.5" />
+              )}
+            </Button>
+          )}
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={handleDelete}
+            disabled={loading !== null}
+            className="text-red-600 hover:bg-red-50"
+          >
+            {loading === "delete" ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="size-3.5" />
+            )}
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+/**
+ * Setup wizard del ad account (cuando todavía no se eligió uno).
+ */
+function AdAccountSetup({ featureEnabled }: { featureEnabled: boolean }) {
+  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+  const [accounts, setAccounts] = useState<
+    Array<{
+      id: string
+      name: string
+      currency: string
+      account_status: number
+      business?: { name: string }
+    }>
+  >([])
+  const [error, setError] = useState("")
+  const [selected, setSelected] = useState("")
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    fetch("/api/admin/meta/ad-account")
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.error) {
+          setError(data.error)
+        } else {
+          setAccounts(data.availableAccounts || [])
+          if (data.listError) setError(data.listError)
+        }
+      })
+      .finally(() => setLoading(false))
+  }, [])
+
+  const handleSave = async () => {
+    if (!selected) return
+    setSaving(true)
+    try {
+      const res = await fetch("/api/admin/meta/ad-account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ adAccountId: selected }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        alert(data.error || `Error ${res.status}`)
+        return
+      }
+      router.refresh()
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="space-y-5 max-w-3xl">
+      <div>
+        <Button
+          variant="ghost"
+          size="sm"
+          render={<Link href="/admin/meta" />}
+          className="-ml-2"
+        >
+          <ArrowLeft className="size-4 mr-1" />
+          Volver
+        </Button>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 mt-2">
+          <Megaphone className="size-6 text-[#6B4F7A]" />
+          Meta Ads — setup inicial
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Elegí qué ad account usar para crear campañas. Tiene que ser una
+          ad account de Meta Business Manager con saldo configurado.
+        </p>
+      </div>
+
+      {!featureEnabled && <FeatureFlagWarning />}
+
+      <Card>
+        <CardContent className="p-5 space-y-4">
+          {loading ? (
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <Loader2 className="size-4 animate-spin" />
+              Cargando ad accounts disponibles…
+            </div>
+          ) : error ? (
+            <div className="rounded-md bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-700 dark:text-red-300 border border-red-200">
+              <p className="font-bold">No pude listar ad accounts</p>
+              <p className="text-xs mt-1">{error}</p>
+            </div>
+          ) : accounts.length === 0 ? (
+            <div className="rounded-md bg-amber-50 dark:bg-amber-950/30 p-3 text-sm text-amber-800 dark:text-amber-300 border border-amber-200">
+              <p className="font-bold">
+                No tenés ad accounts accesibles con este token.
+              </p>
+              <p className="text-xs mt-1">
+                Asegurate de que el usuario conectado a Meta tenga rol de
+                administrador en al menos una ad account de Business
+                Manager, y reconectá desde /admin/meta.
+              </p>
+            </div>
+          ) : (
+            <>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                Encontramos {accounts.length} ad account{accounts.length > 1 ? "s" : ""}:
+              </p>
+              <div className="space-y-2">
+                {accounts.map((a) => (
+                  <button
+                    key={a.id}
+                    type="button"
+                    onClick={() => setSelected(a.id)}
+                    className={`w-full text-left p-3 rounded-lg border-2 transition-colors ${selected === a.id ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/50"}`}
+                  >
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
+                        {a.name}
+                      </p>
+                      <code className="text-[10px] bg-gray-100 dark:bg-neutral-800 px-1 rounded">
+                        {a.id}
+                      </code>
+                      <span
+                        className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${a.account_status === 1 ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-red-700"}`}
+                      >
+                        {a.account_status === 1 ? "Activa" : `Estado ${a.account_status}`}
+                      </span>
+                      {selected === a.id && (
+                        <CheckCircle2 className="size-4 text-[#6B4F7A] ml-auto" />
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      Moneda: {a.currency}
+                      {a.business?.name ? ` · Business: ${a.business.name}` : ""}
+                    </p>
+                  </button>
+                ))}
+              </div>
+              <Button
+                onClick={handleSave}
+                disabled={!selected || saving}
+                className="bg-[#6B4F7A] hover:bg-[#8B6F9A] w-full"
+              >
+                {saving ? (
+                  <Loader2 className="size-4 mr-2 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="size-4 mr-2" />
+                )}
+                Usar este ad account
+              </Button>
+            </>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  )
+}
+
+/**
+ * Modal de creación de campaña. Form lineal con todos los campos
+ * críticos. Validaciones espejan las del backend para feedback rápido.
+ */
+function CreateCampaignModal({
+  motos,
+  minBudget,
+  onClose,
+}: {
+  motos: MotoLite[]
+  minBudget: number
+  onClose: () => void
+}) {
+  const router = useRouter()
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState("")
+  const [motoId, setMotoId] = useState("")
+  const [searchMoto, setSearchMoto] = useState("")
+  const [objective, setObjective] = useState<(typeof CAMPAIGN_OBJECTIVES)[number]>(
+    "OUTCOME_TRAFFIC"
+  )
+  const [dailyBudget, setDailyBudget] = useState<string>(String(minBudget * 2))
+  const [startDate, setStartDate] = useState(
+    new Date(Date.now() + 60 * 60 * 1000).toISOString().slice(0, 16)
+  )
+  const [endDate, setEndDate] = useState(
+    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16)
+  )
+  const [ageMin, setAgeMin] = useState(18)
+  const [ageMax, setAgeMax] = useState(55)
+  const [creativeCaption, setCreativeCaption] = useState("")
+  const [cta, setCta] = useState<(typeof CTAS)[number]>("LEARN_MORE")
+  const [destinationUrl, setDestinationUrl] = useState("")
+
+  const motosFiltradas = useMemo(() => {
+    const q = searchMoto.trim().toLowerCase()
+    if (!q) return motos.slice(0, 30)
+    return motos
+      .filter((m) =>
+        `${m.marca} ${m.nombre} ${m.slug}`.toLowerCase().includes(q)
+      )
+      .slice(0, 30)
+  }, [searchMoto, motos])
+  const motoSel = motos.find((m) => m.id === motoId)
+
+  // Pre-popular destinationUrl con la ficha de la moto
+  useEffect(() => {
+    if (motoSel && !destinationUrl) {
+      setDestinationUrl(`https://www.motosfernandez.com.ar/catalogo/${motoSel.slug}`)
+    }
+  }, [motoSel, destinationUrl])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError("")
+    if (!motoSel) return setError("Elegí una moto")
+    if (Number(dailyBudget) < minBudget) {
+      return setError(`Presupuesto diario mínimo: ${minBudget}`)
+    }
+    setSubmitting(true)
+    try {
+      const res = await fetch("/api/admin/meta/campaigns", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          motoId,
+          objective,
+          dailyBudgetCents: Number(dailyBudget) * 100,
+          startDate: new Date(startDate).toISOString(),
+          endDate: new Date(endDate).toISOString(),
+          audienceConfig: {
+            ageMin,
+            ageMax,
+            genders: ["all"],
+            locations: { countries: ["AR"], cities: [] },
+            interests: [],
+            languages: [],
+          },
+          creativeImageUrl: motoSel.fotos[0],
+          creativeCaption: creativeCaption || `${motoSel.marca} ${motoSel.nombre} — ¡consultá ya!`,
+          creativeCallToAction: cta,
+          destinationUrl: destinationUrl || null,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error || `Error ${res.status}`)
+        return
+      }
+      onClose()
+      router.refresh()
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-neutral-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+              Nueva campaña — arranca en BORRADOR
+            </h2>
+            <button
+              type="button"
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-600"
+            >
+              <XCircle className="size-5" />
+            </button>
+          </div>
+
+          <div>
+            <Label>Moto *</Label>
+            <Input
+              value={searchMoto}
+              onChange={(e) => setSearchMoto(e.target.value)}
+              placeholder="Buscar…"
+              className="mb-2"
+            />
+            <div className="max-h-40 overflow-y-auto rounded-md border border-gray-200 dark:border-neutral-800">
+              {motosFiltradas.map((m) => (
+                <button
+                  key={m.id}
+                  type="button"
+                  onClick={() => setMotoId(m.id)}
+                  className={`w-full text-left p-2 flex items-center gap-2 border-b last:border-b-0 border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800 ${motoId === m.id ? "bg-[#6B4F7A]/10" : ""}`}
+                >
+                  {m.fotoPrincipal && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={m.fotoPrincipal}
+                      alt=""
+                      className="size-8 rounded object-cover bg-gray-100 dark:bg-neutral-800 shrink-0"
+                    />
+                  )}
+                  <span className="text-sm">{m.marca} {m.nombre}</span>
+                  {motoId === m.id && <CheckCircle2 className="size-4 text-[#6B4F7A] ml-auto" />}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <Label>Objetivo *</Label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
+              {CAMPAIGN_OBJECTIVES.map((obj) => (
+                <button
+                  key={obj}
+                  type="button"
+                  onClick={() => setObjective(obj)}
+                  className={`text-left rounded-lg border-2 p-2 text-xs transition-colors ${objective === obj ? "border-[#6B4F7A] bg-[#6B4F7A]/5 font-semibold" : "border-gray-200 dark:border-neutral-800"}`}
+                >
+                  {OBJECTIVE_LABELS[obj]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="budget">Presupuesto diario (ARS) *</Label>
+              <Input
+                id="budget"
+                type="number"
+                min={minBudget}
+                value={dailyBudget}
+                onChange={(e) => setDailyBudget(e.target.value)}
+              />
+              <p className="text-[10px] text-gray-400 mt-1">Mínimo: {minBudget}</p>
+            </div>
+            <div>
+              <Label>CTA</Label>
+              <select
+                value={cta}
+                onChange={(e) => setCta(e.target.value as (typeof CTAS)[number])}
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900"
+              >
+                {CTAS.map((c) => (
+                  <option key={c} value={c}>{c.replace(/_/g, " ")}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="start">Inicio *</Label>
+              <Input
+                id="start"
+                type="datetime-local"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+            <div>
+              <Label htmlFor="end">Fin *</Label>
+              <Input
+                id="end"
+                type="datetime-local"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label htmlFor="ageMin">Edad mín.</Label>
+              <Input
+                id="ageMin"
+                type="number"
+                min={18}
+                max={65}
+                value={ageMin}
+                onChange={(e) => setAgeMin(Number(e.target.value))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="ageMax">Edad máx.</Label>
+              <Input
+                id="ageMax"
+                type="number"
+                min={18}
+                max={65}
+                value={ageMax}
+                onChange={(e) => setAgeMax(Number(e.target.value))}
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label htmlFor="caption">Texto del aviso *</Label>
+            <Textarea
+              id="caption"
+              rows={3}
+              maxLength={2200}
+              value={creativeCaption}
+              onChange={(e) => setCreativeCaption(e.target.value)}
+              placeholder="Si lo dejás vacío, se autocompleta con la moto"
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="dest">URL destino</Label>
+            <Input
+              id="dest"
+              type="url"
+              value={destinationUrl}
+              onChange={(e) => setDestinationUrl(e.target.value)}
+              placeholder="https://www.motosfernandez.com.ar/catalogo/..."
+            />
+          </div>
+
+          {error && (
+            <div className="rounded-md bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-700 dark:text-red-300 border border-red-200">
+              {error}
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+              disabled={submitting}
+            >
+              {submitting ? (
+                <Loader2 className="size-4 mr-2 animate-spin" />
+              ) : (
+                <Plus className="size-4 mr-2" />
+              )}
+              Crear en borrador
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
