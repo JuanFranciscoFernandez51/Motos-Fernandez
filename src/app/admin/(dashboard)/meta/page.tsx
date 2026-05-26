@@ -54,14 +54,26 @@ export default async function MetaAdminPage({
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <InstagramIcon className="size-6 text-pink-500" />
-          Instagram + Facebook
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          Publicaciones automáticas en IG (carrusel) y Facebook Page.
-        </p>
+      <div className="flex items-start justify-between gap-3 flex-wrap">
+        <div>
+          <h1 className="text-2xl font-bold flex items-center gap-2">
+            <InstagramIcon className="size-6 text-pink-500" />
+            Instagram + Facebook
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+            Publicaciones automáticas en IG (carrusel) y Facebook Page.
+          </p>
+        </div>
+        {status.connected && (
+          <Button
+            variant="outline"
+            render={<Link href="/admin/meta/calendario" />}
+            className="border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10"
+          >
+            <Sparkles className="size-4 mr-1.5" />
+            Calendario de publicaciones
+          </Button>
+        )}
       </div>
 
       {ok && (

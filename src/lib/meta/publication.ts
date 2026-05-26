@@ -155,13 +155,24 @@ async function esperarMediaListo(
  */
 export async function publicarEnMeta(
   modeloId: string,
-  options: { forceRepublish?: boolean } = {}
+  options: {
+    forceRepublish?: boolean
+    /** Override del caption (si no, autogenerado desde la moto). */
+    customCaption?: string
+    /** Plataformas a publicar. Default: ambas. Usado por el cron de
+     *  scheduled posts cuando el usuario eligió solo una. */
+    platforms?: ("IG" | "FB")[]
+  } = {}
 ): Promise<{
   ok: boolean
   igPostId?: string
   igPermalink?: string
   fbPostId?: string
+  fbPermalink?: string
   error?: string
+  /** Errores por plataforma cuando es PARTIAL (una funcionó, otra no). */
+  igError?: string
+  fbError?: string
 }> {
   const cfg = await prisma.metaConfig.findUnique({ where: { id: "default" } })
   if (!cfg?.pageAccessToken || !cfg.igUserId || !cfg.pageId) {
@@ -204,7 +215,45 @@ export async function publicarEnMeta(
   }
 
   try {
-    const caption = generarCaption(m)
+    const platforms = options.platforms ?? ["IG", "FB"]
+    const incluyeIG = platforms.includes("IG")
+    const incluyeFB = platforms.includes("FB")
+    const caption = options.customCaption?.trim()
+      ? options.customCaption.trim()
+      : generarCaption(m)
+
+    // Si solo es FB (sin IG), saltamos todo el flujo de carrusel.
+    if (!incluyeIG) {
+      let fbPostIdOnly: string | undefined
+      try {
+        const fb = await metaPost<FBPhotoResponse>(`/${cfg.pageId}/photos`, {
+          url: fotos[0],
+          caption,
+          published: true,
+        })
+        fbPostIdOnly = fb.post_id || fb.id
+        await prisma.modelo.update({
+          where: { id: m.id },
+          data: {
+            fbPostId: fbPostIdOnly,
+            fbPermalink: fbPostIdOnly
+              ? `https://www.facebook.com/${fbPostIdOnly}`
+              : null,
+            igUltimaSync: new Date(),
+          },
+        })
+        return {
+          ok: true,
+          fbPostId: fbPostIdOnly,
+          fbPermalink: fbPostIdOnly
+            ? `https://www.facebook.com/${fbPostIdOnly}`
+            : undefined,
+        }
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e)
+        return { ok: false, error: msg, fbError: msg }
+      }
+    }
 
     // 1) Subir cada foto como carousel_item → recibimos creation_ids
     //    Guardamos el par (id, url) para que si IG rechaza un container
@@ -255,17 +304,22 @@ export async function publicarEnMeta(
       // si falla, no rompemos
     }
 
-    // 4) Cross-post a Facebook Page (foto principal con caption)
+    // 4) Cross-post a Facebook Page (foto principal con caption) — solo
+    //    si el caller pidió ambas plataformas.
     let fbPostId: string | undefined
-    try {
-      const fb = await metaPost<FBPhotoResponse>(`/${cfg.pageId}/photos`, {
-        url: fotos[0],
-        caption,
-        published: true,
-      })
-      fbPostId = fb.post_id || fb.id
-    } catch (e) {
-      console.warn("[Meta] Cross-post a FB falló:", e)
+    let fbErrorMsg: string | undefined
+    if (incluyeFB) {
+      try {
+        const fb = await metaPost<FBPhotoResponse>(`/${cfg.pageId}/photos`, {
+          url: fotos[0],
+          caption,
+          published: true,
+        })
+        fbPostId = fb.post_id || fb.id
+      } catch (e) {
+        fbErrorMsg = e instanceof Error ? e.message : String(e)
+        console.warn("[Meta] Cross-post a FB falló:", fbErrorMsg)
+      }
     }
 
     await prisma.modelo.update({
@@ -287,6 +341,10 @@ export async function publicarEnMeta(
       igPostId: published.id,
       igPermalink: permalink,
       fbPostId,
+      fbPermalink: fbPostId
+        ? `https://www.facebook.com/${fbPostId}`
+        : undefined,
+      fbError: fbErrorMsg,
     }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Error desconocido"
