@@ -332,14 +332,20 @@ export async function metaFetch(path: string, init: RequestInit = {}): Promise<R
 }
 
 /**
- * Convierte un error de Graph API en un mensaje accionable. Los códigos
- * más comunes que vemos en producción:
- * - code 190: token expirado/revocado → reconectar
- * - code 100 + subcode 33: objeto no existe o sin permiso → reconectar
- *   (también pasa con tokens viejos que perdieron alcance sobre la página)
- * - code 100 + subcode 463: media inválido (aspect ratio, formato, etc.)
+ * Convierte un error de Graph API en un mensaje accionable. El mismo
+ * code/subcode puede significar cosas distintas según el endpoint:
+ * - code 190 → token vencido/revocado (cualquier endpoint).
+ * - code 100/33 → "objeto inaccesible". En endpoints /me, /me/accounts
+ *   suele ser permisos. En endpoints con ID numérico (containers, posts,
+ *   ad accounts) suele ser "el objeto ya no existe" — típicamente porque
+ *   IG rechazó un media al cargarlo y descartó el container.
+ * - code 100/463 → media inválido (aspect ratio, formato, etc.).
  */
-function interpretarErrorMeta(status: number, raw: string): string {
+function interpretarErrorMeta(
+  status: number,
+  raw: string,
+  path?: string
+): string {
   try {
     const data = JSON.parse(raw) as {
       error?: { code?: number; error_subcode?: number; message?: string }
@@ -348,8 +354,18 @@ function interpretarErrorMeta(status: number, raw: string): string {
     const subcode = data.error?.error_subcode
     const msg = data.error?.message || raw
 
-    if (code === 190 || (code === 100 && subcode === 33)) {
-      return `Sesión con Meta vencida o sin permisos (code ${code}/${subcode ?? "-"}). Andá a /admin/meta y tocá "Reconectar con Meta". Detalle original: ${msg}`
+    if (code === 190) {
+      return `Sesión con Meta vencida (code 190). Andá a /admin/meta y tocá "Reconectar con Meta". Detalle: ${msg}`
+    }
+
+    if (code === 100 && subcode === 33) {
+      // Distinguir si el path es un endpoint de cuenta (token issue) o un
+      // ID de objeto (objeto descartado).
+      const esObjetoEspecifico = path && /^\/\d+/.test(path)
+      if (esObjetoEspecifico) {
+        return `Meta no encuentra el objeto en ${path} (code 100/33). En el flujo de publicación esto significa que IG rechazó la foto al cargarla y descartó el container. Revisá que la foto sea JPG, aspect ratio entre 4:5 y 1.91:1, y que la URL sea pública. Detalle: ${msg}`
+      }
+      return `Meta no tiene permisos sobre el objeto (code 100/33). Reconectá Meta desde /admin/meta. Detalle: ${msg}`
     }
     if (code === 100 && subcode === 463) {
       return `Meta rechazó la foto (aspect ratio fuera de 4:5 a 1.91:1, o formato no JPG). Detalle: ${msg}`
@@ -365,7 +381,7 @@ export async function metaGet<T = unknown>(path: string): Promise<T> {
   if (!res.ok) {
     const txt = await res.text()
     throw new Error(
-      `Meta GET ${path} falló (${res.status}): ${interpretarErrorMeta(res.status, txt)}`
+      `Meta GET ${path} falló (${res.status}): ${interpretarErrorMeta(res.status, txt, path)}`
     )
   }
   return res.json() as Promise<T>
@@ -382,7 +398,7 @@ export async function metaPost<T = unknown>(path: string, body: unknown): Promis
   if (!res.ok) {
     const txt = await res.text()
     throw new Error(
-      `Meta POST ${path} falló (${res.status}): ${interpretarErrorMeta(res.status, txt)}`
+      `Meta POST ${path} falló (${res.status}): ${interpretarErrorMeta(res.status, txt, path)}`
     )
   }
   return res.json() as Promise<T>
