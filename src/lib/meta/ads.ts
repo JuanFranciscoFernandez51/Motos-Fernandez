@@ -251,6 +251,15 @@ export async function createCampaignInMeta(
   motoLabel: string
 ): Promise<MetaCampaignCreated> {
   // 1) Campaign
+  //
+  // Detalles que aprendimos a la fuerza:
+  // - special_ad_categories tiene que ser ["NONE"] explícito en
+  //   accounts nuevas, no array vacío (Meta da 100/4834011 si no).
+  // - buying_type debería defaultear a AUCTION pero algunas ad accounts
+  //   lo requieren explícito.
+  // - El objective tiene que venir como string (ej "OUTCOME_TRAFFIC").
+  //   En ad accounts viejas todavía hay que mandar el legacy
+  //   ("LINK_CLICKS") — Meta migró los nuevos en julio 2023.
   const campaignName = `MF — ${motoLabel} — ${data.startDate.toISOString().slice(0, 10)}`
   const campaign = await metaPost<{ id: string }>(
     `/${adAccountId}/campaigns`,
@@ -258,8 +267,8 @@ export async function createCampaignInMeta(
       name: campaignName,
       objective: data.objective,
       status: "PAUSED",
-      // Compras solo con consentimiento explícito en LATAM.
-      special_ad_categories: [],
+      special_ad_categories: ["NONE"],
+      buying_type: "AUCTION",
     }
   )
 

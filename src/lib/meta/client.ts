@@ -426,29 +426,49 @@ function interpretarErrorMeta(
 ): string {
   try {
     const data = JSON.parse(raw) as {
-      error?: { code?: number; error_subcode?: number; message?: string }
+      error?: {
+        code?: number
+        error_subcode?: number
+        message?: string
+        // Meta a veces incluye un mensaje "user friendly" más útil que
+        // el genérico, y un fbtrace_id para abrir ticket si hace falta.
+        error_user_title?: string
+        error_user_msg?: string
+        fbtrace_id?: string
+      }
     }
     const code = data.error?.code
     const subcode = data.error?.error_subcode
     const msg = data.error?.message || raw
+    const userMsg = data.error?.error_user_msg
+    const trace = data.error?.fbtrace_id
+
+    // Detalle extra cuando Meta lo da (suele tener la causa real)
+    const detalleExtra = [
+      userMsg ? `Detalle Meta: ${userMsg}` : null,
+      trace ? `fbtrace_id: ${trace}` : null,
+    ]
+      .filter(Boolean)
+      .join(" · ")
 
     if (code === 190) {
-      return `Sesión con Meta vencida (code 190). Andá a /admin/meta y tocá "Reconectar con Meta". Detalle: ${msg}`
+      return `Sesión con Meta vencida (code 190). Andá a /admin/meta y tocá "Reconectar con Meta". Detalle: ${msg}. ${detalleExtra}`
     }
 
     if (code === 100 && subcode === 33) {
-      // Distinguir si el path es un endpoint de cuenta (token issue) o un
-      // ID de objeto (objeto descartado).
       const esObjetoEspecifico = path && /^\/\d+/.test(path)
       if (esObjetoEspecifico) {
-        return `Meta no encuentra el objeto en ${path} (code 100/33). En el flujo de publicación esto significa que IG rechazó la foto al cargarla y descartó el container. Revisá que la foto sea JPG, aspect ratio entre 4:5 y 1.91:1, y que la URL sea pública. Detalle: ${msg}`
+        return `Meta no encuentra el objeto en ${path} (code 100/33). En el flujo de publicación esto significa que IG rechazó la foto al cargarla y descartó el container. Revisá que la foto sea JPG, aspect ratio entre 4:5 y 1.91:1, y que la URL sea pública. Detalle: ${msg}. ${detalleExtra}`
       }
-      return `Meta no tiene permisos sobre el objeto (code 100/33). Reconectá Meta desde /admin/meta. Detalle: ${msg}`
+      return `Meta no tiene permisos sobre el objeto (code 100/33). Reconectá Meta desde /admin/meta. Detalle: ${msg}. ${detalleExtra}`
     }
     if (code === 100 && subcode === 463) {
-      return `Meta rechazó la foto (aspect ratio fuera de 4:5 a 1.91:1, o formato no JPG). Detalle: ${msg}`
+      return `Meta rechazó la foto (aspect ratio fuera de 4:5 a 1.91:1, o formato no JPG). Detalle: ${msg}. ${detalleExtra}`
     }
-    return `Meta error ${code ?? status}/${subcode ?? "-"}: ${msg}`
+    if (code === 100 && subcode === 4834011) {
+      return `Meta rechazó la creación de la campaña (code 100/4834011). Causa típica: special_ad_categories mal seteado, objetivo no disponible para esta ad account, o billing/permission de la ad account. Detalle: ${msg}. ${detalleExtra}`
+    }
+    return `Meta error ${code ?? status}/${subcode ?? "-"}: ${msg}. ${detalleExtra}`
   } catch {
     return raw
   }
