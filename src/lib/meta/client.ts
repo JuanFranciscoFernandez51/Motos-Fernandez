@@ -468,6 +468,13 @@ function interpretarErrorMeta(
     if (code === 100 && subcode === 4834011) {
       return `Meta rechazó la creación de la campaña (code 100/4834011). Causa típica: special_ad_categories mal seteado, objetivo no disponible para esta ad account, o billing/permission de la ad account. Detalle: ${msg}. ${detalleExtra}`
     }
+    if (
+      code === 100 &&
+      subcode === 1487390 &&
+      (userMsg || msg).toLowerCase().includes("modo de desarrollo")
+    ) {
+      return `🔒 La app de Meta está en MODO DESARROLLO — no permite crear creatives de ads en producción. Necesitás pasar la app a "Live Mode" en developers.facebook.com/apps → tu app → arriba derecha cambiar de "In Development" a "Live". Eso requiere completar App Review + Business Verification (1-2 semanas — ya iniciado). Detalle: ${msg}`
+    }
     return `Meta error ${code ?? status}/${subcode ?? "-"}: ${msg}. ${detalleExtra}`
   } catch {
     return raw

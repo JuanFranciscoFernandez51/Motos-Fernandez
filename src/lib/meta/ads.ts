@@ -184,6 +184,11 @@ export async function searchTargeting(
  * Adapta nuestra AudienceConfig al "targeting spec" de Meta. Meta tiene
  * una estructura JSON específica con keys tipo `geo_locations`,
  * `interests`, etc.
+ *
+ * advantage_audience: Meta v25+ exige declararlo explícito (0=off, 1=on).
+ * Lo dejamos en 0 para que el targeting respete EXACTAMENTE lo que el
+ * admin eligió. Si queremos que Meta amplíe el público automáticamente
+ * para optimizar, lo cambiamos a 1.
  */
 export function audienceConfigToTargetingSpec(
   a: AudienceConfig
@@ -191,6 +196,7 @@ export function audienceConfigToTargetingSpec(
   const spec: Record<string, unknown> = {
     age_min: a.ageMin,
     age_max: a.ageMax,
+    targeting_automation: { advantage_audience: 0 },
   }
   // Genders: Meta espera [1] male, [2] female, [1,2] all
   if (!a.genders.includes("all")) {
@@ -277,6 +283,11 @@ export async function createCampaignInMeta(
   )
 
   // 2) Ad Set
+  //
+  // bid_strategy: cuando no especificás una, Meta v25+ exige bid_amount
+  // o constraints. LOWEST_COST_WITHOUT_CAP es la "automatic bid"
+  // histórica — Meta optimiza solo, sin tope manual. Es la opción más
+  // simple y la que el admin típicamente quiere para una primera campaña.
   const targeting = audienceConfigToTargetingSpec(data.audienceConfig)
   const adSet = await metaPost<{ id: string }>(
     `/${adAccountId}/adsets`,
@@ -285,6 +296,7 @@ export async function createCampaignInMeta(
       campaign_id: campaign.id,
       daily_budget: data.dailyBudgetCents, // Meta espera centavos
       billing_event: "IMPRESSIONS",
+      bid_strategy: "LOWEST_COST_WITHOUT_CAP",
       optimization_goal:
         data.objective === "OUTCOME_TRAFFIC"
           ? "LINK_CLICKS"
@@ -301,15 +313,18 @@ export async function createCampaignInMeta(
   )
 
   // 3) Creative
+  //
+  // instagram_user_id (v25+) reemplaza al legacy instagram_actor_id.
+  // Si lo mandamos con el nombre viejo, Meta tira:
+  //   "Param instagram_actor_id must be a valid Instagram account id"
   const creativePayload: Record<string, unknown> = {
     name: `${campaignName} - Creative`,
     object_story_spec: {
       page_id: pageId,
-      ...(igUserId ? { instagram_actor_id: igUserId } : {}),
+      ...(igUserId ? { instagram_user_id: igUserId } : {}),
       link_data: {
         link: data.destinationUrl || "https://www.motosfernandez.com.ar",
         message: data.creativeCaption,
-        image_hash: undefined, // simplificado — subir imagen va en otro endpoint
         picture: data.creativeImageUrl,
         call_to_action: { type: data.creativeCallToAction },
       },
