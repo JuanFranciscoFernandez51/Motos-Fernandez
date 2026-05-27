@@ -72,6 +72,7 @@ export default async function MetaAdsPage() {
         endDate: c.endDate.toISOString(),
         insightsCache: c.insightsCache as Record<string, unknown> | null,
         errorMessage: c.errorMessage,
+        metaCampaignId: c.metaCampaignId,
         moto: {
           id: c.moto.id,
           slug: c.moto.slug,

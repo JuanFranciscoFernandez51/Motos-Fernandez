@@ -60,6 +60,7 @@ type CampaignLite = {
   endDate: string
   insightsCache: Record<string, unknown> | null
   errorMessage: string | null
+  metaCampaignId: string | null
   moto: {
     id: string
     slug: string
@@ -320,7 +321,7 @@ function CampaignRow({ campaign }: { campaign: CampaignLite }) {
           )}
         </div>
         <div className="flex flex-wrap items-center gap-1 shrink-0">
-          {campaign.status === "DRAFT" && (
+          {(campaign.status === "DRAFT" || campaign.status === "FAILED") && (
             <Button
               size="sm"
               onClick={handlePublish}
@@ -332,7 +333,7 @@ function CampaignRow({ campaign }: { campaign: CampaignLite }) {
               ) : (
                 <Rocket className="size-3.5 mr-1" />
               )}
-              Publicar a Meta
+              {campaign.status === "FAILED" ? "Reintentar publicación" : "Publicar a Meta"}
             </Button>
           )}
           {(campaign.status === "IN_META_PAUSED" || campaign.status === "PAUSED_BY_USER") && (
@@ -365,7 +366,9 @@ function CampaignRow({ campaign }: { campaign: CampaignLite }) {
               Pausar
             </Button>
           )}
-          {campaign.status !== "DRAFT" && (
+          {/* Sync solo si ya está en Meta (tiene metaCampaignId). Las DRAFT
+              y FAILED-sin-publicar no tienen métricas que sincronizar. */}
+          {campaign.metaCampaignId && (
             <Button
               size="sm"
               variant="ghost"

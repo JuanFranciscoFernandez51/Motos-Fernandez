@@ -30,9 +30,12 @@ export async function POST(
     include: { moto: true },
   })
   if (!c) return NextResponse.json({ error: "No encontrada" }, { status: 404 })
-  if (c.status !== "DRAFT") {
+  // Aceptamos DRAFT (primera vez) o FAILED (reintento — el admin quiere
+  // volver a intentar tras un error de Meta). Cualquier otro estado ya
+  // significa que la campaña vive en Meta y publicar de nuevo duplicaría.
+  if (c.status !== "DRAFT" && c.status !== "FAILED") {
     return NextResponse.json(
-      { error: `Solo se publican campañas DRAFT (esta está ${c.status})` },
+      { error: `Solo se publican campañas DRAFT o FAILED (esta está ${c.status})` },
       { status: 409 }
     )
   }
