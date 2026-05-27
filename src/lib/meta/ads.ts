@@ -269,6 +269,10 @@ export async function createCampaignInMeta(
       status: "PAUSED",
       special_ad_categories: ["NONE"],
       buying_type: "AUCTION",
+      // Meta v25+ exige esta flag explícita cuando NO usamos Campaign
+      // Budget Optimization (CBO) — el presupuesto vive en el adset, no
+      // en la campaña. false = los adsets no comparten budget entre sí.
+      is_adset_budget_sharing_enabled: false,
     }
   )
 
