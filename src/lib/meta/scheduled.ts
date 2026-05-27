@@ -29,6 +29,9 @@ const MIN_LEAD_TIME_MIN = 5
 const MAX_FUTURE_MONTHS = 6
 const CAPTION_MAX = 2200
 
+export const MEDIA_TYPES = ["PHOTO_CAROUSEL", "VIDEO", "REEL"] as const
+export type MediaType = (typeof MEDIA_TYPES)[number]
+
 export const scheduledPostCreateSchema = z
   .object({
     motoId: z.string().min(1, "motoId requerido"),
@@ -41,7 +44,23 @@ export const scheduledPostCreateSchema = z
       .max(CAPTION_MAX, `Caption máximo ${CAPTION_MAX} chars`)
       .optional()
       .nullable(),
+    mediaType: z.enum(MEDIA_TYPES).default("PHOTO_CAROUSEL"),
+    // URL(s) de Cloudinary. Para VIDEO/REEL es obligatorio al menos 1.
+    videoUrls: z.array(z.string().url()).default([]),
+    customFotos: z.array(z.string().url()).default([]),
   })
+  .refine(
+    (d) => {
+      if (d.mediaType === "VIDEO" || d.mediaType === "REEL") {
+        return d.videoUrls.length >= 1
+      }
+      return true
+    },
+    {
+      message: "VIDEO y REEL requieren al menos una URL en videoUrls",
+      path: ["videoUrls"],
+    }
+  )
   .refine(
     (data) => {
       const ahora = Date.now()

@@ -1326,6 +1326,15 @@ model ScheduledPost {
   platforms       String[]
   scheduledAt     DateTime // En UTC. Se convierte a AR solo en la UI.
   customCaption   String?  @db.Text
+  // Tipo de media a publicar:
+  // - PHOTO_CAROUSEL (default): usa moto.fotos como carrusel IG + foto principal FB.
+  // - VIDEO: video al feed (IG video feed, FB video). videoUrls debe tener 1 URL.
+  // - REEL: Reels de IG (vertical 9:16, máx 90s) + Reel de FB. videoUrls debe tener 1 URL.
+  mediaType       String   @default("PHOTO_CAROUSEL")
+  // Override de assets si el admin no quiere usar las fotos del modelo.
+  // Cloudinary URLs. Para VIDEO/REEL se usa el primero.
+  videoUrls       String[] @default([])
+  customFotos     String[] @default([])
   status          String   @default("PENDING")
   publishedAt     DateTime?
   // Estructura: { ig: { postId, permalink, publishedAt }, fb: { postId, permalink, publishedAt } }

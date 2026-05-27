@@ -69,6 +69,9 @@ export async function GET(request: Request) {
       customCaption: true,
       retryCount: true,
       lockedAt: true,
+      mediaType: true,
+      videoUrls: true,
+      customFotos: true,
     },
   })
 
@@ -152,6 +155,9 @@ export async function GET(request: Request) {
         // scheduled posts y no queremos que el segundo falle con "ya
         // publicada". Cada ejecución es un post nuevo.
         forceRepublish: true,
+        mediaType: cand.mediaType as "PHOTO_CAROUSEL" | "VIDEO" | "REEL",
+        videoUrls: cand.videoUrls || [],
+        customFotos: cand.customFotos || [],
       })
     } catch (e) {
       publishResult = {

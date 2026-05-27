@@ -114,6 +114,8 @@ const navEntries: NavEntry[] = [
   { href: "/admin/crm", label: "CRM / Leads", icon: Users, seccion: "CRM" },
   { href: "/admin/ml", label: "Mercado Libre", icon: ShoppingBag, seccion: "ML" },
   { href: "/admin/meta", label: "Instagram + FB", icon: InstagramIcon as LucideIcon, seccion: "META" },
+  // Meta Ads separado: gasta presupuesto real, va con permiso aparte.
+  { href: "/admin/meta/ads", label: "Meta Ads", icon: Megaphone, seccion: "META_ADS" },
 
   // Marketing y comunicación
   {

@@ -141,6 +141,9 @@ export async function POST(request: Request) {
       customCaption: data.customCaption || null,
       status: "PENDING",
       createdById: (session as { id?: string }).id || null,
+      mediaType: data.mediaType,
+      videoUrls: data.videoUrls,
+      customFotos: data.customFotos,
     },
     include: {
       moto: { select: { id: true, slug: true, marca: true, nombre: true } },

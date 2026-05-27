@@ -6,7 +6,10 @@ import { AdsClient } from "./ads-client"
 export const dynamic = "force-dynamic"
 
 export default async function MetaAdsPage() {
-  const session = await requireSection("META")
+  // Permiso separado de META (orgánico). Esto previene que un usuario
+  // con permiso solo para publicar posts gratis pueda crear campañas
+  // pagas (que gastan presupuesto real).
+  const session = await requireSection("META_ADS")
   if (!session) redirect("/admin")
 
   const cfg = await prisma.metaConfig.findUnique({ where: { id: "default" } })

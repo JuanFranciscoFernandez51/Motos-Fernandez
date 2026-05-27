@@ -162,6 +162,13 @@ export async function publicarEnMeta(
     /** Plataformas a publicar. Default: ambas. Usado por el cron de
      *  scheduled posts cuando el usuario eligió solo una. */
     platforms?: ("IG" | "FB")[]
+    /** Tipo de media: por default PHOTO_CAROUSEL (lo de siempre).
+     *  VIDEO o REEL publican video en IG/FB. */
+    mediaType?: "PHOTO_CAROUSEL" | "VIDEO" | "REEL"
+    /** Override de assets si el caller no quiere usar moto.fotos.
+     *  Para VIDEO/REEL es obligatoria una URL en videoUrls. */
+    videoUrls?: string[]
+    customFotos?: string[]
   } = {}
 ): Promise<{
   ok: boolean
@@ -218,9 +225,31 @@ export async function publicarEnMeta(
     const platforms = options.platforms ?? ["IG", "FB"]
     const incluyeIG = platforms.includes("IG")
     const incluyeFB = platforms.includes("FB")
+    const mediaType = options.mediaType ?? "PHOTO_CAROUSEL"
     const caption = options.customCaption?.trim()
       ? options.customCaption.trim()
       : generarCaption(m)
+
+    // === BRANCHING POR TIPO DE MEDIA ===
+    if (mediaType === "VIDEO" || mediaType === "REEL") {
+      const videoUrl = options.videoUrls?.[0]
+      if (!videoUrl) {
+        return {
+          ok: false,
+          error: `mediaType=${mediaType} requiere al menos una URL en videoUrls`,
+        }
+      }
+      return await publicarVideoEnMeta(
+        { igUserId: cfg.igUserId, pageId: cfg.pageId, modeloId: m.id },
+        {
+          videoUrl,
+          caption,
+          mediaType,
+          incluyeIG,
+          incluyeFB,
+        }
+      )
+    }
 
     // Si solo es FB (sin IG), saltamos todo el flujo de carrusel.
     if (!incluyeIG) {
@@ -355,6 +384,131 @@ export async function publicarEnMeta(
       })
       .catch(() => null)
     return { ok: false, error: msg }
+  }
+}
+
+/**
+ * Publica un video (REEL o feed) en IG y/o FB.
+ *
+ * IG: POST /{ig_user_id}/media con media_type=VIDEO|REELS + video_url,
+ *     polling hasta FINISHED, después media_publish.
+ * FB: POST /{page_id}/videos con file_url + description.
+ *
+ * Restricciones de Meta para videos:
+ * - REEL: vertical (9:16), 1080×1920 ideal, máx 90s, MP4 H.264 AAC.
+ * - VIDEO feed: hasta 60 min, MP4/MOV, mín 600px lado corto.
+ * Cloudinary puede transformar con f_mp4 + transformaciones.
+ *
+ * La función actualiza modelo.igPostId/fbPostId al terminar para
+ * mantener traza de la última publicación de la moto.
+ */
+async function publicarVideoEnMeta(
+  ctx: { igUserId: string; pageId: string; modeloId: string },
+  args: {
+    videoUrl: string
+    caption: string
+    mediaType: "VIDEO" | "REEL"
+    incluyeIG: boolean
+    incluyeFB: boolean
+  }
+): Promise<{
+  ok: boolean
+  igPostId?: string
+  igPermalink?: string
+  fbPostId?: string
+  fbPermalink?: string
+  error?: string
+  igError?: string
+  fbError?: string
+}> {
+  let igPostId: string | undefined
+  let igPermalink: string | undefined
+  let igErrorMsg: string | undefined
+  let fbPostId: string | undefined
+  let fbErrorMsg: string | undefined
+
+  // === IG ===
+  if (args.incluyeIG) {
+    try {
+      const igMediaType = args.mediaType === "REEL" ? "REELS" : "VIDEO"
+      const container = await metaPost<IGMediaResponse>(
+        `/${ctx.igUserId}/media`,
+        {
+          media_type: igMediaType,
+          video_url: args.videoUrl,
+          caption: args.caption,
+          // Reels: hacer share_to_feed para que aparezca también en el feed.
+          ...(args.mediaType === "REEL" ? { share_to_feed: true } : {}),
+        }
+      )
+      // Video tarda más en procesarse — timeout más largo que fotos.
+      await esperarMediaListo(container.id, 5 * 60 * 1000, args.videoUrl)
+      const published = await metaPost<IGPostResponse>(
+        `/${ctx.igUserId}/media_publish`,
+        { creation_id: container.id }
+      )
+      igPostId = published.id
+      try {
+        const info = await metaGet<{ permalink: string }>(
+          `/${published.id}?fields=permalink`
+        )
+        igPermalink = info.permalink
+      } catch {
+        // sin permalink no rompemos
+      }
+    } catch (e) {
+      igErrorMsg = e instanceof Error ? e.message : String(e)
+    }
+  }
+
+  // === FB ===
+  if (args.incluyeFB) {
+    try {
+      const fb = await metaPost<{ id: string; post_id?: string }>(
+        `/${ctx.pageId}/videos`,
+        {
+          file_url: args.videoUrl,
+          description: args.caption,
+          published: true,
+        }
+      )
+      fbPostId = fb.post_id || fb.id
+    } catch (e) {
+      fbErrorMsg = e instanceof Error ? e.message : String(e)
+    }
+  }
+
+  // Persistir traza
+  if (igPostId || fbPostId) {
+    await prisma.modelo.update({
+      where: { id: ctx.modeloId },
+      data: {
+        ...(igPostId
+          ? { igPostId, igPermalink, igUltimaSync: new Date(), igError: null }
+          : {}),
+        ...(fbPostId
+          ? {
+              fbPostId,
+              fbPermalink: `https://www.facebook.com/${fbPostId}`,
+            }
+          : {}),
+      },
+    })
+  }
+
+  const okGlobal =
+    (args.incluyeIG ? !!igPostId : true) && (args.incluyeFB ? !!fbPostId : true)
+  return {
+    ok: okGlobal,
+    igPostId,
+    igPermalink,
+    fbPostId,
+    fbPermalink: fbPostId ? `https://www.facebook.com/${fbPostId}` : undefined,
+    igError: igErrorMsg,
+    fbError: fbErrorMsg,
+    error: !okGlobal
+      ? [igErrorMsg, fbErrorMsg].filter(Boolean).join(" · ") || "Falló video"
+      : undefined,
   }
 }
 

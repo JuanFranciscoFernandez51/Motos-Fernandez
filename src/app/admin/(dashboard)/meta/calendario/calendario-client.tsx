@@ -22,6 +22,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { InstagramIcon, FacebookIcon } from "@/components/icons/social"
 import { formatMoney } from "@/lib/admin-helpers"
+import { VideoUpload } from "@/components/admin/video-upload"
 
 /**
  * Vista de calendario de publicaciones programadas. Iteración 1: lista
@@ -392,6 +393,10 @@ function CreateModal({
   }, [])
   const [scheduledAt, setScheduledAt] = useState(defaultDate)
   const [customCaption, setCustomCaption] = useState("")
+  const [mediaType, setMediaType] = useState<"PHOTO_CAROUSEL" | "VIDEO" | "REEL">(
+    "PHOTO_CAROUSEL"
+  )
+  const [videoUrl, setVideoUrl] = useState("")
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
 
@@ -418,6 +423,10 @@ function CreateModal({
       setError("Elegí al menos una plataforma (IG o FB)")
       return
     }
+    if ((mediaType === "VIDEO" || mediaType === "REEL") && !videoUrl) {
+      setError(`Subí un video para programar como ${mediaType}`)
+      return
+    }
     setSubmitting(true)
     try {
       // datetime-local viene en zona local del browser. JS Date lo
@@ -434,6 +443,8 @@ function CreateModal({
           platforms,
           scheduledAt: fechaUTC,
           customCaption: customCaption.trim() || null,
+          mediaType,
+          videoUrls: videoUrl ? [videoUrl] : [],
         }),
       })
       const data = await res.json()
@@ -551,6 +562,58 @@ function CreateModal({
               </button>
             </div>
           </div>
+
+          {/* Tipo de contenido */}
+          <div>
+            <Label>Tipo de contenido *</Label>
+            <div className="grid grid-cols-3 gap-2 mt-1">
+              <button
+                type="button"
+                onClick={() => setMediaType("PHOTO_CAROUSEL")}
+                className={`rounded-lg border-2 p-2.5 text-xs transition-colors ${mediaType === "PHOTO_CAROUSEL" ? "border-[#6B4F7A] bg-[#6B4F7A]/5 font-semibold" : "border-gray-200 dark:border-neutral-800"}`}
+              >
+                📸 Fotos
+                <p className="text-[10px] text-gray-500 mt-0.5 font-normal">
+                  Carrusel con las fotos del catálogo
+                </p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMediaType("VIDEO")}
+                className={`rounded-lg border-2 p-2.5 text-xs transition-colors ${mediaType === "VIDEO" ? "border-[#6B4F7A] bg-[#6B4F7A]/5 font-semibold" : "border-gray-200 dark:border-neutral-800"}`}
+              >
+                🎬 Video feed
+                <p className="text-[10px] text-gray-500 mt-0.5 font-normal">
+                  Video al feed (hasta 60 min)
+                </p>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMediaType("REEL")}
+                className={`rounded-lg border-2 p-2.5 text-xs transition-colors ${mediaType === "REEL" ? "border-[#6B4F7A] bg-[#6B4F7A]/5 font-semibold" : "border-gray-200 dark:border-neutral-800"}`}
+              >
+                ⚡ Reel
+                <p className="text-[10px] text-gray-500 mt-0.5 font-normal">
+                  Vertical 9:16, máx 90s
+                </p>
+              </button>
+            </div>
+          </div>
+
+          {/* Uploader de video — solo cuando es VIDEO o REEL */}
+          {(mediaType === "VIDEO" || mediaType === "REEL") && (
+            <div>
+              <Label>
+                {mediaType === "REEL" ? "Reel" : "Video"} a publicar *
+              </Label>
+              <VideoUpload
+                value={videoUrl}
+                onChange={setVideoUrl}
+                folder={mediaType === "REEL" ? "reels" : "videos-meta"}
+                hint={mediaType === "REEL" ? "REEL" : "VIDEO"}
+              />
+            </div>
+          )}
 
           {/* Fecha y hora */}
           <div>

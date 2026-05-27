@@ -26,6 +26,7 @@ export type SeccionId =
   | "FINANCIACION_PLANES"
   | "ML"
   | "META"
+  | "META_ADS"
   | "CRM"
   | "NEWSLETTER"
   | "NOTICIAS"
@@ -84,7 +85,12 @@ export const SECCIONES_ADMIN: SeccionInfo[] = [
 
   // INTEGRACIONES
   { id: "ML",            label: "Mercado Libre",  descripcion: "Publicaciones en ML",                  grupo: "INTEGRACIONES" },
-  { id: "META",          label: "Instagram / FB", descripcion: "Publicaciones en Instagram y Facebook", grupo: "INTEGRACIONES" },
+  { id: "META",          label: "Instagram + Facebook (orgánico)", descripcion: "Publicaciones gratuitas en IG y FB: manual + calendario programado", grupo: "INTEGRACIONES" },
+  // META_ADS: campañas pagas (Marketing API). Separado de META porque
+  // gasta presupuesto real — quien tiene permiso META puede programar
+  // posts orgánicos sin riesgo de plata, pero solo quien tenga META_ADS
+  // puede crear/activar campañas pagas.
+  { id: "META_ADS",      label: "Meta Ads (pago)", descripcion: "Campañas pagas en Facebook + Instagram. Permite gastar presupuesto — asignar solo a usuarios autorizados a decidir gastos.", grupo: "INTEGRACIONES" },
   { id: "ASISTENTE_IA",  label: "Asistente IA",   descripcion: "Chat IA para gestionar la base",        grupo: "INTEGRACIONES" },
 
   // SISTEMA
