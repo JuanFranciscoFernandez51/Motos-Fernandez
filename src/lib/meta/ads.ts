@@ -359,6 +359,161 @@ export async function updateMetaStatus(
   await metaPost(`/${objectId}`, { status })
 }
 
+// ===== HELPERS PARA ESTRUCTURA JERÁRQUICA (Fase 7) =====
+//
+// La función createCampaignInMeta de arriba sigue siendo válida para
+// el flujo "1 click → 1 campaign + 1 adset + 1 ad" desde el wizard
+// simple. Las funciones de abajo permiten crear AdSets y Ads
+// individuales para el editor avanzado.
+
+export type AdMediaInput =
+  | { type: "PHOTO"; imageUrl: string }
+  | { type: "PHOTO_CAROUSEL"; imageUrls: string[] }
+  | { type: "VIDEO" | "REEL"; videoUrl: string }
+
+/**
+ * Crea SOLO un AdSet bajo una campaña existente. Útil para sumar
+ * conjuntos nuevos a una campaign que ya está en Meta (A/B testing
+ * de audiencias).
+ *
+ * El campaign tiene que estar ya en Meta (con metaCampaignId). El
+ * nuevo adset se crea PAUSED — activar es un paso separado.
+ */
+export async function createAdSetInMeta(args: {
+  adAccountId: string
+  metaCampaignId: string
+  name: string
+  dailyBudgetCents: number
+  startDate: Date
+  endDate: Date
+  audience: AudienceConfig
+  /** Objetivo de la campaña — define optimization_goal del adset. */
+  objective: (typeof CAMPAIGN_OBJECTIVES)[number]
+}): Promise<{ metaAdSetId: string }> {
+  const targeting = audienceConfigToTargetingSpec(args.audience)
+  const adSet = await metaPost<{ id: string }>(
+    `/${args.adAccountId}/adsets`,
+    {
+      name: args.name,
+      campaign_id: args.metaCampaignId,
+      daily_budget: args.dailyBudgetCents,
+      billing_event: "IMPRESSIONS",
+      bid_strategy: "LOWEST_COST_WITHOUT_CAP",
+      optimization_goal:
+        args.objective === "OUTCOME_TRAFFIC"
+          ? "LINK_CLICKS"
+          : args.objective === "OUTCOME_LEADS"
+            ? "OFFSITE_CONVERSIONS"
+            : args.objective === "OUTCOME_ENGAGEMENT"
+              ? "POST_ENGAGEMENT"
+              : "REACH",
+      start_time: args.startDate.toISOString(),
+      end_time: args.endDate.toISOString(),
+      targeting,
+      status: "PAUSED",
+    }
+  )
+  return { metaAdSetId: adSet.id }
+}
+
+/**
+ * Crea un Ad (con creative) bajo un AdSet existente.
+ *
+ * Soporta los 4 tipos de media:
+ * - PHOTO: imagen fija (link_data con picture).
+ * - PHOTO_CAROUSEL: 2-10 imágenes (link_data con child_attachments).
+ * - VIDEO: video al feed (video_data con video_id).
+ * - REEL: video vertical 9:16 (mismo video_data pero con placement reel).
+ *
+ * Para VIDEO/REEL Meta necesita primero subir el video al ad account
+ * y obtener un video_id. Esa subida la hacemos con /act/{id}/advideos.
+ */
+export async function createAdInMeta(args: {
+  adAccountId: string
+  pageId: string
+  igUserId: string | null
+  metaAdSetId: string
+  name: string
+  media: AdMediaInput
+  caption: string
+  callToAction: (typeof CTAS)[number]
+  destinationUrl?: string | null
+}): Promise<{ metaAdId: string; metaCreativeId: string }> {
+  const linkBase = args.destinationUrl || "https://www.motosfernandez.com.ar"
+
+  let objectStorySpec: Record<string, unknown>
+
+  if (args.media.type === "PHOTO") {
+    objectStorySpec = {
+      page_id: args.pageId,
+      ...(args.igUserId ? { instagram_user_id: args.igUserId } : {}),
+      link_data: {
+        link: linkBase,
+        message: args.caption,
+        picture: args.media.imageUrl,
+        call_to_action: { type: args.callToAction },
+      },
+    }
+  } else if (args.media.type === "PHOTO_CAROUSEL") {
+    objectStorySpec = {
+      page_id: args.pageId,
+      ...(args.igUserId ? { instagram_user_id: args.igUserId } : {}),
+      link_data: {
+        link: linkBase,
+        message: args.caption,
+        child_attachments: args.media.imageUrls.slice(0, 10).map((url) => ({
+          link: linkBase,
+          picture: url,
+          call_to_action: { type: args.callToAction },
+        })),
+      },
+    }
+  } else {
+    // VIDEO o REEL: hay que subir el video al ad account primero
+    // para obtener video_id, y después referenciarlo en object_story_spec.
+    const video = await metaPost<{ id: string }>(
+      `/${args.adAccountId}/advideos`,
+      { file_url: args.media.videoUrl }
+    )
+    objectStorySpec = {
+      page_id: args.pageId,
+      ...(args.igUserId ? { instagram_user_id: args.igUserId } : {}),
+      video_data: {
+        video_id: video.id,
+        message: args.caption,
+        call_to_action: {
+          type: args.callToAction,
+          value: { link: linkBase },
+        },
+      },
+    }
+  }
+
+  const creative = await metaPost<{ id: string }>(
+    `/${args.adAccountId}/adcreatives`,
+    {
+      name: `${args.name} - Creative`,
+      object_story_spec: objectStorySpec,
+    }
+  )
+
+  const ad = await metaPost<{ id: string }>(`/${args.adAccountId}/ads`, {
+    name: args.name,
+    adset_id: args.metaAdSetId,
+    creative: { creative_id: creative.id },
+    status: "PAUSED",
+  })
+
+  return { metaAdId: ad.id, metaCreativeId: creative.id }
+}
+
+/** Trae insights de un AdSet o Ad individual (no solo de Campaign). */
+export async function fetchObjectInsights(
+  objectId: string
+): Promise<CampaignInsightsCache | null> {
+  return fetchCampaignInsights(objectId) // Meta usa el mismo endpoint
+}
+
 // ===== INSIGHTS =====
 
 /**

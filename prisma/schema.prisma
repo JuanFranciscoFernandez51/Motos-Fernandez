@@ -1399,8 +1399,98 @@ model AdCampaign {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
+  // Estructura jerárquica (Fase 7): una campaña tiene N adsets,
+  // cada adset tiene N ads. Los campos metaAdSetId/metaAdId/etc de
+  // arriba quedan por backward-compat (apuntan al primer adset/ad
+  // creado vía la versión simple). El editor nuevo usa adSets[].
+  adSets                AdCampaignAdSet[]
+
   @@index([status, endDate])
   @@index([motoId])
+}
+
+/// Conjunto de anuncios (AdSet) dentro de una AdCampaign.
+///
+/// La audiencia, el placement y el presupuesto viven a este nivel —
+/// ahí pasa el "A/B testing": varias audiencias dentro de la misma
+/// campaña para ver cuál convierte mejor.
+///
+/// Naming: `AdCampaignAdSet` (no `AdSet`) para evitar colisión con
+/// nombres genéricos y dejar claro que es hijo de AdCampaign.
+model AdCampaignAdSet {
+  id                  String      @id @default(cuid())
+  campaignId          String
+  campaign            AdCampaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  name                String
+  metaAdSetId         String?     @unique
+  // El presupuesto diario es opcional acá: si la campaña padre tiene
+  // CBO (Campaign Budget Optimization) activado, el budget vive en
+  // la campaña. Si no, vive en cada adset.
+  dailyBudgetCents    Int?
+  startDate           DateTime
+  endDate             DateTime
+  // Status sigue el mismo enum que AdCampaign (DRAFT, IN_META_PAUSED,
+  // ACTIVE, PAUSED_BY_USER, COMPLETED, FAILED).
+  status              String      @default("DRAFT")
+  // Audiencia + targeting. Mismo shape que AdCampaign.audienceConfig.
+  audienceConfig      Json
+  // Insights cacheados (refrescados por cron sync). Estructura igual
+  // a la de AdCampaign pero a nivel adset.
+  insightsCache       Json?
+  lastSyncedAt        DateTime?
+  errorMessage        String?     @db.Text
+  errorCode           Int?
+  // Orden de presentación en la UI (botones reordenar).
+  orden               Int         @default(0)
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  ads                 AdCampaignAd[]
+
+  @@index([campaignId])
+  @@index([status])
+}
+
+/// Anuncio individual (Ad) dentro de un AdSet.
+///
+/// Cada ad tiene un creative propio: imagen, video o carrusel + copy +
+/// CTA. Acá está la verdadera variación creativa: testear "Reel
+/// dinámico" vs "carrusel de fotos" vs "foto sola con texto fuerte".
+model AdCampaignAd {
+  id                    String              @id @default(cuid())
+  adSetId               String
+  adSet                 AdCampaignAdSet     @relation(fields: [adSetId], references: [id], onDelete: Cascade)
+  name                  String
+  metaAdId              String?             @unique
+  metaCreativeId        String?
+  status                String              @default("DRAFT")
+  // Tipo de creative:
+  // - PHOTO: una imagen fija (link_data con picture).
+  // - PHOTO_CAROUSEL: carrusel de varias imágenes.
+  // - VIDEO: un video al feed.
+  // - REEL: video vertical 9:16.
+  mediaType             String              @default("PHOTO")
+  // URLs a Cloudinary. Según mediaType:
+  // - PHOTO: 1 url en imageUrls
+  // - PHOTO_CAROUSEL: 2-10 urls en imageUrls
+  // - VIDEO/REEL: 1 url en videoUrls
+  imageUrls             String[]            @default([])
+  videoUrls             String[]            @default([])
+  caption               String              @db.Text
+  // CTA: LEARN_MORE | MESSAGE_PAGE | WHATSAPP_MESSAGE | etc.
+  callToAction          String
+  destinationUrl        String?             @db.Text
+  // Insights por ad — para ver qué creative funcionó mejor.
+  insightsCache         Json?
+  lastSyncedAt          DateTime?
+  errorMessage          String?             @db.Text
+  errorCode             Int?
+  orden                 Int                 @default(0)
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  @@index([adSetId])
+  @@index([status])
 }
 
 /// Log estructurado de cada call a Meta (Graph API + Marketing API).

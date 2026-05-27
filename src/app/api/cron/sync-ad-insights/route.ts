@@ -90,5 +90,59 @@ export async function GET(request: Request) {
     }
   }
 
+  // 3) Sync de insights por AdSet y Ad — para A/B testing comparativo.
+  //    Solo de los items que están en Meta (con metaXxxId).
+  const adSets = await prisma.adCampaignAdSet.findMany({
+    where: {
+      metaAdSetId: { not: null },
+      status: { in: ["ACTIVE", "PAUSED_BY_USER", "COMPLETED"] },
+    },
+    select: { id: true, metaAdSetId: true },
+    take: 100,
+  })
+  for (const s of adSets) {
+    if (!s.metaAdSetId) continue
+    try {
+      const insights = await fetchCampaignInsights(s.metaAdSetId)
+      if (insights) {
+        await prisma.adCampaignAdSet.update({
+          where: { id: s.id },
+          data: {
+            insightsCache: insights as unknown as Prisma.InputJsonValue,
+            lastSyncedAt: ahora,
+          },
+        })
+      }
+    } catch {
+      // best-effort: si falla un adset, seguimos con los demás
+    }
+  }
+
+  const ads = await prisma.adCampaignAd.findMany({
+    where: {
+      metaAdId: { not: null },
+      status: { in: ["ACTIVE", "PAUSED_BY_USER", "COMPLETED"] },
+    },
+    select: { id: true, metaAdId: true },
+    take: 200,
+  })
+  for (const a of ads) {
+    if (!a.metaAdId) continue
+    try {
+      const insights = await fetchCampaignInsights(a.metaAdId)
+      if (insights) {
+        await prisma.adCampaignAd.update({
+          where: { id: a.id },
+          data: {
+            insightsCache: insights as unknown as Prisma.InputJsonValue,
+            lastSyncedAt: ahora,
+          },
+        })
+      }
+    } catch {
+      // idem
+    }
+  }
+
   return NextResponse.json({ ok: true, ...result })
 }

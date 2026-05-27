@@ -388,6 +388,16 @@ function CampaignRow({ campaign }: { campaign: CampaignLite }) {
           )}
           <Button
             size="sm"
+            variant="outline"
+            render={<Link href={`/admin/meta/ads/${campaign.id}`} />}
+            className="border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10"
+            title="Ver conjuntos y ads · A/B testing"
+          >
+            <Eye className="size-3.5 mr-1" />
+            Editar
+          </Button>
+          <Button
+            size="sm"
             variant="ghost"
             onClick={handleDelete}
             disabled={loading !== null}
