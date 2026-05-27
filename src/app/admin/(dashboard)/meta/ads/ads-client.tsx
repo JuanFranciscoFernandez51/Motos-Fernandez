@@ -18,6 +18,9 @@ import {
   Rocket,
   Bike,
   TrendingUp,
+  Sparkles,
+  Eye,
+  Info,
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -627,8 +630,41 @@ function AdAccountSetup({ featureEnabled }: { featureEnabled: boolean }) {
 }
 
 /**
- * Modal de creación de campaña. Form lineal con todos los campos
- * críticos. Validaciones espejan las del backend para feedback rápido.
+ * Texto explicativo de cada objetivo + presupuesto recomendado.
+ * Sirve como guía in-context para que el admin entienda qué elegir.
+ */
+const OBJECTIVE_HELP: Record<
+  (typeof CAMPAIGN_OBJECTIVES)[number],
+  { desc: string; recommendedBudgetARS: number; useCase: string }
+> = {
+  OUTCOME_TRAFFIC: {
+    desc: "Lleva gente a la ficha de la moto en la web. Mide clicks al link.",
+    recommendedBudgetARS: 2000,
+    useCase: "Ideal para motos con stock disponible y ficha completa.",
+  },
+  OUTCOME_ENGAGEMENT: {
+    desc: "Likes, comentarios y shares en la publicación. Buena para crecer cuenta IG/FB.",
+    recommendedBudgetARS: 1500,
+    useCase: "Cuando querés brand awareness o crecer seguidores.",
+  },
+  OUTCOME_LEADS: {
+    desc: "Genera conversaciones por WhatsApp o leads de formulario. Mide consultas reales.",
+    recommendedBudgetARS: 3000,
+    useCase: "El más directo para vender: pagás por consultas, no por clicks.",
+  },
+  OUTCOME_AWARENESS: {
+    desc: "Maximiza alcance e impresiones. Que vea la moto la mayor cantidad de gente.",
+    recommendedBudgetARS: 1500,
+    useCase: "Útil para lanzamientos o motos premium poco conocidas.",
+  },
+}
+
+/**
+ * Modal de creación de campaña. Iteración 2 con:
+ * - Selector visual de objetivo con descripción y presupuesto sugerido.
+ * - Generador de caption con IA (Claude) según moto + objetivo.
+ * - Preview en tiempo real de cómo se va a ver el anuncio.
+ * - Validaciones espejo del backend.
  */
 function CreateCampaignModal({
   motos,
@@ -641,13 +677,16 @@ function CreateCampaignModal({
 }) {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
+  const [generatingCaption, setGeneratingCaption] = useState(false)
   const [error, setError] = useState("")
   const [motoId, setMotoId] = useState("")
   const [searchMoto, setSearchMoto] = useState("")
   const [objective, setObjective] = useState<(typeof CAMPAIGN_OBJECTIVES)[number]>(
-    "OUTCOME_TRAFFIC"
+    "OUTCOME_LEADS"
   )
-  const [dailyBudget, setDailyBudget] = useState<string>(String(minBudget * 2))
+  const [dailyBudget, setDailyBudget] = useState<string>(
+    String(OBJECTIVE_HELP.OUTCOME_LEADS.recommendedBudgetARS)
+  )
   const [startDate, setStartDate] = useState(
     new Date(Date.now() + 60 * 60 * 1000).toISOString().slice(0, 16)
   )
@@ -657,8 +696,27 @@ function CreateCampaignModal({
   const [ageMin, setAgeMin] = useState(18)
   const [ageMax, setAgeMax] = useState(55)
   const [creativeCaption, setCreativeCaption] = useState("")
-  const [cta, setCta] = useState<(typeof CTAS)[number]>("LEARN_MORE")
+  const [cta, setCta] = useState<(typeof CTAS)[number]>("WHATSAPP_MESSAGE")
   const [destinationUrl, setDestinationUrl] = useState("")
+
+  // Cuando cambia el objetivo: sugerir el CTA + presupuesto recomendado
+  // automáticamente (a menos que el admin ya haya tocado el budget).
+  const [budgetTocado, setBudgetTocado] = useState(false)
+  useEffect(() => {
+    if (!budgetTocado) {
+      setDailyBudget(String(OBJECTIVE_HELP[objective].recommendedBudgetARS))
+    }
+    // CTA por defecto según objetivo
+    setCta(
+      objective === "OUTCOME_LEADS"
+        ? "WHATSAPP_MESSAGE"
+        : objective === "OUTCOME_TRAFFIC"
+          ? "LEARN_MORE"
+          : objective === "OUTCOME_ENGAGEMENT"
+            ? "LEARN_MORE"
+            : "LEARN_MORE"
+    )
+  }, [objective, budgetTocado])
 
   const motosFiltradas = useMemo(() => {
     const q = searchMoto.trim().toLowerCase()
@@ -677,6 +735,30 @@ function CreateCampaignModal({
       setDestinationUrl(`https://www.motosfernandez.com.ar/catalogo/${motoSel.slug}`)
     }
   }, [motoSel, destinationUrl])
+
+  const handleGenerarCaption = async () => {
+    if (!motoSel) {
+      setError("Elegí una moto antes de generar el copy con IA")
+      return
+    }
+    setGeneratingCaption(true)
+    setError("")
+    try {
+      const res = await fetch("/api/admin/meta/ads/suggest-caption", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ motoId, objective }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error || `Error ${res.status}`)
+        return
+      }
+      setCreativeCaption(data.caption || "")
+    } finally {
+      setGeneratingCaption(false)
+    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -777,18 +859,33 @@ function CreateCampaignModal({
           </div>
 
           <div>
-            <Label>Objetivo *</Label>
+            <Label>Objetivo de la campaña *</Label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-1">
-              {CAMPAIGN_OBJECTIVES.map((obj) => (
-                <button
-                  key={obj}
-                  type="button"
-                  onClick={() => setObjective(obj)}
-                  className={`text-left rounded-lg border-2 p-2 text-xs transition-colors ${objective === obj ? "border-[#6B4F7A] bg-[#6B4F7A]/5 font-semibold" : "border-gray-200 dark:border-neutral-800"}`}
-                >
-                  {OBJECTIVE_LABELS[obj]}
-                </button>
-              ))}
+              {CAMPAIGN_OBJECTIVES.map((obj) => {
+                const info = OBJECTIVE_HELP[obj]
+                return (
+                  <button
+                    key={obj}
+                    type="button"
+                    onClick={() => setObjective(obj)}
+                    className={`text-left rounded-lg border-2 p-3 transition-colors ${objective === obj ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/50"}`}
+                  >
+                    <p className={`text-xs ${objective === obj ? "font-bold" : "font-semibold"} text-gray-900 dark:text-gray-100`}>
+                      {OBJECTIVE_LABELS[obj]}
+                    </p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 leading-snug">
+                      {info.desc}
+                    </p>
+                    <p className="text-[10px] text-[#6B4F7A] mt-1.5 font-medium">
+                      Recomendado: ${info.recommendedBudgetARS.toLocaleString("es-AR")}/día
+                    </p>
+                  </button>
+                )
+              })}
+            </div>
+            <div className="mt-2 p-2 rounded-md bg-blue-50 dark:bg-blue-950/30 text-[11px] text-blue-800 dark:text-blue-300 flex items-start gap-2">
+              <Info className="size-3.5 shrink-0 mt-0.5" />
+              <span>{OBJECTIVE_HELP[objective].useCase}</span>
             </div>
           </div>
 
@@ -800,12 +897,18 @@ function CreateCampaignModal({
                 type="number"
                 min={minBudget}
                 value={dailyBudget}
-                onChange={(e) => setDailyBudget(e.target.value)}
+                onChange={(e) => {
+                  setBudgetTocado(true)
+                  setDailyBudget(e.target.value)
+                }}
               />
-              <p className="text-[10px] text-gray-400 mt-1">Mínimo: {minBudget}</p>
+              <p className="text-[10px] text-gray-400 mt-1">
+                Mín: ${minBudget.toLocaleString("es-AR")} · Sugerido para este
+                objetivo: ${OBJECTIVE_HELP[objective].recommendedBudgetARS.toLocaleString("es-AR")}
+              </p>
             </div>
             <div>
-              <Label>CTA</Label>
+              <Label>CTA del botón</Label>
               <select
                 value={cta}
                 onChange={(e) => setCta(e.target.value as (typeof CTAS)[number])}
@@ -865,16 +968,84 @@ function CreateCampaignModal({
           </div>
 
           <div>
-            <Label htmlFor="caption">Texto del aviso *</Label>
+            <div className="flex items-center justify-between mb-1">
+              <Label htmlFor="caption">Texto del aviso *</Label>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                onClick={handleGenerarCaption}
+                disabled={generatingCaption || !motoSel}
+                className="text-xs border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10"
+                title="Genera un copy profesional con IA según la moto y el objetivo"
+              >
+                {generatingCaption ? (
+                  <Loader2 className="size-3 animate-spin mr-1.5" />
+                ) : (
+                  <Sparkles className="size-3 mr-1.5" />
+                )}
+                {generatingCaption ? "Generando…" : "Generar con IA"}
+              </Button>
+            </div>
             <Textarea
               id="caption"
-              rows={3}
+              rows={5}
               maxLength={2200}
               value={creativeCaption}
               onChange={(e) => setCreativeCaption(e.target.value)}
-              placeholder="Si lo dejás vacío, se autocompleta con la moto"
+              placeholder="Escribilo a mano o tocá 'Generar con IA' para que Claude lo arme según la moto + objetivo. Lo podés editar después."
+              className="font-mono text-xs"
             />
+            <p className="text-[10px] text-gray-400 mt-1 text-right">
+              {creativeCaption.length} / 2200 chars
+            </p>
           </div>
+
+          {/* Preview del anuncio: mock simple de cómo se vería en IG/FB */}
+          {motoSel && (creativeCaption || motoSel.fotoPrincipal) && (
+            <div>
+              <Label className="flex items-center gap-1.5">
+                <Eye className="size-3.5" /> Preview del anuncio
+              </Label>
+              <div className="mt-1 max-w-sm mx-auto rounded-xl border border-gray-200 dark:border-neutral-800 overflow-hidden bg-white dark:bg-neutral-900 shadow-sm">
+                {/* Header tipo IG */}
+                <div className="flex items-center gap-2 p-2 border-b border-gray-100 dark:border-neutral-800">
+                  <div className="size-7 rounded-full bg-gradient-to-br from-pink-500 via-rose-500 to-yellow-500" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-semibold truncate">motos.fernandez</p>
+                    <p className="text-[10px] text-gray-400">Publicidad · Bahía Blanca</p>
+                  </div>
+                </div>
+                {/* Imagen */}
+                {motoSel.fotoPrincipal && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={motoSel.fotoPrincipal}
+                    alt=""
+                    className="w-full aspect-square object-cover bg-gray-100"
+                  />
+                )}
+                {/* CTA bar */}
+                <div className="px-3 py-2 bg-gray-50 dark:bg-neutral-950 border-y border-gray-100 dark:border-neutral-800 flex items-center justify-between">
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
+                    motosfernandez.com.ar
+                  </p>
+                  <span className="text-[11px] font-semibold text-[#6B4F7A]">
+                    {cta.replace(/_/g, " ")}
+                  </span>
+                </div>
+                {/* Caption */}
+                {creativeCaption && (
+                  <div className="p-3 text-xs whitespace-pre-line line-clamp-6 text-gray-700 dark:text-gray-300">
+                    {creativeCaption}
+                  </div>
+                )}
+              </div>
+              <p className="text-[10px] text-gray-400 mt-1 text-center italic">
+                Vista aproximada — el render real en Meta puede variar
+              </p>
+            </div>
+          )}
 
           <div>
             <Label htmlFor="dest">URL destino</Label>
@@ -885,6 +1056,10 @@ function CreateCampaignModal({
               onChange={(e) => setDestinationUrl(e.target.value)}
               placeholder="https://www.motosfernandez.com.ar/catalogo/..."
             />
+            <p className="text-[10px] text-gray-400 mt-1">
+              Se autocompleta con la ficha de la moto. Cambialo solo si querés
+              que el click vaya a otra página.
+            </p>
           </div>
 
           {error && (
