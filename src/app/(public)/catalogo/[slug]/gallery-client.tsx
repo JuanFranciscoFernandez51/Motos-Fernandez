@@ -4,26 +4,60 @@ import { useEffect, useState, useCallback, useRef } from "react"
 import Image from "next/image"
 import { Bike, ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react"
 
+type ColorOption = {
+  id: string
+  nombre: string
+  hex: string
+  foto: string | null
+}
+
 export function ModelGallery({
   fotos,
   nombre,
+  colores = [],
 }: {
   fotos: string[]
   nombre: string
+  colores?: ColorOption[]
 }) {
+  // Galería combinada: las fotos del modelo + las fotos de cada color
+  // que tenga una (sin duplicar las que ya están). Así al elegir un
+  // color, saltamos a su foto dentro de la misma galería.
+  const coloresConFoto = colores.filter(
+    (c): c is ColorOption & { foto: string } => !!c.foto
+  )
+  const fotos2 = [
+    ...fotos,
+    ...coloresConFoto
+      .map((c) => c.foto)
+      .filter((f) => !fotos.includes(f)),
+  ]
+  const galeria = fotos2.length > 0 ? fotos2 : fotos
+
   const [current, setCurrent] = useState(0)
+  const [colorSel, setColorSel] = useState<string | null>(null)
   const [lightboxOpen, setLightboxOpen] = useState(false)
+
+  // Mapea cada color (con foto) al índice de su foto en la galería.
+  const indiceDeColor = (c: ColorOption): number =>
+    c.foto ? galeria.indexOf(c.foto) : -1
+
+  const seleccionarColor = (c: ColorOption) => {
+    setColorSel(c.id)
+    const idx = indiceDeColor(c)
+    if (idx >= 0) setCurrent(idx)
+  }
   // Refs para gestionar swipe en mobile
   const touchStartX = useRef<number | null>(null)
   const touchStartY = useRef<number | null>(null)
 
   const next = useCallback(
-    () => setCurrent((p) => (p === fotos.length - 1 ? 0 : p + 1)),
-    [fotos.length]
+    () => setCurrent((p) => (p === galeria.length - 1 ? 0 : p + 1)),
+    [galeria.length]
   )
   const prev = useCallback(
-    () => setCurrent((p) => (p === 0 ? fotos.length - 1 : p - 1)),
-    [fotos.length]
+    () => setCurrent((p) => (p === 0 ? galeria.length - 1 : p - 1)),
+    [galeria.length]
   )
 
   // Cuando el lightbox está abierto: ESC cierra, ← → navegan, body sin scroll
@@ -66,7 +100,7 @@ export function ModelGallery({
     touchStartY.current = null
   }
 
-  if (fotos.length === 0) {
+  if (galeria.length === 0) {
     return (
       <div className="aspect-[4/3] rounded-xl bg-[#F0F0F0] dark:bg-neutral-950 flex items-center justify-center">
         <Bike className="size-16 text-gray-300" />
@@ -85,7 +119,7 @@ export function ModelGallery({
           aria-label="Ampliar foto"
         >
           <Image
-            src={fotos[current]}
+            src={galeria[current]}
             alt={`${nombre} - Foto ${current + 1}`}
             fill
             className="object-cover"
@@ -97,7 +131,7 @@ export function ModelGallery({
         <div className="pointer-events-none absolute top-3 right-3 size-9 rounded-full bg-black/40 text-white flex items-center justify-center backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">
           <ZoomIn className="size-4" />
         </div>
-        {fotos.length > 1 && (
+        {galeria.length > 1 && (
           <>
             <button
               type="button"
@@ -122,7 +156,7 @@ export function ModelGallery({
               <ChevronRight className="size-5" />
             </button>
             <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
-              {fotos.map((_, i) => (
+              {galeria.map((_, i) => (
                 <button
                   key={i}
                   type="button"
@@ -142,9 +176,9 @@ export function ModelGallery({
       </div>
 
       {/* Thumbnails */}
-      {fotos.length > 1 && (
+      {galeria.length > 1 && (
         <div className="mt-3 grid grid-cols-5 gap-2">
-          {fotos.slice(0, 5).map((foto, i) => (
+          {galeria.slice(0, 5).map((foto, i) => (
             <button
               key={i}
               type="button"
@@ -164,6 +198,47 @@ export function ModelGallery({
               />
             </button>
           ))}
+        </div>
+      )}
+
+      {/* Selector de colores — tocar un color con foto cambia la imagen
+          principal. Los colores sin foto se muestran informativos. */}
+      {colores.length > 0 && (
+        <div className="mt-4">
+          <p className="text-xs font-semibold text-[#1A1A1A] dark:text-white uppercase tracking-wider mb-2">
+            {colorSel
+              ? `Color: ${colores.find((c) => c.id === colorSel)?.nombre || ""}`
+              : "Colores disponibles"}
+          </p>
+          <div className="flex flex-wrap gap-2.5">
+            {colores.map((color) => {
+              const tieneFoto = !!color.foto
+              const activo = colorSel === color.id
+              return (
+                <button
+                  key={color.id}
+                  type="button"
+                  onClick={() => tieneFoto && seleccionarColor(color)}
+                  title={
+                    color.nombre + (tieneFoto ? "" : " (sin foto específica)")
+                  }
+                  className={`group relative flex items-center gap-1.5 rounded-full border pl-1 pr-3 py-1 transition-all ${
+                    activo
+                      ? "border-[#6B4F7A] ring-2 ring-[#6B4F7A]/30 bg-[#6B4F7A]/5"
+                      : "border-gray-200 dark:border-neutral-700 hover:border-[#6B4F7A]/50"
+                  } ${tieneFoto ? "cursor-pointer" : "cursor-default opacity-80"}`}
+                >
+                  <span
+                    className="size-6 rounded-full border border-black/10 shadow-sm shrink-0"
+                    style={{ backgroundColor: color.hex }}
+                  />
+                  <span className="text-xs font-medium text-gray-700 dark:text-gray-200">
+                    {color.nombre}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
         </div>
       )}
 
@@ -189,14 +264,14 @@ export function ModelGallery({
           </button>
 
           {/* Counter */}
-          {fotos.length > 1 && (
+          {galeria.length > 1 && (
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 px-3 py-1.5 rounded-full bg-white/10 text-white text-sm backdrop-blur-sm">
-              {current + 1} / {fotos.length}
+              {current + 1} / {galeria.length}
             </div>
           )}
 
           {/* Prev button */}
-          {fotos.length > 1 && (
+          {galeria.length > 1 && (
             <button
               type="button"
               onClick={(e) => {
@@ -216,7 +291,7 @@ export function ModelGallery({
             onClick={(e) => e.stopPropagation()}
           >
             <Image
-              src={fotos[current]}
+              src={galeria[current]}
               alt={`${nombre} - Foto ${current + 1}`}
               fill
               className="object-contain"
@@ -227,7 +302,7 @@ export function ModelGallery({
           </div>
 
           {/* Next button */}
-          {fotos.length > 1 && (
+          {galeria.length > 1 && (
             <button
               type="button"
               onClick={(e) => {
@@ -242,9 +317,9 @@ export function ModelGallery({
           )}
 
           {/* Thumbnails strip (en pantalla grande) */}
-          {fotos.length > 1 && (
+          {galeria.length > 1 && (
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 hidden sm:flex gap-2 max-w-[90vw] overflow-x-auto px-2">
-              {fotos.map((foto, i) => (
+              {galeria.map((foto, i) => (
                 <button
                   key={i}
                   type="button"

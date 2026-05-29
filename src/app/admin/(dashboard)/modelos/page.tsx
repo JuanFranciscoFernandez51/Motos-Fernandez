@@ -519,13 +519,26 @@ export default async function ModelosPage() {
             Gestioná el catálogo de motos, cuatriciclos y vehículos.
           </p>
         </div>
-        <Button
-          render={<Link href="/admin/modelos/nuevo" />}
-          className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Nuevo modelo
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* Preview del catálogo 0KM (página oculta del menú público) */}
+          <Button
+            variant="outline"
+            render={
+              <Link href="/0km" target="_blank" rel="noopener noreferrer" />
+            }
+            className="border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10"
+            title="Vista previa de la página Motos 0KM (oculta del menú público)"
+          >
+            Ver Motos 0KM ↗
+          </Button>
+          <Button
+            render={<Link href="/admin/modelos/nuevo" />}
+            className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Nuevo modelo
+          </Button>
+        </div>
       </div>
 
       <ModelosList

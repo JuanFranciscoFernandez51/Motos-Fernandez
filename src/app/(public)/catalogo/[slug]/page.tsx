@@ -153,7 +153,16 @@ export default async function ModeloDetailPage({ params }: Props) {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {/* Gallery + calculadora */}
             <div className="space-y-6">
-              <ModelGallery fotos={model.fotos} nombre={model.nombre} />
+              <ModelGallery
+                fotos={model.fotos}
+                nombre={model.nombre}
+                colores={model.colores.map((c) => ({
+                  id: c.id,
+                  nombre: c.nombre,
+                  hex: c.hex,
+                  foto: c.foto,
+                }))}
+              />
               {/* Calculadora de cuotas (desktop: debajo de fotos) */}
               {model.precio && (
                 <div className="hidden lg:block">
@@ -331,26 +340,8 @@ export default async function ModeloDetailPage({ params }: Props) {
                 </div>
               )}
 
-              {/* Colors */}
-              {model.colores.length > 0 && (
-                <div className="mt-6">
-                  <h2 className="text-sm font-semibold text-[#1A1A1A] dark:text-white uppercase tracking-wider mb-3">
-                    Colores disponibles
-                  </h2>
-                  <div className="flex flex-wrap gap-3">
-                    {model.colores.map((color) => (
-                      <div key={color.id} className="flex items-center gap-2">
-                        <span
-                          className="size-6 rounded-full border border-gray-200 dark:border-neutral-800"
-                          style={{ backgroundColor: color.hex }}
-                          title={color.nombre}
-                        />
-                        <span className="text-xs text-gray-600 dark:text-gray-300">{color.nombre}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              {/* Los colores ahora se muestran en la galería (selector
+                  interactivo que cambia la foto al elegir). */}
 
               {/* CTA buttons */}
               <div className="mt-8 flex flex-col sm:flex-row gap-3">
