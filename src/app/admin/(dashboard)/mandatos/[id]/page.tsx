@@ -5,7 +5,10 @@ import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
 import { MandatoForm } from "@/components/admin/operativo/mandato-form"
 import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
-import { mapMandatoToModeloData } from "@/lib/mandato-helpers"
+import {
+  mapMandatoToModeloData,
+  publicarMandatoEnCatalogoSiCorresponde,
+} from "@/lib/mandato-helpers"
 import { sincronizarMandatoVendido } from "@/lib/venta-moto-helpers"
 import { invalidateModelos } from "@/lib/cached-queries"
 import { Button } from "@/components/ui/button"
@@ -92,6 +95,29 @@ async function updateMandato(formData: FormData) {
       // vendida=true, activo=false, fechaVenta, pausa ML, etc.
       if (nuevoEstado === "VENDIDO") {
         await sincronizarMandatoVendido(tx, { mandatoId: id })
+      }
+
+      // Auto-publish/auto-resync:
+      // - Si todavía no tiene modeloId, lo creamos en el catálogo
+      //   (entra a Stock motos; activo en catálogo solo si hay fotos).
+      // - Si ya está publicado, propagamos los cambios al modelo
+      //   (color, fotos, precio, etc.) para mantenerlos sincronizados.
+      const mandatoActual = await tx.mandatoVenta.findUnique({
+        where: { id },
+        select: { modeloId: true },
+      })
+      if (!mandatoActual?.modeloId) {
+        await publicarMandatoEnCatalogoSiCorresponde(tx, id)
+      } else {
+        const mandatoCompleto = await tx.mandatoVenta.findUnique({
+          where: { id },
+        })
+        if (mandatoCompleto) {
+          await tx.modelo.update({
+            where: { id: mandatoActual.modeloId },
+            data: mapMandatoToModeloData(mandatoCompleto, { incluirFotos: true }),
+          })
+        }
       }
     })
 

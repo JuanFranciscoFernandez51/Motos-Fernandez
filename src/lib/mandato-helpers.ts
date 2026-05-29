@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client"
+import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
 
 /**
  * Crea (o sincroniza) automaticamente un MandatoVenta cuando se toma una
@@ -145,6 +146,83 @@ type MandatoSyncable = {
   fotos: string[]
   observaciones: string | null
   tipoTenencia: string
+}
+
+/**
+ * Idempotente: si el mandato ya tiene `modeloId` (ya fue publicado),
+ * devuelve { ok: true, alreadyPublished: true } sin hacer nada. Sino
+ * crea el Modelo en el catálogo con todos los datos del mandato.
+ *
+ * Decisión de UX:
+ * - El Modelo entra a **Stock motos** automáticamente (campo `activo`
+ *   no afecta a stock — eso se filtra por `archivada`/`vendida`).
+ * - El Modelo aparece en el **catálogo público** solo si el mandato
+ *   ya tiene fotos cargadas. Sin fotos → `activo=false` para no
+ *   exponer al cliente un placeholder feo. Cuando el admin sume
+ *   fotos y haga "Resync" (o se vuelva a publicar), pasa a activo=true.
+ *
+ * Llamar dentro de la misma transacción que el create/update del
+ * mandato cuando se quiere atómico, o por fuera si se acepta best-
+ * effort.
+ */
+export async function publicarMandatoEnCatalogoSiCorresponde(
+  tx: Prisma.TransactionClient,
+  mandatoId: string
+): Promise<
+  | { ok: true; alreadyPublished: true; modeloId: string }
+  | { ok: true; created: true; modeloId: string; codigo: string }
+  | { ok: false; error: string }
+> {
+  const mandato = await tx.mandatoVenta.findUnique({
+    where: { id: mandatoId },
+    include: { cliente: true },
+  })
+  if (!mandato) return { ok: false, error: "Mandato no encontrado" }
+  if (mandato.modeloId)
+    return { ok: true, alreadyPublished: true, modeloId: mandato.modeloId }
+
+  // Slug determinista a partir de marca + modelo + número de mandato
+  const baseSlug = `${mandato.marca}-${mandato.modelo}-mv${mandato.numero}`
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+
+  const codigo = await generarCodigoModelo(tx, { condicion: "USADA" })
+
+  // Decisión de activo: solo si tiene fotos reales subidas. Si vino
+  // sin fotos, queda inactivo y el admin lo activa después.
+  const tieneFotos = mandato.fotos.length > 0
+  const fotos = tieneFotos ? mandato.fotos : ["/images/logo-clasico.png"]
+
+  const modelo = await tx.modelo.create({
+    data: {
+      nombre: `${mandato.marca} ${mandato.modelo}`,
+      slug: baseSlug,
+      codigo,
+      marca: mandato.marca,
+      categoriaVehiculo: "MOTOCICLETA",
+      condicion: "USADA",
+      activo: tieneFotos, // ← clave: público solo si hay fotos
+      origen: "MANDATO",
+      clienteEntregaId: mandato.clienteId,
+      clienteNombre: `${mandato.cliente.apellido}, ${mandato.cliente.nombre}`,
+      clienteContacto:
+        mandato.cliente.telefono || mandato.cliente.email || null,
+      // Mapea año, km, color, chasis, motor, patente, precio, moneda,
+      // observaciones, tipoTenencia desde el mandato (helper compartido).
+      ...mapMandatoToModeloData(mandato, { incluirFotos: false }),
+      fotos,
+    },
+  })
+
+  await tx.mandatoVenta.update({
+    where: { id: mandatoId },
+    data: { modeloId: modelo.id, estado: "ACTIVO" },
+  })
+
+  return { ok: true, created: true, modeloId: modelo.id, codigo }
 }
 
 export function mapMandatoToModeloData(

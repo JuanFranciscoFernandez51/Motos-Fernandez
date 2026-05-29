@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { MandatoForm } from "@/components/admin/operativo/mandato-form"
+import { publicarMandatoEnCatalogoSiCorresponde } from "@/lib/mandato-helpers"
+import { invalidateModelos } from "@/lib/cached-queries"
 
 export const dynamic = "force-dynamic"
 
@@ -67,6 +69,23 @@ async function createMandato(formData: FormData) {
         observaciones: get("observaciones") || null,
       },
     })
+
+    // Auto-publicar al catálogo: el Modelo se crea siempre (entra a
+    // Stock motos), y queda activo=true solo si el mandato vino con
+    // fotos. Sin fotos → activo=false hasta que el admin las cargue.
+    try {
+      await prisma.$transaction(async (tx) => {
+        await publicarMandatoEnCatalogoSiCorresponde(tx, mandato.id)
+      })
+      revalidatePath("/admin/modelos")
+      revalidatePath("/admin/stock-motos")
+      revalidatePath("/catalogo")
+      invalidateModelos()
+    } catch (e) {
+      // Si el auto-publish falla, no rompemos la creación del mandato.
+      // El admin puede republicar manualmente desde la lista de mandatos.
+      console.warn("[mandato-nuevo] auto-publish falló:", e)
+    }
 
     revalidatePath("/admin/mandatos")
     return { id: mandato.id }
