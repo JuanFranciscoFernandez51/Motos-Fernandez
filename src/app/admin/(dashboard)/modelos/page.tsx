@@ -464,9 +464,21 @@ async function deleteModelo(id: string, confirmText: string) {
   invalidateModelos()
 }
 
-export default async function ModelosPage() {
+export default async function ModelosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ condicion?: string }>
+}) {
+  const { condicion } = await searchParams
+  // condicion del query: "USADA" | "0KM" | undefined (todas).
+  // Las dos entradas de menú "Catálogo · Usadas" y "Catálogo · 0KM"
+  // apuntan a esta misma página con el query distinto.
+  const filtroCondicion =
+    condicion === "0KM" ? "0KM" : condicion === "USADA" ? "USADA" : null
+
   const [modelos, proveedores, clientes] = await Promise.all([
     prisma.modelo.findMany({
+      where: filtroCondicion ? { condicion: filtroCondicion } : undefined,
       orderBy: [{ slug: "asc" }],
       select: {
         id: true,
@@ -514,9 +526,19 @@ export default async function ModelosPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Modelos</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+            {filtroCondicion === "0KM"
+              ? "Catálogo · Motos 0KM"
+              : filtroCondicion === "USADA"
+                ? "Catálogo · Usadas"
+                : "Catálogo de motos"}
+          </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Gestioná el catálogo de motos, cuatriciclos y vehículos.
+            {filtroCondicion === "0KM"
+              ? "Modelos 0KM para publicar. Las que no tenés físicamente NO aparecen en Stock motos (sin chasis/motor)."
+              : filtroCondicion === "USADA"
+                ? "Motos usadas del catálogo. Las unidades físicas también están en Stock motos."
+                : "Gestioná el catálogo de motos, cuatriciclos y vehículos."}
           </p>
         </div>
         <div className="flex items-center gap-2">

@@ -22,12 +22,7 @@ export default async function StockMotosPage() {
     },
   })
 
-  const motos = await prisma.modelo.findMany({
-    // Stock = todo lo que podemos ofertar para vender, propio o consignado.
-    // Las EN_DOMICILIO (mandato externo) se traen también para tener los
-    // datos a mano al armar OC. Se separan visualmente en el cliente con
-    // tabs y badge SOLO WEB; el default del filtro es "EN_LOCAL" para que
-    // sigan apareciendo primero las físicas.
+  const motosRaw = await prisma.modelo.findMany({
     orderBy: [{ codigo: "desc" }, { createdAt: "desc" }],
     select: {
       id: true,
@@ -75,6 +70,15 @@ export default async function StockMotosPage() {
       },
     },
   })
+
+  // Stock = lo que REALMENTE existe físicamente. Criterio: tener chasis
+  // o motor cargado (unidad real identificable). Las usadas siempre los
+  // tienen; las 0KM que ingresan físicas se cargan "con número de motor
+  // y chasis". Las 0KM del catálogo publicitario (modelos genéricos que
+  // publicamos sin tener) no tienen ninguno → quedan fuera de Stock.
+  const motos = motosRaw.filter(
+    (m) => !!m.chasis?.trim() || !!m.motor?.trim()
+  )
 
   const ui: StockMotoUI[] = motos.map((m) => {
     // Unificamos el "cliente dueño" según el origen: para PARTE_DE_PAGO

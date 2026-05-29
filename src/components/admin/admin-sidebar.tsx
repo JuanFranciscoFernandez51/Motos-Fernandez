@@ -83,7 +83,8 @@ const navEntries: NavEntry[] = [
     label: "Catálogo",
     icon: Bike,
     items: [
-      { href: "/admin/modelos", label: "Modelos", icon: Bike, seccion: "MODELOS" },
+      { href: "/admin/modelos?condicion=USADA", label: "Catálogo · Usadas", icon: Bike, seccion: "MODELOS" },
+      { href: "/admin/modelos?condicion=0KM", label: "Catálogo · 0KM", icon: Bike, seccion: "MODELOS" },
       { href: "/admin/productos", label: "Productos de tienda", icon: ShoppingBag, seccion: "PRODUCTOS" },
     ],
   },
