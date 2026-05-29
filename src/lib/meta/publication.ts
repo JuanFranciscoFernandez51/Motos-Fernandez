@@ -106,9 +106,13 @@ type IGMediaStatus = { status_code?: string; status?: string }
  *
  * Si el container queda inválido (subcode 33 = "no existe / sin permiso")
  * casi siempre es porque IG rechazó la foto al cargarla (URL inaccesible,
- * formato no JPG, aspect ratio fuera de rango). Reintenta una consulta
- * pidiendo `status_code,status,error_message` que a veces sí responde con
- * el motivo concreto.
+ * formato no JPG, aspect ratio fuera de rango).
+ *
+ * IMPORTANTE: los campos válidos del container de IG son SOLO
+ * `status_code` y `status`. `error_message` NO existe como field y
+ * pedirlo hace que Meta rebote con "(#100) Tried accessing nonexisting
+ * field (error_message)" — lo que rompía TODA publicación a IG. El
+ * detalle del error, cuando lo hay, viene dentro del string `status`.
  */
 async function esperarMediaListo(
   creationId: string,
@@ -119,15 +123,17 @@ async function esperarMediaListo(
   const ctx = contextoFoto ? ` (foto: ${contextoFoto})` : ""
   while (Date.now() - inicio < timeoutMs) {
     try {
-      const r = await metaGet<IGMediaStatus & { error_message?: string }>(
-        `/${creationId}?fields=status_code,status,error_message`
+      const r = await metaGet<IGMediaStatus>(
+        `/${creationId}?fields=status_code,status`
       )
       const code = r.status_code || r.status
       if (code === "FINISHED") return
-      if (code === "ERROR" || code === "EXPIRED") {
-        const detalle = r.error_message ? ` — ${r.error_message}` : ""
+      if (typeof code === "string" && (code.includes("ERROR") || code.includes("EXPIRED"))) {
+        // El string `status` suele traer el detalle (ej:
+        // "ERROR: The media ... aspect ratio ...").
+        const detalle = r.status && r.status !== code ? ` — ${r.status}` : ""
         throw new Error(
-          `IG rechazó el media ${creationId}${ctx}: status=${code}${detalle}. Causas comunes: aspect ratio fuera de 4:5 a 1.91:1, foto no es JPG, URL inaccesible.`
+          `IG rechazó el media ${creationId}${ctx}: ${code}${detalle}. Causas comunes: aspect ratio fuera de 4:5 a 1.91:1, foto no es JPG, URL inaccesible.`
         )
       }
       await new Promise((res) => setTimeout(res, 2000))

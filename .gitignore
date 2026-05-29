@@ -42,3 +42,4 @@ next-env.d.ts
 
 # Archivos temporales locales (parsers, dumps de import)
 tmp/
+.gstack/
