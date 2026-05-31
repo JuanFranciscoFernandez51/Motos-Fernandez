@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef } from "react"
 import Image from "next/image"
-import { Bike, ChevronLeft, ChevronRight, X, ZoomIn } from "lucide-react"
+import { Bike, ChevronLeft, ChevronRight, X, ZoomIn, Check } from "lucide-react"
 
 type ColorOption = {
   id: string
@@ -201,15 +201,21 @@ export function ModelGallery({
         </div>
       )}
 
-      {/* Selector de colores — tocar un color con foto cambia la imagen
-          principal. Los colores sin foto se muestran informativos. */}
+      {/* Selector de colores estilo BMW — chips de pintura con brillo
+          diagonal. Tocar un color con foto cambia la imagen principal;
+          los colores sin foto se muestran informativos. */}
       {colores.length > 0 && (
-        <div className="mt-4">
-          <p className="text-xs font-semibold text-[#1A1A1A] dark:text-white uppercase tracking-wider mb-2">
-            {colorSel
-              ? `Color: ${colores.find((c) => c.id === colorSel)?.nombre || ""}`
-              : "Colores disponibles"}
-          </p>
+        <div className="mt-5">
+          <div className="flex items-baseline justify-between gap-2 mb-2.5">
+            <p className="text-xs font-semibold text-[#1A1A1A] dark:text-white uppercase tracking-wider">
+              {colorSel
+                ? colores.find((c) => c.id === colorSel)?.nombre || "Color"
+                : "Elegí tu color"}
+            </p>
+            <span className="text-[11px] text-gray-400">
+              {colores.length} {colores.length === 1 ? "color" : "colores"}
+            </span>
+          </div>
           <div className="flex flex-wrap gap-2.5">
             {colores.map((color) => {
               const tieneFoto = !!color.foto
@@ -219,26 +225,46 @@ export function ModelGallery({
                   key={color.id}
                   type="button"
                   onClick={() => tieneFoto && seleccionarColor(color)}
+                  aria-pressed={activo}
                   title={
                     color.nombre + (tieneFoto ? "" : " (sin foto específica)")
                   }
-                  className={`group relative flex items-center gap-1.5 rounded-full border pl-1 pr-3 py-1 transition-all ${
+                  className={`group relative h-11 w-16 rounded-lg overflow-hidden shadow-sm transition-all duration-200 ${
                     activo
-                      ? "border-[#6B4F7A] ring-2 ring-[#6B4F7A]/30 bg-[#6B4F7A]/5"
-                      : "border-gray-200 dark:border-neutral-700 hover:border-[#6B4F7A]/50"
-                  } ${tieneFoto ? "cursor-pointer" : "cursor-default opacity-80"}`}
+                      ? "ring-2 ring-[#6B4F7A] ring-offset-2 ring-offset-white dark:ring-offset-neutral-900 scale-[1.03]"
+                      : "ring-1 ring-black/10 dark:ring-white/10 hover:ring-[#6B4F7A]/50 hover:scale-[1.03]"
+                  } ${tieneFoto ? "cursor-pointer" : "cursor-default opacity-70"}`}
                 >
+                  {/* Pintura base + brillo diagonal (efecto chapa) */}
                   <span
-                    className="size-6 rounded-full border border-black/10 shadow-sm shrink-0"
+                    className="absolute inset-0"
                     style={{ backgroundColor: color.hex }}
                   />
-                  <span className="text-xs font-medium text-gray-700 dark:text-gray-200">
-                    {color.nombre}
-                  </span>
+                  <span
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        "linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 42%, rgba(0,0,0,0.28) 100%)",
+                    }}
+                  />
+                  {/* Check del activo */}
+                  {activo && (
+                    <span className="absolute inset-0 flex items-center justify-center">
+                      <span className="flex items-center justify-center size-6 rounded-full bg-white/85 shadow">
+                        <Check className="size-4 text-[#1A1A1A]" strokeWidth={3} />
+                      </span>
+                    </span>
+                  )}
                 </button>
               )
             })}
           </div>
+          {colorSel &&
+            !colores.find((c) => c.id === colorSel)?.foto && (
+              <p className="text-[11px] text-gray-400 mt-2 italic">
+                Este color no tiene foto específica todavía.
+              </p>
+            )}
         </div>
       )}
 
