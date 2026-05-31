@@ -2,9 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    // unoptimized: Cloudinary ya optimiza y sirve por CDN.
-    // Evita el error 402 de Vercel cuando se agota la cuota gratis de /_next/image.
-    unoptimized: true,
+    // Loader custom: next/image arma el srcset apuntando directo a la CDN de
+    // Cloudinary con transformaciones por ancho (f_auto,q_auto,w_X). No pasa
+    // por el optimizador de Vercel → sin error 402 de cuota, y el browser baja
+    // cada imagen en el tamaño/formato justo (clave para LCP mobile).
+    loader: "custom",
+    loaderFile: "./src/lib/cloudinary-loader.ts",
     remotePatterns: [
       {
         protocol: "https",
