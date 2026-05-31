@@ -7,27 +7,29 @@ import { GoldDivider } from "@/components/public/ui/gold-divider"
 import { SectionEyebrow } from "@/components/public/ui/section-eyebrow"
 
 /**
- * Catálogo de MOTOS 0KM — sección paralela al de Usadas. Linkeada desde
- * el menú principal. Reusa CatalogoClient filtrando a las unidades 0KM.
+ * Catálogo de MOTOS USADAS — sección paralela al de 0KM.
+ *
+ * Reusa CatalogoClient (cards, filtros, badges) filtrando a las unidades
+ * con condición USADA. El catálogo general (/catalogo) sigue existiendo
+ * como catch-all para todas las CTAs internas.
  */
 export const metadata: Metadata = {
-  title: "Motos 0KM | Motos Fernandez",
-  description: "Catálogo de motos 0KM nuevas con entrega inmediata y financiación.",
+  title: "Motos Usadas | Motos Fernandez",
+  description:
+    "Motos usadas seleccionadas y revisadas, con garantía, financiación y plan canje en Bahía Blanca.",
 }
 
-export default async function Motos0kmPage() {
+export default async function MotosUsadasPage() {
   const [models, brands] = await Promise.all([
     getModelosCatalogo(),
     getMarcasCatalogo(),
   ])
 
-  // Solo 0KM. El resto del flujo (cards, filtros, badges) lo maneja
-  // CatalogoClient igual que el catálogo general.
-  const ceroKm = models.filter((m) => (m.condicion || "0KM") === "0KM")
+  const usadas = models.filter((m) => m.condicion === "USADA")
 
   return (
     <>
-      <TrackVisita pagina="0km" />
+      <TrackVisita pagina="usadas" />
 
       {/* ==================== HERO ==================== */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325]">
@@ -39,29 +41,29 @@ export default async function Motos0kmPage() {
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
           <SectionEyebrow centered variant="gold">
-            Nuevas · Entrega inmediata
+            Seleccionadas · Revisadas
           </SectionEyebrow>
           <h1 className="mt-5 font-heading text-5xl sm:text-6xl lg:text-7xl text-white text-balance leading-tight">
-            Motos <span className="text-[#C8C8D0]">0KM</span>
+            Motos <span className="text-[#C8C8D0]">Usadas</span>
           </h1>
           <GoldDivider variant="ornament" className="mt-7" />
           <p className="mt-7 text-base sm:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Modelos nuevos con garantía oficial, financiación propia y plan
-            canje. Elegí color y consultá entrega inmediata.
+            Unidades revisadas por nuestro taller oficial, con garantía,
+            financiación propia y plan canje. Consultá disponibilidad.
           </p>
         </div>
       </section>
 
-      {/* ==================== CATÁLOGO 0KM ==================== */}
+      {/* ==================== CATÁLOGO USADAS ==================== */}
       <section className="py-12 sm:py-16 bg-[#F8F5FA] dark:bg-neutral-950 min-h-[60vh]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          {ceroKm.length === 0 ? (
+          {usadas.length === 0 ? (
             <p className="text-center text-gray-500 dark:text-gray-400 py-20">
-              Todavía no hay motos 0KM cargadas en esta sección.
+              Por el momento no hay motos usadas publicadas.
             </p>
           ) : (
             <CatalogoClient
-              models={JSON.parse(JSON.stringify(ceroKm))}
+              models={JSON.parse(JSON.stringify(usadas))}
               brands={brands}
             />
           )}

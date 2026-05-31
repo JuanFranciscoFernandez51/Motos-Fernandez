@@ -32,7 +32,8 @@ import { MobileBottomBar } from "@/components/public/mobile-bottom-bar"
 import { WelcomePopup } from "@/components/public/welcome-popup"
 
 const NAV_LINKS = [
-  { href: "/catalogo", label: "Catálogo", highlight: true },
+  { href: "/0km", label: "Motos 0KM", highlight: true },
+  { href: "/usadas", label: "Usadas", highlight: true },
   { href: "/tienda", label: "Tienda" },
   { href: "/consigna", label: "Consigna" },
   { href: "/financiacion", label: "Financiación" },

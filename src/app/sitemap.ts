@@ -9,6 +9,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Rutas estáticas
   const staticRoutes = [
     "/",
+    "/0km",
+    "/usadas",
     "/catalogo",
     "/tienda",
     "/financiacion",
