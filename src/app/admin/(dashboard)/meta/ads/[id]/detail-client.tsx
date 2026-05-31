@@ -18,6 +18,9 @@ import {
   Save,
   XCircle,
   Bike,
+  Play,
+  Pause,
+  Trophy,
 } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -180,6 +183,9 @@ export function CampaignDetailClient({
         </div>
       </div>
 
+      {/* Tabla comparativa de creativos (A/B testing) */}
+      <CreativesComparison adSets={campaign.adSets} />
+
       {/* AdSets accordion */}
       <div className="space-y-3">
         {campaign.adSets.length === 0 ? (
@@ -229,6 +235,185 @@ export function CampaignDetailClient({
   )
 }
 
+type AdInsights = {
+  impressions?: number
+  clicks?: number
+  ctr?: number
+  cpc?: number
+  spend?: number
+  reach?: number
+}
+
+type CreativeRow = {
+  id: string
+  name: string
+  adSetName: string
+  mediaType: string
+  thumb: string | null
+  status: string
+  impressions: number
+  clicks: number
+  ctr: number
+  cpc: number
+  spend: number
+}
+
+/**
+ * Tabla comparativa de todos los ads de la campaña (across adsets).
+ * Resalta el ganador por CTR (más alto = mejor) y por CPC (más bajo =
+ * mejor, ignorando los que no tienen clicks). Solo se muestra si hay
+ * ≥2 ads con datos de insights — sino no hay nada que comparar.
+ */
+function CreativesComparison({ adSets }: { adSets: AdSetLite[] }) {
+  const rows: CreativeRow[] = []
+  for (const s of adSets) {
+    for (const ad of s.ads) {
+      if (ad.status === "DELETED") continue
+      const ins = (ad.insightsCache || {}) as AdInsights
+      const impressions = ins.impressions || 0
+      const clicks = ins.clicks || 0
+      // CTR/CPC: usamos lo que vino de Meta; si falta, lo derivamos.
+      const ctr = ins.ctr ?? (impressions > 0 ? (clicks / impressions) * 100 : 0)
+      const cpc = ins.cpc ?? (clicks > 0 ? (ins.spend || 0) / clicks : 0)
+      rows.push({
+        id: ad.id,
+        name: ad.name,
+        adSetName: s.name,
+        mediaType: ad.mediaType,
+        thumb:
+          ad.mediaType === "VIDEO" || ad.mediaType === "REEL"
+            ? ad.videoUrls[0] || null
+            : ad.imageUrls[0] || null,
+        status: ad.status,
+        impressions,
+        clicks,
+        ctr,
+        cpc,
+        spend: ins.spend || 0,
+      })
+    }
+  }
+
+  // Necesitamos al menos 2 ads y que alguno tenga impresiones para que
+  // la comparación tenga sentido.
+  const conDatos = rows.filter((r) => r.impressions > 0)
+  if (rows.length < 2 || conDatos.length === 0) return null
+
+  // Ganadores
+  const bestCtr = conDatos.reduce((a, b) => (b.ctr > a.ctr ? b : a))
+  const withClicks = conDatos.filter((r) => r.clicks > 0 && r.cpc > 0)
+  const bestCpc = withClicks.length
+    ? withClicks.reduce((a, b) => (b.cpc < a.cpc ? b : a))
+    : null
+
+  // Orden: mejor CTR primero
+  const ordenadas = [...rows].sort((a, b) => b.ctr - a.ctr)
+
+  const fmtCpc = (n: number) =>
+    n > 0 ? `$${n.toLocaleString("es-AR", { maximumFractionDigits: 0 })}` : "—"
+
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Trophy className="size-4 text-amber-500" />
+          <h2 className="text-sm font-bold">Comparativa de creativos</h2>
+          <span className="text-[11px] text-gray-400">
+            cuál rinde mejor (CTR alto · CPC bajo)
+          </span>
+        </div>
+        <div className="overflow-x-auto -mx-1">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="text-left text-gray-400 border-b border-gray-100 dark:border-neutral-800">
+                <th className="py-1.5 px-1 font-medium">Creativo</th>
+                <th className="py-1.5 px-1 font-medium text-right">Impr.</th>
+                <th className="py-1.5 px-1 font-medium text-right">Clicks</th>
+                <th className="py-1.5 px-1 font-medium text-right">CTR</th>
+                <th className="py-1.5 px-1 font-medium text-right">CPC</th>
+                <th className="py-1.5 px-1 font-medium text-right">Gasto</th>
+              </tr>
+            </thead>
+            <tbody>
+              {ordenadas.map((r) => {
+                const isCtrWinner = r.id === bestCtr.id
+                const isCpcWinner = bestCpc?.id === r.id
+                return (
+                  <tr
+                    key={r.id}
+                    className="border-b border-gray-50 dark:border-neutral-900 last:border-0"
+                  >
+                    <td className="py-1.5 px-1">
+                      <div className="flex items-center gap-2 min-w-0">
+                        {r.thumb ? (
+                          r.mediaType === "VIDEO" || r.mediaType === "REEL" ? (
+                            <video src={r.thumb} muted className="size-8 rounded object-cover bg-black shrink-0" />
+                          ) : (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={r.thumb} alt="" className="size-8 rounded object-cover bg-gray-100 shrink-0" />
+                          )
+                        ) : (
+                          <div className="size-8 rounded bg-gray-200 shrink-0 flex items-center justify-center">
+                            <ImageIcon className="size-3.5 text-gray-400" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <p className="font-medium truncate max-w-[140px]">{r.name}</p>
+                          <p className="text-[10px] text-gray-400 truncate max-w-[140px]">
+                            {r.adSetName}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-1.5 px-1 text-right tabular-nums">
+                      {r.impressions.toLocaleString("es-AR")}
+                    </td>
+                    <td className="py-1.5 px-1 text-right tabular-nums">
+                      {r.clicks.toLocaleString("es-AR")}
+                    </td>
+                    <td className="py-1.5 px-1 text-right tabular-nums">
+                      <span
+                        className={
+                          isCtrWinner
+                            ? "font-bold text-emerald-600 inline-flex items-center gap-0.5"
+                            : ""
+                        }
+                      >
+                        {isCtrWinner && <Trophy className="size-3" />}
+                        {r.ctr.toFixed(2)}%
+                      </span>
+                    </td>
+                    <td className="py-1.5 px-1 text-right tabular-nums">
+                      <span
+                        className={
+                          isCpcWinner
+                            ? "font-bold text-emerald-600 inline-flex items-center gap-0.5"
+                            : ""
+                        }
+                      >
+                        {isCpcWinner && <Trophy className="size-3" />}
+                        {fmtCpc(r.cpc)}
+                      </span>
+                    </td>
+                    <td className="py-1.5 px-1 text-right tabular-nums text-gray-500">
+                      {fmtCpc(r.spend)}
+                    </td>
+                  </tr>
+                )
+              })}
+            </tbody>
+          </table>
+        </div>
+        <p className="text-[10px] text-gray-400 mt-2 italic">
+          Datos cacheados — se actualizan cada 6 h o al tocar
+          &quot;Sincronizar&quot; en la lista de campañas. Pausá los que
+          rinden peor y dejá corriendo el ganador.
+        </p>
+      </CardContent>
+    </Card>
+  )
+}
+
 function AdSetCard({
   adSet,
   fotosMoto,
@@ -242,6 +427,7 @@ function AdSetCard({
   const [open, setOpen] = useState(true)
   const [showCreateAd, setShowCreateAd] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [toggling, setToggling] = useState(false)
   const insights = adSet.insightsCache as { reach?: number; clicks?: number; spend?: number } | null
 
   const handleDelete = async () => {
@@ -252,6 +438,30 @@ function AdSetCard({
       router.refresh()
     } finally {
       setDeleting(false)
+    }
+  }
+
+  const isActive = adSet.status === "ACTIVE"
+  const canToggle =
+    !!adSet.metaAdSetId &&
+    ["ACTIVE", "IN_META_PAUSED", "PAUSED_BY_USER"].includes(adSet.status)
+
+  const handleToggle = async () => {
+    setToggling(true)
+    try {
+      const res = await fetch(`/api/admin/meta/adsets/${adSet.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: isActive ? "PAUSED" : "ACTIVE" }),
+      })
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        window.alert(d.error || `Error ${res.status}`)
+        return
+      }
+      router.refresh()
+    } finally {
+      setToggling(false)
     }
   }
 
@@ -289,6 +499,26 @@ function AdSetCard({
             </p>
           )}
         </div>
+        {canToggle && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation()
+              handleToggle()
+            }}
+            disabled={toggling}
+            className={`p-1.5 rounded ${isActive ? "text-amber-600 hover:bg-amber-50" : "text-emerald-600 hover:bg-emerald-50"}`}
+            title={isActive ? "Pausar conjunto" : "Activar conjunto"}
+          >
+            {toggling ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : isActive ? (
+              <Pause className="size-4" />
+            ) : (
+              <Play className="size-4" />
+            )}
+          </button>
+        )}
         <button
           type="button"
           onClick={(e) => {
@@ -351,6 +581,31 @@ function AdCard({ ad }: { ad: AdLite }) {
   const [caption, setCaption] = useState(ad.caption)
   const [cta, setCta] = useState(ad.callToAction)
   const [saving, setSaving] = useState(false)
+  const [toggling, setToggling] = useState(false)
+
+  const isActive = ad.status === "ACTIVE"
+  const canToggle =
+    !!ad.metaAdId &&
+    ["ACTIVE", "IN_META_PAUSED", "PAUSED_BY_USER"].includes(ad.status)
+
+  const handleToggle = async () => {
+    setToggling(true)
+    try {
+      const res = await fetch(`/api/admin/meta/ads-items/${ad.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: isActive ? "PAUSED" : "ACTIVE" }),
+      })
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        window.alert(d.error || `Error ${res.status}`)
+        return
+      }
+      router.refresh()
+    } finally {
+      setToggling(false)
+    }
+  }
 
   const handleSave = async () => {
     setSaving(true)
@@ -419,6 +674,23 @@ function AdCard({ ad }: { ad: AdLite }) {
             )}
           </div>
           <div className="flex flex-col gap-0.5 shrink-0">
+            {canToggle && (
+              <button
+                type="button"
+                onClick={handleToggle}
+                disabled={toggling}
+                className={`p-1 rounded ${isActive ? "text-amber-600 hover:bg-amber-50" : "text-emerald-600 hover:bg-emerald-50"}`}
+                title={isActive ? "Pausar ad" : "Activar ad"}
+              >
+                {toggling ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : isActive ? (
+                  <Pause className="size-3.5" />
+                ) : (
+                  <Play className="size-3.5" />
+                )}
+              </button>
+            )}
             <button
               type="button"
               onClick={() => setEditing(!editing)}

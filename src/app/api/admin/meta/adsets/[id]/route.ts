@@ -24,6 +24,8 @@ const patchSchema = z.object({
   dailyBudgetCents: z.number().int().positive().optional(),
   endDate: z.coerce.date().optional(),
   audienceConfig: audienceConfigSchema.optional(),
+  // Activar/pausar el conjunto individualmente en Meta.
+  status: z.enum(["ACTIVE", "PAUSED"]).optional(),
 })
 
 export async function GET(
@@ -71,6 +73,26 @@ export async function PATCH(
   if (parsed.data.audienceConfig) {
     data.audienceConfig = parsed.data.audienceConfig as Prisma.InputJsonValue
   }
+
+  // Activar / pausar en Meta (solo si el adset ya vive en Meta).
+  if (parsed.data.status) {
+    if (!existente.metaAdSetId) {
+      return NextResponse.json(
+        { error: "El conjunto todavía no está publicado en Meta" },
+        { status: 409 }
+      )
+    }
+    try {
+      await updateMetaStatus(existente.metaAdSetId, parsed.data.status)
+      data.status = parsed.data.status === "ACTIVE" ? "ACTIVE" : "PAUSED_BY_USER"
+    } catch (e) {
+      return NextResponse.json(
+        { error: e instanceof Error ? e.message : String(e) },
+        { status: 500 }
+      )
+    }
+  }
+
   const updated = await prisma.adCampaignAdSet.update({ where: { id }, data })
 
   // TODO: si está en Meta, propagar cambios con POST /{metaAdSetId}

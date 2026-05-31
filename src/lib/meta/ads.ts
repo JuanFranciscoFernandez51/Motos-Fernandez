@@ -98,10 +98,17 @@ export const campaignCreateSchema = z.object({
   endDate: z.coerce.date(),
   audienceConfig: audienceConfigSchema,
   creativeImageUrl: z.string().url(),
+  creativeMediaType: z.enum(["PHOTO", "VIDEO", "REEL"]).default("PHOTO"),
+  creativeVideoUrl: z.string().url().optional().nullable(),
   creativeCaption: z.string().min(1).max(2200),
   creativeCallToAction: z.enum(CTAS),
   destinationUrl: z.string().url().optional().nullable(),
-}).refine((d) => d.endDate > d.startDate, {
+}).refine(
+  (d) =>
+    d.creativeMediaType === "PHOTO" ||
+    (!!d.creativeVideoUrl && d.creativeVideoUrl.length > 0),
+  { message: "VIDEO/REEL requieren creativeVideoUrl", path: ["creativeVideoUrl"] }
+).refine((d) => d.endDate > d.startDate, {
   message: "endDate debe ser posterior a startDate",
   path: ["endDate"],
 }).refine(
@@ -315,24 +322,48 @@ export async function createCampaignInMeta(
   // 3) Creative
   //
   // instagram_user_id (v25+) reemplaza al legacy instagram_actor_id.
-  // Si lo mandamos con el nombre viejo, Meta tira:
-  //   "Param instagram_actor_id must be a valid Instagram account id"
-  const creativePayload: Record<string, unknown> = {
-    name: `${campaignName} - Creative`,
-    object_story_spec: {
+  // Soporta foto (link_data) o video/reel (video_data, subiendo el video
+  // a /advideos primero para obtener video_id).
+  const linkBase =
+    data.destinationUrl || "https://www.motosfernandez.com.ar"
+  let objectStorySpec: Record<string, unknown>
+  if (
+    (data.creativeMediaType === "VIDEO" || data.creativeMediaType === "REEL") &&
+    data.creativeVideoUrl
+  ) {
+    const video = await metaPost<{ id: string }>(`/${adAccountId}/advideos`, {
+      file_url: data.creativeVideoUrl,
+    })
+    objectStorySpec = {
+      page_id: pageId,
+      ...(igUserId ? { instagram_user_id: igUserId } : {}),
+      video_data: {
+        video_id: video.id,
+        message: data.creativeCaption,
+        // Para video, Meta requiere image_url como thumbnail (usamos la
+        // foto principal de la moto como cover).
+        image_url: data.creativeImageUrl,
+        call_to_action: {
+          type: data.creativeCallToAction,
+          value: { link: linkBase },
+        },
+      },
+    }
+  } else {
+    objectStorySpec = {
       page_id: pageId,
       ...(igUserId ? { instagram_user_id: igUserId } : {}),
       link_data: {
-        link: data.destinationUrl || "https://www.motosfernandez.com.ar",
+        link: linkBase,
         message: data.creativeCaption,
         picture: data.creativeImageUrl,
         call_to_action: { type: data.creativeCallToAction },
       },
-    },
+    }
   }
   const creative = await metaPost<{ id: string }>(
     `/${adAccountId}/adcreatives`,
-    creativePayload
+    { name: `${campaignName} - Creative`, object_story_spec: objectStorySpec }
   )
 
   // 4) Ad

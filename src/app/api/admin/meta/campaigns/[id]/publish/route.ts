@@ -74,6 +74,9 @@ export async function POST(
     endDate: c.endDate,
     audienceConfig: audienceParsed.data,
     creativeImageUrl: c.creativeImageUrl,
+    creativeMediaType:
+      c.creativeMediaType as CampaignCreateInput["creativeMediaType"],
+    creativeVideoUrl: c.creativeVideoUrl,
     creativeCaption: c.creativeCaption,
     creativeCallToAction:
       c.creativeCallToAction as CampaignCreateInput["creativeCallToAction"],

@@ -26,6 +26,8 @@ const patchSchema = z.object({
   caption: z.string().min(1).max(2200).optional(),
   callToAction: z.enum(CTAS).optional(),
   destinationUrl: z.string().url().nullable().optional(),
+  // Activar/pausar el ad individualmente en Meta.
+  status: z.enum(["ACTIVE", "PAUSED"]).optional(),
 })
 
 export async function GET(
@@ -68,6 +70,25 @@ export async function PATCH(
   if (parsed.data.callToAction) data.callToAction = parsed.data.callToAction
   if (parsed.data.destinationUrl !== undefined) {
     data.destinationUrl = parsed.data.destinationUrl
+  }
+
+  // Activar / pausar en Meta (solo si el ad ya vive en Meta).
+  if (parsed.data.status) {
+    if (!existente.metaAdId) {
+      return NextResponse.json(
+        { error: "El ad todavía no está publicado en Meta" },
+        { status: 409 }
+      )
+    }
+    try {
+      await updateMetaStatus(existente.metaAdId, parsed.data.status)
+      data.status = parsed.data.status === "ACTIVE" ? "ACTIVE" : "PAUSED_BY_USER"
+    } catch (e) {
+      return NextResponse.json(
+        { error: e instanceof Error ? e.message : String(e) },
+        { status: 500 }
+      )
+    }
   }
 
   const updated = await prisma.adCampaignAd.update({ where: { id }, data })

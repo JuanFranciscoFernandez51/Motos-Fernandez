@@ -111,6 +111,8 @@ export async function POST(request: Request) {
       status: "DRAFT",
       audienceConfig: data.audienceConfig as Prisma.InputJsonValue,
       creativeImageUrl: data.creativeImageUrl,
+      creativeMediaType: data.creativeMediaType,
+      creativeVideoUrl: data.creativeVideoUrl || null,
       creativeCaption: data.creativeCaption,
       creativeCallToAction: data.creativeCallToAction,
       destinationUrl: data.destinationUrl || null,

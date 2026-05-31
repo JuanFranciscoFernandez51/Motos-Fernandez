@@ -27,6 +27,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { VideoUpload } from "@/components/admin/video-upload"
 import { formatMoney } from "@/lib/admin-helpers"
 import { OBJECTIVE_LABELS, CTAS, CAMPAIGN_OBJECTIVES } from "@/lib/meta/ads"
 
@@ -708,6 +709,8 @@ function CreateCampaignModal({
   const [creativeCaption, setCreativeCaption] = useState("")
   const [cta, setCta] = useState<(typeof CTAS)[number]>("WHATSAPP_MESSAGE")
   const [destinationUrl, setDestinationUrl] = useState("")
+  const [mediaType, setMediaType] = useState<"PHOTO" | "VIDEO" | "REEL">("PHOTO")
+  const [videoUrl, setVideoUrl] = useState("")
 
   // Cuando cambia el objetivo: sugerir el CTA + presupuesto recomendado
   // automáticamente (a menos que el admin ya haya tocado el budget).
@@ -777,6 +780,9 @@ function CreateCampaignModal({
     if (Number(dailyBudget) < minBudget) {
       return setError(`Presupuesto diario mínimo: ${minBudget}`)
     }
+    if ((mediaType === "VIDEO" || mediaType === "REEL") && !videoUrl) {
+      return setError("Subí un video o cambiá el formato a Foto")
+    }
     setSubmitting(true)
     try {
       const res = await fetch("/api/admin/meta/campaigns", {
@@ -797,6 +803,9 @@ function CreateCampaignModal({
             languages: [],
           },
           creativeImageUrl: motoSel.fotos[0],
+          creativeMediaType: mediaType,
+          creativeVideoUrl:
+            mediaType === "VIDEO" || mediaType === "REEL" ? videoUrl : null,
           creativeCaption: creativeCaption || `${motoSel.marca} ${motoSel.nombre} — ¡consultá ya!`,
           creativeCallToAction: cta,
           destinationUrl: destinationUrl || null,
@@ -978,6 +987,48 @@ function CreateCampaignModal({
           </div>
 
           <div>
+            <Label>Formato del creativo *</Label>
+            <div className="grid grid-cols-3 gap-2 mt-1">
+              {(["PHOTO", "VIDEO", "REEL"] as const).map((t) => (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => setMediaType(t)}
+                  className={`rounded-lg border-2 p-2 text-center transition-colors ${mediaType === t ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/50"}`}
+                >
+                  <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">
+                    {t === "PHOTO" ? "Foto" : t === "VIDEO" ? "Video" : "Reel"}
+                  </p>
+                  <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-0.5">
+                    {t === "PHOTO"
+                      ? "Foto de la moto"
+                      : t === "VIDEO"
+                        ? "Feed horizontal"
+                        : "Vertical 9:16"}
+                  </p>
+                </button>
+              ))}
+            </div>
+            {(mediaType === "VIDEO" || mediaType === "REEL") && (
+              <div className="mt-3">
+                <Label className="flex items-center gap-1.5">
+                  <Play className="size-3.5" /> Video del aviso *
+                </Label>
+                <VideoUpload
+                  value={videoUrl}
+                  onChange={setVideoUrl}
+                  hint={mediaType === "REEL" ? "REEL" : "VIDEO"}
+                  className="mt-1"
+                />
+                <p className="text-[10px] text-gray-400 mt-1">
+                  La foto de portada (primera foto de la moto) se usa como
+                  miniatura mientras carga el video.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <div>
             <div className="flex items-center justify-between mb-1">
               <Label htmlFor="caption">Texto del aviso *</Label>
               <Button
@@ -1026,14 +1077,22 @@ function CreateCampaignModal({
                     <p className="text-[10px] text-gray-400">Publicidad · Bahía Blanca</p>
                   </div>
                 </div>
-                {/* Imagen */}
-                {motoSel.fotoPrincipal && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={motoSel.fotoPrincipal}
-                    alt=""
-                    className="w-full aspect-square object-cover bg-gray-100"
+                {/* Media: video si hay, sino imagen */}
+                {(mediaType === "VIDEO" || mediaType === "REEL") && videoUrl ? (
+                  <video
+                    src={videoUrl}
+                    controls
+                    className={`w-full bg-black object-cover ${mediaType === "REEL" ? "aspect-[9/16]" : "aspect-video"}`}
                   />
+                ) : (
+                  motoSel.fotoPrincipal && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={motoSel.fotoPrincipal}
+                      alt=""
+                      className="w-full aspect-square object-cover bg-gray-100"
+                    />
+                  )
                 )}
                 {/* CTA bar */}
                 <div className="px-3 py-2 bg-gray-50 dark:bg-neutral-950 border-y border-gray-100 dark:border-neutral-800 flex items-center justify-between">

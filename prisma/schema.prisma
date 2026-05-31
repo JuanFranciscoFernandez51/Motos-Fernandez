@@ -1384,6 +1384,11 @@ model AdCampaign {
   // genders, locations[], interests[], languages[] }. Ver brief §6.5.
   audienceConfig        Json
   creativeImageUrl      String   @db.Text
+  // Tipo de creative del wizard rápido: "PHOTO" (default) | "VIDEO" | "REEL".
+  // Para el editor avanzado, cada AdCampaignAd tiene su propio mediaType.
+  creativeMediaType     String   @default("PHOTO")
+  // URL de Cloudinary del video cuando creativeMediaType es VIDEO/REEL.
+  creativeVideoUrl      String?  @db.Text
   creativeCaption       String   @db.Text
   // CTA: LEARN_MORE | MESSAGE_PAGE | WHATSAPP_MESSAGE | GET_DIRECTIONS | etc.
   creativeCallToAction  String
