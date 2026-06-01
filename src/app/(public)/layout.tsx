@@ -33,7 +33,7 @@ import { WelcomePopup } from "@/components/public/welcome-popup"
 
 const NAV_LINKS = [
   { href: "/0km", label: "Motos 0KM", highlight: true },
-  { href: "/usadas", label: "Usadas", highlight: true },
+  { href: "/disponibles", label: "Disponibles", highlight: true },
   { href: "/tienda", label: "Tienda" },
   { href: "/consigna", label: "Consigna" },
   { href: "/financiacion", label: "Financiación" },

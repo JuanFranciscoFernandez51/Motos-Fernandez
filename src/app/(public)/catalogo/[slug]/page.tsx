@@ -293,7 +293,13 @@ export default async function ModeloDetailPage({ params }: Props) {
 
               {/* Price + cuota desde */}
               <div className="mt-6 p-5 rounded-xl bg-[#F0F0F0] dark:bg-neutral-950">
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">Precio de lista</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+                  {(model.condicion || "0KM") === "0KM" &&
+                  !model.chasis?.trim() &&
+                  !model.motor?.trim()
+                    ? "Precio sugerido público"
+                    : "Precio de lista"}
+                </p>
                 <p className="text-3xl font-bold text-[#6B4F7A]">
                   {model.precio
                     ? (model.moneda || "ARS") === "USD"

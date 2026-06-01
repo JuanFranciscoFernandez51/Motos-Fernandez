@@ -37,6 +37,9 @@ interface Modelo {
   financiacion?: unknown
   /** "EN_LOCAL" | "EN_DOMICILIO" — badge SOLO WEB en card. */
   tipoTenencia?: string | null
+  /** Unidad física real (stock): si tiene chasis o motor cargado. */
+  chasis?: string | null
+  motor?: string | null
 }
 
 // Parseo de cilindrada: "150cc" -> 150, "300 cc" -> 300, null si no se puede
@@ -526,14 +529,24 @@ export function CatalogoClient({
                       </>
                     )}
                   </p>
-                  <div className="mt-2 sm:mt-3 lg:mt-4 pt-2 sm:pt-3 lg:pt-4 border-t border-gray-100 dark:border-neutral-800 flex items-center justify-between gap-2">
-                    <p className="text-sm sm:text-base lg:text-lg font-bold text-[#6B4F7A] dark:text-[#C39BD3] truncate">
-                      {model.precio
-                        ? (model.moneda || "ARS") === "USD"
-                          ? `USD ${model.precio.toLocaleString("es-AR")}`
-                          : formatPrice(model.precio)
-                        : "Consultar"}
-                    </p>
+                  <div className="mt-2 sm:mt-3 lg:mt-4 pt-2 sm:pt-3 lg:pt-4 border-t border-gray-100 dark:border-neutral-800 flex items-end justify-between gap-2">
+                    <div className="min-w-0">
+                      {(model.condicion || "0KM") === "0KM" &&
+                        !model.chasis?.trim() &&
+                        !model.motor?.trim() &&
+                        model.precio != null && (
+                          <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 leading-tight">
+                            Precio sugerido público
+                          </p>
+                        )}
+                      <p className="text-sm sm:text-base lg:text-lg font-bold text-[#6B4F7A] dark:text-[#C39BD3] truncate">
+                        {model.precio
+                          ? (model.moneda || "ARS") === "USD"
+                            ? `USD ${model.precio.toLocaleString("es-AR")}`
+                            : formatPrice(model.precio)
+                          : "Consultar"}
+                      </p>
+                    </div>
                     <span className="hidden sm:inline-flex text-xs font-bold text-[#C8C8D0] group-hover:gap-2 items-center gap-1 transition-all whitespace-nowrap">
                       Ver detalle <span className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
                     </span>
