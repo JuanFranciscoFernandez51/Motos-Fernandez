@@ -465,6 +465,9 @@ function interpretarErrorMeta(
     if (code === 100 && subcode === 463) {
       return `Meta rechazó la foto (aspect ratio fuera de 4:5 a 1.91:1, o formato no JPG). Detalle: ${msg}. ${detalleExtra}`
     }
+    if (code === 100 && subcode === 1487194) {
+      return `Meta rechazó el creative (code 100/1487194). Causa típica: la cuenta de Instagram no está conectada a nivel de la cuenta publicitaria (aunque sí a la Página), o la cuenta publicitaria tiene un tema de facturación/estado. El sistema reintenta el aviso sin Instagram automáticamente; si seguís viendo esto, en Business Manager → Configuración → Cuentas de Instagram, agregá @motos.fernandez a la cuenta publicitaria, y revisá el medio de pago de la ad account. Detalle: ${msg}. ${detalleExtra}`
+    }
     if (code === 100 && subcode === 4834011) {
       return `Meta rechazó la creación de la campaña (code 100/4834011). Causa típica: special_ad_categories mal seteado, objetivo no disponible para esta ad account, o billing/permission de la ad account. Detalle: ${msg}. ${detalleExtra}`
     }

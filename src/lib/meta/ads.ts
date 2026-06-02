@@ -361,9 +361,10 @@ export async function createCampaignInMeta(
       },
     }
   }
-  const creative = await metaPost<{ id: string }>(
-    `/${adAccountId}/adcreatives`,
-    { name: `${campaignName} - Creative`, object_story_spec: objectStorySpec }
+  const creative = await crearAdCreative(
+    adAccountId,
+    `${campaignName} - Creative`,
+    objectStorySpec
   )
 
   // 4) Ad
@@ -388,6 +389,46 @@ export async function updateMetaStatus(
   status: "ACTIVE" | "PAUSED" | "DELETED"
 ): Promise<void> {
   await metaPost(`/${objectId}`, { status })
+}
+
+/**
+ * Crea un adcreative tolerando el problema de `instagram_user_id`.
+ *
+ * Cuando la cuenta de Instagram está vinculada a la Página pero NO está
+ * conectada a nivel de la ad account, Meta rechaza el creative con
+ * `100/1487194` ("el objeto no está visible para ti / acción restringida
+ * a ciertos tipos de cuenta"). En ese caso reintentamos SIN
+ * `instagram_user_id`: el aviso igual se muestra en Instagram porque el IG
+ * está vinculado a la Página (Meta usa el IG conectado a la página por
+ * defecto). Así no bloqueamos la publicación por un tema de linkeo.
+ */
+async function crearAdCreative(
+  adAccountId: string,
+  name: string,
+  objectStorySpec: Record<string, unknown>
+): Promise<{ id: string }> {
+  try {
+    return await metaPost<{ id: string }>(`/${adAccountId}/adcreatives`, {
+      name,
+      object_story_spec: objectStorySpec,
+    })
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    const teniaIG = "instagram_user_id" in objectStorySpec
+    const esProblemaIG =
+      teniaIG &&
+      (msg.includes("1487194") ||
+        msg.includes("no está visible") ||
+        msg.includes("restringida a ciertos tipos"))
+    if (!esProblemaIG) throw e
+    // Reintento sin instagram_user_id (placement IG vía la página).
+    const sinIG: Record<string, unknown> = { ...objectStorySpec }
+    delete sinIG.instagram_user_id
+    return await metaPost<{ id: string }>(`/${adAccountId}/adcreatives`, {
+      name,
+      object_story_spec: sinIG,
+    })
+  }
 }
 
 // ===== HELPERS PARA ESTRUCTURA JERÁRQUICA (Fase 7) =====
@@ -520,12 +561,10 @@ export async function createAdInMeta(args: {
     }
   }
 
-  const creative = await metaPost<{ id: string }>(
-    `/${args.adAccountId}/adcreatives`,
-    {
-      name: `${args.name} - Creative`,
-      object_story_spec: objectStorySpec,
-    }
+  const creative = await crearAdCreative(
+    args.adAccountId,
+    `${args.name} - Creative`,
+    objectStorySpec
   )
 
   const ad = await metaPost<{ id: string }>(`/${args.adAccountId}/ads`, {
