@@ -20,8 +20,15 @@ export const metadata: Metadata = {
     "Stock físico disponible en el local: motos usadas y 0KM listas para entrega, con garantía, financiación y plan canje en Bahía Blanca.",
 }
 
-const esFisica = (m: { chasis?: string | null; motor?: string | null }) =>
-  !!m.chasis?.trim() || !!m.motor?.trim()
+// Stock físico = todo MENOS las 0KM del catálogo publicitario (modelos
+// genéricos sin chasis ni motor que publicamos sin tenerlos). Las usadas
+// y las 0KM que están físicas en el local quedan adentro, aunque todavía
+// no tengan el chasis/motor tipeado.
+const esCatalogo0km = (m: {
+  condicion?: string | null
+  chasis?: string | null
+  motor?: string | null
+}) => (m.condicion || "0KM") === "0KM" && !m.chasis?.trim() && !m.motor?.trim()
 
 export default async function DisponiblesPage() {
   const [models, brands] = await Promise.all([
@@ -29,7 +36,7 @@ export default async function DisponiblesPage() {
     getMarcasCatalogo(),
   ])
 
-  const disponibles = models.filter(esFisica)
+  const disponibles = models.filter((m) => !esCatalogo0km(m))
 
   return (
     <>

@@ -71,14 +71,18 @@ export default async function StockMotosPage() {
     },
   })
 
-  // Stock = lo que REALMENTE existe físicamente. Criterio: tener chasis
-  // o motor cargado (unidad real identificable). Las usadas siempre los
-  // tienen; las 0KM que ingresan físicas se cargan "con número de motor
-  // y chasis". Las 0KM del catálogo publicitario (modelos genéricos que
-  // publicamos sin tener) no tienen ninguno → quedan fuera de Stock.
-  const motos = motosRaw.filter(
-    (m) => !!m.chasis?.trim() || !!m.motor?.trim()
-  )
+  // Stock = lo que REALMENTE existe físicamente. Lo definimos por
+  // EXCLUSIÓN: dejamos afuera SOLO las 0KM del catálogo publicitario
+  // (modelos genéricos que publicamos sin tenerlos físicamente). Esas son
+  // las 0KM sin chasis ni motor cargado.
+  //
+  // Todo lo demás es stock real: las usadas (aunque todavía no tengan el
+  // chasis/motor tipeado) y las 0KM que ingresaron físicas con número de
+  // motor y chasis. Antes filtrábamos por "tener chasis o motor", pero eso
+  // escondía usadas reales que se cargaron sin esos datos.
+  const esCatalogo0km = (m: (typeof motosRaw)[number]) =>
+    (m.condicion || "0KM") === "0KM" && !m.chasis?.trim() && !m.motor?.trim()
+  const motos = motosRaw.filter((m) => !esCatalogo0km(m))
 
   const ui: StockMotoUI[] = motos.map((m) => {
     // Unificamos el "cliente dueño" según el origen: para PARTE_DE_PAGO
