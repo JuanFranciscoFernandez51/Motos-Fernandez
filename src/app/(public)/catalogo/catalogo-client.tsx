@@ -51,10 +51,6 @@ function parseCilindrada(cc: string | null | undefined): number | null {
   return Number.isFinite(n) ? n : null
 }
 
-// Formato de precio corto para sliders: $1.500.000
-function formatPrecioCorto(valor: number): string {
-  return `$${valor.toLocaleString("es-AR")}`
-}
 
 export function CatalogoClient({
   models,
@@ -98,9 +94,6 @@ export function CatalogoClient({
     }
   }, [models])
 
-  // Estado de filtros avanzados (abiertos por defecto: en el sidebar
-  // queremos ver precio/cilindrada siempre, estilo MercadoLibre).
-  const [mostrarAvanzados, setMostrarAvanzados] = useState(true)
   const [precioMin, setPrecioMin] = useState<number>(precioMinCatalogo)
   const [precioMax, setPrecioMax] = useState<number>(precioMaxCatalogo)
   const [cilindradaMin, setCilindradaMin] = useState<number>(0)
@@ -222,17 +215,20 @@ export function CatalogoClient({
 
         {/* ===== SIDEBAR DE FILTROS (estilo MercadoLibre) ===== */}
         <aside
-          className={`${sidebarOpen ? "block" : "hidden"} lg:block rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 lg:sticky lg:top-24 mb-6 lg:mb-0 space-y-5`}
+          className={`${sidebarOpen ? "block" : "hidden"} lg:block lg:sticky lg:top-24 mb-6 lg:mb-0 divide-y divide-gray-200 dark:divide-neutral-800`}
         >
-        {/* Category tabs - scroll horizontal en mobile */}
-        <div className="-mx-4 sm:mx-0 px-4 sm:px-0 overflow-x-auto sm:overflow-visible">
-          <div className="flex sm:flex-wrap justify-start sm:justify-center gap-2 min-w-max sm:min-w-0">
+        {/* Tipo de moto */}
+        <div className="pb-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
+            Tipo de moto
+          </p>
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={() => setCategoria("TODAS")}
-              className={`shrink-0 rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all ${
+              className={`rounded-full px-4 py-2 text-xs sm:text-sm font-semibold transition-all ${
                 categoria === "TODAS"
                   ? "bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] text-white shadow-violeta-soft"
-                  : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 border border-gray-100 dark:border-neutral-800 hover:border-[#6B4F7A]/30"
+                  : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#6B4F7A]/40"
               }`}
             >
               Todas
@@ -241,10 +237,10 @@ export function CatalogoClient({
               <button
                 key={cat.value}
                 onClick={() => setCategoria(cat.value)}
-                className={`shrink-0 rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all ${
+                className={`rounded-full px-4 py-2 text-xs sm:text-sm font-semibold transition-all ${
                   categoria === cat.value
                     ? "bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] text-white shadow-violeta-soft"
-                    : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 border border-gray-100 dark:border-neutral-800 hover:border-[#6B4F7A]/30"
+                    : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#6B4F7A]/40"
                 }`}
               >
                 {cat.label}
@@ -255,7 +251,11 @@ export function CatalogoClient({
 
         {/* Condición — oculto en /0km (todas son 0KM) */}
         {mostrarCondicion && (
-        <div className="flex flex-wrap gap-2">
+        <div className="py-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
+            Condición
+          </p>
+          <div className="flex flex-wrap gap-2">
           {[
             { value: "TODAS", label: "Todas" },
             { value: "0KM", label: "0KM" },
@@ -264,185 +264,144 @@ export function CatalogoClient({
             <button
               key={opt.value}
               onClick={() => setCondicion(opt.value)}
-              className={`rounded-full px-4 sm:px-5 py-2 text-xs sm:text-sm font-semibold transition-all ${
+              className={`rounded-full px-4 py-2 text-xs sm:text-sm font-semibold transition-all ${
                 condicion === opt.value
                   ? opt.value === "0KM"
                     ? "bg-emerald-600 text-white shadow"
                     : opt.value === "USADA"
                     ? "bg-orange-500 text-white shadow"
                     : "bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] text-white shadow-violeta-soft"
-                  : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 border border-gray-100 dark:border-neutral-800 hover:border-[#6B4F7A]/30"
+                  : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#6B4F7A]/40"
               }`}
             >
               {opt.label}
             </button>
           ))}
+          </div>
         </div>
         )}
 
-        {/* Search + brand filter */}
-        <div className="flex flex-col gap-3">
-          <div className="relative flex-1">
+        {/* Buscar */}
+        <div className="py-5">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
             <input
               type="text"
               placeholder="Buscar modelo, marca..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 pl-10 pr-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+              className="w-full rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2.5 pl-10 pr-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
             />
           </div>
-          <select
-            value={marca}
-            onChange={(e) => setMarca(e.target.value)}
-            className="rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
-          >
-            <option value="TODAS">Todas las marcas</option>
-            {brands.map((b) => (
-              <option key={b} value={b}>
-                {b}
-              </option>
-            ))}
-          </select>
         </div>
 
-        {/* Boton filtros avanzados + limpiar */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setMostrarAvanzados((v) => !v)}
-            aria-expanded={mostrarAvanzados}
-            className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-              mostrarAvanzados || filtrosAvanzadosActivos > 0
-                ? "bg-[#6B4F7A] text-white hover:bg-[#8B6F9A]"
-                : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800"
-            }`}
-          >
-            <SlidersHorizontal className="size-4" />
-            Filtros avanzados
-            {filtrosAvanzadosActivos > 0 && (
-              <span className="inline-flex items-center justify-center min-w-5 h-5 rounded-full bg-white dark:bg-neutral-900 text-[#6B4F7A] text-[11px] font-bold px-1.5">
-                {filtrosAvanzadosActivos}
-              </span>
-            )}
-          </button>
-          {filtrosAvanzadosActivos > 0 && (
+        {/* Marca — lista completa, clickeable */}
+        <div className="py-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
+            Marca
+          </p>
+          <div className="flex flex-col gap-0.5 max-h-72 overflow-y-auto pr-1">
             <button
               type="button"
-              onClick={limpiarFiltrosAvanzados}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm font-medium text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+              onClick={() => setMarca("TODAS")}
+              className={`text-left rounded-md px-3 py-1.5 text-sm transition-colors ${
+                marca === "TODAS"
+                  ? "bg-[#6B4F7A] text-white font-semibold"
+                  : "text-[#4E4B48] dark:text-gray-300 hover:bg-[#6B4F7A]/10"
+              }`}
             >
-              <X className="size-4" />
-              Limpiar filtros
+              Todas las marcas
             </button>
-          )}
+            {brands.map((b) => (
+              <button
+                key={b}
+                type="button"
+                onClick={() => setMarca(b)}
+                className={`text-left rounded-md px-3 py-1.5 text-sm transition-colors ${
+                  marca === b
+                    ? "bg-[#6B4F7A] text-white font-semibold"
+                    : "text-[#4E4B48] dark:text-gray-300 hover:bg-[#6B4F7A]/10"
+                }`}
+              >
+                {b}
+              </button>
+            ))}
+          </div>
         </div>
 
-        {/* Panel colapsable de filtros avanzados */}
-        <div
-          className={`overflow-hidden transition-[max-height,opacity] duration-300 ease-in-out ${
-            mostrarAvanzados ? "max-h-[1200px] opacity-100" : "max-h-0 opacity-0"
-          }`}
-        >
-          <div className="mt-2 rounded-xl border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-950 p-4">
-            <div className="grid grid-cols-1 gap-5">
-              {/* Slider de precio */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-semibold text-[#1A1A1A] dark:text-white">
-                    Precio
-                  </label>
-                  <span className="text-xs font-medium text-[#6B4F7A]">
-                    {formatPrecioCorto(precioMin)} - {formatPrecioCorto(precioMax)}
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  <div>
-                    <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">Mínimo</label>
-                    <input
-                      type="range"
-                      min={precioMinCatalogo}
-                      max={precioMaxCatalogo}
-                      step={Math.max(1, Math.round((precioMaxCatalogo - precioMinCatalogo) / 200))}
-                      value={precioMin}
-                      onChange={(e) => {
-                        const v = Number(e.target.value)
-                        setPrecioMin(Math.min(v, precioMax))
-                      }}
-                      className="w-full accent-[#6B4F7A]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">Máximo</label>
-                    <input
-                      type="range"
-                      min={precioMinCatalogo}
-                      max={precioMaxCatalogo}
-                      step={Math.max(1, Math.round((precioMaxCatalogo - precioMinCatalogo) / 200))}
-                      value={precioMax}
-                      onChange={(e) => {
-                        const v = Number(e.target.value)
-                        setPrecioMax(Math.max(v, precioMin))
-                      }}
-                      className="w-full accent-[#6B4F7A]"
-                    />
-                  </div>
-                </div>
-                <p className="mt-1 text-[11px] text-gray-400">
-                  Los modelos sin precio cargado siempre aparecen.
-                </p>
-              </div>
+        {/* Precio — desde / hasta escribible */}
+        <div className="py-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
+            Precio (ARS)
+          </p>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              inputMode="numeric"
+              placeholder="Desde"
+              value={precioMin > precioMinCatalogo ? precioMin : ""}
+              onChange={(e) => {
+                const v = e.target.value === "" ? precioMinCatalogo : Number(e.target.value)
+                if (!Number.isNaN(v)) setPrecioMin(v)
+              }}
+              className="w-full min-w-0 rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2 px-3 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+            />
+            <span className="text-gray-400 shrink-0">–</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              placeholder="Hasta"
+              value={precioMax < precioMaxCatalogo ? precioMax : ""}
+              onChange={(e) => {
+                const v = e.target.value === "" ? precioMaxCatalogo : Number(e.target.value)
+                if (!Number.isNaN(v)) setPrecioMax(v)
+              }}
+              className="w-full min-w-0 rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2 px-3 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+            />
+          </div>
+          <p className="mt-1.5 text-[11px] text-gray-400">
+            Los modelos sin precio cargado siempre aparecen.
+          </p>
+        </div>
 
-              {/* Slider de cilindrada */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-semibold text-[#1A1A1A] dark:text-white">
-                    Cilindrada
-                  </label>
-                  <span className="text-xs font-medium text-[#6B4F7A]">
-                    {cilindradaMin}cc - {cilindradaMax}cc
-                  </span>
-                </div>
-                <div className="space-y-2">
-                  <div>
-                    <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">Mínimo</label>
-                    <input
-                      type="range"
-                      min={0}
-                      max={cilindradaMaxCatalogo}
-                      step={10}
-                      value={cilindradaMin}
-                      onChange={(e) => {
-                        const v = Number(e.target.value)
-                        setCilindradaMin(Math.min(v, cilindradaMax))
-                      }}
-                      className="w-full accent-[#6B4F7A]"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-[11px] text-gray-500 dark:text-gray-400 mb-1">Máximo</label>
-                    <input
-                      type="range"
-                      min={0}
-                      max={cilindradaMaxCatalogo}
-                      step={10}
-                      value={cilindradaMax}
-                      onChange={(e) => {
-                        const v = Number(e.target.value)
-                        setCilindradaMax(Math.max(v, cilindradaMin))
-                      }}
-                      className="w-full accent-[#6B4F7A]"
-                    />
-                  </div>
-                </div>
-                <p className="mt-1 text-[11px] text-gray-400">
-                  Los modelos sin cilindrada siempre aparecen.
-                </p>
-              </div>
-            </div>
+        {/* Cilindrada — desde / hasta escribible */}
+        <div className="py-5">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
+            Cilindrada (cc)
+          </p>
+          <div className="flex items-center gap-2">
+            <input
+              type="number"
+              inputMode="numeric"
+              placeholder="Desde"
+              value={cilindradaMin > 0 ? cilindradaMin : ""}
+              onChange={(e) => {
+                const v = e.target.value === "" ? 0 : Number(e.target.value)
+                if (!Number.isNaN(v)) setCilindradaMin(v)
+              }}
+              className="w-full min-w-0 rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2 px-3 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+            />
+            <span className="text-gray-400 shrink-0">–</span>
+            <input
+              type="number"
+              inputMode="numeric"
+              placeholder="Hasta"
+              value={cilindradaMax < cilindradaMaxCatalogo ? cilindradaMax : ""}
+              onChange={(e) => {
+                const v = e.target.value === "" ? cilindradaMaxCatalogo : Number(e.target.value)
+                if (!Number.isNaN(v)) setCilindradaMax(v)
+              }}
+              className="w-full min-w-0 rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2 px-3 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+            />
+          </div>
+          <p className="mt-1.5 text-[11px] text-gray-400">
+            Los modelos sin cilindrada siempre aparecen.
+          </p>
+        </div>
 
-            {/* Toggles */}
-            <div className="mt-5 flex flex-wrap gap-2">
+        {/* Toggles */}
+        <div className="py-5">
+            <div className="flex flex-col gap-2">
               <button
                 type="button"
                 onClick={() => setSoloDestacados((v) => !v)}
@@ -470,7 +429,6 @@ export function CatalogoClient({
                 Con financiación
               </button>
             </div>
-          </div>
         </div>
         </aside>
 
