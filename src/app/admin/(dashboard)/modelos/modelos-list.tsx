@@ -27,6 +27,8 @@ import {
   ChevronDown,
   ChevronRight,
   RotateCcw,
+  Send,
+  Loader2,
 } from "lucide-react"
 import { FotosModal } from "./fotos-modal"
 import { DeleteModal } from "./delete-modal"
@@ -127,6 +129,31 @@ export function ModelosList({
   const [vendidasOpen, setVendidasOpen] = useState(false)
   const [queryVendidas, setQueryVendidas] = useState("")
   const [ocDrawerModeloId, setOCDrawerModeloId] = useState<string | null>(null)
+  const [republicandoId, setRepublicandoId] = useState<string | null>(null)
+
+  // Republica una moto en Instagram + Facebook (fuerza aunque ya esté publicada).
+  const handleRepublicar = async (id: string, nombre: string) => {
+    if (republicandoId) return
+    setRepublicandoId(id)
+    try {
+      const res = await fetch(`/api/admin/meta/publish/${id}?force=1`, {
+        method: "POST",
+      })
+      const data = await res.json().catch(() => ({}))
+      if (res.ok && data.ok) {
+        const redes = [data.igPostId && "Instagram", data.fbPostId && "Facebook"]
+          .filter(Boolean)
+          .join(" + ")
+        window.alert(`✅ "${nombre}" republicada en ${redes || "Meta"}.`)
+      } else {
+        window.alert(`❌ No se pudo republicar: ${data.error || `Error ${res.status}`}`)
+      }
+    } catch (e) {
+      window.alert(`❌ Error de red: ${e instanceof Error ? e.message : String(e)}`)
+    } finally {
+      setRepublicandoId(null)
+    }
+  }
 
   // Separamos activas (no vendidas) y vendidas
   const modelosActivas = useMemo(
@@ -639,6 +666,22 @@ export function ModelosList({
                             title="Ver en el sitio"
                           >
                             <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              handleRepublicar(modelo.id, modelo.nombre)
+                            }
+                            disabled={republicandoId === modelo.id}
+                            title="Republicar en Instagram + Facebook"
+                            className="text-[#6B4F7A] hover:text-[#8B6F9A] hover:bg-[#6B4F7A]/10"
+                          >
+                            {republicandoId === modelo.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Send className="h-4 w-4" />
+                            )}
                           </Button>
                           <Button
                             variant="ghost"
