@@ -271,12 +271,19 @@ export default async function HomePage() {
               />
 
               <AnimatedSection animation="fade-up">
-                <div className="mt-12 text-center">
+                <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <Link
-                    href="/catalogo"
+                    href="/0km"
+                    className="group inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#8B6F9A] transition-all shadow-premium-sm hover:shadow-premium-md"
+                  >
+                    Ver catálogo 0KM
+                    <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                  <Link
+                    href="/disponibles"
                     className="group inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-bold text-[#6B4F7A] hover:bg-[#6B4F7A] hover:text-white hover:border-[#6B4F7A] transition-all shadow-premium-sm hover:shadow-premium-md"
                   >
-                    Ver catálogo completo
+                    Ver usadas / disponibles
                     <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </div>

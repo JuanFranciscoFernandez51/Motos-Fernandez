@@ -5,7 +5,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, Bike, Star } from "lucide-react"
 import { formatPrice } from "@/lib/constants"
-import { AnimatedSection } from "@/components/public/ui/animated-section"
 
 export type ModeloHomeItem = {
   id: string
@@ -42,50 +41,21 @@ export function ModelosHomeGrid({
   destacadas: ModeloHomeItem[]
   rotativas: ModeloHomeItem[]
 }) {
-  // Si no hay 5 destacadas, completamos con las primeras del rotativo
-  const SLOTS_FIJOS = 5
-  const fijas: ModeloHomeItem[] = [...destacadasInput.slice(0, SLOTS_FIJOS)]
-  const usadasIds = new Set(fijas.map((m) => m.id))
-  const rotativasDisponibles = rotativasInput.filter((m) => !usadasIds.has(m.id))
-
-  if (fijas.length < SLOTS_FIJOS) {
-    const faltan = SLOTS_FIJOS - fijas.length
-    const completar = rotativasDisponibles.slice(0, faltan)
-    fijas.push(...completar)
-    completar.forEach((m) => usadasIds.add(m.id))
+  // Unificamos y deduplicamos (destacadas primero) y separamos por condición.
+  const vistos = new Set<string>()
+  const todas: ModeloHomeItem[] = []
+  for (const m of [...destacadasInput, ...rotativasInput]) {
+    if (vistos.has(m.id)) continue
+    vistos.add(m.id)
+    todas.push(m)
   }
-  const restantes = rotativasInput.filter((m) => !usadasIds.has(m.id))
+  // Ordenamos cada grupo con las destacadas adelante.
+  const ordenar = (arr: ModeloHomeItem[]) =>
+    [...arr].sort((a, b) => Number(b.destacado) - Number(a.destacado))
+  const usadas = ordenar(todas.filter((m) => (m.condicion || "0KM") === "USADA"))
+  const ceroKm = ordenar(todas.filter((m) => (m.condicion || "0KM") === "0KM"))
 
-  // Ventana rotativa
-  const [pageIndex, setPageIndex] = useState(0)
-  const [fading, setFading] = useState(false)
-
-  // Calcular cuántas páginas tenemos en función de SLOTS_ROTATIVOS
-  const totalPaginas =
-    restantes.length > 0
-      ? Math.max(1, Math.ceil(restantes.length / SLOTS_ROTATIVOS))
-      : 0
-
-  useEffect(() => {
-    if (totalPaginas <= 1) return // No hace falta rotar
-    const interval = setInterval(() => {
-      // Fade out → cambio página → fade in
-      setFading(true)
-      setTimeout(() => {
-        setPageIndex((i) => (i + 1) % totalPaginas)
-        setFading(false)
-      }, 400) // duración del fade-out
-    }, ROTATION_MS)
-    return () => clearInterval(interval)
-  }, [totalPaginas])
-
-  // Slice de la página actual
-  const inicio = pageIndex * SLOTS_ROTATIVOS
-  const fin = inicio + SLOTS_ROTATIVOS
-  const ventanaActual = restantes.slice(inicio, fin)
-
-  // Si no hay nada para rotar, solo mostramos las fijas
-  if (fijas.length === 0 && ventanaActual.length === 0) {
+  if (usadas.length === 0 && ceroKm.length === 0) {
     return (
       <div className="text-center py-16 rounded-2xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800">
         <Bike className="size-12 mx-auto text-gray-200 mb-4" />
@@ -97,48 +67,91 @@ export function ModelosHomeGrid({
   }
 
   return (
-    <div className="space-y-5">
-      {/* Primera fila — destacadas FIJAS */}
-      {fijas.length > 0 && (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5">
-          {fijas.map((model, idx) => (
-            <AnimatedSection key={model.id} animation="fade-up" delay={idx * 80}>
-              <ModeloCard model={model} pinned={destacadasInput.some(d => d.id === model.id)} />
-            </AnimatedSection>
+    <div className="space-y-10">
+      {usadas.length > 0 && (
+        <FilaModelos titulo="Usadas" items={usadas} href="/disponibles" hrefLabel="Ver usadas" />
+      )}
+      {ceroKm.length > 0 && (
+        <FilaModelos titulo="Motos 0KM" items={ceroKm} href="/0km" hrefLabel="Ver 0KM" />
+      )}
+    </div>
+  )
+}
+
+/**
+ * Una fila de modelos (Usadas o 0KM) con título, link al catálogo
+ * correspondiente y rotación suave si hay más de SLOTS_ROTATIVOS.
+ */
+function FilaModelos({
+  titulo,
+  items,
+  href,
+  hrefLabel,
+}: {
+  titulo: string
+  items: ModeloHomeItem[]
+  href: string
+  hrefLabel: string
+}) {
+  const [pageIndex, setPageIndex] = useState(0)
+  const [fading, setFading] = useState(false)
+  const totalPaginas = Math.max(1, Math.ceil(items.length / SLOTS_ROTATIVOS))
+
+  useEffect(() => {
+    if (totalPaginas <= 1) return
+    const interval = setInterval(() => {
+      setFading(true)
+      setTimeout(() => {
+        setPageIndex((i) => (i + 1) % totalPaginas)
+        setFading(false)
+      }, 400)
+    }, ROTATION_MS)
+    return () => clearInterval(interval)
+  }, [totalPaginas])
+
+  const inicio = pageIndex * SLOTS_ROTATIVOS
+  const ventana = items.slice(inicio, inicio + SLOTS_ROTATIVOS)
+
+  return (
+    <div>
+      {/* Header de la fila: título + link al catálogo */}
+      <div className="flex items-center justify-between gap-3 mb-4">
+        <h3 className="font-heading text-2xl sm:text-3xl text-[#1A1A1A] dark:text-white">
+          {titulo}
+        </h3>
+        <Link
+          href={href}
+          className="group inline-flex items-center gap-1.5 text-sm font-bold text-[#6B4F7A] hover:text-[#8B6F9A] transition-colors whitespace-nowrap"
+        >
+          {hrefLabel}
+          <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+        </Link>
+      </div>
+
+      {/* Indicador de rotación */}
+      {totalPaginas > 1 && (
+        <div className="flex items-center gap-1.5 mb-4">
+          {Array.from({ length: totalPaginas }).map((_, i) => (
+            <span
+              key={i}
+              aria-hidden
+              className={`h-1 rounded-full transition-all duration-500 ${
+                i === pageIndex ? "w-8 bg-[#6B4F7A]" : "w-1.5 bg-gray-300 dark:bg-neutral-700"
+              }`}
+            />
           ))}
         </div>
       )}
 
-      {/* Segunda fila — ROTATIVAS con fade */}
-      {ventanaActual.length > 0 && (
-        <div className="relative">
-          {/* Indicador sutil de rotación (solo si hay más de una página) */}
-          {totalPaginas > 1 && (
-            <div className="flex items-center justify-center gap-1.5 mb-4">
-              {Array.from({ length: totalPaginas }).map((_, i) => (
-                <span
-                  key={i}
-                  aria-hidden
-                  className={`h-1 rounded-full transition-all duration-500 ${
-                    i === pageIndex
-                      ? "w-8 bg-[#6B4F7A]"
-                      : "w-1.5 bg-gray-300 dark:bg-neutral-700"
-                  }`}
-                />
-              ))}
-            </div>
-          )}
-          <div
-            className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 transition-opacity duration-500 ${
-              fading ? "opacity-0" : "opacity-100"
-            }`}
-          >
-            {ventanaActual.map((model) => (
-              <ModeloCard key={model.id} model={model} pinned={false} />
-            ))}
-          </div>
-        </div>
-      )}
+      <div
+        className={`grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-5 transition-opacity duration-500 ${
+          fading ? "opacity-0" : "opacity-100"
+        }`}
+      >
+        {ventana.map((model) => (
+          <ModeloCard key={model.id} model={model} pinned={model.destacado} />
+        ))}
+      </div>
     </div>
   )
 }
