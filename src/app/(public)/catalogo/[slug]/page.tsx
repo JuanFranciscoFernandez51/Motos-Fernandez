@@ -123,7 +123,7 @@ export default async function ModeloDetailPage({ params }: Props) {
 
   return (
     <>
-      <TrackVisita pagina="modelo-detalle" />
+      <TrackVisita pagina={`/catalogo/${model.slug}`} />
       <ModeloViewContentTracker modelo={modeloInfo} />
       <script
         type="application/ld+json"

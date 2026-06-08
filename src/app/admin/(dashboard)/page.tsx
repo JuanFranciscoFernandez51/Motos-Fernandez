@@ -198,13 +198,15 @@ export default async function AdminDashboardPage() {
     prisma.visita.count({
       where: { createdAt: { gte: weekAgoUTC } },
     }),
-    // Visitas por página (top 5, últimos 7 días)
+    // Visitas por página (top 5, últimos 7 días). Excluimos las páginas de
+    // detalle (/catalogo/slug, /tienda/slug) — esas van en sus propios
+    // widgets ("Modelos más consultados" / "Productos más vistos").
     prisma.visita.groupBy({
       by: ["pagina"],
       _count: { pagina: true },
       orderBy: { _count: { pagina: "desc" } },
       take: 5,
-      where: { createdAt: { gte: weekAgoUTC } },
+      where: { createdAt: { gte: weekAgoUTC }, pagina: { not: { startsWith: "/" } } },
     }),
     // Ciudades top (últimos 7 días)
     prisma.visita.groupBy({
@@ -323,9 +325,34 @@ export default async function AdminDashboardPage() {
       ORDER BY cantidad DESC
       LIMIT 10
     `,
-    // Stock de motos
-    prisma.modelo.count({ where: { activo: true, vendida: false } }),
-    prisma.modelo.count({ where: { vendida: false, activo: true, fotos: { isEmpty: false } } }),
+    // Stock de motos REAL (físico): excluye las 0KM del catálogo
+    // publicitario (0KM sin chasis ni motor). Cuenta las unidades que
+    // realmente existen (usadas + 0KM en el local), igual que /admin/stock-motos.
+    prisma.modelo.count({
+      where: {
+        vendida: false,
+        NOT: {
+          AND: [
+            { condicion: "0KM" },
+            { OR: [{ chasis: null }, { chasis: "" }] },
+            { OR: [{ motor: null }, { motor: "" }] },
+          ],
+        },
+      },
+    }),
+    prisma.modelo.count({
+      where: {
+        vendida: false,
+        fotos: { isEmpty: false },
+        NOT: {
+          AND: [
+            { condicion: "0KM" },
+            { OR: [{ chasis: null }, { chasis: "" }] },
+            { OR: [{ motor: null }, { motor: "" }] },
+          ],
+        },
+      },
+    }),
     // Cuotas vencidas (estado ATRASADA)
     prisma.cuotaFinanciacion.count({ where: { estado: "ATRASADA" } }),
     // Cuotas que vencen esta semana (próximos 7 días) y están pendientes
@@ -384,6 +411,28 @@ export default async function AdminDashboardPage() {
     pagina: v.pagina,
     cantidad: v._count.pagina,
   }))
+
+  // Resolver slugs → nombres legibles para los widgets de "más vistos".
+  const [infoModelosVistos, infoProductosVistos] = await Promise.all([
+    modelosMasVistos.length
+      ? prisma.modelo.findMany({
+          where: { slug: { in: modelosMasVistos.map((m) => m.slug) } },
+          select: { slug: true, marca: true, nombre: true },
+        })
+      : Promise.resolve([]),
+    productosMasVistos.length
+      ? prisma.producto.findMany({
+          where: { slug: { in: productosMasVistos.map((p) => p.slug) } },
+          select: { slug: true, nombre: true },
+        })
+      : Promise.resolve([]),
+  ])
+  const nombreModelo = new Map(
+    infoModelosVistos.map((m) => [m.slug, `${m.marca} ${m.nombre}`])
+  )
+  const nombreProducto = new Map(
+    infoProductosVistos.map((p) => [p.slug, p.nombre])
+  )
 
   // Tasa de conversión (pedidos aprobados / visitas a /tienda)
   const tasaConversion =
@@ -1002,9 +1051,9 @@ export default async function AdminDashboardPage() {
                         <Link
                           href={p.pagina}
                           className="w-32 text-xs text-gray-700 dark:text-gray-300 truncate shrink-0 hover:text-[#6B4F7A] hover:underline"
-                          title={p.slug}
+                          title={nombreProducto.get(p.slug) || p.slug}
                         >
-                          {p.slug}
+                          {nombreProducto.get(p.slug) || p.slug}
                         </Link>
                         <div className="flex-1 h-5 bg-gray-100 dark:bg-neutral-800 rounded-md overflow-hidden">
                           <div
@@ -1051,9 +1100,9 @@ export default async function AdminDashboardPage() {
                         <Link
                           href={m.pagina}
                           className="w-32 text-xs text-gray-700 dark:text-gray-300 truncate shrink-0 hover:text-[#6B4F7A] hover:underline"
-                          title={m.slug}
+                          title={nombreModelo.get(m.slug) || m.slug}
                         >
-                          {m.slug}
+                          {nombreModelo.get(m.slug) || m.slug}
                         </Link>
                         <div className="flex-1 h-5 bg-gray-100 dark:bg-neutral-800 rounded-md overflow-hidden">
                           <div
