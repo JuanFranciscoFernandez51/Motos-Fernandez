@@ -192,36 +192,59 @@ const MAPA = [
       { nombre: "Verde y Dorada", archivos: ["bmw 1300 adventure verde y dorada.avif"] },
     ],
   },
+  // Yamaha deportiva + línea YZ de competición (modelos creados en
+  // scripts/crear-yamaha-competicion.cjs).
+  {
+    marca: "Yamaha",
+    nombre: "R7",
+    colores: [
+      {
+        nombre: "Azul",
+        archivos: [
+          "YAMAHA R7 AZUL .jpg",
+          "YAMAHA R7 AZUL 1.jpg",
+          "YAMAHA R7 AZUL 2.jpg",
+        ],
+      },
+      { nombre: "Negro", archivos: ["YAMAHA R7 NEGRA.jpg", "YAMAHA R7 NEGRA Q.jpg"] },
+    ],
+  },
+  {
+    marca: "Yamaha",
+    nombre: "YZ 125",
+    colores: [{ nombre: "Azul", archivos: ["YZ125.jpg", "YZ125 1.jpg", "YZ125 2.jpg"] }],
+  },
+  {
+    marca: "Yamaha",
+    nombre: "YZ 250",
+    colores: [
+      {
+        nombre: "Azul",
+        archivos: ["YZ250.jpg", "YZ250 1.jpg", "YZ250 2.jpg", "YZ250 3.jpg", "YZ250 4.jpg"],
+      },
+    ],
+  },
+  {
+    marca: "Yamaha",
+    nombre: "YZ 250F",
+    colores: [
+      {
+        nombre: "Azul",
+        archivos: ["YZ250F.jpg", "YZ250F 1.jpg", "YZ250F 2.jpg", "YZ250F 3.jpg"],
+      },
+    ],
+  },
+  {
+    marca: "Yamaha",
+    nombre: "YZ 450F",
+    colores: [
+      { nombre: "Azul", archivos: ["YZ450F .jpg", "YZ450F 1 .jpg", "YZ450F 2 .jpg"] },
+    ],
+  },
 ]
 
 // Archivos SIN modelo en la DB (no se crea nada, solo se reporta).
 const SIN_MODELO = {
-  "Yamaha R7 (no existe en DB)": [
-    "YAMAHA R7 AZUL .jpg",
-    "YAMAHA R7 AZUL 1.jpg",
-    "YAMAHA R7 AZUL 2.jpg",
-    "YAMAHA R7 NEGRA.jpg",
-    "YAMAHA R7 NEGRA Q.jpg",
-  ],
-  "Yamaha YZ125 (no existe en DB)": ["YZ125.jpg", "YZ125 1.jpg", "YZ125 2.jpg"],
-  "Yamaha YZ250 (no existe en DB)": [
-    "YZ250.jpg",
-    "YZ250 1.jpg",
-    "YZ250 2.jpg",
-    "YZ250 3.jpg",
-    "YZ250 4.jpg",
-  ],
-  "Yamaha YZ250F (no existe en DB)": [
-    "YZ250F.jpg",
-    "YZ250F 1.jpg",
-    "YZ250F 2.jpg",
-    "YZ250F 3.jpg",
-  ],
-  "Yamaha YZ450F (no existe en DB)": [
-    "YZ450F .jpg",
-    "YZ450F 1 .jpg",
-    "YZ450F 2 .jpg",
-  ],
 }
 
 async function subir(ruta) {
