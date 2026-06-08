@@ -32,7 +32,7 @@ const HEX = {
   Sport: "#1B3A6B", "Triple Black": "#1A1A1A", Blanco: "#ECECEC", Negro: "#1A1A1A",
   "Azul Passion": "#0E2C66", Trophy: "#C7402E", Tricolor: "#1B3A6B", Rojo: "#B11212",
   "Imperial Blue": "#0E2C66", Tramuntana: "#7A6A55", Gris: "#6B6B6B", Karakorum: "#8A8576",
-  Roja: "#B11212", Estándar: "#6B6B6B",
+  Roja: "#B11212", Estándar: "#6B6B6B", "M Motorsport": "#1B3A6B",
 }
 const hexDe = (c) => HEX[c] || "#6B6B6B"
 
@@ -89,6 +89,27 @@ const NUEVOS = [
       { nombre: "Blanco", archivos: ["BMW S1000RR BLANCO.jpg"] },
       { nombre: "Gris", archivos: ["BMW S1000RR GRIS.jpg"] },
       { nombre: "Negro", archivos: ["BMW S1000RR NEGRO.jpg"] },
+    ],
+  },
+  {
+    nombre: "M 1000 RR",
+    colores: [
+      { nombre: "M Motorsport", archivos: ["bmw M1000RR.jpg", "BMW M1000RR 1.jpg"] },
+    ],
+  },
+  {
+    nombre: "M 1000 XR",
+    colores: [
+      {
+        nombre: "M Motorsport",
+        archivos: [
+          "BMW M1000XR.jpg",
+          "BMW M1000XR 1.webp",
+          "BMW M1000XR 2.jpg",
+          "BMW M1000XR 3 .jpg",
+          "BMW M1000XR 4.jpg",
+        ],
+      },
     ],
   },
 ]
