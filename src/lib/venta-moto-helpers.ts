@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client"
 import { generarCodigoModelo } from "./codigo-modelo-helpers"
+import { marcarFotosVendido } from "./sold-overlay"
 
 /**
  * Genera un slug único derivado de `base` que no choque con otros slugs
@@ -132,6 +133,7 @@ export async function marcarModeloComoVendido(
     select: {
       id: true,
       vendida: true,
+      fotos: true,
       mlListingId: true,
       mlEstado: true,
       mandato: { select: { id: true, estado: true } },
@@ -140,6 +142,9 @@ export async function marcarModeloComoVendido(
   if (!m) return
   const fecha = args.fechaVenta || new Date()
 
+  // Estampar el cartel VENDIDO en la foto principal (idempotente).
+  const fotosVendido = marcarFotosVendido(m.fotos)
+
   await tx.modelo.update({
     where: { id: m.id },
     data: {
@@ -147,6 +152,7 @@ export async function marcarModeloComoVendido(
       activo: false,
       etiqueta: null,
       fechaVenta: fecha,
+      fotos: fotosVendido,
       ...(args.chasis !== undefined ? { chasis: args.chasis } : {}),
       ...(args.motor !== undefined ? { motor: args.motor } : {}),
       ...(args.patente !== undefined ? { patente: args.patente } : {}),
@@ -305,7 +311,7 @@ export async function manejarVentaDeMoto(
         moneda: m.moneda,
         descripcion: m.descripcion,
         observaciones: m.observaciones,
-        fotos: m.fotos,
+        fotos: marcarFotosVendido(m.fotos),
         etiqueta: null,
         orden: m.orden,
         // Identidad de unidad vendida

@@ -9,6 +9,7 @@ import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 import { checklistPermutaTexto } from "@/lib/admin-helpers"
 import { crearMandatoDesdePermuta } from "@/lib/mandato-helpers"
 import { manejarVentaDeMoto } from "@/lib/venta-moto-helpers"
+import { desmarcarFotosVendido } from "@/lib/sold-overlay"
 import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
 
 export const dynamic = "force-dynamic"
@@ -117,9 +118,18 @@ async function markVendida(id: string, vendida: boolean) {
   } else {
     // Desmarcar: solo aplica al modelo que está marcado como vendida.
     // Si era un clon, mejor borrarlo manual desde la lista.
+    // Sacamos también el cartel VENDIDO de la foto principal (restaura original).
+    const actual = await prisma.modelo.findUnique({
+      where: { id },
+      select: { fotos: true },
+    })
     await prisma.modelo.update({
       where: { id },
-      data: { vendida: false, fechaVenta: null },
+      data: {
+        vendida: false,
+        fechaVenta: null,
+        ...(actual ? { fotos: desmarcarFotosVendido(actual.fotos) } : {}),
+      },
     })
   }
   revalidatePath("/admin/modelos")
