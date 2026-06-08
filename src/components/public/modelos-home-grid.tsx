@@ -187,8 +187,16 @@ function ModeloCard({
           >
             {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
           </span>
-          {/* Tenencia: dónde se ve/se compra la moto */}
-          {model.tipoTenencia === "EN_DOMICILIO" ? (
+          {/* Tenencia: dónde se ve/se compra la moto. Las 0KM del catálogo
+              no las tenemos físicas → "Consultar disponibilidad". */}
+          {(model.condicion || "0KM") === "0KM" ? (
+            <span
+              className="rounded-md px-2 py-0.5 text-[10px] font-bold bg-[#6B4F7A] text-white"
+              title="Consultanos disponibilidad y entrega de esta unidad 0KM"
+            >
+              CONSULTAR DISPONIBILIDAD
+            </span>
+          ) : model.tipoTenencia === "EN_DOMICILIO" ? (
             <span
               className="rounded-md px-2 py-0.5 text-[10px] font-bold bg-blue-600 text-white"
               title="Esta moto se publica solo por la web — coordinamos visita con el titular"

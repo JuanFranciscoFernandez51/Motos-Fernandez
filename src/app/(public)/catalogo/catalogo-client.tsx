@@ -485,8 +485,17 @@ export function CatalogoClient({
                         {ETIQUETAS_MAP[model.etiqueta].label.toUpperCase()}
                       </span>
                     )}
-                    {/* Tenencia: dónde se puede ver/comprar */}
-                    {model.tipoTenencia === "EN_DOMICILIO" ? (
+                    {/* Tenencia: dónde se puede ver/comprar. Las 0KM del
+                        catálogo no las tenemos físicas → "Consultar
+                        disponibilidad". */}
+                    {(model.condicion || "0KM") === "0KM" ? (
+                      <span
+                        className="rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg bg-[#6B4F7A] truncate max-w-full"
+                        title="Consultanos disponibilidad y entrega de esta unidad 0KM"
+                      >
+                        CONSULTAR DISPONIBILIDAD
+                      </span>
+                    ) : model.tipoTenencia === "EN_DOMICILIO" ? (
                       <span
                         className="rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg bg-blue-600 truncate max-w-full"
                         title="Esta moto se publica solo por la web — coordinamos visita con el titular"

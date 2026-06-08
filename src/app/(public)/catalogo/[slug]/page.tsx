@@ -239,8 +239,14 @@ export default async function ModeloDetailPage({ params }: Props) {
                     {ETIQUETAS_MAP[model.etiqueta].label}
                   </span>
                 )}
-                {/* Tenencia: dónde se puede ver/comprar la moto */}
-                {model.tipoTenencia === "EN_DOMICILIO" ? (
+                {/* Tenencia: dónde se puede ver/comprar la moto.
+                    Las 0KM del catálogo no las tenemos físicas → "Consultar
+                    disponibilidad" en vez de "En concesionaria". */}
+                {(model.condicion || "0KM") === "0KM" ? (
+                  <span className="inline-block rounded-md px-2.5 py-0.5 text-xs font-bold text-white bg-[#6B4F7A]">
+                    CONSULTAR DISPONIBILIDAD
+                  </span>
+                ) : model.tipoTenencia === "EN_DOMICILIO" ? (
                   <span className="inline-block rounded-md px-2.5 py-0.5 text-xs font-bold text-white bg-blue-600">
                     SOLO WEB
                   </span>
