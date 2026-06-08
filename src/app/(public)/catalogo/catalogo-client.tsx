@@ -59,14 +59,19 @@ function formatPrecioCorto(valor: number): string {
 export function CatalogoClient({
   models,
   brands,
+  mostrarCondicion = true,
 }: {
   models: Modelo[]
   brands: string[]
+  /** Mostrar el filtro 0KM/Usadas. En la página /0km se oculta (todas son 0KM). */
+  mostrarCondicion?: boolean
 }) {
   const [categoria, setCategoria] = useState<string>("TODAS")
   const [condicion, setCondicion] = useState<string>("TODAS")
   const [marca, setMarca] = useState<string>("TODAS")
   const [search, setSearch] = useState("")
+  // Sidebar de filtros abierto en mobile (en desktop siempre visible).
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const { compareItems } = useCompare()
 
   // Rangos dinamicos de precio y cilindrada en base al catalogo
@@ -93,8 +98,9 @@ export function CatalogoClient({
     }
   }, [models])
 
-  // Estado de filtros avanzados
-  const [mostrarAvanzados, setMostrarAvanzados] = useState(false)
+  // Estado de filtros avanzados (abiertos por defecto: en el sidebar
+  // queremos ver precio/cilindrada siempre, estilo MercadoLibre).
+  const [mostrarAvanzados, setMostrarAvanzados] = useState(true)
   const [precioMin, setPrecioMin] = useState<number>(precioMinCatalogo)
   const [precioMax, setPrecioMax] = useState<number>(precioMaxCatalogo)
   const [cilindradaMin, setCilindradaMin] = useState<number>(0)
@@ -131,6 +137,23 @@ export function CatalogoClient({
     setSoloDestacados(false)
     setSoloConFinanciacion(false)
   }
+
+  // Limpia TODO (incluye marca, tipo, condición, búsqueda).
+  const limpiarTodo = () => {
+    setCategoria("TODAS")
+    setCondicion("TODAS")
+    setMarca("TODAS")
+    setSearch("")
+    limpiarFiltrosAvanzados()
+  }
+
+  // Total de filtros activos (para el botón "Filtros" en mobile).
+  const totalFiltrosActivos =
+    (categoria !== "TODAS" ? 1 : 0) +
+    (mostrarCondicion && condicion !== "TODAS" ? 1 : 0) +
+    (marca !== "TODAS" ? 1 : 0) +
+    (search.trim() ? 1 : 0) +
+    filtrosAvanzadosActivos
 
   const filtered = useMemo(() => {
     return models.filter((m) => {
@@ -186,8 +209,21 @@ export function CatalogoClient({
 
   return (
     <>
-      {/* Filters */}
-      <div className="mb-6 sm:mb-8 space-y-3 sm:space-y-4">
+      <div className="lg:grid lg:grid-cols-[15rem_1fr] xl:grid-cols-[17rem_1fr] lg:gap-8 items-start">
+        {/* Botón Filtros (solo mobile) */}
+        <button
+          type="button"
+          onClick={() => setSidebarOpen((v) => !v)}
+          className="lg:hidden mb-4 inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-4 py-2.5 text-sm font-semibold text-white"
+        >
+          <SlidersHorizontal className="size-4" />
+          Filtros{totalFiltrosActivos > 0 ? ` (${totalFiltrosActivos})` : ""}
+        </button>
+
+        {/* ===== SIDEBAR DE FILTROS (estilo MercadoLibre) ===== */}
+        <aside
+          className={`${sidebarOpen ? "block" : "hidden"} lg:block rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 lg:sticky lg:top-24 mb-6 lg:mb-0 space-y-5`}
+        >
         {/* Category tabs - scroll horizontal en mobile */}
         <div className="-mx-4 sm:mx-0 px-4 sm:px-0 overflow-x-auto sm:overflow-visible">
           <div className="flex sm:flex-wrap justify-start sm:justify-center gap-2 min-w-max sm:min-w-0">
@@ -217,8 +253,9 @@ export function CatalogoClient({
           </div>
         </div>
 
-        {/* Condition filter */}
-        <div className="flex flex-wrap justify-center gap-2">
+        {/* Condición — oculto en /0km (todas son 0KM) */}
+        {mostrarCondicion && (
+        <div className="flex flex-wrap gap-2">
           {[
             { value: "TODAS", label: "Todas" },
             { value: "0KM", label: "0KM" },
@@ -241,9 +278,10 @@ export function CatalogoClient({
             </button>
           ))}
         </div>
+        )}
 
         {/* Search + brand filter */}
-        <div className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
+        <div className="flex flex-col gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-gray-400" />
             <input
@@ -269,7 +307,7 @@ export function CatalogoClient({
         </div>
 
         {/* Boton filtros avanzados + limpiar */}
-        <div className="flex flex-wrap items-center justify-center gap-2 max-w-xl mx-auto">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => setMostrarAvanzados((v) => !v)}
@@ -306,8 +344,8 @@ export function CatalogoClient({
             mostrarAvanzados ? "max-h-[1200px] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="max-w-3xl mx-auto mt-2 rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 shadow-sm">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="mt-2 rounded-xl border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-950 p-4">
+            <div className="grid grid-cols-1 gap-5">
               {/* Slider de precio */}
               <div>
                 <div className="flex items-center justify-between mb-2">
@@ -434,10 +472,27 @@ export function CatalogoClient({
             </div>
           </div>
         </div>
-      </div>
+        </aside>
 
-      {/* Results */}
-      {filtered.length === 0 ? (
+        {/* ===== COLUMNA DE RESULTADOS ===== */}
+        <div className="min-w-0">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              {filtered.length} {filtered.length === 1 ? "resultado" : "resultados"}
+            </p>
+            {totalFiltrosActivos > 0 && (
+              <button
+                type="button"
+                onClick={limpiarTodo}
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-[#6B4F7A] hover:underline"
+              >
+                <X className="size-3.5" /> Limpiar todo
+              </button>
+            )}
+          </div>
+
+          {/* Results */}
+          {filtered.length === 0 ? (
         <div className="py-20 text-center">
           <Bike className="size-12 text-gray-300 mx-auto mb-4" />
           <p className="text-gray-500 dark:text-gray-400 font-body">
@@ -609,7 +664,9 @@ export function CatalogoClient({
             </article>
           ))}
         </div>
-      )}
+          )}
+        </div>
+      </div>
 
       {/* Floating compare pill */}
       {compareItems.length > 0 && (

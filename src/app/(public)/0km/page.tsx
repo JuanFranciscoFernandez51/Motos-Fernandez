@@ -63,6 +63,7 @@ export default async function Motos0kmPage() {
             <CatalogoClient
               models={JSON.parse(JSON.stringify(ceroKm))}
               brands={brands}
+              mostrarCondicion={false}
             />
           )}
         </div>
