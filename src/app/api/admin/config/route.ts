@@ -48,6 +48,9 @@ export async function PUT(request: NextRequest) {
         mercadopagoHabilitado: Boolean(body.mercadopagoHabilitado),
         enviosHabilitados: Boolean(body.enviosHabilitados),
         retiroHabilitado: Boolean(body.retiroHabilitado),
+        mundialActivo: Boolean(body.mundialActivo),
+        mundialDesde: body.mundialDesde ? new Date(body.mundialDesde) : null,
+        mundialHasta: body.mundialHasta ? new Date(body.mundialHasta) : null,
       },
       create: {
         id: "singleton",
@@ -61,6 +64,9 @@ export async function PUT(request: NextRequest) {
         mercadopagoHabilitado: body.mercadopagoHabilitado ?? true,
         enviosHabilitados: body.enviosHabilitados ?? true,
         retiroHabilitado: body.retiroHabilitado ?? true,
+        mundialActivo: Boolean(body.mundialActivo),
+        mundialDesde: body.mundialDesde ? new Date(body.mundialDesde) : null,
+        mundialHasta: body.mundialHasta ? new Date(body.mundialHasta) : null,
       },
     })
 

@@ -505,6 +505,10 @@ model SiteConfig {
   mercadopagoHabilitado Boolean @default(true)
   enviosHabilitados    Boolean  @default(true)
   retiroHabilitado     Boolean  @default(true)
+  // Modo Mundial 🇦🇷 — switch manual + ventana de fechas opcional.
+  mundialActivo        Boolean  @default(false)
+  mundialDesde         DateTime?
+  mundialHasta         DateTime?
   updatedAt            DateTime @updatedAt
 }
 

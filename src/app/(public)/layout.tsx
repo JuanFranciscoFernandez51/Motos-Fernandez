@@ -30,6 +30,7 @@ import { NewsletterForm } from "@/components/public/newsletter-form"
 import { PromoBar } from "@/components/public/promo-bar"
 import { MobileBottomBar } from "@/components/public/mobile-bottom-bar"
 import { WelcomePopup } from "@/components/public/welcome-popup"
+import { ModoMundial } from "@/components/public/modo-mundial"
 
 const NAV_LINKS = [
   { href: "/0km", label: "Motos 0KM", highlight: true },
@@ -589,6 +590,7 @@ export default function PublicLayout({
     <CartProvider>
       <ComparadorProvider>
         <WishlistProvider>
+          <ModoMundial />
           <div className="sticky top-0 z-40">
             <PromoBar />
             <Navbar />
