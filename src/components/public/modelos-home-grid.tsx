@@ -166,7 +166,7 @@ function ModeloCard({
   return (
     <Link
       href={`/catalogo/${model.slug}`}
-      className="group relative flex flex-col h-full rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
+      className="moto-card group relative flex flex-col h-full rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
     >
       <div className="relative aspect-[4/3] bg-gradient-to-br from-[#F8F5FA] to-[#EFEAF2] dark:from-neutral-800 dark:to-neutral-900 overflow-hidden">
         {model.fotos[0] ? (
@@ -243,7 +243,7 @@ function ModeloCard({
             <p className="text-[10px] text-gray-400 uppercase tracking-wide font-semibold">
               Precio
             </p>
-            <p className="text-lg font-bold text-[#3D2649] dark:text-[#C39BD3] leading-tight">
+            <p className="moto-precio text-lg font-bold text-[#3D2649] dark:text-[#C39BD3] leading-tight">
               {model.precio
                 ? (model.moneda || "ARS") === "USD"
                   ? `USD ${model.precio.toLocaleString("es-AR")}`

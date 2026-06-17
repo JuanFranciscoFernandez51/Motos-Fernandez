@@ -462,7 +462,7 @@ export function CatalogoClient({
           {filtered.map((model) => (
             <article
               key={model.id}
-              className="group relative rounded-xl sm:rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-500 hover:-translate-y-1"
+              className="moto-card group relative rounded-xl sm:rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-500 hover:-translate-y-1"
             >
               {/* Borde dorado sutil en hover */}
               <div
@@ -554,7 +554,7 @@ export function CatalogoClient({
                         </p>
                       )}
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-base sm:text-lg lg:text-xl font-bold text-[#6B4F7A] dark:text-[#C39BD3]">
+                      <p className="moto-precio text-base sm:text-lg lg:text-xl font-bold text-[#6B4F7A] dark:text-[#C39BD3]">
                         {model.precio
                           ? (model.moneda || "ARS") === "USD"
                             ? `USD ${model.precio.toLocaleString("es-AR")}`

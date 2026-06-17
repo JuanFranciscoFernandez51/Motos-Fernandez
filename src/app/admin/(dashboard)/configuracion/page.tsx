@@ -226,58 +226,6 @@ export default function ConfiguracionPage() {
         </label>
       </div>
 
-      {/* Modo Mundial 🇦🇷 */}
-      <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-3">
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <span aria-hidden>🇦🇷</span>
-          Modo Mundial
-        </h2>
-        <p className="text-xs text-gray-500 dark:text-gray-400 -mt-1">
-          Prende animaciones festivas (banner + confeti + detalle celeste-blanco)
-          en la web pública. Podés dejarlo prendido y/o limitarlo a fechas.
-        </p>
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={config.mundialActivo}
-            onChange={e => set("mundialActivo", e.target.checked)}
-            className="w-4 h-4 rounded accent-[#75AADB]"
-          />
-          <div>
-            <p className="text-sm font-medium">Modo Mundial activado</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Switch maestro. Si lo apagás, no se muestra nada.
-            </p>
-          </div>
-        </label>
-        <div className="grid grid-cols-2 gap-3 pt-1">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
-              Desde (opcional)
-            </label>
-            <Input
-              type="date"
-              value={config.mundialDesde}
-              onChange={e => set("mundialDesde", e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
-              Hasta (opcional)
-            </label>
-            <Input
-              type="date"
-              value={config.mundialHasta}
-              onChange={e => set("mundialHasta", e.target.value)}
-            />
-          </div>
-        </div>
-        <p className="text-[11px] text-gray-400">
-          Sin fechas, queda activo mientras el switch esté prendido. Con fechas,
-          solo se muestra dentro de ese rango (se apaga solo al terminar).
-        </p>
-      </div>
-
       {/* Datos legales para PDFs */}
       <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-4">
         <div>

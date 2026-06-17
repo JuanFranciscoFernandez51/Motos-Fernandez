@@ -590,8 +590,8 @@ export default function PublicLayout({
     <CartProvider>
       <ComparadorProvider>
         <WishlistProvider>
-          <ModoMundial />
           <div className="sticky top-0 z-40">
+            <ModoMundial />
             <PromoBar />
             <Navbar />
           </div>

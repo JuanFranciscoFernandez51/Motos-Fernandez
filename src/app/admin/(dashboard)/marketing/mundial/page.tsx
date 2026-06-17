@@ -1,0 +1,159 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { Save, Loader2, CheckCircle } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+
+/**
+ * Modo Mundial 🇦🇷 — configuración (sección Marketing).
+ *
+ * Carga la SiteConfig completa y la vuelve a guardar entera (igual que la
+ * página de Configuración) para no pisar otros campos. Sólo edita los campos
+ * mundialActivo / mundialDesde / mundialHasta.
+ */
+
+type Config = Record<string, unknown> & {
+  mundialActivo?: boolean
+  mundialDesde?: string | null
+  mundialHasta?: string | null
+}
+
+export default function ModoMundialPage() {
+  const [config, setConfig] = useState<Config>({})
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    fetch("/api/admin/config")
+      .then((r) => r.json())
+      .then((data) => {
+        setConfig({
+          ...data,
+          mundialActivo: Boolean(data.mundialActivo),
+          mundialDesde: data.mundialDesde ? String(data.mundialDesde).slice(0, 10) : "",
+          mundialHasta: data.mundialHasta ? String(data.mundialHasta).slice(0, 10) : "",
+        })
+        setLoading(false)
+      })
+      .catch(() => setLoading(false))
+  }, [])
+
+  const set = (key: keyof Config, value: string | boolean) => {
+    setConfig((prev) => ({ ...prev, [key]: value }))
+    setSaved(false)
+  }
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      await fetch("/api/admin/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(config),
+      })
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
+      </div>
+    )
+  }
+
+  const activo = Boolean(config.mundialActivo)
+
+  return (
+    <div className="space-y-6 max-w-2xl">
+      <div>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+          <span aria-hidden>🇦🇷</span> Modo Mundial
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Prende animaciones festivas en la web pública: banner arriba con las
+          3 estrellas, confeti al entrar y al scrollear, decoraciones flotando y
+          las cards de motos en celeste-blanco con el precio en amarillo al pasar
+          el mouse.
+        </p>
+      </div>
+
+      {/* Estado */}
+      <div
+        className={`rounded-xl border p-4 text-sm font-medium flex items-center gap-2 ${
+          activo
+            ? "bg-[#75AADB]/10 border-[#75AADB]/40 text-[#0B2A4A] dark:text-[#9FD0F0]"
+            : "bg-gray-50 dark:bg-neutral-900 border-gray-200 dark:border-neutral-800 text-gray-500"
+        }`}
+      >
+        <span aria-hidden>{activo ? "🎉" : "💤"}</span>
+        {activo
+          ? "Modo Mundial PRENDIDO (sujeto a las fechas de abajo si están cargadas)."
+          : "Modo Mundial apagado."}
+      </div>
+
+      {/* Switch + fechas */}
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-4">
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={activo}
+            onChange={(e) => set("mundialActivo", e.target.checked)}
+            className="w-5 h-5 rounded accent-[#75AADB]"
+          />
+          <div>
+            <p className="text-sm font-medium">Activar Modo Mundial</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Switch maestro. Si lo apagás, no se muestra nada en la web.
+            </p>
+          </div>
+        </label>
+
+        <div className="grid grid-cols-2 gap-3 pt-1 border-t border-gray-100 dark:border-neutral-800">
+          <div className="pt-3">
+            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+              Desde (opcional)
+            </label>
+            <Input
+              type="date"
+              value={(config.mundialDesde as string) || ""}
+              onChange={(e) => set("mundialDesde", e.target.value)}
+            />
+          </div>
+          <div className="pt-3">
+            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+              Hasta (opcional)
+            </label>
+            <Input
+              type="date"
+              value={(config.mundialHasta as string) || ""}
+              onChange={(e) => set("mundialHasta", e.target.value)}
+            />
+          </div>
+        </div>
+        <p className="text-[11px] text-gray-400">
+          Sin fechas: queda activo mientras el switch esté prendido. Con fechas:
+          se muestra sólo dentro de ese rango y se apaga solo al terminar.
+        </p>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <Button onClick={handleSave} disabled={saving} className="bg-[#6B4F7A] hover:bg-[#8B6F9A]">
+          {saving ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+          Guardar
+        </Button>
+        {saved && (
+          <span className="inline-flex items-center gap-1 text-sm text-green-600 dark:text-green-300">
+            <CheckCircle className="h-4 w-4" /> Guardado
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}

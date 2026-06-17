@@ -141,12 +141,27 @@ export function ModoMundial() {
 
   return (
     <>
-      {/* Franja superior celeste-blanco-celeste */}
-      <div
-        aria-hidden
-        className="fixed top-0 inset-x-0 h-[3px] z-[70] pointer-events-none"
-        style={{ background: `linear-gradient(90deg, ${CELESTE}, #ffffff, ${CELESTE})` }}
-      />
+      {/* Banner festivo ARRIBA (en flujo, dentro del header sticky → queda
+          fijo arriba al scrollear). */}
+      {!bannerCerrado && (
+        <div
+          className="relative w-full text-center text-[#0B2A4A] font-bold text-xs sm:text-sm py-2 px-9"
+          style={{ background: `linear-gradient(90deg, ${CELESTE} 0%, #eaf4fb 50%, ${CELESTE} 100%)` }}
+        >
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden>⭐⭐⭐</span> ¡VAMOS ARGENTINA! 🇦🇷 — Viví el Mundial
+            con Motos Fernández <span aria-hidden>⚽</span>
+          </span>
+          <button
+            type="button"
+            onClick={cerrarBanner}
+            aria-label="Cerrar"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-[#0B2A4A]/70 hover:text-[#0B2A4A]"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+      )}
 
       {/* Decoraciones flotando de fondo */}
       <div aria-hidden className="fixed inset-0 z-[5] pointer-events-none overflow-hidden">
@@ -171,28 +186,13 @@ export function ModoMundial() {
         <Confeti key={b.id} n={b.n} />
       ))}
 
-      {/* Barra festiva FIJA abajo (arriba de la barra inferior en mobile) */}
-      {!bannerCerrado && (
-        <div
-          className="fixed inset-x-0 bottom-16 lg:bottom-0 z-30 text-center text-[#0B2A4A] font-bold text-xs sm:text-sm py-2 px-9 shadow-[0_-2px_10px_rgba(0,0,0,0.12)]"
-          style={{ background: `linear-gradient(90deg, ${CELESTE} 0%, #eaf4fb 50%, ${CELESTE} 100%)` }}
-        >
-          <span className="inline-flex items-center gap-1.5">
-            <span aria-hidden>⭐⭐⭐</span> ¡VAMOS ARGENTINA! 🇦🇷 — Viví el Mundial
-            con Motos Fernández <span aria-hidden>⚽</span>
-          </span>
-          <button
-            type="button"
-            onClick={cerrarBanner}
-            aria-label="Cerrar"
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-[#0B2A4A]/70 hover:text-[#0B2A4A]"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
-      )}
-
       <style>{`
+        /* Hover mundialero en las cards de motos: celeste/blanco + precio amarillo */
+        .moto-card { transition: background-color .35s ease, background .35s ease; }
+        .moto-card:hover {
+          background: linear-gradient(135deg, ${CELESTE} 0%, #eaf4fb 55%, #ffffff 100%) !important;
+        }
+        .moto-card:hover .moto-precio { color: ${SOL} !important; }
         @keyframes mundialCaida {
           0%   { transform: translateY(-12vh) rotate(0deg); opacity: 1; }
           100% { transform: translateY(112vh) rotate(560deg); opacity: 0.85; }
