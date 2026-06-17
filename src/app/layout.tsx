@@ -72,11 +72,9 @@ export const metadata: Metadata = {
     description: BUSINESS.description,
     images: ["/images/og-image.jpg"],
   },
-  icons: {
-    icon: "/images/favicon.svg",
-    shortcut: "/images/favicon.svg",
-    apple: "/images/favicon.svg",
-  },
+  // El favicon sale de la convención de archivos de Next: src/app/favicon.ico
+  // + src/app/icon.png (ambos con el logo MF). No definimos icons acá para no
+  // duplicar los <link>.
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_URL || "https://motosfernandez.com.ar"
   ),
