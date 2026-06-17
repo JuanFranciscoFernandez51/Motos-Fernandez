@@ -1,18 +1,14 @@
-"use client"
-
-import { useEffect, useState } from "react"
-
 /**
  * Modo Mundial 🇦🇷 — piezas del hero de la home.
  *
- * Se monta dentro del hero y, si el Modo Mundial está activo, agrega:
- *  - Badge "Edición Mundial 2026" con bandera argentina flameando (SVG con
- *    filtro de desplazamiento animado).
+ * Se monta dentro del hero y, si el Modo Mundial está activo (prop `active`,
+ * calculada server-side en la page), agrega:
+ *  - Bandera argentina flameando (SVG con filtro de desplazamiento animado).
  *  - 3 estrellas de campeón titilando escalonadas + "Tricampeones del mundo".
  *  - Franja celeste/blanca fina animada al pie.
  *
- * El confetti es global (componente ModoMundial en el layout). Respeta
- * prefers-reduced-motion. Estado desde /api/site/mundial.
+ * El badge "Edición Mundial 2026" vive en el eyebrow del hero. El confetti es
+ * global (componente ModoMundial del layout). Respeta prefers-reduced-motion.
  */
 
 const CELESTE = "#75AADB"
@@ -21,7 +17,7 @@ const ORO = "#F4B739"
 const STAR_PATH =
   "M12 2l2.9 6.3 6.9.7-5.2 4.6 1.5 6.8L12 17.8 5.9 21l1.5-6.8L2.2 9.6l6.9-.7z"
 
-function BanderaFlameando({ width = 44 }: { width?: number }) {
+function BanderaFlameando({ width = 56 }: { width?: number }) {
   const h = (width * 210) / 320
   return (
     <svg
@@ -30,7 +26,7 @@ function BanderaFlameando({ width = 44 }: { width?: number }) {
       viewBox="0 0 320 210"
       aria-hidden
       className="mf-flag shrink-0"
-      style={{ filter: "drop-shadow(0 6px 10px rgba(0,0,0,.45))" }}
+      style={{ filter: "drop-shadow(0 8px 14px rgba(0,0,0,.45))" }}
     >
       <defs>
         <filter id="mfwave" x="-20%" y="-20%" width="140%" height="140%">
@@ -77,7 +73,7 @@ function BanderaFlameando({ width = 44 }: { width?: number }) {
   )
 }
 
-function Estrellas({ size = 22 }: { size?: number }) {
+function Estrellas({ size = 24 }: { size?: number }) {
   return (
     <span className="inline-flex items-center gap-1.5" aria-hidden>
       {[0, 0.35, 0.7].map((d, i) => (
@@ -99,50 +95,25 @@ function Estrellas({ size = 22 }: { size?: number }) {
   )
 }
 
-export function MundialHero() {
-  const [active, setActive] = useState(false)
-
-  useEffect(() => {
-    let vivo = true
-    fetch("/api/site/mundial")
-      .then((r) => r.json())
-      .then((d) => {
-        if (vivo && d?.active) setActive(true)
-      })
-      .catch(() => {})
-    return () => {
-      vivo = false
-    }
-  }, [])
-
+export function MundialHero({ active }: { active: boolean }) {
   if (!active) return null
 
   return (
     <div className="mt-8">
-      {/* Badge Edición Mundial */}
-      <div
-        className="mf-float inline-flex items-center gap-2.5 rounded-full border px-3.5 py-1.5"
-        style={{
-          borderColor: "rgba(117,170,219,.45)",
-          background: "rgba(117,170,219,.12)",
-        }}
-      >
-        <BanderaFlameando width={40} />
-        <span
-          className="font-extrabold uppercase"
-          style={{ color: CELESTE, letterSpacing: "0.18em", fontSize: 11 }}
-        >
-          Edición Mundial 2026
-        </span>
-      </div>
-
-      {/* 3 estrellas de campeón + frase */}
-      <div className="mt-4 flex items-center gap-3">
-        <Estrellas size={24} />
-        <p className="text-sm sm:text-base font-semibold text-white/90">
-          Tricampeones del mundo
-          <span className="text-white/55"> — y vamos por más.</span>
-        </p>
+      {/* Bandera flameando + 3 estrellas de campeón + frase */}
+      <div className="flex items-center gap-4">
+        <div className="mf-float">
+          <BanderaFlameando width={56} />
+        </div>
+        <div>
+          <div className="flex items-center gap-2.5">
+            <Estrellas size={24} />
+            <p className="text-base sm:text-lg font-bold text-white">
+              Tricampeones del mundo
+            </p>
+          </div>
+          <p className="mt-1 text-sm text-white/55">y vamos por más.</p>
+        </div>
       </div>
 
       {/* Franja celeste/blanca animada al pie */}

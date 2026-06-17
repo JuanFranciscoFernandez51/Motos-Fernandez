@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
+import { revalidateTag } from "next/cache"
 import { requireAdmin } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
+import { CACHE_TAGS } from "@/lib/cached-queries"
 
 const DEFAULT_CONFIG = {
   id: "singleton",
@@ -79,6 +81,8 @@ export async function PUT(request: NextRequest) {
           : "sutil",
       },
     })
+
+    revalidateTag(CACHE_TAGS.config, "max")
 
     return NextResponse.json(config)
   } catch (error) {

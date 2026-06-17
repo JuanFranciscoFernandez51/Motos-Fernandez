@@ -6,6 +6,7 @@ import {
   getModelosHome,
   getNoticiasRecientes,
   getTestimoniosHome,
+  isMundialActivo,
 } from "@/lib/cached-queries"
 import { ModelosHomeGrid } from "@/components/public/modelos-home-grid"
 import { MundialHero } from "@/components/public/mundial-hero"
@@ -35,10 +36,11 @@ import {
 // ==================== PAGE ====================
 
 export default async function HomePage() {
-  const [modelosHome, noticias, testimonios] = await Promise.all([
+  const [modelosHome, noticias, testimonios, mundial] = await Promise.all([
     getModelosHome(),
     getNoticiasRecientes(),
     getTestimoniosHome(),
+    isMundialActivo(),
   ])
   const { destacadas, rotativas } = modelosHome
   // Para chequeos de empty state
@@ -70,14 +72,23 @@ export default async function HomePage() {
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-14 lg:py-16">
           <div className="max-w-4xl">
-            {/* Eyebrow premium */}
+            {/* Eyebrow premium — en Modo Mundial muta a "Edición Mundial 2026" */}
             <AnimatedSection animation="fade" delay={100}>
-              <div className="inline-flex items-center gap-2.5 rounded-full border border-[#C8C8D0]/30 bg-[#C8C8D0]/[0.08] px-4 py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.22em] text-[#C8C8D0] backdrop-blur-sm">
-                <span className="size-1.5 rounded-full bg-[#C8C8D0] animate-pulse" />
-                Concesionaria multimarca · {BUSINESS.city}
-                <span className="size-1.5 rounded-full bg-[#C8C8D0]/50" />
-                Desde {BUSINESS.yearFounded}
-              </div>
+              {mundial ? (
+                <div className="inline-flex items-center gap-2.5 rounded-full border border-[#75AADB]/45 bg-[#75AADB]/[0.12] px-4 py-1.5 text-[10px] sm:text-[11px] font-extrabold uppercase tracking-[0.22em] text-[#9FC6E8] backdrop-blur-sm">
+                  <span className="size-1.5 rounded-full bg-[#75AADB] animate-pulse" />
+                  🇦🇷 Edición Mundial 2026
+                  <span className="size-1.5 rounded-full bg-[#F4B739]" />
+                  Vamos Argentina
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-2.5 rounded-full border border-[#C8C8D0]/30 bg-[#C8C8D0]/[0.08] px-4 py-1.5 text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.22em] text-[#C8C8D0] backdrop-blur-sm">
+                  <span className="size-1.5 rounded-full bg-[#C8C8D0] animate-pulse" />
+                  Concesionaria multimarca · {BUSINESS.city}
+                  <span className="size-1.5 rounded-full bg-[#C8C8D0]/50" />
+                  Desde {BUSINESS.yearFounded}
+                </div>
+              )}
             </AnimatedSection>
 
             {/* Headline display sobrio y moderno */}
@@ -86,7 +97,11 @@ export default async function HomePage() {
                 <span className="block font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl leading-[0.9] tracking-tight">
                   TU PRÓXIMA
                 </span>
-                <span className="block font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl mt-1 leading-[0.9] tracking-tight text-[#C8C8D0]">
+                <span
+                  className={`block font-display text-5xl sm:text-6xl lg:text-7xl xl:text-8xl mt-1 leading-[0.9] tracking-tight ${
+                    mundial ? "text-[#75AADB]" : "text-[#C8C8D0]"
+                  }`}
+                >
                   AVENTURA
                 </span>
                 <span className="block font-heading text-xl sm:text-2xl lg:text-3xl mt-3 font-light text-gray-300">
@@ -182,7 +197,7 @@ export default async function HomePage() {
             </AnimatedSection>
 
             {/* Piezas Modo Mundial (solo si está activo) */}
-            <MundialHero />
+            <MundialHero active={mundial} />
           </div>
         </div>
 

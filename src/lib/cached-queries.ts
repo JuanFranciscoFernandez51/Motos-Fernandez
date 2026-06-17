@@ -11,10 +11,45 @@ export const CACHE_TAGS = {
   noticias: "noticias",
   noticia: (slug: string) => `noticia:${slug}`,
   testimonios: "testimonios",
+  config: "config",
 } as const
 
 // Revalidación por tiempo — fallback por si nos olvidamos un tag en el admin.
 const ONE_HOUR = 60 * 60
+
+// ==================== MODO MUNDIAL ====================
+
+/**
+ * Config crudo del Modo Mundial (cacheado). El cálculo de "activo" según fechas
+ * se hace afuera con new Date() para no congelar la ventana en el cache.
+ */
+export const getMundialConfig = unstable_cache(
+  async () => {
+    return await prisma.siteConfig.findUnique({
+      where: { id: "singleton" },
+      select: {
+        mundialActivo: true,
+        mundialDesde: true,
+        mundialHasta: true,
+        mundialBarraEstilo: true,
+        mundialConfetti: true,
+        mundialConfettiNivel: true,
+      },
+    })
+  },
+  ["mundial-config"],
+  { tags: [CACHE_TAGS.config], revalidate: 60 }
+)
+
+/** ¿Está activo el Modo Mundial ahora mismo? (switch + ventana de fechas) */
+export async function isMundialActivo(): Promise<boolean> {
+  const cfg = await getMundialConfig()
+  if (!cfg?.mundialActivo) return false
+  const now = new Date()
+  const desdeOk = !cfg.mundialDesde || now >= cfg.mundialDesde
+  const hastaOk = !cfg.mundialHasta || now <= cfg.mundialHasta
+  return desdeOk && hastaOk
+}
 
 // ==================== MODELOS ====================
 
