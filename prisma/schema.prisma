@@ -509,6 +509,10 @@ model SiteConfig {
   mundialActivo        Boolean  @default(false)
   mundialDesde         DateTime?
   mundialHasta         DateTime?
+  // Estilo de la barra: "bandera" | "marquee". Confetti on/off + nivel.
+  mundialBarraEstilo   String   @default("bandera")
+  mundialConfetti      Boolean  @default(true)
+  mundialConfettiNivel String   @default("sutil") // "sutil" | "medio" | "trapo"
   updatedAt            DateTime @updatedAt
 }
 

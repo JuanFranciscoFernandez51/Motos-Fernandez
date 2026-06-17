@@ -4,89 +4,217 @@ import { useEffect, useRef, useState } from "react"
 import { X } from "lucide-react"
 
 /**
- * Modo Mundial 🇦🇷 — se activa desde el admin (switch + fechas opcionales).
+ * Modo Mundial 🇦🇷 — kit festivo (basado en el handoff de diseño).
  *
- * - Barra festiva FIJA abajo (queda visible siempre, arriba de la barra
- *   inferior mobile).
- * - Decoraciones argentinas (banderas / estrellas / pelotas / sol) flotando
- *   siempre de fondo → movimiento constante.
- * - Confeti al cargar Y cuando el usuario scrollea (se reactiva al moverte
- *   por la página, con throttle para no saturar).
- * - Franja superior celeste-blanco.
+ * Piezas (configurables desde admin → Marketing → Modo Mundial):
+ *  - Barra de anuncio arriba: estilo "bandera" (franja celeste/blanca + Sol de
+ *    Mayo girando + shimmer) o "marquee" (cinta oscura desplazándose).
+ *  - Confetti celeste/blanco/dorado en <canvas> (niveles: sutil/medio/trapo).
+ *  - Hover mundialero en las cards de motos (celeste/blanco + precio amarillo).
  *
- * Sin librerías externas (todo CSS). Respeta prefers-reduced-motion.
+ * Estado desde /api/site/mundial. Respeta prefers-reduced-motion.
  */
 
 const CELESTE = "#75AADB"
-const SOL = "#F6B40E"
-const COLORES = [CELESTE, "#FFFFFF", CELESTE, SOL, "#FFFFFF"]
-const EMOJIS = ["🇦🇷", "⭐", "⚽", "☀️", "🇦🇷", "⭐"]
+const ORO = "#F4B739"
+const AZUL_TEXTO = "#0c3a63"
+const CONFETTI_COLORS = ["#75AADB", "#ffffff", "#9FCBEF", "#F4B739", "#bcdcf5", "#ffffff"]
+const NIVELES: Record<string, number> = { sutil: 30, medio: 58, trapo: 95 }
 
-type Burst = { id: number; n: number }
+const FRASES_MARQUEE = [
+  "Vamos Argentina",
+  "Mundial 2026",
+  "Motos Fernández te banca",
+  "Tricampeones del mundo",
+]
 
-function Confeti({ n }: { n: number }) {
-  const piezas = Array.from({ length: n }, (_, i) => {
-    const left = (i * 41 + 7) % 100
-    const delay = (i % 10) * 0.12
-    const dur = 3.2 + ((i * 17) % 26) / 10
-    const esEmoji = i % 3 === 0
-    const color = COLORES[i % COLORES.length]
-    const emoji = EMOJIS[i % EMOJIS.length]
-    const size = 7 + (i % 4) * 2
-    const rot = (i * 47) % 360
-    return { left, delay, dur, esEmoji, color, emoji, size, rot, i }
-  })
+type MundialState = {
+  active: boolean
+  barraEstilo: "bandera" | "marquee"
+  confetti: boolean
+  confettiNivel: string
+}
+
+function SolDeMayo({ size = 24 }: { size?: number }) {
   return (
-    <div aria-hidden className="fixed inset-0 z-[65] pointer-events-none overflow-hidden">
-      {piezas.map((p) =>
-        p.esEmoji ? (
-          <span
-            key={p.i}
-            className="mundial-confeti"
-            style={{
-              left: `${p.left}%`,
-              fontSize: `${p.size + 8}px`,
-              lineHeight: 1,
-              animationDelay: `${p.delay}s`,
-              animationDuration: `${p.dur}s`,
-            }}
-          >
-            {p.emoji}
-          </span>
-        ) : (
-          <span
-            key={p.i}
-            className="mundial-confeti"
-            style={{
-              left: `${p.left}%`,
-              width: `${p.size}px`,
-              height: `${p.size * 1.6}px`,
-              background: p.color,
-              borderRadius: "2px",
-              animationDelay: `${p.delay}s`,
-              animationDuration: `${p.dur}s`,
-              transform: `rotate(${p.rot}deg)`,
-            }}
-          />
-        )
-      )}
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 96 96"
+      aria-hidden
+      className="mf-sun shrink-0"
+    >
+      <circle cx="48" cy="48" r="40" fill="none" stroke={ORO} strokeWidth="15" strokeDasharray="3.6 8.2" />
+      <circle cx="48" cy="48" r="24" fill={ORO} stroke="#cf8a18" strokeWidth="2" />
+    </svg>
+  )
+}
+
+function BarraBandera({ onClose }: { onClose: () => void }) {
+  return (
+    <div
+      className="relative w-full overflow-hidden flex items-center justify-center gap-3.5 px-9"
+      style={{
+        height: 48,
+        background:
+          "linear-gradient(180deg, #75AADB 0%, #75AADB 33%, #ffffff 33%, #ffffff 67%, #75AADB 67%, #75AADB 100%)",
+      }}
+    >
+      <SolDeMayo size={24} />
+      <span
+        className="font-extrabold uppercase"
+        style={{ color: AZUL_TEXTO, letterSpacing: "0.12em", fontSize: 15 }}
+      >
+        ¡Vamos Argentina!
+      </span>
+      <span
+        className="font-bold uppercase hidden sm:inline"
+        style={{ color: AZUL_TEXTO, opacity: 0.7, letterSpacing: "0.18em", fontSize: 12 }}
+      >
+        Mundial 2026
+      </span>
+      <span aria-hidden className="mf-shimmer" />
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Cerrar"
+        className="absolute right-2 top-1/2 -translate-y-1/2"
+        style={{ color: AZUL_TEXTO }}
+      >
+        <X className="size-4" />
+      </button>
     </div>
   )
 }
 
-export function ModoMundial() {
-  const [active, setActive] = useState(false)
-  const [bannerCerrado, setBannerCerrado] = useState(true)
-  const [bursts, setBursts] = useState<Burst[]>([])
-  const burstId = useRef(0)
-  const lastScrollBurst = useRef(0)
-  const cleanupRef = useRef<(() => void) | null>(null)
+function BarraMarquee({ onClose }: { onClose: () => void }) {
+  const bloque = (
+    <span className="mf-mq-bloque inline-flex items-center">
+      {FRASES_MARQUEE.map((f, i) => (
+        <span key={i} className="inline-flex items-center">
+          <span
+            className="font-bold uppercase"
+            style={{ color: "#cfe0f0", letterSpacing: "0.16em", fontSize: 13, padding: "0 22px" }}
+          >
+            {f}
+          </span>
+          <span aria-hidden style={{ color: i % 2 === 0 ? ORO : CELESTE, fontSize: 11 }}>
+            ◆
+          </span>
+        </span>
+      ))}
+    </span>
+  )
+  return (
+    <div
+      className="relative w-full overflow-hidden flex items-center px-9"
+      style={{
+        height: 48,
+        background: "#0c0e12",
+        borderTop: "1px solid rgba(117,170,219,.35)",
+        borderBottom: "1px solid rgba(117,170,219,.35)",
+      }}
+    >
+      <div className="mf-mq-track flex whitespace-nowrap">
+        {bloque}
+        {bloque}
+      </div>
+      <button
+        type="button"
+        onClick={onClose}
+        aria-label="Cerrar"
+        className="absolute right-2 top-1/2 -translate-y-1/2 text-[#cfe0f0]/70 hover:text-[#cfe0f0] bg-[#0c0e12]"
+      >
+        <X className="size-4" />
+      </button>
+    </div>
+  )
+}
 
-  const lanzarConfeti = (n: number) => {
-    const id = ++burstId.current
-    setBursts((b) => [...b, { id, n }])
-    setTimeout(() => setBursts((b) => b.filter((x) => x.id !== id)), 5600)
-  }
+function Confetti({ nivel }: { nivel: string }) {
+  const ref = useRef<HTMLCanvasElement | null>(null)
+  useEffect(() => {
+    const cv = ref.current
+    if (!cv) return
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
+    if (reduce) return
+    const ctx = cv.getContext("2d")
+    if (!ctx) return
+    const base = NIVELES[nivel] ?? NIVELES.sutil
+    let W = 0, H = 0, dpr = 1, parts: ReturnType<typeof spawn>[] = []
+    let raf = 0, t = 0
+
+    function spawn(init: boolean) {
+      return {
+        x: Math.random() * W,
+        y: init ? Math.random() * H : -12 - Math.random() * 60,
+        w: 5 + Math.random() * 5,
+        h: 8 + Math.random() * 8,
+        c: CONFETTI_COLORS[(Math.random() * CONFETTI_COLORS.length) | 0],
+        vy: 0.45 + Math.random() * 0.85,
+        sway: 0.5 + Math.random() * 1.2,
+        ph: Math.random() * Math.PI * 2,
+        rot: Math.random() * Math.PI,
+        vr: -0.04 + Math.random() * 0.08,
+      }
+    }
+    const resize = () => {
+      dpr = Math.min(2, window.devicePixelRatio || 1)
+      W = Math.max(1, window.innerWidth)
+      H = Math.max(1, window.innerHeight)
+      cv.width = W * dpr
+      cv.height = H * dpr
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    }
+    const make = () => {
+      const count = Math.round(base * Math.max(0.5, W / 720))
+      parts = Array.from({ length: count }, () => spawn(true))
+    }
+    resize()
+    make()
+    const frame = () => {
+      t += 0.016
+      ctx.clearRect(0, 0, W, H)
+      for (const p of parts) {
+        p.y += p.vy
+        p.x += Math.sin(t * p.sway + p.ph) * 0.6
+        p.rot += p.vr
+        if (p.y > H + 24) Object.assign(p, spawn(false))
+        ctx.save()
+        ctx.translate(p.x, p.y)
+        ctx.rotate(p.rot)
+        ctx.globalAlpha = 0.92
+        ctx.fillStyle = p.c
+        ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h)
+        ctx.restore()
+      }
+      raf = requestAnimationFrame(frame)
+    }
+    frame()
+    const onResize = () => {
+      resize()
+      make()
+    }
+    window.addEventListener("resize", onResize)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener("resize", onResize)
+    }
+  }, [nivel])
+
+  return (
+    <canvas
+      ref={ref}
+      aria-hidden
+      className="fixed inset-0 z-[3] pointer-events-none"
+      style={{ width: "100%", height: "100%" }}
+    />
+  )
+}
+
+export function ModoMundial() {
+  const [st, setSt] = useState<MundialState | null>(null)
+  const [barraCerrada, setBarraCerrada] = useState(true)
 
   useEffect(() => {
     let vivo = true
@@ -94,127 +222,60 @@ export function ModoMundial() {
       .then((r) => r.json())
       .then((d) => {
         if (!vivo || !d?.active) return
-        setActive(true)
-        setBannerCerrado(
-          typeof window !== "undefined" &&
-            sessionStorage.getItem("mundial-banner-cerrado") === "1"
-        )
-        lanzarConfeti(54) // burst de bienvenida
-
-        // Confeti reactivo al scroll (throttle 1.6s)
-        const onScroll = () => {
-          const ahora = Date.now()
-          if (ahora - lastScrollBurst.current > 1600) {
-            lastScrollBurst.current = ahora
-            lanzarConfeti(16)
-          }
-        }
-        window.addEventListener("scroll", onScroll, { passive: true })
-        // limpieza
-        cleanupRef.current = () => window.removeEventListener("scroll", onScroll)
+        setSt({
+          active: true,
+          barraEstilo: d.barraEstilo === "marquee" ? "marquee" : "bandera",
+          confetti: d.confetti !== false,
+          confettiNivel: d.confettiNivel || "sutil",
+        })
+        try {
+          setBarraCerrada(localStorage.getItem("mf-mundial-bar-cerrada") === "1")
+        } catch {}
       })
       .catch(() => {})
     return () => {
       vivo = false
-      cleanupRef.current?.()
     }
   }, [])
 
-  if (!active) return null
+  if (!st?.active) return null
 
-  const cerrarBanner = () => {
-    setBannerCerrado(true)
+  const cerrarBarra = () => {
+    setBarraCerrada(true)
     try {
-      sessionStorage.setItem("mundial-banner-cerrado", "1")
+      localStorage.setItem("mf-mundial-bar-cerrada", "1")
     } catch {}
   }
 
-  // Decoraciones flotando de fondo (siempre).
-  const flotantes = Array.from({ length: 14 }, (_, i) => ({
-    left: (i * 53 + 4) % 100,
-    delay: (i % 14) * 1.1,
-    dur: 13 + ((i * 7) % 12),
-    emoji: EMOJIS[i % EMOJIS.length],
-    size: 16 + (i % 3) * 6,
-    i,
-  }))
-
   return (
     <>
-      {/* Banner festivo ARRIBA (en flujo, dentro del header sticky → queda
-          fijo arriba al scrollear). */}
-      {!bannerCerrado && (
-        <div
-          className="relative w-full text-center text-[#0B2A4A] font-bold text-xs sm:text-sm py-2 px-9"
-          style={{ background: `linear-gradient(90deg, ${CELESTE} 0%, #eaf4fb 50%, ${CELESTE} 100%)` }}
-        >
-          <span className="inline-flex items-center gap-1.5">
-            <span aria-hidden>⭐⭐⭐</span> ¡VAMOS ARGENTINA! 🇦🇷 — Viví el Mundial
-            con Motos Fernández <span aria-hidden>⚽</span>
-          </span>
-          <button
-            type="button"
-            onClick={cerrarBanner}
-            aria-label="Cerrar"
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-[#0B2A4A]/70 hover:text-[#0B2A4A]"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
-      )}
-
-      {/* Decoraciones flotando de fondo */}
-      <div aria-hidden className="fixed inset-0 z-[5] pointer-events-none overflow-hidden">
-        {flotantes.map((f) => (
-          <span
-            key={f.i}
-            className="mundial-flota"
-            style={{
-              left: `${f.left}%`,
-              fontSize: `${f.size}px`,
-              animationDelay: `${f.delay}s`,
-              animationDuration: `${f.dur}s`,
-            }}
-          >
-            {f.emoji}
-          </span>
+      {!barraCerrada &&
+        (st.barraEstilo === "marquee" ? (
+          <BarraMarquee onClose={cerrarBarra} />
+        ) : (
+          <BarraBandera onClose={cerrarBarra} />
         ))}
-      </div>
 
-      {/* Confeti (bursts: carga + scroll) */}
-      {bursts.map((b) => (
-        <Confeti key={b.id} n={b.n} />
-      ))}
+      {st.confetti && <Confetti nivel={st.confettiNivel} />}
 
       <style>{`
-        /* Hover mundialero en las cards de motos: celeste/blanco + precio amarillo */
-        .moto-card { transition: background-color .35s ease, background .35s ease; }
-        .moto-card:hover {
-          background: linear-gradient(135deg, ${CELESTE} 0%, #eaf4fb 55%, #ffffff 100%) !important;
+        @keyframes mfSpin { to { transform: rotate(360deg); } }
+        @keyframes mfShimmer { 0% { transform: translateX(-130%) skewX(-18deg); } 100% { transform: translateX(130%) skewX(-18deg); } }
+        @keyframes mfMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .mf-sun { animation: mfSpin 32s linear infinite; transform-origin: 50% 50%; }
+        .mf-shimmer {
+          position: absolute; top: 0; bottom: 0; width: 40%; pointer-events: none;
+          background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent);
+          animation: mfShimmer 5.5s ease-in-out infinite;
         }
-        .moto-card:hover .moto-precio { color: ${SOL} !important; }
-        @keyframes mundialCaida {
-          0%   { transform: translateY(-12vh) rotate(0deg); opacity: 1; }
-          100% { transform: translateY(112vh) rotate(560deg); opacity: 0.85; }
-        }
-        @keyframes mundialFlota {
-          0%   { transform: translateY(14vh) translateX(0) rotate(0deg); opacity: 0; }
-          12%  { opacity: 0.28; }
-          88%  { opacity: 0.28; }
-          100% { transform: translateY(-115vh) translateX(36px) rotate(40deg); opacity: 0; }
-        }
-        .mundial-confeti {
-          position: absolute; top: -12vh;
-          animation-name: mundialCaida; animation-timing-function: ease-in;
-          animation-iteration-count: 1; animation-fill-mode: forwards;
-        }
-        .mundial-flota {
-          position: absolute; bottom: -14vh;
-          animation-name: mundialFlota; animation-timing-function: linear;
-          animation-iteration-count: infinite; will-change: transform, opacity;
-        }
+        .mf-mq-track { animation: mfMarquee 22s linear infinite; }
+        .mf-mq-track:hover { animation-play-state: paused; }
+        /* Hover mundialero en las cards de motos */
+        .moto-card { transition: background .35s ease; }
+        .moto-card:hover { background: linear-gradient(135deg, ${CELESTE} 0%, #eaf4fb 55%, #ffffff 100%) !important; }
+        .moto-card:hover .moto-precio { color: ${ORO} !important; }
         @media (prefers-reduced-motion: reduce) {
-          .mundial-confeti, .mundial-flota { display: none; }
+          .mf-sun, .mf-shimmer, .mf-mq-track { animation: none !important; }
         }
       `}</style>
     </>

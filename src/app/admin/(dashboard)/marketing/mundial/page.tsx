@@ -34,6 +34,9 @@ export default function ModoMundialPage() {
           mundialActivo: Boolean(data.mundialActivo),
           mundialDesde: data.mundialDesde ? String(data.mundialDesde).slice(0, 10) : "",
           mundialHasta: data.mundialHasta ? String(data.mundialHasta).slice(0, 10) : "",
+          mundialBarraEstilo: data.mundialBarraEstilo === "marquee" ? "marquee" : "bandera",
+          mundialConfetti: data.mundialConfetti !== false,
+          mundialConfettiNivel: data.mundialConfettiNivel || "sutil",
         })
         setLoading(false)
       })
@@ -141,6 +144,91 @@ export default function ModoMundialPage() {
           Sin fechas: queda activo mientras el switch esté prendido. Con fechas:
           se muestra sólo dentro de ese rango y se apaga solo al terminar.
         </p>
+      </div>
+
+      {/* Estilo de barra */}
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-3">
+        <p className="text-sm font-medium">Estilo de la barra de arriba</p>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            {
+              v: "bandera",
+              titulo: "Bandera",
+              desc: "Franja celeste/blanca con Sol de Mayo y brillo. Clásica y festiva.",
+            },
+            {
+              v: "marquee",
+              titulo: "Marquee oscuro",
+              desc: "Cinta negra con frases desplazándose. Fiel a tu estilo actual.",
+            },
+          ].map((op) => {
+            const sel = (config.mundialBarraEstilo as string) === op.v
+            return (
+              <button
+                key={op.v}
+                type="button"
+                onClick={() => set("mundialBarraEstilo", op.v)}
+                className={`text-left rounded-lg border p-3 transition ${
+                  sel
+                    ? "border-[#75AADB] ring-2 ring-[#75AADB]/40 bg-[#75AADB]/5"
+                    : "border-gray-200 dark:border-neutral-800 hover:border-gray-300"
+                }`}
+              >
+                <p className="text-sm font-semibold">{op.titulo}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{op.desc}</p>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      {/* Confetti */}
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-4">
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={config.mundialConfetti !== false}
+            onChange={(e) => set("mundialConfetti", e.target.checked)}
+            className="w-5 h-5 rounded accent-[#75AADB]"
+          />
+          <div>
+            <p className="text-sm font-medium">Confeti celeste y blanco</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Cae confeti suave por toda la web mientras el Modo Mundial está prendido.
+            </p>
+          </div>
+        </label>
+
+        {config.mundialConfetti !== false && (
+          <div className="pt-1 border-t border-gray-100 dark:border-neutral-800">
+            <p className="text-xs font-medium text-gray-600 dark:text-gray-300 mb-2 pt-3">
+              Cantidad
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { v: "sutil", t: "Sutil" },
+                { v: "medio", t: "Medio" },
+                { v: "trapo", t: "A todo trapo" },
+              ].map((op) => {
+                const sel = ((config.mundialConfettiNivel as string) || "sutil") === op.v
+                return (
+                  <button
+                    key={op.v}
+                    type="button"
+                    onClick={() => set("mundialConfettiNivel", op.v)}
+                    className={`rounded-lg border px-3 py-2 text-sm font-medium transition ${
+                      sel
+                        ? "border-[#75AADB] ring-2 ring-[#75AADB]/40 bg-[#75AADB]/5 text-[#0B2A4A] dark:text-[#9FD0F0]"
+                        : "border-gray-200 dark:border-neutral-800 hover:border-gray-300 text-gray-600 dark:text-gray-300"
+                    }`}
+                  >
+                    {op.t}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-3">

@@ -51,6 +51,11 @@ export async function PUT(request: NextRequest) {
         mundialActivo: Boolean(body.mundialActivo),
         mundialDesde: body.mundialDesde ? new Date(body.mundialDesde) : null,
         mundialHasta: body.mundialHasta ? new Date(body.mundialHasta) : null,
+        mundialBarraEstilo: body.mundialBarraEstilo === "marquee" ? "marquee" : "bandera",
+        mundialConfetti: body.mundialConfetti !== false,
+        mundialConfettiNivel: ["sutil", "medio", "trapo"].includes(body.mundialConfettiNivel)
+          ? body.mundialConfettiNivel
+          : "sutil",
       },
       create: {
         id: "singleton",
@@ -67,6 +72,11 @@ export async function PUT(request: NextRequest) {
         mundialActivo: Boolean(body.mundialActivo),
         mundialDesde: body.mundialDesde ? new Date(body.mundialDesde) : null,
         mundialHasta: body.mundialHasta ? new Date(body.mundialHasta) : null,
+        mundialBarraEstilo: body.mundialBarraEstilo === "marquee" ? "marquee" : "bandera",
+        mundialConfetti: body.mundialConfetti !== false,
+        mundialConfettiNivel: ["sutil", "medio", "trapo"].includes(body.mundialConfettiNivel)
+          ? body.mundialConfettiNivel
+          : "sutil",
       },
     })
 
