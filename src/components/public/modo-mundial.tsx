@@ -178,8 +178,8 @@ export function ModoMundial() {
           style={{ background: `linear-gradient(90deg, ${CELESTE} 0%, #eaf4fb 50%, ${CELESTE} 100%)` }}
         >
           <span className="inline-flex items-center gap-1.5">
-            <span aria-hidden>⭐</span> ¡VAMOS ARGENTINA! 🇦🇷 — Viví el Mundial con
-            Motos Fernández <span aria-hidden>⚽</span>
+            <span aria-hidden>⭐⭐⭐</span> ¡VAMOS ARGENTINA! 🇦🇷 — Viví el Mundial
+            con Motos Fernández <span aria-hidden>⚽</span>
           </span>
           <button
             type="button"
