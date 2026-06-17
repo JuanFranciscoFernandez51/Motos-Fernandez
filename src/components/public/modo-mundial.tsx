@@ -229,7 +229,7 @@ export function ModoMundial() {
           confettiNivel: d.confettiNivel || "sutil",
         })
         try {
-          setBarraCerrada(localStorage.getItem("mf-mundial-bar-cerrada") === "1")
+          setBarraCerrada(localStorage.getItem("mf-mundial-bar-cerrada-v2") === "1")
         } catch {}
       })
       .catch(() => {})
@@ -243,7 +243,7 @@ export function ModoMundial() {
   const cerrarBarra = () => {
     setBarraCerrada(true)
     try {
-      localStorage.setItem("mf-mundial-bar-cerrada", "1")
+      localStorage.setItem("mf-mundial-bar-cerrada-v2", "1")
     } catch {}
   }
 
