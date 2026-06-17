@@ -8,6 +8,7 @@ import {
   getTestimoniosHome,
 } from "@/lib/cached-queries"
 import { ModelosHomeGrid } from "@/components/public/modelos-home-grid"
+import { MundialHero } from "@/components/public/mundial-hero"
 import { AnimatedSection } from "@/components/public/ui/animated-section"
 import { MarqueeBrands } from "@/components/public/ui/marquee-brands"
 import { Watermark } from "@/components/public/ui/watermark"
@@ -179,6 +180,9 @@ export default async function HomePage() {
                 </div>
               </div>
             </AnimatedSection>
+
+            {/* Piezas Modo Mundial (solo si está activo) */}
+            <MundialHero />
           </div>
         </div>
 
