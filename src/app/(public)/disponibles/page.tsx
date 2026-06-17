@@ -68,7 +68,7 @@ export default async function DisponiblesPage() {
 
       {/* ==================== STOCK DISPONIBLE ==================== */}
       <section className="py-12 sm:py-16 bg-[#F8F5FA] dark:bg-neutral-950 min-h-[60vh]">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1600px] px-4 sm:px-6 lg:px-8">
           {disponibles.length === 0 ? (
             <p className="text-center text-gray-500 dark:text-gray-400 py-20">
               Por el momento no hay unidades disponibles publicadas.

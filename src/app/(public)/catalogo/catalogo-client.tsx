@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { formatPrice, CATEGORIAS_VEHICULO, CATEGORIA_VEHICULO_LABELS, ETIQUETAS_MAP } from "@/lib/constants"
+import { formatPrice, CATEGORIAS_VEHICULO, ETIQUETAS_MAP } from "@/lib/constants"
 import { Bike, Search, Scale, SlidersHorizontal, X, Star, CreditCard } from "lucide-react"
 import { useCompare } from "@/components/public/comparador-provider"
 import { CompareButton } from "@/components/public/compare-button"
@@ -458,7 +458,7 @@ export function CatalogoClient({
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-5 lg:gap-6">
           {filtered.map((model) => (
             <article
               key={model.id}
@@ -490,37 +490,19 @@ export function CatalogoClient({
 
                   {/* Chips arriba a la izquierda (no clickeables) */}
                   <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col items-start gap-1 sm:gap-1.5 pointer-events-none max-w-[70%]">
-                    <span className="rounded-md bg-[#0E0B12]/80 px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[9px] sm:text-xs font-medium text-white backdrop-blur-sm truncate max-w-full">
-                      {CATEGORIA_VEHICULO_LABELS[model.categoriaVehiculo] || model.categoriaVehiculo}
-                    </span>
                     {model.etiqueta && ETIQUETAS_MAP[model.etiqueta] && (
                       <span className={`rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg truncate max-w-full ${ETIQUETAS_MAP[model.etiqueta].color}`}>
                         {ETIQUETAS_MAP[model.etiqueta].label.toUpperCase()}
                       </span>
                     )}
-                    {/* Tenencia: dónde se puede ver/comprar. Las 0KM del
-                        catálogo no las tenemos físicas → "Consultar
-                        disponibilidad". */}
-                    {(model.condicion || "0KM") === "0KM" ? (
+                    {/* Solo en 0KM mostramos "Consultar disponibilidad". En
+                        usadas no va badge de tenencia (más limpio). */}
+                    {(model.condicion || "0KM") === "0KM" && (
                       <span
                         className="rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg bg-[#6B4F7A] truncate max-w-full"
                         title="Consultanos disponibilidad y entrega de esta unidad 0KM"
                       >
                         CONSULTAR DISPONIBILIDAD
-                      </span>
-                    ) : model.tipoTenencia === "EN_DOMICILIO" ? (
-                      <span
-                        className="rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg bg-blue-600 truncate max-w-full"
-                        title="Esta moto se publica solo por la web — coordinamos visita con el titular"
-                      >
-                        SOLO WEB
-                      </span>
-                    ) : (
-                      <span
-                        className="rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg bg-[#6B4F7A] truncate max-w-full"
-                        title="Disponible para ver y probar en Brown 1052"
-                      >
-                        EN CONCESIONARIA
                       </span>
                     )}
                   </div>
@@ -551,27 +533,30 @@ export function CatalogoClient({
                       </>
                     )}
                   </p>
-                  <div className="mt-2 sm:mt-3 lg:mt-4 pt-2 sm:pt-3 lg:pt-4 border-t border-gray-100 dark:border-neutral-800 flex items-end justify-between gap-2">
-                    <div className="min-w-0">
-                      {(model.condicion || "0KM") === "0KM" &&
-                        !model.chasis?.trim() &&
-                        !model.motor?.trim() &&
-                        model.precio != null && (
-                          <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 leading-tight">
-                            Precio sugerido público
-                          </p>
-                        )}
-                      <p className="text-sm sm:text-base lg:text-lg font-bold text-[#6B4F7A] dark:text-[#C39BD3] truncate">
+                  <div className="mt-2 sm:mt-3 lg:mt-4 pt-2 sm:pt-3 lg:pt-4 border-t border-gray-100 dark:border-neutral-800">
+                    {(model.condicion || "0KM") === "0KM" &&
+                      !model.chasis?.trim() &&
+                      !model.motor?.trim() &&
+                      model.precio != null && (
+                        <p className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500 leading-tight">
+                          Precio sugerido público
+                        </p>
+                      )}
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="text-base sm:text-lg lg:text-xl font-bold text-[#6B4F7A] dark:text-[#C39BD3]">
                         {model.precio
                           ? (model.moneda || "ARS") === "USD"
                             ? `USD ${model.precio.toLocaleString("es-AR")}`
                             : formatPrice(model.precio)
                           : "Consultar"}
                       </p>
+                      <span
+                        aria-hidden
+                        className="hidden sm:inline-flex text-[#C8C8D0] group-hover:text-[#6B4F7A] group-hover:translate-x-0.5 transition-all shrink-0"
+                      >
+                        &rarr;
+                      </span>
                     </div>
-                    <span className="hidden sm:inline-flex text-xs font-bold text-[#C8C8D0] group-hover:gap-2 items-center gap-1 transition-all whitespace-nowrap">
-                      Ver detalle <span className="group-hover:translate-x-0.5 transition-transform">&rarr;</span>
-                    </span>
                   </div>
                 </div>
               </Link>
