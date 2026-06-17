@@ -488,8 +488,19 @@ export function CatalogoClient({
                   {/* Overlay gradient bottom */}
                   <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                  {/* Chips arriba a la izquierda (no clickeables) */}
-                  <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col items-start gap-1 sm:gap-1.5 pointer-events-none max-w-[70%]">
+                  {/* Chips arriba a la izquierda (no clickeables). Reservamos
+                      4rem a la derecha (iconos favoritos/comparar) para que las
+                      etiquetas nunca se superpongan. */}
+                  <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col items-start gap-1 sm:gap-1.5 pointer-events-none max-w-[calc(100%-4rem)]">
+                    <span
+                      className={`rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[9px] sm:text-xs font-bold text-white shadow-lg ${
+                        (model.condicion || "0KM") === "0KM"
+                          ? "bg-emerald-500/90"
+                          : "bg-orange-500/90"
+                      }`}
+                    >
+                      {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
+                    </span>
                     {model.etiqueta && ETIQUETAS_MAP[model.etiqueta] && (
                       <span className={`rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg truncate max-w-full ${ETIQUETAS_MAP[model.etiqueta].color}`}>
                         {ETIQUETAS_MAP[model.etiqueta].label.toUpperCase()}
@@ -561,17 +572,9 @@ export function CatalogoClient({
                 </div>
               </Link>
 
-              {/* Badge de condición + botones interactivos — FUERA del Link (HTML válido) */}
+              {/* Botones interactivos — FUERA del Link (HTML válido).
+                  El badge de condición ahora va arriba a la izquierda. */}
               <div className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10 flex items-center gap-1 sm:gap-1.5">
-                <span
-                  className={`pointer-events-none rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[9px] sm:text-xs font-bold backdrop-blur-sm ${
-                    (model.condicion || "0KM") === "0KM"
-                      ? "bg-emerald-500/90 text-white"
-                      : "bg-orange-500/90 text-white"
-                  }`}
-                >
-                  {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
-                </span>
                 <WishlistButton
                   variant="icon-floating"
                   item={{

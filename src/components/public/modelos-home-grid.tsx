@@ -183,14 +183,9 @@ function ModeloCard({
           </div>
         )}
 
-        {/* Badges */}
-        {pinned && (
-          <div className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-[#0E0B12]/85 backdrop-blur-sm px-2.5 py-1 text-[10px] font-bold text-white">
-            <Star className="size-2.5 fill-[#C8C8D0] text-[#C8C8D0]" />
-            Destacado
-          </div>
-        )}
-        <div className="absolute top-3 right-3 flex flex-col items-end gap-1">
+        {/* Badges — todos en una sola columna a la derecha para que NUNCA se
+            superpongan. Condición + (destacado) + (0KM) consultar. */}
+        <div className="absolute top-3 right-3 flex flex-col items-end gap-1 max-w-[80%]">
           <span
             className={`rounded-md px-2 py-0.5 text-[10px] font-bold ${
               (model.condicion || "0KM") === "0KM"
@@ -200,28 +195,20 @@ function ModeloCard({
           >
             {(model.condicion || "0KM") === "0KM" ? "0KM" : "USADA"}
           </span>
-          {/* Tenencia: dónde se ve/se compra la moto. Las 0KM del catálogo
-              no las tenemos físicas → "Consultar disponibilidad". */}
-          {(model.condicion || "0KM") === "0KM" ? (
+          {pinned && (
+            <span className="inline-flex items-center gap-1 rounded-md bg-[#0E0B12]/85 backdrop-blur-sm px-2 py-0.5 text-[10px] font-bold text-white">
+              <Star className="size-2.5 fill-[#C8C8D0] text-[#C8C8D0]" />
+              Destacado
+            </span>
+          )}
+          {/* Solo 0KM: "Consultar disponibilidad" (las usadas no llevan
+              badge de tenencia, queda más limpio). */}
+          {(model.condicion || "0KM") === "0KM" && (
             <span
-              className="rounded-md px-2 py-0.5 text-[10px] font-bold bg-[#6B4F7A] text-white"
+              className="rounded-md px-2 py-0.5 text-[10px] font-bold bg-[#6B4F7A] text-white text-right"
               title="Consultanos disponibilidad y entrega de esta unidad 0KM"
             >
               CONSULTAR DISPONIBILIDAD
-            </span>
-          ) : model.tipoTenencia === "EN_DOMICILIO" ? (
-            <span
-              className="rounded-md px-2 py-0.5 text-[10px] font-bold bg-blue-600 text-white"
-              title="Esta moto se publica solo por la web — coordinamos visita con el titular"
-            >
-              SOLO WEB
-            </span>
-          ) : (
-            <span
-              className="rounded-md px-2 py-0.5 text-[10px] font-bold bg-[#6B4F7A] text-white"
-              title="Disponible para ver y probar en Brown 1052"
-            >
-              EN CONCESIONARIA
             </span>
           )}
         </div>
