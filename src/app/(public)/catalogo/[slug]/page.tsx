@@ -14,7 +14,8 @@ import {
   CATEGORIA_VEHICULO_LABELS,
   ETIQUETAS_MAP,
 } from "@/lib/constants"
-import { getModeloBySlug, getModelosRelacionados } from "@/lib/cached-queries"
+import { getModeloBySlug, getModelosRelacionados, isPromoEnvioActiva } from "@/lib/cached-queries"
+import { SelloEnvio, esElegiblePromoEnvio } from "@/components/public/sello-envio"
 import { calcularCuotaDesde } from "@/lib/cuota-helper"
 import {
   ModeloViewContentTracker,
@@ -55,6 +56,8 @@ export default async function ModeloDetailPage({ params }: Props) {
   if (!model) notFound()
 
   const related = await getModelosRelacionados(model.categoriaVehiculo, model.id)
+  // Sello "Envío gratis al Sur" si la promo está activa y la moto califica.
+  const conSello = (await isPromoEnvioActiva()) && esElegiblePromoEnvio(model)
   const specs = (model.specs as Record<string, string>) || {}
   const financiacion = (model.financiacion as Array<{
     plan: string
@@ -152,7 +155,13 @@ export default async function ModeloDetailPage({ params }: Props) {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {/* Gallery + calculadora */}
-            <div className="space-y-6">
+            <div className="relative space-y-6">
+              {/* Sello "Envío gratis al Sur" (motos usadas ≤650cc en promo) */}
+              {conSello && (
+                <div className="absolute -top-5 -left-5 z-30 pointer-events-none">
+                  <SelloEnvio size={104} idSuffix={`detalle-${model.id}`} />
+                </div>
+              )}
               <ModelGallery
                 fotos={model.fotos}
                 nombre={model.nombre}
