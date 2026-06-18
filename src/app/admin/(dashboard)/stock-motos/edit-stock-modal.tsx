@@ -226,15 +226,21 @@ export function EditStockModal({
           <div className="grid grid-cols-[1fr_120px] gap-3">
             <div>
               <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
-                Precio venta
+                Precio publicación
               </label>
               <input
                 type="number"
                 value={precio}
                 onChange={(e) => setPrecio(e.target.value)}
-                placeholder="1500000"
+                placeholder="A completar"
                 className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#6B4F7A] outline-none"
               />
+              {moto.valorToma != null && (
+                <p className="mt-1 text-[11px] text-purple-500 dark:text-purple-300">
+                  Valor de toma (interno): {moto.valorTomaMoneda === "USD" ? "U$" : "$"}
+                  {moto.valorToma.toLocaleString("es-AR")}
+                </p>
+              )}
             </div>
             <div>
               <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">

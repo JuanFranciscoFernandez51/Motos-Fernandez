@@ -155,8 +155,10 @@ async function createOrdenCompra(formData: FormData) {
                 patente: p.patente,
                 chasis: p.chasis,
                 motor: p.motor,
-                precio: p.valor,
+                precio: null, // precio de PUBLICACIÓN: a completar en Stock motos
                 moneda: monedaPermuta,
+                valorToma: p.valor, // valor de toma (interno)
+                valorTomaMoneda: monedaPermuta,
                 activo: false,
                 fotos: [placeholderFoto],
                 origen: "PARTE_DE_PAGO",

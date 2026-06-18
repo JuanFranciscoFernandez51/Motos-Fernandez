@@ -38,6 +38,8 @@ export type StockMotoUI = {
   patente: string | null
   precio: number | null
   moneda: string
+  valorToma: number | null
+  valorTomaMoneda: string | null
   activo: boolean
   vendida: boolean
   fechaVenta: string | null
@@ -471,7 +473,15 @@ export function StockMotosClient({
                             {formatMoney(m.precio, m.moneda)}
                           </span>
                         ) : (
-                          <span className="text-gray-300">Consultar</span>
+                          <span className="text-amber-600 dark:text-amber-400 font-medium">A completar</span>
+                        )}
+                        {m.valorToma != null && (
+                          <p
+                            className="text-[10px] text-purple-500 dark:text-purple-300 mt-0.5"
+                            title="Valor de toma (interno, no se publica)"
+                          >
+                            Toma: {formatMoney(m.valorToma, m.valorTomaMoneda || m.moneda)}
+                          </p>
                         )}
                       </td>
                       <td className="px-3 py-2.5 text-xs whitespace-nowrap">
