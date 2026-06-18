@@ -91,48 +91,64 @@ export async function GET(
 
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", position: "relative", background: VIOLETA }}>
-        {/* Foto full-bleed */}
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          position: "relative",
+          background: "linear-gradient(160deg, #3D2649 0%, #1a0f24 45%, #0A0810 100%)",
+        }}
+      >
         {foto ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={foto}
-            alt=""
-            style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", objectFit: "cover" }}
-          />
+          <>
+            {/* Tinte ambiente: la misma foto a sangre, bien tenue, para dar color
+                al fondo sin que importe el recorte (no es la que se ve). */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={foto}
+              alt=""
+              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.3 }}
+            />
+            <div style={{ position: "absolute", inset: 0, display: "flex", background: "rgba(10,8,16,0.5)" }} />
+            {/* Foto real: CONTAIN → la moto entra entera y centrada, nunca cortada. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={foto}
+              alt=""
+              style={{ position: "absolute", top: 118, left: 40, width: 1000, height: 706, objectFit: "contain" }}
+            />
+          </>
         ) : (
           <div
             style={{
               position: "absolute",
-              inset: 0,
+              top: 118,
+              left: 40,
+              width: 1000,
+              height: 706,
               display: "flex",
-              background: `radial-gradient(120% 90% at 50% 12%, #2a1b33 0%, #150e1d 60%, #0A0810 100%)`,
+              alignItems: "center",
+              justifyContent: "center",
+              color: "rgba(255,255,255,0.18)",
+              fontSize: 200,
+              fontWeight: 800,
             }}
-          />
+          >
+            MF
+          </div>
         )}
 
-        {/* Scrim superior */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 520,
-            display: "flex",
-            background: "linear-gradient(180deg, rgba(10,8,16,0.82) 0%, rgba(10,8,16,0) 100%)",
-          }}
-        />
-        {/* Scrim inferior */}
+        {/* Scrim inferior para que el texto se lea sobre cualquier fondo */}
         <div
           style={{
             position: "absolute",
             bottom: 0,
             left: 0,
             right: 0,
-            height: 780,
+            height: 760,
             display: "flex",
-            background: "linear-gradient(0deg, rgba(10,8,16,0.96) 0%, rgba(10,8,16,0.86) 26%, rgba(10,8,16,0) 100%)",
+            background: "linear-gradient(0deg, rgba(10,8,16,0.97) 0%, rgba(10,8,16,0.9) 30%, rgba(10,8,16,0) 100%)",
           }}
         />
 
