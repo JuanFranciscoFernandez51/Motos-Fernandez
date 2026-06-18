@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { X } from "lucide-react"
 
 /**
@@ -133,7 +134,10 @@ function BarraMarquee({ onClose }: { onClose: () => void }) {
 
 function Confetti({ nivel }: { nivel: string }) {
   const ref = useRef<HTMLCanvasElement | null>(null)
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   useEffect(() => {
+    if (!mounted) return
     const cv = ref.current
     if (!cv) return
     const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches
@@ -196,19 +200,29 @@ function Confetti({ nivel }: { nivel: string }) {
       make()
     }
     window.addEventListener("resize", onResize)
+    window.addEventListener("orientationchange", onResize)
+    // Reajuste extra en el próximo frame por si el layout aún no estabilizó.
+    const raf0 = requestAnimationFrame(onResize)
     return () => {
       cancelAnimationFrame(raf)
+      cancelAnimationFrame(raf0)
       window.removeEventListener("resize", onResize)
+      window.removeEventListener("orientationchange", onResize)
     }
-  }, [nivel])
+  }, [nivel, mounted])
 
-  return (
+  if (!mounted) return null
+
+  // Portal a <body>: evita que un ancestro con transform/overflow recorte el
+  // canvas fixed (causaba que el confeti apareciera solo en parte de la pantalla).
+  return createPortal(
     <canvas
       ref={ref}
       aria-hidden
       className="fixed inset-0 z-[3] pointer-events-none"
-      style={{ width: "100%", height: "100%" }}
-    />
+      style={{ width: "100vw", height: "100vh" }}
+    />,
+    document.body
   )
 }
 

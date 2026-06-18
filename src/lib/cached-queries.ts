@@ -87,6 +87,49 @@ export const getModelosDestacados = unstable_cache(
 )
 
 /**
+ * Ordena las 0KM del home priorizando BMW (mayormente, ~2 por página de 5) pero
+ * intercalando TODAS las marcas para que no quede agrupado por una sola (antes
+ * dominaba Yamaha/Kawasaki). El resto de marcas va en round-robin (una de cada
+ * marca por vuelta) para máxima variedad.
+ */
+function ordenar0kmHome<T extends { marca: string | null }>(pool: T[]): T[] {
+  const esBmw = (m: T) => (m.marca || "").trim().toUpperCase() === "BMW"
+  const bmw = pool.filter(esBmw)
+  const otros = pool.filter((m) => !esBmw(m))
+
+  // Round-robin de las otras marcas (una de cada marca por vuelta).
+  const grupos = new Map<string, T[]>()
+  for (const m of otros) {
+    const k = (m.marca || "?").trim()
+    if (!grupos.has(k)) grupos.set(k, [])
+    grupos.get(k)!.push(m)
+  }
+  const marcas = [...grupos.keys()]
+  const otrosRR: T[] = []
+  let quedan = true
+  while (quedan) {
+    quedan = false
+    for (const b of marcas) {
+      const g = grupos.get(b)!
+      if (g.length) {
+        otrosRR.push(g.shift()!)
+        quedan = true
+      }
+    }
+  }
+
+  // Intercalar por "página" de 5: 2 BMW + 3 de las otras (round-robin).
+  const result: T[] = []
+  let bi = 0
+  let oi = 0
+  while (bi < bmw.length || oi < otrosRR.length) {
+    for (let k = 0; k < 2 && bi < bmw.length; k++) result.push(bmw[bi++])
+    for (let k = 0; k < 3 && oi < otrosRR.length; k++) result.push(otrosRR[oi++])
+  }
+  return result
+}
+
+/**
  * Para el home: trae las destacadas como fijas (primera fila) y un set
  * más amplio de motos para rotar en la segunda fila.
  */
@@ -110,10 +153,12 @@ export const getModelosHome = unstable_cache(
         prisma.modelo.findMany({
           where: { activo: true, vendida: false, destacado: false, condicion: { not: "USADA" } },
           orderBy: [{ orden: "asc" }, { createdAt: "desc" }],
-          take: 30,
+          take: 120,
         }),
       ])
-      return { destacadas, rotativas: [...rotUsadas, ...rot0km] }
+      // Diversificar las 0KM (mayormente BMW + todas las marcas intercaladas).
+      const rot0kmOrdenadas = ordenar0kmHome(rot0km).slice(0, 35)
+      return { destacadas, rotativas: [...rotUsadas, ...rot0kmOrdenadas] }
     } catch {
       return { destacadas: [], rotativas: [] }
     }
