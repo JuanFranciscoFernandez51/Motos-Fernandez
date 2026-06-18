@@ -13,10 +13,8 @@ export const dynamic = "force-dynamic"
  */
 
 const LILA = "#C39BD3"
-const VIOLETA_BADGE = "#6B4F7A"
-const NARANJA = "#FF9500"
 const WHATSAPP = "#25D366"
-const CUOTAS = "12 · 24 · 36 cuotas en pesos"
+const CUOTAS = "Financiá hasta el 100%"
 const SIZE = { width: 1080, height: 1350 }
 
 export async function GET(
@@ -116,18 +114,6 @@ export async function GET(
           />
         )}
 
-        {/* Degradado superior (para el header) */}
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            right: 0,
-            height: 260,
-            display: "flex",
-            background: "linear-gradient(180deg, rgba(10,8,16,0.6) 0%, rgba(10,8,16,0) 100%)",
-          }}
-        />
         {/* Degradado inferior que se difumina hacia arriba (legibilidad del texto) */}
         <div
           style={{
@@ -141,56 +127,6 @@ export async function GET(
               "linear-gradient(0deg, rgba(10,8,16,0.97) 0%, rgba(10,8,16,0.9) 16%, rgba(10,8,16,0.55) 40%, rgba(10,8,16,0) 100%)",
           }}
         />
-
-        {/* HEADER */}
-        <div
-          style={{
-            position: "absolute",
-            top: 54,
-            left: 60,
-            right: 60,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-            <div
-              style={{
-                width: 60,
-                height: 60,
-                borderRadius: 14,
-                background: "rgba(61,38,73,0.85)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                color: LILA,
-                fontSize: 30,
-                fontWeight: 800,
-                letterSpacing: -1,
-              }}
-            >
-              MF
-            </div>
-            <div style={{ display: "flex", color: "#fff", fontSize: 24, fontWeight: 800, letterSpacing: 3 }}>
-              MOTOS · FERNÁNDEZ
-            </div>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              padding: "12px 26px",
-              borderRadius: 14,
-              background: esUsada ? VIOLETA_BADGE : NARANJA,
-              color: esUsada ? "#fff" : "#1a0f00",
-              fontSize: 26,
-              fontWeight: 800,
-              letterSpacing: 2,
-            }}
-          >
-            {esUsada ? "USADA" : "0 KM"}
-          </div>
-        </div>
 
         {/* INFO inferior */}
         <div style={{ position: "absolute", left: 60, right: 60, bottom: 132, display: "flex", flexDirection: "column" }}>
