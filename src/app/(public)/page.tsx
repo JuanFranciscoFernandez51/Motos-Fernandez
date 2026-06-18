@@ -284,6 +284,7 @@ export default async function HomePage() {
                   destacado: m.destacado,
                   tipoTenencia: m.tipoTenencia,
                   cilindrada: m.cilindrada,
+                  categoriaVehiculo: m.categoriaVehiculo,
                 }))}
                 rotativas={rotativas.map((m) => ({
                   id: m.id,
@@ -299,6 +300,7 @@ export default async function HomePage() {
                   destacado: m.destacado,
                   tipoTenencia: m.tipoTenencia,
                   cilindrada: m.cilindrada,
+                  categoriaVehiculo: m.categoriaVehiculo,
                 }))}
               />
 

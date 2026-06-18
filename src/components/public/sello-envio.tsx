@@ -76,12 +76,22 @@ export function parseCilindrada(cc?: string | null): number | null {
   return m ? parseInt(m[1], 10) : null
 }
 
-/** ¿La moto califica para el sello? (usada y <= 650cc). */
+// Categorías que NO son moto (la promo es solo para motos).
+const CATEGORIAS_NO_MOTO = ["CUATRICICLO", "UTV", "MOTO_DE_AGUA"]
+
+/**
+ * ¿La moto califica para el sello? Promo = solo motos, usadas, <= 650cc.
+ * Se excluyen explícitamente cuatris/UTV/motos de agua; cualquier otra cosa
+ * (incl. categoría vacía) se considera moto para no dejar sin sello a las
+ * motos que no tengan la categoría cargada.
+ */
 export function esElegiblePromoEnvio(moto: {
   condicion?: string | null
   cilindrada?: string | null
+  categoriaVehiculo?: string | null
 }): boolean {
   const esUsada = (moto.condicion || "").toUpperCase().includes("USAD")
+  const esMoto = !CATEGORIAS_NO_MOTO.includes((moto.categoriaVehiculo || "").toUpperCase())
   const cc = parseCilindrada(moto.cilindrada)
-  return esUsada && cc !== null && cc <= 650
+  return esUsada && esMoto && cc !== null && cc <= 650
 }

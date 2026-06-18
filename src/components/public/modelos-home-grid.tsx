@@ -23,6 +23,8 @@ export type ModeloHomeItem = {
   tipoTenencia?: string | null
   /** Cilindrada ("150cc", "650cc"...) — para el sello de envío gratis. */
   cilindrada?: string | null
+  /** "MOTOCICLETA" | "CUATRICICLO" | ... — la promo de envío es solo para motos. */
+  categoriaVehiculo?: string | null
 }
 
 const ROTATION_MS = 12000 // 12 segundos
