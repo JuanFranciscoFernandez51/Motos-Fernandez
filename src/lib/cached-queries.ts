@@ -93,19 +93,27 @@ export const getModelosDestacados = unstable_cache(
 export const getModelosHome = unstable_cache(
   async () => {
     try {
-      const [destacadas, rotativas] = await Promise.all([
+      // Traemos un lote por separado de usadas y de 0KM (sin destacar) para que
+      // AMBAS filas del home tengan suficientes unidades para rotar. Si se
+      // mezclaran en una sola query, las 0KM (muchas más) tapan a las usadas.
+      const [destacadas, rotUsadas, rot0km] = await Promise.all([
         prisma.modelo.findMany({
           where: { activo: true, vendida: false, destacado: true },
           orderBy: [{ orden: "asc" }, { createdAt: "desc" }],
           take: 5,
         }),
         prisma.modelo.findMany({
-          where: { activo: true, vendida: false, destacado: false },
+          where: { activo: true, vendida: false, destacado: false, condicion: "USADA" },
+          orderBy: [{ orden: "asc" }, { createdAt: "desc" }],
+          take: 25,
+        }),
+        prisma.modelo.findMany({
+          where: { activo: true, vendida: false, destacado: false, condicion: { not: "USADA" } },
           orderBy: [{ orden: "asc" }, { createdAt: "desc" }],
           take: 30,
         }),
       ])
-      return { destacadas, rotativas }
+      return { destacadas, rotativas: [...rotUsadas, ...rot0km] }
     } catch {
       return { destacadas: [], rotativas: [] }
     }
