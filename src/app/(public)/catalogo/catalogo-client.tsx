@@ -476,8 +476,15 @@ export function CatalogoClient({
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-5 lg:gap-6">
           {filtered.map((model) => (
+            <div key={model.id} className="relative">
+              {/* Sello promo envío gratis (usadas ≤650cc) — afuera del
+                  overflow-hidden de la card para que sobresalga */}
+              {promoEnvio && esElegiblePromoEnvio(model) && (
+                <div className="absolute -top-4 -left-4 z-30 pointer-events-none">
+                  <SelloEnvio size={80} idSuffix={model.id} />
+                </div>
+              )}
             <article
-              key={model.id}
               className="moto-card group relative rounded-xl sm:rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-500 hover:-translate-y-1"
             >
               {/* Borde dorado sutil en hover */}
@@ -485,12 +492,6 @@ export function CatalogoClient({
                 aria-hidden
                 className="absolute inset-0 rounded-xl sm:rounded-2xl ring-1 ring-transparent group-hover:ring-[#C8C8D0]/40 transition-all duration-500 pointer-events-none z-[1]"
               />
-              {/* Sello promo envío gratis (usadas ≤650cc) */}
-              {promoEnvio && esElegiblePromoEnvio(model) && (
-                <div className="absolute -top-2 -left-2 z-20 pointer-events-none">
-                  <SelloEnvio size={74} idSuffix={model.id} />
-                </div>
-              )}
               {/* Link principal — envuelve imagen + info */}
               <Link href={`/catalogo/${model.slug}`} className="block">
                 <div className="relative aspect-[4/3] bg-gradient-to-br from-[#F8F5FA] to-[#EFEAF2] dark:from-neutral-800 dark:to-neutral-900 overflow-hidden">
@@ -630,6 +631,7 @@ export function CatalogoClient({
                 />
               </div>
             </article>
+            </div>
           ))}
         </div>
           )}

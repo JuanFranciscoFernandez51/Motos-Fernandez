@@ -189,16 +189,18 @@ function ModeloCard({
 }) {
   const conSello = promoEnvio && esElegiblePromoEnvio(model)
   return (
-    <Link
-      href={`/catalogo/${model.slug}`}
-      className="moto-card group relative flex flex-col h-full rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
-    >
-      {/* Sello promo envío gratis (usadas ≤650cc) */}
+    <div className="relative h-full">
+      {/* Sello promo envío gratis (usadas ≤650cc) — afuera del overflow-hidden
+          para que sobresalga de la card */}
       {conSello && (
-        <div className="absolute -top-2 -left-2 z-20 pointer-events-none">
-          <SelloEnvio size={70} idSuffix={model.id} />
+        <div className="absolute -top-4 -left-4 z-30 pointer-events-none">
+          <SelloEnvio size={78} idSuffix={model.id} />
         </div>
       )}
+      <Link
+        href={`/catalogo/${model.slug}`}
+        className="moto-card group relative flex flex-col h-full rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
+      >
       <div className="relative aspect-[4/3] bg-gradient-to-br from-[#F8F5FA] to-[#EFEAF2] dark:from-neutral-800 dark:to-neutral-900 overflow-hidden">
         {model.fotos[0] ? (
           <Image
@@ -285,6 +287,7 @@ function ModeloCard({
           <ArrowRight className="size-4 text-[#6B4F7A] group-hover:translate-x-1 transition-transform" />
         </div>
       </div>
-    </Link>
+      </Link>
+    </div>
   )
 }

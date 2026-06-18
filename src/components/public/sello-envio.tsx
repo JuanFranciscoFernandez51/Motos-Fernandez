@@ -26,8 +26,7 @@ export function SelloEnvio({
       height={size}
       viewBox="0 0 200 200"
       aria-hidden
-      className={className}
-      style={{ filter: "drop-shadow(0 14px 26px rgba(0,0,0,.5))" }}
+      className={`mf-sello ${className}`}
     >
       <defs>
         <path id={pathId} d="M100,100 m-76,0 a76,76 0 1,1 152,0 a76,76 0 1,1 -152,0" />
@@ -35,9 +34,9 @@ export function SelloEnvio({
 
       {/* Anillo giratorio */}
       <g className="mf-sello-ring" style={{ transformBox: "fill-box", transformOrigin: "center" }}>
-        <circle cx="100" cy="100" r="95" fill="#0c0e12" stroke="#75AADB" strokeWidth="2" />
+        <circle cx="100" cy="100" r="95" className="mf-sello-disc" stroke="#75AADB" strokeWidth="2" />
         <circle cx="100" cy="100" r="80" fill="none" stroke="#75AADB" strokeWidth="1" strokeDasharray="2 5" />
-        <text fill="#e9edf2" style={{ fontWeight: 700, fontSize: "13.5px", letterSpacing: "0.16em" }}>
+        <text className="mf-sello-curve" style={{ fontWeight: 700, fontSize: "13.5px", letterSpacing: "0.16em" }}>
           <textPath href={`#${pathId}`} startOffset="0">
             {TEXTO_CURVO}
           </textPath>
@@ -63,6 +62,14 @@ export function SelloEnvio({
       <style>{`
         @keyframes mfSelloSpin { to { transform: rotate(360deg); } }
         .mf-sello-ring { animation: mfSelloSpin 24s linear infinite; }
+        /* Tema claro (default): disco crema + texto oscuro */
+        .mf-sello { filter: drop-shadow(0 8px 16px rgba(0,0,0,.28)); }
+        .mf-sello-disc { fill: #F7F5EF; }
+        .mf-sello-curve { fill: #0c0e12; }
+        /* Tema oscuro: disco oscuro + texto claro */
+        .dark .mf-sello { filter: drop-shadow(0 14px 26px rgba(0,0,0,.55)); }
+        .dark .mf-sello-disc { fill: #0c0e12; }
+        .dark .mf-sello-curve { fill: #e9edf2; }
         @media (prefers-reduced-motion: reduce) { .mf-sello-ring { animation: none; } }
       `}</style>
     </svg>
