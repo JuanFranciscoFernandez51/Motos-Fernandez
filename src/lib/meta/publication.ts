@@ -18,9 +18,12 @@ import { BUSINESS } from "@/lib/constants"
 // IG quiere fotos en aspect ratios entre 4:5 y 1.91:1. Lo más seguro es 1:1.
 function urlIG(url: string): string {
   if (!url || !url.includes("res.cloudinary.com")) return url
+  // Encuadre a 4:5 (1080×1350) con PADDING sobre fondo oscuro de marca: la moto
+  // entra entera (no se recorta) y todas las slides comparten el formato de la
+  // portada, así Instagram no las vuelve a recortar.
   return url.replace(
     /\/upload\//,
-    "/upload/f_jpg,q_auto:good,w_1080,h_1080,c_fill,g_auto/"
+    "/upload/f_jpg,q_auto:good,w_1080,h_1350,c_pad,b_rgb:0a0810/"
   )
 }
 

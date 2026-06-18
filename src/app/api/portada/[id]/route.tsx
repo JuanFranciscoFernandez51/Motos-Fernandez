@@ -7,18 +7,16 @@ export const dynamic = "force-dynamic"
 /**
  * GET /api/portada/[id]
  *
- * Portada 1080×1350 (4:5, retrato IG) generada con next/og (Satori) a partir de
- * los datos de una moto. Se usa como slide 1 de los carruseles de Instagram
- * (ver publicarEnMeta → se antepone esta URL a las fotos).
- *
- * Identidad: violeta MF, foto full-bleed + scrim, badge de condición, modelo
- * grande, specs (año/km/cil), precio + pill WhatsApp, footer web/tel.
+ * Portada 1080×1350 (4:5 retrato IG) con next/og (Satori). Foto a sangre
+ * (full-bleed) + degradado que oscurece hacia abajo para que el texto se lea
+ * encima. Slide 1 de los carruseles de Instagram (ver publicarEnMeta).
  */
 
-const VIOLETA = "#3D2649"
 const LILA = "#C39BD3"
+const VIOLETA_BADGE = "#6B4F7A"
 const NARANJA = "#FF9500"
 const WHATSAPP = "#25D366"
+const CUOTAS = "12 · 24 · 36 cuotas en pesos"
 const SIZE = { width: 1080, height: 1350 }
 
 export async function GET(
@@ -51,7 +49,7 @@ export async function GET(
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            background: VIOLETA,
+            background: "#0A0810",
             color: "#fff",
             fontSize: 64,
             fontWeight: 800,
@@ -73,9 +71,16 @@ export async function GET(
       : `$${m.precio.toLocaleString("es-AR")}`
     : "Consultar"
 
-  const modeloTxt = `${m.marca ? m.marca + " " : ""}${m.nombre}`.trim()
-  const modeloLen = modeloTxt.length
-  const modeloSize = modeloLen > 22 ? 64 : modeloLen > 16 ? 80 : 96
+  // Evitar "BMW BMW ..." si el nombre ya incluye la marca.
+  const marca = (m.marca || "").trim()
+  const nombre = (m.nombre || "").trim()
+  const modeloTxt = (
+    marca && !nombre.toLowerCase().startsWith(marca.toLowerCase())
+      ? `${marca} ${nombre}`
+      : nombre
+  ).trim()
+  const L = modeloTxt.length
+  const modeloSize = L <= 13 ? 108 : L <= 18 ? 90 : L <= 24 ? 72 : 60
 
   // Specs (ocultar vacíos)
   const specs: { lbl: string; val: string }[] = []
@@ -91,64 +96,49 @@ export async function GET(
 
   return new ImageResponse(
     (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          position: "relative",
-          background: "linear-gradient(160deg, #3D2649 0%, #1a0f24 45%, #0A0810 100%)",
-        }}
-      >
+      <div style={{ width: "100%", height: "100%", display: "flex", position: "relative", background: "#0A0810" }}>
+        {/* Foto a sangre */}
         {foto ? (
-          <>
-            {/* Tinte ambiente: la misma foto a sangre, bien tenue, para dar color
-                al fondo sin que importe el recorte (no es la que se ve). */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={foto}
-              alt=""
-              style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: 0.3 }}
-            />
-            <div style={{ position: "absolute", inset: 0, display: "flex", background: "rgba(10,8,16,0.5)" }} />
-            {/* Foto real: CONTAIN → la moto entra entera y centrada, nunca cortada. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={foto}
-              alt=""
-              style={{ position: "absolute", top: 118, left: 40, width: 1000, height: 706, objectFit: "contain" }}
-            />
-          </>
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={foto}
+            alt=""
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+          />
         ) : (
           <div
             style={{
               position: "absolute",
-              top: 118,
-              left: 40,
-              width: 1000,
-              height: 706,
+              inset: 0,
               display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "rgba(255,255,255,0.18)",
-              fontSize: 200,
-              fontWeight: 800,
+              background: "radial-gradient(120% 90% at 50% 18%, #2a1b33 0%, #150e1d 60%, #0A0810 100%)",
             }}
-          >
-            MF
-          </div>
+          />
         )}
 
-        {/* Scrim inferior para que el texto se lea sobre cualquier fondo */}
+        {/* Degradado superior (para el header) */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 260,
+            display: "flex",
+            background: "linear-gradient(180deg, rgba(10,8,16,0.6) 0%, rgba(10,8,16,0) 100%)",
+          }}
+        />
+        {/* Degradado inferior que se difumina hacia arriba (legibilidad del texto) */}
         <div
           style={{
             position: "absolute",
             bottom: 0,
             left: 0,
             right: 0,
-            height: 760,
+            height: 820,
             display: "flex",
-            background: "linear-gradient(0deg, rgba(10,8,16,0.97) 0%, rgba(10,8,16,0.9) 30%, rgba(10,8,16,0) 100%)",
+            background:
+              "linear-gradient(0deg, rgba(10,8,16,0.97) 0%, rgba(10,8,16,0.9) 16%, rgba(10,8,16,0.55) 40%, rgba(10,8,16,0) 100%)",
           }}
         />
 
@@ -156,42 +146,42 @@ export async function GET(
         <div
           style={{
             position: "absolute",
-            top: 56,
-            left: 64,
-            right: 64,
+            top: 54,
+            left: 60,
+            right: 60,
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
             <div
               style={{
-                width: 76,
-                height: 76,
-                borderRadius: 18,
-                background: VIOLETA,
+                width: 60,
+                height: 60,
+                borderRadius: 14,
+                background: "rgba(61,38,73,0.85)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "#fff",
-                fontSize: 38,
+                color: LILA,
+                fontSize: 30,
                 fontWeight: 800,
                 letterSpacing: -1,
               }}
             >
               MF
             </div>
-            <div style={{ display: "flex", color: "#fff", fontSize: 26, fontWeight: 800, letterSpacing: 3 }}>
-              MOTOS · <span style={{ color: LILA, marginLeft: 8 }}>FERNÁNDEZ</span>
+            <div style={{ display: "flex", color: "#fff", fontSize: 24, fontWeight: 800, letterSpacing: 3 }}>
+              MOTOS · FERNÁNDEZ
             </div>
           </div>
           <div
             style={{
               display: "flex",
-              padding: "14px 28px",
-              borderRadius: 999,
-              background: esUsada ? "#7a4d92" : NARANJA,
+              padding: "12px 26px",
+              borderRadius: 14,
+              background: esUsada ? VIOLETA_BADGE : NARANJA,
               color: esUsada ? "#fff" : "#1a0f00",
               fontSize: 26,
               fontWeight: 800,
@@ -203,9 +193,9 @@ export async function GET(
         </div>
 
         {/* INFO inferior */}
-        <div style={{ position: "absolute", left: 64, right: 64, bottom: 128, display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", color: LILA, fontSize: 26, fontWeight: 700, letterSpacing: 6, marginBottom: 14 }}>
-            {esUsada ? "USADA · OPORTUNIDAD" : "0 KM · UNIDAD NUEVA"}
+        <div style={{ position: "absolute", left: 60, right: 60, bottom: 132, display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", color: LILA, fontSize: 27, fontWeight: 700, letterSpacing: 5, marginBottom: 8 }}>
+            {esUsada ? "USADA SELECCIONADA" : "0 KM · UNIDAD NUEVA"}
           </div>
           <div
             style={{
@@ -215,41 +205,42 @@ export async function GET(
               fontWeight: 800,
               lineHeight: 1,
               letterSpacing: -2,
-              marginBottom: 30,
+              marginBottom: 28,
             }}
           >
             {modeloTxt}
           </div>
 
           {/* Specs */}
-          <div style={{ display: "flex", gap: 54, marginBottom: 32 }}>
+          <div style={{ display: "flex", gap: 52, marginBottom: 30 }}>
             {specs.map((s, i) => (
               <div key={i} style={{ display: "flex", flexDirection: "column" }}>
                 <div style={{ display: "flex", color: LILA, fontSize: 19, fontWeight: 700, letterSpacing: 2 }}>
                   {s.lbl.toUpperCase()}
                 </div>
-                <div style={{ display: "flex", color: "#fff", fontSize: 38, fontWeight: 700, marginTop: 6 }}>
+                <div style={{ display: "flex", color: "#fff", fontSize: 40, fontWeight: 700, marginTop: 6 }}>
                   {s.val}
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Precio + WhatsApp */}
+          {/* Precio + cuotas + WhatsApp */}
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between" }}>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <div style={{ display: "flex", color: LILA, fontSize: 22, fontWeight: 600, letterSpacing: 2, marginBottom: 6 }}>
-                PRECIO
-              </div>
-              <div style={{ display: "flex", color: "#fff", fontSize: 84, fontWeight: 800, lineHeight: 1 }}>
+              <div style={{ display: "flex", color: "#fff", fontSize: 90, fontWeight: 800, lineHeight: 1, letterSpacing: -1 }}>
                 {precio}
+              </div>
+              <div style={{ display: "flex", color: LILA, fontSize: 25, fontWeight: 600, marginTop: 12 }}>
+                {CUOTAS}
               </div>
             </div>
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
-                padding: "20px 34px",
+                gap: 12,
+                padding: "18px 32px",
                 borderRadius: 999,
                 background: WHATSAPP,
                 color: "#053d1c",
@@ -257,7 +248,10 @@ export async function GET(
                 fontWeight: 800,
               }}
             >
-              Consultanos
+              <svg width="30" height="30" viewBox="0 0 32 32" fill="#053d1c">
+                <path d="M16.04 3.2c-7.06 0-12.8 5.74-12.8 12.8 0 2.26.6 4.46 1.72 6.4L3.2 28.8l6.56-1.72c1.87 1.02 3.97 1.56 6.28 1.56 7.06 0 12.8-5.74 12.8-12.8s-5.74-12.8-12.8-12.8zm0 23.36c-2.05 0-4.06-.55-5.81-1.59l-.42-.25-3.89 1.02 1.04-3.79-.27-.44a10.5 10.5 0 0 1-1.61-5.6c0-5.86 4.77-10.62 10.63-10.62 2.84 0 5.5 1.11 7.51 3.12a10.55 10.55 0 0 1 3.11 7.52c0 5.86-4.77 10.63-10.62 10.63zm5.83-7.96c-.32-.16-1.89-.93-2.18-1.04-.29-.11-.5-.16-.71.16-.21.32-.82 1.04-1 1.25-.18.21-.37.24-.69.08-.32-.16-1.35-.5-2.57-1.59-.95-.85-1.59-1.89-1.78-2.21-.18-.32-.02-.49.14-.65.14-.14.32-.37.48-.55.16-.18.21-.32.32-.53.11-.21.05-.4-.03-.55-.08-.16-.71-1.72-.98-2.35-.26-.62-.52-.54-.71-.55h-.61c-.21 0-.55.08-.84.4-.29.32-1.1 1.08-1.1 2.62 0 1.54 1.13 3.03 1.29 3.24.16.21 2.22 3.39 5.38 4.76.75.32 1.34.51 1.8.66.76.24 1.44.21 1.99.13.61-.09 1.89-.77 2.16-1.52.27-.74.27-1.38.19-1.52-.08-.13-.29-.21-.61-.37z" />
+              </svg>
+              Consultá
             </div>
           </div>
         </div>
@@ -266,19 +260,19 @@ export async function GET(
         <div
           style={{
             position: "absolute",
-            left: 64,
-            right: 64,
-            bottom: 52,
+            left: 60,
+            right: 60,
+            bottom: 50,
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            color: "rgba(255,255,255,0.62)",
+            color: "rgba(255,255,255,0.6)",
             fontSize: 24,
             fontWeight: 500,
           }}
         >
           <div style={{ display: "flex" }}>motosfernandez.com.ar</div>
-          <div style={{ display: "flex" }}>291 578-8671</div>
+          <div style={{ display: "flex" }}>+54 9 291 578 8671</div>
         </div>
       </div>
     ),
