@@ -26,15 +26,16 @@ export function CamisetaStyles() {
   )
 }
 
-/** Rayas verticales celestes sobre la foto (aparecen en hover). */
+/** Rayas verticales celestes de fondo (aparecen en hover). Va detrás del
+ *  texto del cuerpo de la card (nombre/precio). */
 export function CamisetaStripes() {
   return (
     <div
       aria-hidden
-      className="absolute inset-0 z-[2] opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out pointer-events-none"
+      className="absolute inset-0 z-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 ease-out pointer-events-none"
       style={{
         background:
-          "repeating-linear-gradient(90deg, rgba(117,170,219,0) 0 18px, rgba(117,170,219,.28) 18px 36px)",
+          "repeating-linear-gradient(90deg, rgba(117,170,219,0) 0 16px, rgba(117,170,219,.22) 16px 32px)",
       }}
     />
   )

@@ -233,8 +233,7 @@ function ModeloCard({
             <Bike className="size-10" />
           </div>
         )}
-        {/* Efecto camiseta (Mundial): rayas + badge VAMOS, solo en hover */}
-        {camiseta && <CamisetaStripes />}
+        {/* Badge VAMOS (efecto camiseta), solo en hover */}
         {camiseta && !conSello && <CamisetaBadge className="top-3 left-3" />}
 
         {/* Badges — todos en una sola columna a la derecha para que NUNCA se
@@ -267,7 +266,10 @@ function ModeloCard({
           )}
         </div>
       </div>
-      <div className="p-5">
+      <div className="relative p-5 overflow-hidden">
+        {/* Rayas camiseta de fondo (Mundial), solo en hover */}
+        {camiseta && <CamisetaStripes />}
+        <div className="relative z-10">
         <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-[0.18em]">
           {model.marca}
         </p>
@@ -309,6 +311,7 @@ function ModeloCard({
             </p>
           </div>
           <ArrowRight className="size-4 text-[#6B4F7A] group-hover:translate-x-1 transition-transform" />
+        </div>
         </div>
       </div>
       </Link>

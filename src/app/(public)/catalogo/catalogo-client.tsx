@@ -520,8 +520,7 @@ export function CatalogoClient({
                       <Bike className="size-10 sm:size-12" />
                     </div>
                   )}
-                  {/* Efecto camiseta (Mundial): rayas + badge VAMOS, solo en hover */}
-                  {mundial && <CamisetaStripes />}
+                  {/* Badge VAMOS (efecto camiseta), solo en hover */}
                   {mundial && !(promoEnvio && esElegiblePromoEnvio(model)) && (
                     <CamisetaBadge className="top-2.5 left-2.5" />
                   )}
@@ -558,7 +557,10 @@ export function CatalogoClient({
                     )}
                   </div>
                 </div>
-                <div className="p-3 sm:p-4 lg:p-5">
+                <div className="relative p-3 sm:p-4 lg:p-5 overflow-hidden">
+                  {/* Rayas camiseta de fondo (Mundial), solo en hover */}
+                  {mundial && <CamisetaStripes />}
+                  <div className="relative z-10">
                   <p className="text-[9px] sm:text-[10px] font-bold text-[#C8C8D0] uppercase tracking-[0.14em] sm:tracking-[0.18em] truncate">
                     {model.marca}
                   </p>
@@ -611,6 +613,7 @@ export function CatalogoClient({
                         &rarr;
                       </span>
                     </div>
+                  </div>
                   </div>
                 </div>
               </Link>
