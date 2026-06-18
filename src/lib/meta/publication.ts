@@ -175,6 +175,9 @@ export async function publicarEnMeta(
      *  Para VIDEO/REEL es obligatoria una URL en videoUrls. */
     videoUrls?: string[]
     customFotos?: string[]
+    /** Anteponer la portada generada (slide 1) en carruseles de fotos.
+     *  Default true para PHOTO_CAROUSEL. */
+    portada?: boolean
   } = {}
 ): Promise<{
   ok: boolean
@@ -215,11 +218,21 @@ export async function publicarEnMeta(
     return { ok: false, error: "La moto no tiene fotos" }
   }
 
-  // Filtrar fotos a URLs HTTPS públicas y limitar a 10 (max IG carrusel)
-  const fotos = m.fotos
+  // Portada generada (slide 1) — solo para carruseles de fotos.
+  const PORTADA_BASE = (
+    process.env.PORTADA_BASE_URL || "https://www.motosfernandez.com.ar"
+  ).replace(/\/+$/, "")
+  const usarPortada =
+    options.portada !== false && (options.mediaType ?? "PHOTO_CAROUSEL") === "PHOTO_CAROUSEL"
+
+  // Filtrar fotos a URLs HTTPS públicas. Anteponemos la portada (si corresponde)
+  // y limitamos a 10 (max IG carrusel). La portada NO pasa por urlIG.
+  const fotosMoto = (options.customFotos?.length ? options.customFotos : m.fotos)
     .filter((u) => /^https?:\/\//i.test(u))
-    .slice(0, 10)
     .map(urlIG)
+  const fotos = (
+    usarPortada ? [`${PORTADA_BASE}/api/portada/${m.id}`, ...fotosMoto] : fotosMoto
+  ).slice(0, 10)
   if (fotos.length === 0) {
     return {
       ok: false,
