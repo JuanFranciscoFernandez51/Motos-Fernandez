@@ -6,9 +6,10 @@ export const dynamic = "force-dynamic"
 
 /**
  * GET /api/site/mundial
- * → { active, barraEstilo, confetti, confettiNivel }
+ * → { active, barraEstilo, confetti, confettiNivel, promoEnvio }
  *
  * Activo = switch manual ON y (sin fechas, o hoy dentro de [desde, hasta]).
+ * promoEnvio = promoEnvioActiva ON y dentro de la misma ventana de fechas.
  */
 export async function GET() {
   try {
@@ -21,22 +22,26 @@ export async function GET() {
         mundialBarraEstilo: true,
         mundialConfetti: true,
         mundialConfettiNivel: true,
+        promoEnvioActiva: true,
       },
     })
-    let active = false
-    if (cfg?.mundialActivo) {
+    let dentroVentana = false
+    if (cfg) {
       const now = new Date()
       const desdeOk = !cfg.mundialDesde || now >= cfg.mundialDesde
       const hastaOk = !cfg.mundialHasta || now <= cfg.mundialHasta
-      active = desdeOk && hastaOk
+      dentroVentana = desdeOk && hastaOk
     }
+    const active = Boolean(cfg?.mundialActivo) && dentroVentana
+    const promoEnvio = Boolean(cfg?.promoEnvioActiva) && dentroVentana
     return NextResponse.json({
       active,
       barraEstilo: cfg?.mundialBarraEstilo === "marquee" ? "marquee" : "bandera",
       confetti: cfg?.mundialConfetti ?? true,
       confettiNivel: cfg?.mundialConfettiNivel || "sutil",
+      promoEnvio,
     })
   } catch {
-    return NextResponse.json({ active: false })
+    return NextResponse.json({ active: false, promoEnvio: false })
   }
 }

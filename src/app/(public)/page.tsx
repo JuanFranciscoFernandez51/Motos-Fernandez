@@ -7,9 +7,12 @@ import {
   getNoticiasRecientes,
   getTestimoniosHome,
   isMundialActivo,
+  isPromoEnvioActiva,
 } from "@/lib/cached-queries"
 import { ModelosHomeGrid } from "@/components/public/modelos-home-grid"
 import { MundialHero } from "@/components/public/mundial-hero"
+import { SelloEnvio } from "@/components/public/sello-envio"
+import { BloqueEnvioMundial } from "@/components/public/bloque-envio-mundial"
 import { AnimatedSection } from "@/components/public/ui/animated-section"
 import { MarqueeBrands } from "@/components/public/ui/marquee-brands"
 import { Watermark } from "@/components/public/ui/watermark"
@@ -36,11 +39,12 @@ import {
 // ==================== PAGE ====================
 
 export default async function HomePage() {
-  const [modelosHome, noticias, testimonios, mundial] = await Promise.all([
+  const [modelosHome, noticias, testimonios, mundial, promoEnvio] = await Promise.all([
     getModelosHome(),
     getNoticiasRecientes(),
     getTestimoniosHome(),
     isMundialActivo(),
+    isPromoEnvioActiva(),
   ])
   const { destacadas, rotativas } = modelosHome
   // Para chequeos de empty state
@@ -63,6 +67,13 @@ export default async function HomePage() {
 
         {/* Logo clásico flotante con animación premium */}
         <FloatingLogo position="right" size="2xl" opacity="soft" className="hidden md:block" />
+
+        {/* Sello promo Envío gratis al Sur (esquina del hero) */}
+        {promoEnvio && (
+          <div className="absolute top-6 right-4 sm:right-8 lg:right-12 z-20 pointer-events-none hidden sm:block">
+            <SelloEnvio size={130} idSuffix="hero" />
+          </div>
+        )}
 
         {/* Línea dorada decorativa */}
         <div
@@ -272,6 +283,7 @@ export default async function HomePage() {
                   fotos: m.fotos,
                   destacado: m.destacado,
                   tipoTenencia: m.tipoTenencia,
+                  cilindrada: m.cilindrada,
                 }))}
                 rotativas={rotativas.map((m) => ({
                   id: m.id,
@@ -286,6 +298,7 @@ export default async function HomePage() {
                   fotos: m.fotos,
                   destacado: m.destacado,
                   tipoTenencia: m.tipoTenencia,
+                  cilindrada: m.cilindrada,
                 }))}
               />
 
@@ -325,6 +338,9 @@ export default async function HomePage() {
           )}
         </div>
       </section>
+
+      {/* ==================== PROMO ENVÍO GRATIS AL SUR (Mundial) ==================== */}
+      {promoEnvio && <BloqueEnvioMundial />}
 
       {/* ==================== QUIZ RECOMENDADOR CTA ==================== */}
       <section className="relative py-20 bg-white dark:bg-neutral-900 overflow-hidden">

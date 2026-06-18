@@ -58,6 +58,7 @@ export async function PUT(request: NextRequest) {
         mundialConfettiNivel: ["sutil", "medio", "trapo"].includes(body.mundialConfettiNivel)
           ? body.mundialConfettiNivel
           : "sutil",
+        promoEnvioActiva: Boolean(body.promoEnvioActiva),
       },
       create: {
         id: "singleton",
@@ -79,6 +80,7 @@ export async function PUT(request: NextRequest) {
         mundialConfettiNivel: ["sutil", "medio", "trapo"].includes(body.mundialConfettiNivel)
           ? body.mundialConfettiNivel
           : "sutil",
+        promoEnvioActiva: Boolean(body.promoEnvioActiva),
       },
     })
 

@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, Bike, Star } from "lucide-react"
 import { formatPrice } from "@/lib/constants"
+import { SelloEnvio, esElegiblePromoEnvio } from "@/components/public/sello-envio"
 
 export type ModeloHomeItem = {
   id: string
@@ -20,6 +21,8 @@ export type ModeloHomeItem = {
   destacado: boolean
   /** "EN_LOCAL" | "EN_DOMICILIO" — usado para mostrar badge SOLO WEB. */
   tipoTenencia?: string | null
+  /** Cilindrada ("150cc", "650cc"...) — para el sello de envío gratis. */
+  cilindrada?: string | null
 }
 
 const ROTATION_MS = 12000 // 12 segundos
@@ -41,6 +44,21 @@ export function ModelosHomeGrid({
   destacadas: ModeloHomeItem[]
   rotativas: ModeloHomeItem[]
 }) {
+  // ¿Promo "Envío gratis al Sur" activa? (para el sello en cards de usadas ≤650cc)
+  const [promoEnvio, setPromoEnvio] = useState(false)
+  useEffect(() => {
+    let vivo = true
+    fetch("/api/site/mundial")
+      .then((r) => r.json())
+      .then((d) => {
+        if (vivo && d?.promoEnvio) setPromoEnvio(true)
+      })
+      .catch(() => {})
+    return () => {
+      vivo = false
+    }
+  }, [])
+
   // Unificamos y deduplicamos (destacadas primero) y separamos por condición.
   const vistos = new Set<string>()
   const todas: ModeloHomeItem[] = []
@@ -69,10 +87,10 @@ export function ModelosHomeGrid({
   return (
     <div className="space-y-10">
       {usadas.length > 0 && (
-        <FilaModelos titulo="Usadas" items={usadas} href="/disponibles" hrefLabel="Ver usadas" />
+        <FilaModelos titulo="Usadas" items={usadas} href="/disponibles" hrefLabel="Ver usadas" promoEnvio={promoEnvio} />
       )}
       {ceroKm.length > 0 && (
-        <FilaModelos titulo="Motos 0KM" items={ceroKm} href="/0km" hrefLabel="Ver 0KM" />
+        <FilaModelos titulo="Motos 0KM" items={ceroKm} href="/0km" hrefLabel="Ver 0KM" promoEnvio={promoEnvio} />
       )}
     </div>
   )
@@ -87,11 +105,13 @@ function FilaModelos({
   items,
   href,
   hrefLabel,
+  promoEnvio,
 }: {
   titulo: string
   items: ModeloHomeItem[]
   href: string
   hrefLabel: string
+  promoEnvio: boolean
 }) {
   const [pageIndex, setPageIndex] = useState(0)
   const [fading, setFading] = useState(false)
@@ -149,7 +169,7 @@ function FilaModelos({
         }`}
       >
         {ventana.map((model) => (
-          <ModeloCard key={model.id} model={model} pinned={model.destacado} />
+          <ModeloCard key={model.id} model={model} pinned={model.destacado} promoEnvio={promoEnvio} />
         ))}
       </div>
     </div>
@@ -159,15 +179,24 @@ function FilaModelos({
 function ModeloCard({
   model,
   pinned,
+  promoEnvio,
 }: {
   model: ModeloHomeItem
   pinned: boolean
+  promoEnvio: boolean
 }) {
+  const conSello = promoEnvio && esElegiblePromoEnvio(model)
   return (
     <Link
       href={`/catalogo/${model.slug}`}
       className="moto-card group relative flex flex-col h-full rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
     >
+      {/* Sello promo envío gratis (usadas ≤650cc) */}
+      {conSello && (
+        <div className="absolute -top-2 -left-2 z-20 pointer-events-none">
+          <SelloEnvio size={70} idSuffix={model.id} />
+        </div>
+      )}
       <div className="relative aspect-[4/3] bg-gradient-to-br from-[#F8F5FA] to-[#EFEAF2] dark:from-neutral-800 dark:to-neutral-900 overflow-hidden">
         {model.fotos[0] ? (
           <Image

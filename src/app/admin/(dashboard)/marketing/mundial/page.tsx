@@ -37,6 +37,7 @@ export default function ModoMundialPage() {
           mundialBarraEstilo: data.mundialBarraEstilo === "marquee" ? "marquee" : "bandera",
           mundialConfetti: data.mundialConfetti !== false,
           mundialConfettiNivel: data.mundialConfettiNivel || "sutil",
+          promoEnvioActiva: Boolean(data.promoEnvioActiva),
         })
         setLoading(false)
       })
@@ -229,6 +230,30 @@ export default function ModoMundialPage() {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Promo Envío gratis al Sur */}
+      <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-3">
+        <label className="flex items-center gap-3 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={Boolean(config.promoEnvioActiva)}
+            onChange={(e) => set("promoEnvioActiva", e.target.checked)}
+            className="w-5 h-5 rounded accent-[#75AADB]"
+          />
+          <div>
+            <p className="text-sm font-medium">📦 Promo &quot;Envío gratis a todo el Sur&quot;</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Prende la franja celeste arriba, el sello giratorio &quot;GRATIS AL SUR&quot; en el
+              hero y sobre las usadas que aplican, y el bloque de envío en la home.
+            </p>
+          </div>
+        </label>
+        <div className="rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 px-3 py-2 text-[11px] text-amber-800 dark:text-amber-300">
+          ⚠️ El sello solo aparece sobre <strong>motos usadas de hasta 650cc</strong> (se toma de
+          la cilindrada cargada). El límite de cilindrada no se muestra como texto en la web — va
+          solo en la letra chica / Términos. Usa la misma ventana de fechas de arriba.
+        </div>
       </div>
 
       <div className="flex items-center gap-3">

@@ -8,6 +8,7 @@ import { Bike, Search, Scale, SlidersHorizontal, X, Star, CreditCard } from "luc
 import { useCompare } from "@/components/public/comparador-provider"
 import { CompareButton } from "@/components/public/compare-button"
 import { WishlistButton } from "@/components/public/wishlist-button"
+import { SelloEnvio, esElegiblePromoEnvio } from "@/components/public/sello-envio"
 
 interface ModeloColor {
   id: string
@@ -69,6 +70,21 @@ export function CatalogoClient({
   // Sidebar de filtros abierto en mobile (en desktop siempre visible).
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { compareItems } = useCompare()
+
+  // Promo "Envío gratis al Sur" — sello en cards de usadas ≤650cc.
+  const [promoEnvio, setPromoEnvio] = useState(false)
+  useEffect(() => {
+    let vivo = true
+    fetch("/api/site/mundial")
+      .then((r) => r.json())
+      .then((d) => {
+        if (vivo && d?.promoEnvio) setPromoEnvio(true)
+      })
+      .catch(() => {})
+    return () => {
+      vivo = false
+    }
+  }, [])
 
   // Rangos dinamicos de precio y cilindrada en base al catalogo
   const { precioMinCatalogo, precioMaxCatalogo, cilindradaMaxCatalogo } = useMemo(() => {
@@ -469,6 +485,12 @@ export function CatalogoClient({
                 aria-hidden
                 className="absolute inset-0 rounded-xl sm:rounded-2xl ring-1 ring-transparent group-hover:ring-[#C8C8D0]/40 transition-all duration-500 pointer-events-none z-[1]"
               />
+              {/* Sello promo envío gratis (usadas ≤650cc) */}
+              {promoEnvio && esElegiblePromoEnvio(model) && (
+                <div className="absolute -top-2 -left-2 z-20 pointer-events-none">
+                  <SelloEnvio size={74} idSuffix={model.id} />
+                </div>
+              )}
               {/* Link principal — envuelve imagen + info */}
               <Link href={`/catalogo/${model.slug}`} className="block">
                 <div className="relative aspect-[4/3] bg-gradient-to-br from-[#F8F5FA] to-[#EFEAF2] dark:from-neutral-800 dark:to-neutral-900 overflow-hidden">

@@ -513,6 +513,9 @@ model SiteConfig {
   mundialBarraEstilo   String   @default("bandera")
   mundialConfetti      Boolean  @default(true)
   mundialConfettiNivel String   @default("sutil") // "sutil" | "medio" | "trapo"
+  // Promo "Envío gratis al Sur" (Mundial). Aplica a motos <= 650cc (regla en datos,
+  // no se muestra el limite como copy). Activa dentro de la ventana del Mundial.
+  promoEnvioActiva     Boolean  @default(false)
   updatedAt            DateTime @updatedAt
 }
 

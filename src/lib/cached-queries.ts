@@ -34,6 +34,7 @@ export const getMundialConfig = unstable_cache(
         mundialBarraEstilo: true,
         mundialConfetti: true,
         mundialConfettiNivel: true,
+        promoEnvioActiva: true,
       },
     })
   },
@@ -41,14 +42,29 @@ export const getMundialConfig = unstable_cache(
   { tags: [CACHE_TAGS.config], revalidate: 60 }
 )
 
-/** ¿Está activo el Modo Mundial ahora mismo? (switch + ventana de fechas) */
-export async function isMundialActivo(): Promise<boolean> {
-  const cfg = await getMundialConfig()
-  if (!cfg?.mundialActivo) return false
+/** ¿Hoy cae dentro de la ventana de fechas del Mundial? (sin/con fechas) */
+function dentroVentanaMundial(cfg: {
+  mundialDesde?: Date | null
+  mundialHasta?: Date | null
+}): boolean {
   const now = new Date()
   const desdeOk = !cfg.mundialDesde || now >= cfg.mundialDesde
   const hastaOk = !cfg.mundialHasta || now <= cfg.mundialHasta
   return desdeOk && hastaOk
+}
+
+/** ¿Está activo el Modo Mundial ahora mismo? (switch + ventana de fechas) */
+export async function isMundialActivo(): Promise<boolean> {
+  const cfg = await getMundialConfig()
+  if (!cfg?.mundialActivo) return false
+  return dentroVentanaMundial(cfg)
+}
+
+/** ¿Está activa la promo "Envío gratis al Sur"? (switch + ventana del Mundial) */
+export async function isPromoEnvioActiva(): Promise<boolean> {
+  const cfg = await getMundialConfig()
+  if (!cfg?.promoEnvioActiva) return false
+  return dentroVentanaMundial(cfg)
 }
 
 // ==================== MODELOS ====================
