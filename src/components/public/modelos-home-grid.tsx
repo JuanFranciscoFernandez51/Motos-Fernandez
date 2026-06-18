@@ -6,6 +6,12 @@ import Image from "next/image"
 import { ArrowRight, Bike, Star } from "lucide-react"
 import { formatPrice } from "@/lib/constants"
 import { SelloEnvio, esElegiblePromoEnvio } from "@/components/public/sello-envio"
+import {
+  CamisetaStyles,
+  CamisetaStripes,
+  CamisetaBadge,
+  CamisetaStars,
+} from "@/components/public/camiseta-hover"
 
 export type ModeloHomeItem = {
   id: string
@@ -46,14 +52,17 @@ export function ModelosHomeGrid({
   destacadas: ModeloHomeItem[]
   rotativas: ModeloHomeItem[]
 }) {
-  // ¿Promo "Envío gratis al Sur" activa? (para el sello en cards de usadas ≤650cc)
+  // Estado Mundial: promo de envío (sello) + efecto "camiseta" en hover.
   const [promoEnvio, setPromoEnvio] = useState(false)
+  const [mundial, setMundial] = useState(false)
   useEffect(() => {
     let vivo = true
     fetch("/api/site/mundial")
       .then((r) => r.json())
       .then((d) => {
-        if (vivo && d?.promoEnvio) setPromoEnvio(true)
+        if (!vivo) return
+        if (d?.promoEnvio) setPromoEnvio(true)
+        if (d?.active) setMundial(true)
       })
       .catch(() => {})
     return () => {
@@ -88,11 +97,12 @@ export function ModelosHomeGrid({
 
   return (
     <div className="space-y-10">
+      {mundial && <CamisetaStyles />}
       {usadas.length > 0 && (
-        <FilaModelos titulo="Usadas" items={usadas} href="/disponibles" hrefLabel="Ver usadas" promoEnvio={promoEnvio} />
+        <FilaModelos titulo="Usadas" items={usadas} href="/disponibles" hrefLabel="Ver usadas" promoEnvio={promoEnvio} camiseta={mundial} />
       )}
       {ceroKm.length > 0 && (
-        <FilaModelos titulo="Motos 0KM" items={ceroKm} href="/0km" hrefLabel="Ver 0KM" promoEnvio={promoEnvio} />
+        <FilaModelos titulo="Motos 0KM" items={ceroKm} href="/0km" hrefLabel="Ver 0KM" promoEnvio={promoEnvio} camiseta={mundial} />
       )}
     </div>
   )
@@ -108,12 +118,14 @@ function FilaModelos({
   href,
   hrefLabel,
   promoEnvio,
+  camiseta,
 }: {
   titulo: string
   items: ModeloHomeItem[]
   href: string
   hrefLabel: string
   promoEnvio: boolean
+  camiseta: boolean
 }) {
   const [pageIndex, setPageIndex] = useState(0)
   const [fading, setFading] = useState(false)
@@ -171,7 +183,7 @@ function FilaModelos({
         }`}
       >
         {ventana.map((model) => (
-          <ModeloCard key={model.id} model={model} pinned={model.destacado} promoEnvio={promoEnvio} />
+          <ModeloCard key={model.id} model={model} pinned={model.destacado} promoEnvio={promoEnvio} camiseta={camiseta} />
         ))}
       </div>
     </div>
@@ -182,10 +194,12 @@ function ModeloCard({
   model,
   pinned,
   promoEnvio,
+  camiseta,
 }: {
   model: ModeloHomeItem
   pinned: boolean
   promoEnvio: boolean
+  camiseta: boolean
 }) {
   const conSello = promoEnvio && esElegiblePromoEnvio(model)
   return (
@@ -199,7 +213,11 @@ function ModeloCard({
       )}
       <Link
         href={`/catalogo/${model.slug}`}
-        className="moto-card group relative flex flex-col h-full rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
+        className={`moto-card group relative flex flex-col h-full rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-300 ${
+          camiseta
+            ? "hover:-translate-y-2 ring-1 ring-transparent hover:ring-2 hover:ring-[#75AADB]"
+            : "hover:-translate-y-1"
+        }`}
       >
       <div className="relative aspect-[4/3] bg-gradient-to-br from-[#F8F5FA] to-[#EFEAF2] dark:from-neutral-800 dark:to-neutral-900 overflow-hidden">
         {model.fotos[0] ? (
@@ -215,6 +233,9 @@ function ModeloCard({
             <Bike className="size-10" />
           </div>
         )}
+        {/* Efecto camiseta (Mundial): rayas + badge VAMOS, solo en hover */}
+        {camiseta && <CamisetaStripes />}
+        {camiseta && !conSello && <CamisetaBadge className="top-3 left-3" />}
 
         {/* Badges — todos en una sola columna a la derecha para que NUNCA se
             superpongan. Condición + (destacado) + (0KM) consultar. */}
@@ -250,9 +271,12 @@ function ModeloCard({
         <p className="text-[10px] font-bold text-gray-500 dark:text-gray-400 uppercase tracking-[0.18em]">
           {model.marca}
         </p>
-        <h3 className="mt-1 font-heading text-base font-bold text-[#1A1A1A] dark:text-white truncate">
-          {model.nombre}
-        </h3>
+        <div className="mt-1 flex items-center gap-2">
+          <h3 className="font-heading text-base font-bold text-[#1A1A1A] dark:text-white truncate">
+            {model.nombre}
+          </h3>
+          {camiseta && <CamisetaStars />}
+        </div>
         <p className="text-xs text-gray-400 mt-1">
           {(model.condicion || "0KM") === "USADA" ? (
             <>

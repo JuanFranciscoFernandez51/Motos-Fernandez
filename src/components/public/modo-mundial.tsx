@@ -270,10 +270,6 @@ export function ModoMundial() {
         }
         .mf-mq-track { animation: mfMarquee 22s linear infinite; }
         .mf-mq-track:hover { animation-play-state: paused; }
-        /* Hover mundialero en las cards de motos */
-        .moto-card { transition: background .35s ease; }
-        .moto-card:hover { background: linear-gradient(135deg, ${CELESTE} 0%, #eaf4fb 55%, #ffffff 100%) !important; }
-        .moto-card:hover .moto-precio { color: ${ORO} !important; }
         @media (prefers-reduced-motion: reduce) {
           .mf-sun, .mf-shimmer, .mf-mq-track { animation: none !important; }
         }

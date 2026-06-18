@@ -9,6 +9,12 @@ import { useCompare } from "@/components/public/comparador-provider"
 import { CompareButton } from "@/components/public/compare-button"
 import { WishlistButton } from "@/components/public/wishlist-button"
 import { SelloEnvio, esElegiblePromoEnvio } from "@/components/public/sello-envio"
+import {
+  CamisetaStyles,
+  CamisetaStripes,
+  CamisetaBadge,
+  CamisetaStars,
+} from "@/components/public/camiseta-hover"
 
 interface ModeloColor {
   id: string
@@ -71,14 +77,17 @@ export function CatalogoClient({
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { compareItems } = useCompare()
 
-  // Promo "Envío gratis al Sur" — sello en cards de usadas ≤650cc.
+  // Estado Mundial: promo de envío (sello) + efecto "camiseta" en hover.
   const [promoEnvio, setPromoEnvio] = useState(false)
+  const [mundial, setMundial] = useState(false)
   useEffect(() => {
     let vivo = true
     fetch("/api/site/mundial")
       .then((r) => r.json())
       .then((d) => {
-        if (vivo && d?.promoEnvio) setPromoEnvio(true)
+        if (!vivo) return
+        if (d?.promoEnvio) setPromoEnvio(true)
+        if (d?.active) setMundial(true)
       })
       .catch(() => {})
     return () => {
@@ -475,6 +484,7 @@ export function CatalogoClient({
         </div>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-3 sm:gap-5 lg:gap-6">
+          {mundial && <CamisetaStyles />}
           {filtered.map((model) => (
             <div key={model.id} className="relative">
               {/* Sello promo envío gratis (usadas ≤650cc) — afuera del
@@ -487,10 +497,12 @@ export function CatalogoClient({
             <article
               className="moto-card group relative rounded-xl sm:rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden shadow-premium-sm hover:shadow-premium-lg transition-all duration-500 hover:-translate-y-1"
             >
-              {/* Borde dorado sutil en hover */}
+              {/* Borde sutil en hover (celeste con Mundial activo, dorado si no) */}
               <div
                 aria-hidden
-                className="absolute inset-0 rounded-xl sm:rounded-2xl ring-1 ring-transparent group-hover:ring-[#C8C8D0]/40 transition-all duration-500 pointer-events-none z-[1]"
+                className={`absolute inset-0 rounded-xl sm:rounded-2xl ring-1 ring-transparent transition-all duration-500 pointer-events-none z-[1] ${
+                  mundial ? "group-hover:ring-2 group-hover:ring-[#75AADB]" : "group-hover:ring-[#C8C8D0]/40"
+                }`}
               />
               {/* Link principal — envuelve imagen + info */}
               <Link href={`/catalogo/${model.slug}`} className="block">
@@ -507,6 +519,11 @@ export function CatalogoClient({
                     <div className="flex items-center justify-center h-full text-gray-300">
                       <Bike className="size-10 sm:size-12" />
                     </div>
+                  )}
+                  {/* Efecto camiseta (Mundial): rayas + badge VAMOS, solo en hover */}
+                  {mundial && <CamisetaStripes />}
+                  {mundial && !(promoEnvio && esElegiblePromoEnvio(model)) && (
+                    <CamisetaBadge className="top-2.5 left-2.5" />
                   )}
                   {/* Overlay gradient bottom */}
                   <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -545,9 +562,12 @@ export function CatalogoClient({
                   <p className="text-[9px] sm:text-[10px] font-bold text-[#C8C8D0] uppercase tracking-[0.14em] sm:tracking-[0.18em] truncate">
                     {model.marca}
                   </p>
-                  <h3 className="mt-0.5 sm:mt-1 font-heading text-sm sm:text-lg lg:text-xl font-semibold text-[#1A1A1A] dark:text-white leading-tight line-clamp-2">
-                    {model.nombre}
-                  </h3>
+                  <div className="mt-0.5 sm:mt-1 flex items-start gap-1.5">
+                    <h3 className="font-heading text-sm sm:text-lg lg:text-xl font-semibold text-[#1A1A1A] dark:text-white leading-tight line-clamp-2">
+                      {model.nombre}
+                    </h3>
+                    {mundial && <CamisetaStars />}
+                  </div>
                   <p className="text-[11px] sm:text-xs text-gray-500 dark:text-gray-400 mt-0.5 sm:mt-1 truncate">
                     {(model.condicion || "0KM") === "USADA" ? (
                       <>
