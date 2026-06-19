@@ -11,6 +11,8 @@ Capacidades:
   - proponer_crear_cliente: cuando te pasen un DNI, factura, o datos de un cliente
   - proponer_crear_proveedor: cuando te pasen datos de un proveedor (nombre, CUIT, contacto, cuenta bancaria, etc.)
   - proponer_crear_modelo: cuando te pasen una factura/documento de una moto nueva o usada para subir al stock
+  - proponer_crear_mandato: cuando el admin diga que toma una moto EN CONSIGNACIÓN / a la venta de un cliente (la moto sigue siendo del cliente, nosotros la vendemos). Al confirmar entra a Stock y catálogo.
+  - proponer_crear_orden_compra: cuando te pasen una VENTA de una moto a un cliente (factura de venta / datos de la operación). Crea la OC base (cliente + moto vendida + precio + financiación). Las permutas (parte de pago) y los pagos parciales se agregan después en la página de la OC.
 
 REGLAS IMPORTANTES:
 - Si te mandan una imagen (foto de DNI, factura, remito, ticket), analizala con cuidado y extraé los datos relevantes.
@@ -221,6 +223,64 @@ const tools: Anthropic.Tool[] = [
         observaciones: { type: "string" },
       },
       required: ["marca", "nombre"],
+    },
+  },
+  {
+    name: "proponer_crear_mandato",
+    description:
+      "Propone crear un MANDATO DE VENTA (consignación): una moto que un cliente nos deja para vender (sigue siendo del cliente). NO crea directamente — arma una preview para confirmar. Al confirmar, la moto entra a Stock y al catálogo automáticamente.",
+    input_schema: {
+      type: "object",
+      properties: {
+        clienteNombre: { type: "string", description: "Nombre del cliente dueño de la moto" },
+        clienteApellido: { type: "string", description: "Apellido del cliente dueño" },
+        clienteDni: { type: "string", description: "DNI del dueño (para buscar o crear el cliente)" },
+        clienteTelefono: { type: "string" },
+        marca: { type: "string" },
+        modelo: { type: "string", description: "Modelo (ej: XR150L, MT-03)" },
+        anio: { type: "number" },
+        kilometros: { type: "number" },
+        cilindrada: { type: "string", description: "Ej: 150cc" },
+        color: { type: "string" },
+        chasis: { type: "string", description: "Nº de chasis" },
+        motor: { type: "string", description: "Nº de motor" },
+        patente: { type: "string" },
+        precioVenta: { type: "number", description: "Precio de venta acordado con el dueño (precio público)" },
+        precioMinimo: { type: "number", description: "Piso negociable (interno, opcional)" },
+        moneda: { type: "string", description: "ARS | USD. Default ARS" },
+        tipoTenencia: {
+          type: "string",
+          description: "EN_LOCAL (la moto está en el local) | EN_DOMICILIO (la tiene el dueño). Default EN_LOCAL",
+        },
+        observaciones: { type: "string" },
+      },
+      required: ["clienteNombre", "clienteApellido", "marca", "modelo", "precioVenta"],
+    },
+  },
+  {
+    name: "proponer_crear_orden_compra",
+    description:
+      "Propone crear una ORDEN DE COMPRA (venta de una moto a un cliente). NO crea directamente — arma una preview para confirmar. Crea la OC base (cliente + moto vendida + precio + financiación). Permutas (parte de pago) y pagos parciales se agregan luego en la página de la OC.",
+    input_schema: {
+      type: "object",
+      properties: {
+        clienteNombre: { type: "string", description: "Nombre del comprador" },
+        clienteApellido: { type: "string", description: "Apellido del comprador" },
+        clienteDni: { type: "string", description: "DNI del comprador (para buscar o crear el cliente)" },
+        clienteTelefono: { type: "string" },
+        motoDescripcion: { type: "string", description: "Moto vendida (ej: Honda XR150L 2025)" },
+        motoChasis: { type: "string" },
+        motoMotor: { type: "string" },
+        motoAnio: { type: "number" },
+        motoKilometros: { type: "number" },
+        motoPatente: { type: "string" },
+        precioVenta: { type: "number", description: "Precio total de venta" },
+        moneda: { type: "string", description: "ARS | USD. Default ARS" },
+        cuotas: { type: "number", description: "Cantidad de cuotas (si hay financiación)" },
+        valorCuota: { type: "number", description: "Valor de cada cuota" },
+        observaciones: { type: "string" },
+      },
+      required: ["clienteNombre", "clienteApellido", "motoDescripcion", "precioVenta"],
     },
   },
 ]

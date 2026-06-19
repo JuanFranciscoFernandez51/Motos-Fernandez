@@ -37,7 +37,7 @@ interface Message {
   preview?: PreviewPropuesta
 }
 
-type EntidadPreview = "cliente" | "proveedor" | "modelo"
+type EntidadPreview = "cliente" | "proveedor" | "modelo" | "mandato" | "orden_compra"
 
 interface PreviewPropuesta {
   entidad: EntidadPreview
@@ -57,13 +57,15 @@ const QUICK_QUESTIONS = [
 const INITIAL_MESSAGE: Message = {
   role: "assistant",
   content:
-    "Hola! Soy tu asistente de Motos Fernandez.\n\nPodés:\n- Consultar datos en tiempo real (pedidos, ventas, stock, leads, turnos)\n- Crear clientes, proveedores y motos diciéndome los datos\n- 📎 Subir foto de un DNI o factura y yo extraigo los datos\n\nSiempre te muestro una preview antes de guardar nada.",
+    "Hola! Soy tu asistente de Motos Fernandez.\n\nPodés:\n- Consultar datos en tiempo real (pedidos, ventas, stock, leads, turnos)\n- Crear clientes, proveedores, motos, mandatos de venta y órdenes de compra diciéndome los datos\n- 📎 Subir foto de un DNI o factura y yo extraigo los datos\n\nSiempre te muestro una preview antes de guardar nada.",
 }
 
 const ENTIDAD_LABELS: Record<EntidadPreview, string> = {
   cliente: "cliente",
   proveedor: "proveedor",
   modelo: "modelo (moto)",
+  mandato: "mandato de venta",
+  orden_compra: "orden de compra",
 }
 
 // ==================== HELPERS ====================
