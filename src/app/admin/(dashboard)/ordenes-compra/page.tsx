@@ -25,7 +25,7 @@ export default async function OrdenesCompraPage() {
           </p>
         </div>
         <Button
-          render={<Link href="/admin/ordenes-compra/nueva" />}
+          render={<Link href="/admin/ordenes-compra/nueva-rapida" />}
           className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
         >
           <Plus className="h-4 w-4 mr-2" />

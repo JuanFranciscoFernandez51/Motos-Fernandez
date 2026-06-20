@@ -19,28 +19,35 @@ export async function POST(request: Request) {
 
   try {
     const b = await request.json()
+    const clienteIdSel = b?.clienteId ? String(b.clienteId).trim() : null
     const nombre = String(b?.clienteNombre || "").trim()
     const apellido = String(b?.clienteApellido || "").trim()
     const motoDescripcion = String(b?.motoDescripcion || "").trim()
     const precioVenta = Number(b?.precioVenta)
 
-    if (!nombre || !apellido)
-      return NextResponse.json({ error: "Falta el nombre/apellido del comprador" }, { status: 400 })
+    if (!clienteIdSel && (!nombre || !apellido))
+      return NextResponse.json({ error: "Falta el comprador (elegí uno o cargá nombre/apellido)" }, { status: 400 })
     if (!motoDescripcion)
       return NextResponse.json({ error: "Falta la descripción de la moto vendida" }, { status: 400 })
     if (!Number.isFinite(precioVenta) || precioVenta <= 0)
       return NextResponse.json({ error: "Falta el precio de venta" }, { status: 400 })
 
-    // Buscar o crear el cliente comprador (por DNI, o por nombre+apellido)
+    // Cliente: si vino un clienteId ya elegido, lo usamos; sino buscamos por DNI
+    // o nombre+apellido, y si no existe lo creamos.
     const dni = b?.clienteDni ? String(b.clienteDni).replace(/\D/g, "") : null
-    let cliente =
-      (dni && (await prisma.cliente.findFirst({ where: { dni } }))) ||
-      (await prisma.cliente.findFirst({
-        where: {
-          nombre: { equals: nombre, mode: "insensitive" },
-          apellido: { equals: apellido, mode: "insensitive" },
-        },
-      }))
+    let cliente = clienteIdSel
+      ? await prisma.cliente.findUnique({ where: { id: clienteIdSel } })
+      : null
+    if (!cliente) {
+      cliente =
+        (dni && (await prisma.cliente.findFirst({ where: { dni } }))) ||
+        (await prisma.cliente.findFirst({
+          where: {
+            nombre: { equals: nombre, mode: "insensitive" },
+            apellido: { equals: apellido, mode: "insensitive" },
+          },
+        }))
+    }
     if (!cliente) {
       cliente = await prisma.cliente.create({
         data: {
