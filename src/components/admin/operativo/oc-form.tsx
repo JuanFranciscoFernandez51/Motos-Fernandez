@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { ArrowLeft, Save, Loader2, Plus } from "lucide-react"
+import { ArrowLeft, Save, Loader2, Plus, ChevronDown, ChevronUp } from "lucide-react"
 import { ClienteSelector, type ClienteOption } from "./cliente-selector"
 import { MotoSelector, type ModeloOption } from "./moto-selector"
 import {
@@ -156,9 +156,10 @@ export function OCForm({
   const [isPending, startTransition] = useTransition()
   const [data, setData] = useState<OCData>({ ...EMPTY, ...initialData })
   const monedaOCInit = (initialData?.moneda as string) || "ARS"
-  const [permutas, setPermutas] = useState<PermutaForm[]>(
-    initialPermutas.length > 0 ? initialPermutas : [permutaVacia(monedaOCInit)]
-  )
+  // Permutas: arrancan vacías (no mostramos fila vacía si la OC no tiene parte
+  // de pago). La sección se despliega al agregar una.
+  const [permutas, setPermutas] = useState<PermutaForm[]>(initialPermutas)
+  const [permutasAbierto, setPermutasAbierto] = useState(initialPermutas.length > 0)
   const [pagos, setPagos] = useState<PagoForm[]>(() => {
     // Si la OC ya tenia una financiacion guardada (capital + cuotas), la
     // representamos como un pago virtual con metodo FINANCIACION para
@@ -608,37 +609,48 @@ export function OCForm({
           </CardContent>
         </Card>
 
-        {/* Permutas — siempre visible. Si no hay ninguna cargada queda
-            con un slot vacío que se ignora al guardar (mismo comportamiento
-            que antes). El usuario agrega con el botón. */}
-        <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <div>
-                  <CardTitle>Permutas / Parte de pago</CardTitle>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                    Motos que el cliente entrega como parte del pago. Si no
-                    hay, dejá vacío.
-                  </p>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPermutas((prev) => [...prev, permutaVacia(data.moneda || "ARS")])}
-                >
-                  <Plus className="h-3.5 w-3.5 mr-1" />
-                  Agregar permuta
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-3">
+        {/* Permutas — pestañita plegable. Si la OC no tiene parte de pago,
+            queda como una barrita "Agregar" y no muestra filas vacías. Al
+            agregar una, se despliega. */}
+        <Card className="overflow-hidden">
+          <button
+            type="button"
+            onClick={() => {
+              if (permutas.length === 0) {
+                setPermutas([permutaVacia(data.moneda || "ARS")])
+                setPermutasAbierto(true)
+              } else {
+                setPermutasAbierto((v) => !v)
+              }
+            }}
+            className="w-full flex items-center justify-between gap-2 px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors"
+          >
+            <div>
+              <CardTitle>Permutas / Parte de pago</CardTitle>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                {permutas.length > 0
+                  ? `${permutas.length} moto${permutas.length === 1 ? "" : "s"} como parte de pago`
+                  : "Sin parte de pago — tocá para agregar una moto"}
+              </p>
+            </div>
+            {permutas.length > 0 ? (
+              permutasAbierto ? (
+                <ChevronUp className="h-5 w-5 text-gray-400 shrink-0" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-gray-400 shrink-0" />
+              )
+            ) : (
+              <Plus className="h-5 w-5 text-[#6B4F7A] shrink-0" />
+            )}
+          </button>
+          {permutas.length > 0 && permutasAbierto && (
+            <CardContent className="space-y-3 pt-0">
               {permutas.map((pp, idx) => (
                 <OCPermutaRow
                   key={pp.id ?? `nueva-${idx}`}
                   pp={pp}
                   idx={idx}
-                  canDelete={permutas.length > 1}
+                  canDelete={true}
                   onChange={(patch) =>
                     setPermutas((prev) =>
                       prev.map((p, i) => (i === idx ? { ...p, ...patch } : p))
@@ -649,8 +661,18 @@ export function OCForm({
                   }
                 />
               ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setPermutas((prev) => [...prev, permutaVacia(data.moneda || "ARS")])}
+              >
+                <Plus className="h-3.5 w-3.5 mr-1" />
+                Agregar otra permuta
+              </Button>
             </CardContent>
-          </Card>
+          )}
+        </Card>
 
         {/* Card "Financiación / Plan de cuotas" eliminada — todo se carga
             ahora desde el editor de Pagos eligiendo método=FINANCIACION,
