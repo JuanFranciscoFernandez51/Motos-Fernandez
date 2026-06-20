@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 
+// Planes de financiación cambian muy de vez en cuando → cacheamos 1h para no
+// pegar a la base en cada visita pública.
+export const revalidate = 3600
+
 // Coeficientes calculados con amortización francesa (sistema de cuotas fijas)
 // TNA 72% → tasa mensual 6% → cuota = PV × [0.06 × (1.06)^n] / [(1.06)^n - 1]
 // TNA 40% → tasa mensual 3.333% → cuota = PV × [i × (1+i)^n] / [(1+i)^n - 1]

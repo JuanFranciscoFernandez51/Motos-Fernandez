@@ -338,6 +338,7 @@ export const getNoticiasPublicadas = unstable_cache(
       return await prisma.noticia.findMany({
         where: { publicado: true },
         orderBy: { fechaPublicacion: "desc" },
+        take: 100,
       })
     } catch {
       return []

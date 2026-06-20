@@ -5,6 +5,7 @@ import { ModeloForm } from "@/components/admin/modelo-form"
 import { ModeloEditActions } from "@/components/admin/modelo-edit-actions"
 import { invalidateModelos } from "@/lib/cached-queries"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
+import { buscarMotoExistentePorIdentificadores } from "@/lib/moto-dedup-helpers"
 import { checklistPermutaTexto } from "@/lib/admin-helpers"
 import { crearMandatoDesdePermuta } from "@/lib/mandato-helpers"
 import { manejarVentaDeMoto } from "@/lib/venta-moto-helpers"
@@ -333,35 +334,57 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
           const slug = `mf-${String(proximoMF).padStart(4, "0")}`
           proximoMF++
           const codigo = await generarCodigoModelo(tx, { condicion: "USADA" })
-          const motoRecibida = await tx.modelo.create({
-            data: {
-              nombre: p.modelo,
-              slug,
-              codigo,
-              marca: p.marca,
-              condicion: "USADA",
-              anio: p.anio,
-              kilometros: p.kilometros,
-              patente: p.patente,
-              chasis: p.chasis,
-              motor: p.motor,
-              precio: null, // precio de PUBLICACIÓN: a completar en Stock motos
-              moneda: input.moneda,
-              valorToma: p.valor, // valor de toma (interno)
-              valorTomaMoneda: input.moneda,
-              activo: false,
-              fotos: [placeholderFoto],
-              origen: "PARTE_DE_PAGO",
-              clienteEntregaId: input.clienteId,
-              ordenCompraOrigenId: orden.id,
-              etiqueta: null,
-              notasInternas: checklistTxt
-                ? `Checklist al recibir (de OC):\n${checklistTxt}`
-                : null,
-            },
+          const yaExisteMoto = await buscarMotoExistentePorIdentificadores(tx, {
+            chasis: p.chasis,
+            motor: p.motor,
+            patente: p.patente,
           })
-          motoRecibidaId = motoRecibida.id
-          motosRecibidasIds.push(motoRecibida.id)
+          if (yaExisteMoto) {
+            // Anti-duplicado: la moto ya estaba en stock → la vinculamos en vez
+            // de crear una copia (le cargamos el valor de toma y el origen OC).
+            motoRecibidaId = yaExisteMoto.id
+            motosRecibidasIds.push(yaExisteMoto.id)
+            await tx.modelo.update({
+              where: { id: yaExisteMoto.id },
+              data: {
+                valorToma: p.valor,
+                valorTomaMoneda: input.moneda,
+                origen: "PARTE_DE_PAGO",
+                ordenCompraOrigenId: orden.id,
+                clienteEntregaId: input.clienteId,
+              },
+            })
+          } else {
+            const motoRecibida = await tx.modelo.create({
+              data: {
+                nombre: p.modelo,
+                slug,
+                codigo,
+                marca: p.marca,
+                condicion: "USADA",
+                anio: p.anio,
+                kilometros: p.kilometros,
+                patente: p.patente,
+                chasis: p.chasis,
+                motor: p.motor,
+                precio: null, // precio de PUBLICACIÓN: a completar en Stock motos
+                moneda: input.moneda,
+                valorToma: p.valor, // valor de toma (interno)
+                valorTomaMoneda: input.moneda,
+                activo: false,
+                fotos: [placeholderFoto],
+                origen: "PARTE_DE_PAGO",
+                clienteEntregaId: input.clienteId,
+                ordenCompraOrigenId: orden.id,
+                etiqueta: null,
+                notasInternas: checklistTxt
+                  ? `Checklist al recibir (de OC):\n${checklistTxt}`
+                  : null,
+              },
+            })
+            motoRecibidaId = motoRecibida.id
+            motosRecibidasIds.push(motoRecibida.id)
+          }
         }
         const monedaPermuta = p.moneda || orden.moneda || "ARS"
         const permutaCreada = await tx.oCPermuta.create({

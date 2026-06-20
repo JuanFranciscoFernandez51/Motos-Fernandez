@@ -13,6 +13,7 @@ import {
 import { FileText, CheckCircle, Trash2, Download, PartyPopper } from "lucide-react"
 import { invalidateModelos } from "@/lib/cached-queries"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
+import { buscarMotoExistentePorIdentificadores } from "@/lib/moto-dedup-helpers"
 import { checklistPermutaTexto } from "@/lib/admin-helpers"
 import { crearMandatoDesdePermuta } from "@/lib/mandato-helpers"
 import { manejarVentaDeMoto, crearModeloDesdeOCSinModelo } from "@/lib/venta-moto-helpers"
@@ -242,34 +243,55 @@ async function updateOrden(formData: FormData) {
             const slug = `mf-${String(proximoMF).padStart(4, "0")}`
             proximoMF++
             const codigo = await generarCodigoModelo(tx, { condicion: "USADA" })
-            const motoRecibida = await tx.modelo.create({
-              data: {
-                nombre: p.modelo,
-                slug,
-                codigo,
-                marca: p.marca,
-                condicion: "USADA",
-                anio: p.anio,
-                kilometros: p.kilometros,
-                patente: p.patente,
-                chasis: p.chasis,
-                motor: p.motor,
-                precio: null, // precio de PUBLICACIÓN: a completar en Stock motos
-                moneda: monedaPermuta,
-                valorToma: p.valor, // valor de toma (interno)
-                valorTomaMoneda: monedaPermuta,
-                activo: false,
-                fotos: [placeholderFoto],
-                origen: "PARTE_DE_PAGO",
-                clienteEntregaId: orden.clienteId,
-                ordenCompraOrigenId: orden.id,
-                etiqueta: null,
-                notasInternas: checklistTxt
-                  ? `Checklist al recibir (de OC):\n${checklistTxt}`
-                  : null,
-              },
+            const yaExisteMoto = await buscarMotoExistentePorIdentificadores(tx, {
+              chasis: p.chasis,
+              motor: p.motor,
+              patente: p.patente,
             })
-            motoRecibidaId = motoRecibida.id
+            if (yaExisteMoto) {
+              // Anti-duplicado: la moto ya estaba en stock → la vinculamos en vez
+              // de crear una copia (le cargamos el valor de toma y el origen OC).
+              motoRecibidaId = yaExisteMoto.id
+              await tx.modelo.update({
+                where: { id: yaExisteMoto.id },
+                data: {
+                  valorToma: p.valor,
+                  valorTomaMoneda: monedaPermuta,
+                  origen: "PARTE_DE_PAGO",
+                  ordenCompraOrigenId: orden.id,
+                  clienteEntregaId: orden.clienteId,
+                },
+              })
+            } else {
+              const motoRecibida = await tx.modelo.create({
+                data: {
+                  nombre: p.modelo,
+                  slug,
+                  codigo,
+                  marca: p.marca,
+                  condicion: "USADA",
+                  anio: p.anio,
+                  kilometros: p.kilometros,
+                  patente: p.patente,
+                  chasis: p.chasis,
+                  motor: p.motor,
+                  precio: null, // precio de PUBLICACIÓN: a completar en Stock motos
+                  moneda: monedaPermuta,
+                  valorToma: p.valor, // valor de toma (interno)
+                  valorTomaMoneda: monedaPermuta,
+                  activo: false,
+                  fotos: [placeholderFoto],
+                  origen: "PARTE_DE_PAGO",
+                  clienteEntregaId: orden.clienteId,
+                  ordenCompraOrigenId: orden.id,
+                  etiqueta: null,
+                  notasInternas: checklistTxt
+                    ? `Checklist al recibir (de OC):\n${checklistTxt}`
+                    : null,
+                },
+              })
+              motoRecibidaId = motoRecibida.id
+            }
           }
           const permutaCreada = await tx.oCPermuta.create({
             data: {

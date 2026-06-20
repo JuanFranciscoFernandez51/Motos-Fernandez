@@ -1,4 +1,6 @@
-export const dynamic = 'force-dynamic'
+// El sitemap se cachea 1h (ISR) en vez de regenerarse en cada request de los
+// crawlers — baja consultas a la base sin perder frescura útil.
+export const revalidate = 3600
 
 import { MetadataRoute } from "next"
 import { prisma } from "@/lib/prisma"
