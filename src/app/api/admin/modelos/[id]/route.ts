@@ -40,6 +40,15 @@ export async function PUT(
   try {
     const body = await request.json()
 
+    // Guarda: el precio de publicación es null ("Consultar") o un positivo.
+    // Nunca negativo (evita publicar mal por un tipeo).
+    if (body.precio != null && (typeof body.precio !== "number" || body.precio < 0)) {
+      return NextResponse.json(
+        { error: "El precio no puede ser negativo. Dejalo vacío para 'Consultar'." },
+        { status: 400 }
+      )
+    }
+
     const modelo = await prisma.modelo.update({
       where: { id },
       data: {

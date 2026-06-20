@@ -136,6 +136,7 @@ export default async function AdminDashboardPage() {
     topMarcasRaw,
     motosEnStock,
     motosListasParaPublicar,
+    motosSinPrecio,
     cuotasAtrasadas,
     cuotasProximaSemana,
     otActivas,
@@ -344,6 +345,22 @@ export default async function AdminDashboardPage() {
       where: {
         vendida: false,
         fotos: { isEmpty: false },
+        NOT: {
+          AND: [
+            { condicion: "0KM" },
+            { OR: [{ chasis: null }, { chasis: "" }] },
+            { OR: [{ motor: null }, { motor: "" }] },
+          ],
+        },
+      },
+    }),
+    // Motos físicas en stock SIN precio de publicación cargado (típicamente
+    // las tomadas en parte de pago, que esperan que se les complete el precio).
+    prisma.modelo.count({
+      where: {
+        vendida: false,
+        archivada: false,
+        precio: null,
         NOT: {
           AND: [
             { condicion: "0KM" },
@@ -1164,6 +1181,19 @@ export default async function AdminDashboardPage() {
               </p>
             </CardContent>
           </Card>
+          <Link href="/admin/stock-motos" className="block">
+            <Card className={motosSinPrecio > 0 ? "border-amber-300 dark:border-amber-900/40 hover:border-amber-400 transition-colors" : "hover:border-gray-300 transition-colors"}>
+              <CardContent className="p-4">
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Motos sin precio</p>
+                <p className={`text-2xl font-bold mt-1 ${motosSinPrecio > 0 ? "text-amber-600 dark:text-amber-400" : "text-gray-700 dark:text-gray-300"}`}>
+                  {motosSinPrecio}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {motosSinPrecio > 0 ? "Completá el precio de publicación →" : "Todas con precio cargado"}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
           <Card className={cuotasAtrasadas > 0 ? "border-red-300 dark:border-red-900/40" : ""}>
             <CardContent className="p-4">
               <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Cuotas vencidas</p>
