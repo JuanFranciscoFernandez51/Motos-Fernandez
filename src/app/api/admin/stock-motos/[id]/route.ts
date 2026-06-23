@@ -127,6 +127,7 @@ const CAMPOS_PERMITIDOS = [
   "moneda",
   "clienteEntregaId",
   "color",
+  "activo",
 ] as const
 
 type CampoPermitido = (typeof CAMPOS_PERMITIDOS)[number]
@@ -152,7 +153,9 @@ export async function PATCH(
       data[k] = null
       continue
     }
-    if (k === "anio" || k === "kilometros" || k === "precio") {
+    if (k === "activo") {
+      data[k] = Boolean(raw)
+    } else if (k === "anio" || k === "kilometros" || k === "precio") {
       const n = parseInt(String(raw))
       data[k] = Number.isFinite(n) ? n : null
     } else if (k === "patente" || k === "chasis" || k === "motor") {

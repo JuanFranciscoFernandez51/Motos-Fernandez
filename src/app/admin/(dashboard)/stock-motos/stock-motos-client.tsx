@@ -124,6 +124,26 @@ export function StockMotosClient({
     }
   }
 
+  // Publicar / despublicar a Disponibles desde la lista (toggle inline).
+  const togglePublicar = async (moto: StockMotoUI) => {
+    setAccionLoading(moto.id)
+    try {
+      const res = await fetch(`/api/admin/stock-motos/${moto.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ activo: !moto.activo }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        alert(data.error || `Error ${res.status}`)
+        return
+      }
+      router.refresh()
+    } finally {
+      setAccionLoading(null)
+    }
+  }
+
   // Para los contadores aplicamos el filtro de tenencia (lo que estás viendo
   // ahora), pero la fila "total/disponibles" del header sigue dependiendo
   // del tab visible — así si filtrás "en domicilio" ves los conteos de
@@ -526,15 +546,34 @@ export function StockMotosClient({
                               </p>
                             )}
                           </div>
-                        ) : m.activo ? (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 font-medium">
-                            Disponible
-                          </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 font-medium">
-                            <AlertCircle className="size-3" />
-                            Sin publicar
-                          </span>
+                          <button
+                            type="button"
+                            disabled={accionLoading === m.id}
+                            onClick={(e) => {
+                              e.stopPropagation()
+                              togglePublicar(m)
+                            }}
+                            title={
+                              m.activo
+                                ? "Publicada en Disponibles — tocá para despublicar"
+                                : "Sin publicar — tocá para publicar a Disponibles"
+                            }
+                            className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-medium transition-colors disabled:opacity-50 ${
+                              m.activo
+                                ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900/60"
+                                : "bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-900/60"
+                            }`}
+                          >
+                            {accionLoading === m.id ? (
+                              <Loader2 className="size-3 animate-spin" />
+                            ) : m.activo ? (
+                              <CheckCircle2 className="size-3" />
+                            ) : (
+                              <AlertCircle className="size-3" />
+                            )}
+                            {m.activo ? "Disponible" : "Sin publicar"}
+                          </button>
                         )}
                       </td>
                       <td className="px-3 py-2.5 text-right whitespace-nowrap">
