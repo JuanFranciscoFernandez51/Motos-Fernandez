@@ -20,7 +20,7 @@ export async function PATCH(
 
   if (b.accion === "pagar") {
     data.estado = "PAGADO"
-    data.pagadoEl = new Date()
+    data.pagadoEl = b.pagadoEl ? new Date(b.pagadoEl) : new Date()
   } else if (b.accion === "pendiente") {
     data.estado = "PENDIENTE"
     data.pagadoEl = null

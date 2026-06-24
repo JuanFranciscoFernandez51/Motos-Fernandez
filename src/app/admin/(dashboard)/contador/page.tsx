@@ -33,6 +33,7 @@ export default async function ContadorPage() {
         monto: v.monto,
         estado: v.estado,
         pagadoEl: v.pagadoEl ? v.pagadoEl.toISOString() : null,
+        comprobanteUrl: v.comprobanteUrl,
         notas: v.notas,
       }))}
       obligaciones={obligaciones.map((o) => ({

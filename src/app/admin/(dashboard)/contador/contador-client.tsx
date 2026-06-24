@@ -2,8 +2,9 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Check, Loader2, Calendar, AlertTriangle, Clock, Settings2 } from "lucide-react"
+import { Check, Loader2, Calendar, AlertTriangle, Clock, Settings2, FileText, X } from "lucide-react"
 import { labelTipo } from "@/lib/contador-helpers"
+import { ImageUpload } from "@/components/admin/image-upload"
 
 type VencimientoUI = {
   id: string
@@ -14,6 +15,7 @@ type VencimientoUI = {
   monto: number | null
   estado: string
   pagadoEl: string | null
+  comprobanteUrl: string | null
   notas: string | null
 }
 type ObligacionUI = {
@@ -56,6 +58,7 @@ export function ContadorClient({
   const router = useRouter()
   const [loading, setLoading] = useState<string | null>(null)
   const [showConfig, setShowConfig] = useState(false)
+  const [pagando, setPagando] = useState<VencimientoUI | null>(null)
 
   const togglePagado = async (v: VencimientoUI) => {
     setLoading(v.id)
@@ -156,12 +159,12 @@ export function ContadorClient({
               </div>
               <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 shrink-0">{fmtMonto(v.monto)}</span>
               <button
-                onClick={() => togglePagado(v)}
+                onClick={() => setPagando(v)}
                 disabled={loading === v.id}
                 className="shrink-0 inline-flex items-center gap-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 px-3 py-1.5 text-xs font-bold text-white transition-colors"
               >
-                {loading === v.id ? <Loader2 className="size-3.5 animate-spin" /> : <Check className="size-3.5" />}
-                Pagado
+                <Check className="size-3.5" />
+                Pagar
               </button>
             </div>
           )
@@ -185,6 +188,17 @@ export function ContadorClient({
                   Pagado{v.pagadoEl ? ` el ${fmtFecha(v.pagadoEl)}` : ""}
                 </p>
               </div>
+              {v.comprobanteUrl && (
+                <a
+                  href={v.comprobanteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title="Ver comprobante"
+                  className="shrink-0 inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  <FileText className="size-3.5" /> Boleta
+                </a>
+              )}
               <span className="text-sm text-gray-500 shrink-0">{fmtMonto(v.monto)}</span>
               <button
                 onClick={() => togglePagado(v)}
@@ -197,6 +211,117 @@ export function ContadorClient({
           ))}
         </div>
       )}
+
+      {pagando && (
+        <PagarModal
+          vencimiento={pagando}
+          onClose={() => setPagando(null)}
+          onDone={() => {
+            setPagando(null)
+            router.refresh()
+          }}
+        />
+      )}
+    </div>
+  )
+}
+
+function PagarModal({
+  vencimiento,
+  onClose,
+  onDone,
+}: {
+  vencimiento: VencimientoUI
+  onClose: () => void
+  onDone: () => void
+}) {
+  const hoyISO = new Date().toISOString().slice(0, 10)
+  const [monto, setMonto] = useState(vencimiento.monto ? String(vencimiento.monto) : "")
+  const [fecha, setFecha] = useState(hoyISO)
+  const [comprobante, setComprobante] = useState("")
+  const [saving, setSaving] = useState(false)
+
+  const confirmar = async () => {
+    setSaving(true)
+    try {
+      await fetch(`/api/admin/contador/vencimiento/${vencimiento.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          accion: "pagar",
+          monto: monto ? Number(monto.replace(/[^\d]/g, "")) : null,
+          pagadoEl: fecha,
+          comprobanteUrl: comprobante || null,
+        }),
+      })
+      onDone()
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+      <div
+        className="w-full max-w-md rounded-2xl bg-white dark:bg-neutral-900 p-5 space-y-4 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+            Pagar — {labelTipo(vencimiento.tipo)}
+          </h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+            <X className="size-5" />
+          </button>
+        </div>
+        <p className="text-xs text-gray-500 dark:text-gray-400">
+          {vencimiento.titulo} · período {vencimiento.periodo}
+        </p>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Monto pagado</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={monto}
+              onChange={(e) => setMonto(e.target.value)}
+              placeholder="opcional"
+              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">Fecha de pago</label>
+            <input
+              type="date"
+              value={fecha}
+              onChange={(e) => setFecha(e.target.value)}
+              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-300 mb-1">
+            Comprobante / boleta (opcional)
+          </label>
+          <ImageUpload value={comprobante} onChange={setComprobante} folder="comprobantes-fiscales" />
+        </div>
+
+        <div className="flex items-center gap-2 justify-end pt-1">
+          <button onClick={onClose} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">
+            Cancelar
+          </button>
+          <button
+            onClick={confirmar}
+            disabled={saving}
+            className="inline-flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 px-5 py-2 text-sm font-bold text-white transition-colors"
+          >
+            {saving ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
+            Confirmar pago
+          </button>
+        </div>
+      </div>
     </div>
   )
 }
