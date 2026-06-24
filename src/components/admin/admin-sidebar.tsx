@@ -109,6 +109,7 @@ const navEntries: NavEntry[] = [
     items: [
       { href: "/admin/tesoreria", label: "Resumen", icon: LayoutDashboard, seccion: "TESORERIA" },
       { href: "/admin/tesoreria/financiaciones", label: "Financiaciones", icon: CreditCard, seccion: "TESORERIA" },
+      { href: "/admin/contador", label: "Contador (vencimientos)", icon: Receipt, soloAdmin: true },
     ],
   },
   // CRM y Mercado Libre quedan como entradas top-level (fuera de Marketing)

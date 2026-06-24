@@ -1543,3 +1543,43 @@ model MetaApiLog {
   @@index([relatedAdCampaignId])
   @@index([errorCode])
 }
+
+// ==================== CONTADOR / VENCIMIENTOS FISCALES ====================
+
+/// Obligación fiscal recurrente (mensual). Plantilla desde la que se generan
+/// los vencimientos de cada período. tipo: IVA | IIBB | CARGAS_SOCIALES |
+/// MUNICIPAL | SINDICATO | OTRO.
+model ObligacionFiscal {
+  id             String        @id @default(cuid())
+  tipo           String
+  titulo         String
+  diaVencimiento Int           @default(15) // día del mes (1-31)
+  montoEstimado  Int? // referencia, opcional
+  activo         Boolean       @default(true)
+  notas          String?
+  vencimientos   Vencimiento[]
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+/// Instancia concreta de un vencimiento (un período fiscal). Generadas desde
+/// las obligaciones recurrentes o cargadas a mano.
+model Vencimiento {
+  id               String            @id @default(cuid())
+  obligacionId     String?
+  obligacion       ObligacionFiscal? @relation(fields: [obligacionId], references: [id], onDelete: SetNull)
+  tipo             String
+  titulo           String
+  periodo          String // "2026-06" (período fiscal)
+  fechaVencimiento DateTime
+  monto            Int?
+  estado           String            @default("PENDIENTE") // PENDIENTE | PAGADO
+  pagadoEl         DateTime?
+  comprobanteUrl   String? // boleta/comprobante de pago
+  notas            String?
+  createdAt        DateTime          @default(now())
+
+  @@unique([obligacionId, periodo])
+  @@index([fechaVencimiento])
+  @@index([estado])
+}
