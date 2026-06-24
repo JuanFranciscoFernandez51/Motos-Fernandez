@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import { Check, Loader2, Calendar, AlertTriangle, Clock, Settings2, FileText, X } from "lucide-react"
+import { Check, Loader2, Calendar, AlertTriangle, Clock, Settings2, FileText, X, Mail } from "lucide-react"
 import { labelTipo } from "@/lib/contador-helpers"
 import { ImageUpload } from "@/components/admin/image-upload"
 
@@ -59,6 +59,22 @@ export function ContadorClient({
   const [loading, setLoading] = useState<string | null>(null)
   const [showConfig, setShowConfig] = useState(false)
   const [pagando, setPagando] = useState<VencimientoUI | null>(null)
+  const [probando, setProbando] = useState(false)
+
+  const probarAviso = async () => {
+    setProbando(true)
+    try {
+      const res = await fetch("/api/admin/contador/probar-aviso", { method: "POST" })
+      const data = await res.json().catch(() => ({}))
+      if (res.ok) {
+        alert(`✅ Mail de prueba enviado a ${data.destino}. Revisá tu casilla (y spam).`)
+      } else {
+        alert(`Error: ${data.error || res.status}`)
+      }
+    } finally {
+      setProbando(false)
+    }
+  }
 
   const togglePagado = async (v: VencimientoUI) => {
     setLoading(v.id)
@@ -90,12 +106,22 @@ export function ContadorClient({
             Tus obligaciones del mes en un solo lugar. Marcá cada una al pagarla.
           </p>
         </div>
-        <button
-          onClick={() => setShowConfig((v) => !v)}
-          className="inline-flex items-center gap-1.5 text-sm text-[#6B4F7A] hover:underline whitespace-nowrap"
-        >
-          <Settings2 className="size-4" /> Configurar fechas
-        </button>
+        <div className="flex flex-col items-end gap-2">
+          <button
+            onClick={() => setShowConfig((v) => !v)}
+            className="inline-flex items-center gap-1.5 text-sm text-[#6B4F7A] hover:underline whitespace-nowrap"
+          >
+            <Settings2 className="size-4" /> Configurar fechas
+          </button>
+          <button
+            onClick={probarAviso}
+            disabled={probando}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 dark:border-neutral-700 px-3 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-800 disabled:opacity-50 whitespace-nowrap"
+          >
+            {probando ? <Loader2 className="size-3.5 animate-spin" /> : <Mail className="size-3.5" />}
+            Probar aviso por mail
+          </button>
+        </div>
       </div>
 
       {/* Resumen */}
