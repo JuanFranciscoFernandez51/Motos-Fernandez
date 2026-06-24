@@ -141,6 +141,7 @@ export default async function AdminDashboardPage() {
     cuotasProximaSemana,
     otActivas,
     otListas,
+    vencimientosProximos,
   ] = await Promise.all([
     prisma.pedido.count({
       where: { createdAt: { gte: todayUTC } },
@@ -387,6 +388,13 @@ export default async function AdminDashboardPage() {
     }),
     // OT listas para entregar
     prisma.ordenTrabajo.count({ where: { estado: "LISTA" } }),
+    // Vencimientos fiscales pendientes en los próximos 7 días (incl. vencidos)
+    prisma.vencimiento.count({
+      where: {
+        estado: "PENDIENTE",
+        fechaVencimiento: { lte: new Date(Date.now() + 7 * 86400000) },
+      },
+    }),
   ])
 
   // Build all 6 months array (including months with 0 sales)
@@ -1190,6 +1198,19 @@ export default async function AdminDashboardPage() {
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {motosSinPrecio > 0 ? "Completá el precio de publicación →" : "Todas con precio cargado"}
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/admin/contador" className="block">
+            <Card className={vencimientosProximos > 0 ? "border-amber-300 dark:border-amber-900/40 hover:border-amber-400 transition-colors" : "hover:border-gray-300 transition-colors"}>
+              <CardContent className="p-4">
+                <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Vencimientos (7 días)</p>
+                <p className={`text-2xl font-bold mt-1 ${vencimientosProximos > 0 ? "text-amber-600 dark:text-amber-400" : "text-gray-700 dark:text-gray-300"}`}>
+                  {vencimientosProximos}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {vencimientosProximos > 0 ? "Impuestos por pagar →" : "Nada por vencer esta semana"}
                 </p>
               </CardContent>
             </Card>

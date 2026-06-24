@@ -1577,6 +1577,8 @@ model Vencimiento {
   pagadoEl         DateTime?
   comprobanteUrl   String? // boleta/comprobante de pago
   notas            String?
+  // Umbrales de aviso ya enviados ("7","3","1","0","venc") para no repetir.
+  avisosEnviados   String[]          @default([])
   createdAt        DateTime          @default(now())
 
   @@unique([obligacionId, periodo])
