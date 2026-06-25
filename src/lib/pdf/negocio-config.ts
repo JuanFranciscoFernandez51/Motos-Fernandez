@@ -11,6 +11,8 @@ const DEFAULTS = {
   email: "info@motosfernandez.com.ar",
   iva: "Responsable Inscripto",
   ingresosBrutos: "",
+  inicioActividades: "",
+  web: "www.motosfernandez.com.ar",
 }
 
 export type NegocioConfig = typeof DEFAULTS
@@ -31,6 +33,8 @@ export async function getNegocioConfig(): Promise<NegocioConfig> {
             "ciudad",
             "telefonoLegal",
             "email",
+            "inicioActividades",
+            "web",
           ],
         },
       },
@@ -47,6 +51,8 @@ export async function getNegocioConfig(): Promise<NegocioConfig> {
       email: map.email || DEFAULTS.email,
       iva: map.iva || DEFAULTS.iva,
       ingresosBrutos: map.ingresosBrutos || DEFAULTS.ingresosBrutos,
+      inicioActividades: map.inicioActividades || DEFAULTS.inicioActividades,
+      web: map.web || DEFAULTS.web,
     }
   } catch {
     return DEFAULTS

@@ -3,6 +3,7 @@ import { renderToBuffer } from "@react-pdf/renderer"
 import { prisma } from "@/lib/prisma"
 import { requireAdmin } from "@/lib/admin-auth"
 import { getNegocioConfig } from "@/lib/pdf/negocio-config"
+import { getLogoBuffer } from "@/lib/pdf/logo-loader"
 import { FacturaPDF } from "@/lib/pdf/factura-pdf"
 import { generarQrAfip } from "@/lib/afip/qr"
 import { ARCA_CUIT } from "@/lib/afip/config"
@@ -77,12 +78,17 @@ export async function GET(
         ptoVta: f.puntoVenta,
         numero: f.numero,
         fecha: f.fechaCbte,
+        logoSrc: getLogoBuffer(),
         emisor: {
           razonSocial: negocio.razonSocial,
           domicilio: `${negocio.direccion} — ${negocio.ciudad}`,
           cuit: cuitEmisor,
           iva: negocio.iva,
           ingresosBrutos: negocio.ingresosBrutos,
+          inicioActividades: negocio.inicioActividades,
+          telefono: negocio.telefono,
+          email: negocio.email,
+          web: negocio.web,
         },
         receptor: {
           nombre: f.receptorNombre,
