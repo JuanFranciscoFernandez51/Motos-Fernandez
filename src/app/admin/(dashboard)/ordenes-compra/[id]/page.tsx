@@ -55,6 +55,20 @@ type PagoFormPayload = {
   fecha: string | null
 }
 
+type VentaExtraPayload = {
+  id: string | null
+  modeloId: string | null
+  descripcion: string
+  marca: string | null
+  anio: number | null
+  kilometros: number | null
+  patente: string | null
+  chasis: string | null
+  motor: string | null
+  precio: number
+  moneda?: string
+}
+
 async function updateOrden(formData: FormData) {
   "use server"
   try {
@@ -84,6 +98,17 @@ async function updateOrden(formData: FormData) {
     } catch {
       pagosInput = []
     }
+
+    // Unidades EXTRA vendidas
+    let ventasInput: VentaExtraPayload[] = []
+    try {
+      ventasInput = JSON.parse(get("ventasExtra") || "[]")
+    } catch {
+      ventasInput = []
+    }
+    const precioPrincipal = num("precioVenta") ?? 0
+    const sumaVentasExtra = ventasInput.reduce((s, v) => s + (v.precio || 0), 0)
+    const precioVentaTotal = precioPrincipal + sumaVentasExtra
 
     const formaPago = get("formaPago") || null
     // formaPago llega calculada por el cliente (no hay select), pero
@@ -127,7 +152,7 @@ async function updateOrden(formData: FormData) {
           motoPatente: get("motoPatente") || null,
           motoAnio: num("motoAnio"),
           motoKilometros: num("motoKilometros"),
-          precioVenta: num("precioVenta") ?? 0,
+          precioVenta: precioVentaTotal,
           moneda: get("moneda") || "ARS",
           formaPago,
           sena: num("sena"),
@@ -414,6 +439,98 @@ async function updateOrden(formData: FormData) {
         await crearModeloDesdeOCSinModelo(tx, orden)
       }
 
+      // Sincronizar unidades EXTRA vendidas (OCVenta). Borra las que se
+      // quitaron (salvo que ya tengan unidad en stock vinculada), actualiza
+      // las existentes y crea las nuevas. El marcado/clonado en stock solo
+      // se hace una vez (cuando unidadVendidaId aún es null), para no
+      // duplicar clones al re-editar.
+      const ventasExistentes = await tx.oCVenta.findMany({
+        where: { ordenCompraId: id },
+        select: { id: true, unidadVendidaId: true },
+      })
+      const ventasIdsEnviados = new Set(
+        ventasInput.filter((v) => v.id).map((v) => v.id as string)
+      )
+      const ventasABorrar = ventasExistentes.filter(
+        (e) => !ventasIdsEnviados.has(e.id) && !e.unidadVendidaId
+      )
+      if (ventasABorrar.length > 0) {
+        await tx.oCVenta.deleteMany({
+          where: { id: { in: ventasABorrar.map((e) => e.id) } },
+        })
+      }
+
+      const procesarStockUnidad = async (
+        v: VentaExtraPayload,
+        yaVinculada: string | null
+      ): Promise<string | null> => {
+        if (yaVinculada) return yaVinculada // ya se procesó antes
+        if (!v.modeloId) return null
+        if (orden.estado === "CONCRETADA") {
+          const r = await manejarVentaDeMoto(tx, {
+            modeloId: v.modeloId,
+            clienteId: orden.clienteId,
+            ordenCompraId: null,
+            fechaVenta: orden.fecha,
+            chasis: v.chasis,
+            motor: v.motor,
+            patente: v.patente,
+          })
+          return r.modeloIdFinal
+        }
+        if (orden.estado === "RESERVADA") {
+          await tx.modelo.update({
+            where: { id: v.modeloId },
+            data: { etiqueta: "RESERVADA" },
+          })
+        }
+        return null
+      }
+
+      for (const v of ventasInput) {
+        if (v.id) {
+          const prev = ventasExistentes.find((e) => e.id === v.id)
+          const unidadVendidaId = await procesarStockUnidad(
+            v,
+            prev?.unidadVendidaId ?? null
+          )
+          await tx.oCVenta.update({
+            where: { id: v.id },
+            data: {
+              modeloId: v.modeloId || null,
+              descripcion: v.descripcion || "Unidad",
+              marca: v.marca || null,
+              anio: v.anio,
+              kilometros: v.kilometros,
+              patente: v.patente || null,
+              chasis: v.chasis || null,
+              motor: v.motor || null,
+              precio: v.precio || 0,
+              moneda: v.moneda || orden.moneda || "ARS",
+              ...(unidadVendidaId ? { unidadVendidaId } : {}),
+            },
+          })
+        } else {
+          const unidadVendidaId = await procesarStockUnidad(v, null)
+          await tx.oCVenta.create({
+            data: {
+              ordenCompraId: orden.id,
+              modeloId: v.modeloId || null,
+              descripcion: v.descripcion || "Unidad",
+              marca: v.marca || null,
+              anio: v.anio,
+              kilometros: v.kilometros,
+              patente: v.patente || null,
+              chasis: v.chasis || null,
+              motor: v.motor || null,
+              precio: v.precio || 0,
+              moneda: v.moneda || orden.moneda || "ARS",
+              unidadVendidaId,
+            },
+          })
+        }
+      }
+
       // Crear o actualizar financiación. Si ya existe, solo actualizar el garante.
       const finExistente = await tx.financiacionOC.findUnique({
         where: { ordenCompraId: orden.id },
@@ -545,6 +662,27 @@ async function marcarConcretada(id: string) {
       // aparezca en /admin/stock-motos pestaña Vendidas.
       await crearModeloDesdeOCSinModelo(tx, { ...orden, fecha: new Date() })
     }
+
+    // Unidades EXTRA: marcar/clonar cada una (solo si aún no se procesó).
+    const ventasExtra = await tx.oCVenta.findMany({
+      where: { ordenCompraId: id },
+    })
+    for (const v of ventasExtra) {
+      if (v.unidadVendidaId || !v.modeloId) continue
+      const r = await manejarVentaDeMoto(tx, {
+        modeloId: v.modeloId,
+        clienteId: orden.clienteId,
+        ordenCompraId: null,
+        fechaVenta: new Date(),
+        chasis: v.chasis,
+        motor: v.motor,
+        patente: v.patente,
+      })
+      await tx.oCVenta.update({
+        where: { id: v.id },
+        data: { unidadVendidaId: r.modeloIdFinal },
+      })
+    }
   })
 
   revalidatePath("/admin/ordenes-compra")
@@ -578,6 +716,7 @@ export default async function EditarOrdenCompraPage({
       include: {
         permutas: { orderBy: { createdAt: "asc" } },
         pagos: { orderBy: { createdAt: "asc" } },
+        ventas: { orderBy: { createdAt: "asc" } },
         financiacion: {
           // Necesitamos la fecha de la primera cuota para que el form
           // muestre la fecha real al editar.
@@ -626,6 +765,11 @@ export default async function EditarOrdenCompraPage({
 
   const toDateInput = (d: Date | null) => (d ? d.toISOString().split("T")[0] : "")
 
+  // El precioVenta guardado es el TOTAL. El precio de la unidad principal
+  // se deriva restando las unidades extra (para OCs viejas, ventas=[] → total).
+  const sumaExtras = orden.ventas.reduce((s, v) => s + v.precio, 0)
+  const precioPrincipal = orden.precioVenta - sumaExtras
+
   const initialData = {
     id: orden.id,
     clienteId: orden.clienteId,
@@ -636,7 +780,7 @@ export default async function EditarOrdenCompraPage({
     motoPatente: orden.motoPatente || "",
     motoAnio: orden.motoAnio != null ? String(orden.motoAnio) : "",
     motoKilometros: orden.motoKilometros != null ? String(orden.motoKilometros) : "",
-    precioVenta: String(orden.precioVenta),
+    precioVenta: String(precioPrincipal),
     moneda: orden.moneda,
     formaPago: orden.formaPago || "Contado",
     sena: orden.sena != null ? String(orden.sena) : "",
@@ -694,6 +838,21 @@ export default async function EditarOrdenCompraPage({
     moneda: p.moneda || orden.moneda || "ARS",
     detalle: p.detalle || "",
     fecha: p.fecha ? p.fecha.toISOString().split("T")[0] : "",
+  }))
+
+  // Unidades extra existentes -> shape VentaForm
+  const initialVentas = orden.ventas.map((v) => ({
+    id: v.id,
+    modeloId: v.modeloId || "",
+    descripcion: v.descripcion || "",
+    marca: v.marca || "",
+    anio: v.anio != null ? String(v.anio) : "",
+    kilometros: v.kilometros != null ? String(v.kilometros) : "",
+    patente: v.patente || "",
+    chasis: v.chasis || "",
+    motor: v.motor || "",
+    precio: String(v.precio),
+    moneda: v.moneda || orden.moneda || "ARS",
   }))
 
   const initialGarante = orden.financiacion
@@ -786,6 +945,7 @@ export default async function EditarOrdenCompraPage({
         initialData={initialData}
         initialPermutas={initialPermutas}
         initialPagos={initialPagos}
+        initialVentas={initialVentas}
         initialGarante={initialGarante}
         clientes={clientes}
         modelos={modelos}

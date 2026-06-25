@@ -210,6 +210,17 @@ type OCPDFData = {
     anio?: number | null
     kilometros?: number | null
   }
+  // Unidades EXTRA vendidas (2da, 3ra...). La principal va en `moto`.
+  ventas?: {
+    descripcion: string
+    anio?: number | null
+    kilometros?: number | null
+    patente?: string | null
+    chasis?: string | null
+    motor?: string | null
+    precio: number
+    moneda: string
+  }[]
   economico: {
     precioVenta: number
     moneda: string
@@ -401,8 +412,44 @@ export function OCPDF({ data }: { data: OCPDFData }) {
           </View>
         </View>
 
+        {/* Unidades EXTRA vendidas (cuando la OC vende más de un vehículo) */}
+        {data.ventas && data.ventas.length > 0 && (
+          <>
+            <Text style={styles.h2}>Otras unidades vendidas</Text>
+            {data.ventas.map((v, i) => (
+              <View key={i} style={styles.twoCol}>
+                <View style={styles.col}>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Unidad #{i + 2}:</Text>
+                    <Text style={styles.value}>
+                      {v.descripcion}
+                      {v.anio ? ` (${v.anio})` : ""}
+                    </Text>
+                  </View>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Chasis/Motor/Pat.:</Text>
+                    <Text style={styles.value}>
+                      {[v.chasis, v.motor, v.patente].filter(Boolean).join(" · ") || "—"}
+                    </Text>
+                  </View>
+                </View>
+                <View style={styles.col}>
+                  <View style={styles.row}>
+                    <Text style={styles.label}>Precio:</Text>
+                    <Text style={styles.value}>{money(v.precio, v.moneda || moneda)}</Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </>
+        )}
+
         <View style={styles.priceLine}>
-          <Text style={styles.priceLineLabel}>PRECIO TOTAL DE VENTA</Text>
+          <Text style={styles.priceLineLabel}>
+            {data.ventas && data.ventas.length > 0
+              ? "PRECIO TOTAL (TODAS LAS UNIDADES)"
+              : "PRECIO TOTAL DE VENTA"}
+          </Text>
           <Text style={styles.priceLineValue}>
             {money(data.economico.precioVenta, moneda)}
           </Text>

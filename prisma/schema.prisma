@@ -930,6 +930,11 @@ model OrdenCompra {
   // pagos + permutas + monto financiado y debería igualar a precioVenta.
   pagos OCPago[]
 
+  // Unidades EXTRA vendidas (2da, 3ra...). La unidad principal sigue en
+  // los campos modeloId + motoDescripcion/snapshots + (precioVenta es el
+  // TOTAL). El precio de la principal se deriva: precioVenta - suma(ventas).
+  ventas OCVenta[]
+
   // Tareas de outreach (service post-venta + NPS) generadas a partir de esta OC.
   outreachTareas OutreachTarea[]
 
@@ -1014,6 +1019,39 @@ model OCPermuta {
   // Mandato generado automaticamente al tomar esta moto en parte de pago.
   // Sirve como ficha de venta para revenderla.
   mandato MandatoVenta? @relation("MandatoDesdePermuta")
+
+  createdAt DateTime @default(now())
+
+  @@index([ordenCompraId])
+}
+
+/// Unidad EXTRA vendida en una OC (2da, 3ra moto/vehículo). La principal
+/// vive en los campos de OrdenCompra. Espejo de OCPermuta pero para venta.
+/// modeloId y unidadVendidaId son referencias sueltas (ids del catálogo /
+/// de la unidad marcada vendida), sin FK para no tocar el modelo Modelo.
+model OCVenta {
+  id            String      @id @default(cuid())
+  ordenCompraId String
+  ordenCompra   OrdenCompra @relation(fields: [ordenCompraId], references: [id], onDelete: Cascade)
+
+  // Catálogo de origen (si se eligió del stock) — referencia suelta
+  modeloId String?
+
+  // Snapshot de la unidad vendida
+  descripcion String
+  marca       String?
+  anio        Int?
+  kilometros  Int?
+  patente     String?
+  chasis      String?
+  motor       String?
+
+  // Precio de ESTA unidad
+  precio Int
+  moneda String @default("ARS")
+
+  // Moto en stock marcada como vendida para esta unidad (clon 0KM o usada).
+  unidadVendidaId String?
 
   createdAt DateTime @default(now())
 

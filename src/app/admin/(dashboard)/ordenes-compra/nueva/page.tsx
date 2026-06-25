@@ -45,6 +45,21 @@ type PagoFormPayload = {
   fecha: string | null
 }
 
+// Unidad EXTRA vendida (2da, 3ra...). La principal va en los campos moto* de la OC.
+type VentaExtraPayload = {
+  id: string | null
+  modeloId: string | null
+  descripcion: string
+  marca: string | null
+  anio: number | null
+  kilometros: number | null
+  patente: string | null
+  chasis: string | null
+  motor: string | null
+  precio: number
+  moneda?: string
+}
+
 async function createOrdenCompra(formData: FormData) {
   "use server"
   try {
@@ -71,6 +86,19 @@ async function createOrdenCompra(formData: FormData) {
     } catch {
       pagosInput = []
     }
+
+    let ventasInput: VentaExtraPayload[] = []
+    try {
+      ventasInput = JSON.parse(get("ventasExtra") || "[]")
+    } catch {
+      ventasInput = []
+    }
+
+    // El precio que llega en el form es el de la unidad PRINCIPAL.
+    // El precioVenta de la OC es el TOTAL = principal + suma de extras.
+    const precioPrincipal = num("precioVenta") ?? 0
+    const sumaVentasExtra = ventasInput.reduce((s, v) => s + (v.precio || 0), 0)
+    const precioVentaTotal = precioPrincipal + sumaVentasExtra
 
     const formaPago = get("formaPago") || null
     const hayPermuta = formaPago === "Permuta" || formaPago === "Mixta"
@@ -99,7 +127,7 @@ async function createOrdenCompra(formData: FormData) {
           motoPatente: get("motoPatente") || null,
           motoAnio: num("motoAnio"),
           motoKilometros: num("motoKilometros"),
-          precioVenta: num("precioVenta") ?? 0,
+          precioVenta: precioVentaTotal,
           moneda: get("moneda") || "ARS",
           formaPago,
           sena: num("sena"),
@@ -289,6 +317,49 @@ async function createOrdenCompra(formData: FormData) {
         // OC concretada sin modelo del catalogo: crear modelo post-mortem
         // (vendida=true, activo=false) para que aparezca en stock motos.
         await crearModeloDesdeOCSinModelo(tx, orden)
+      }
+
+      // Unidades EXTRA vendidas (2da, 3ra...). Cada una se marca/clona en
+      // stock igual que la principal. Ojo: pasamos ordenCompraId=null a
+      // manejarVentaDeMoto porque la relación 1-1 OCVentaUnidad es de la
+      // unidad principal; el vínculo de la extra queda en OCVenta.unidadVendidaId.
+      for (const v of ventasInput) {
+        let unidadVendidaId: string | null = null
+        if (v.modeloId) {
+          if (orden.estado === "CONCRETADA") {
+            const r = await manejarVentaDeMoto(tx, {
+              modeloId: v.modeloId,
+              clienteId: orden.clienteId,
+              ordenCompraId: null,
+              fechaVenta: orden.fecha,
+              chasis: v.chasis,
+              motor: v.motor,
+              patente: v.patente,
+            })
+            unidadVendidaId = r.modeloIdFinal
+          } else if (orden.estado === "RESERVADA") {
+            await tx.modelo.update({
+              where: { id: v.modeloId },
+              data: { etiqueta: "RESERVADA" },
+            })
+          }
+        }
+        await tx.oCVenta.create({
+          data: {
+            ordenCompraId: orden.id,
+            modeloId: v.modeloId || null,
+            descripcion: v.descripcion || "Unidad",
+            marca: v.marca || null,
+            anio: v.anio,
+            kilometros: v.kilometros,
+            patente: v.patente || null,
+            chasis: v.chasis || null,
+            motor: v.motor || null,
+            precio: v.precio || 0,
+            moneda: v.moneda || orden.moneda || "ARS",
+            unidadVendidaId,
+          },
+        })
       }
 
       // Auto-crear financiación con garante si corresponde

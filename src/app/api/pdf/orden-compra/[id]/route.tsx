@@ -18,6 +18,7 @@ export async function GET(
       cliente: true,
       pagos: { orderBy: { createdAt: "asc" } },
       permutas: { orderBy: { createdAt: "asc" } },
+      ventas: { orderBy: { createdAt: "asc" } },
       financiacion: true,
     },
   })
@@ -62,6 +63,16 @@ export async function GET(
           anio: orden.motoAnio,
           kilometros: orden.motoKilometros,
         },
+        ventas: orden.ventas.map((v) => ({
+          descripcion: v.descripcion,
+          anio: v.anio,
+          kilometros: v.kilometros,
+          patente: v.patente,
+          chasis: v.chasis,
+          motor: v.motor,
+          precio: v.precio,
+          moneda: v.moneda,
+        })),
         economico: {
           precioVenta: orden.precioVenta,
           moneda: orden.moneda,

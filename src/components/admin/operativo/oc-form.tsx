@@ -61,6 +61,26 @@ const permutaVacia = (moneda: string = "ARS"): PermutaForm => ({
   tieneFactura: false, tieneFichaTecnica: false, accesoriosExtra: "",
 })
 
+// Una unidad EXTRA vendida (2da, 3ra moto/vehículo) dentro de la OC.
+export type VentaForm = {
+  id?: string
+  modeloId: string
+  descripcion: string
+  marca: string
+  anio: string
+  kilometros: string
+  patente: string
+  chasis: string
+  motor: string
+  precio: string
+  moneda: string
+}
+
+const ventaVacia = (moneda: string = "ARS"): VentaForm => ({
+  modeloId: "", descripcion: "", marca: "", anio: "", kilometros: "",
+  patente: "", chasis: "", motor: "", precio: "", moneda,
+})
+
 export type OCData = {
   id?: string
   clienteId: string
@@ -133,6 +153,7 @@ export function OCForm({
   initialData,
   initialPermutas = [],
   initialPagos = [],
+  initialVentas = [],
   initialGarante,
   clientes,
   modelos,
@@ -141,6 +162,7 @@ export function OCForm({
   initialData?: Partial<OCData> & { id?: string }
   initialPermutas?: PermutaForm[]
   initialPagos?: PagoForm[]
+  initialVentas?: VentaForm[]
   initialGarante?: {
     nombre: string
     apellido: string
@@ -160,6 +182,9 @@ export function OCForm({
   // de pago). La sección se despliega al agregar una.
   const [permutas, setPermutas] = useState<PermutaForm[]>(initialPermutas)
   const [permutasAbierto, setPermutasAbierto] = useState(initialPermutas.length > 0)
+  // Unidades EXTRA vendidas (2da, 3ra...). La principal sigue en data.modeloId.
+  const [ventas, setVentas] = useState<VentaForm[]>(initialVentas)
+  const [ventasAbierto, setVentasAbierto] = useState(initialVentas.length > 0)
   const [pagos, setPagos] = useState<PagoForm[]>(() => {
     // Si la OC ya tenia una financiacion guardada (capital + cuotas), la
     // representamos como un pago virtual con metodo FINANCIACION para
@@ -236,6 +261,9 @@ export function OCForm({
     setData((prev) => ({ ...prev, [key]: value }))
   }
 
+  const setVenta = (idx: number, patch: Partial<VentaForm>) =>
+    setVentas((prev) => prev.map((v, i) => (i === idx ? { ...v, ...patch } : v)))
+
   // Al elegir moto, auto-completar datos
   const onPickMoto = (m: ModeloOption) => {
     setData((prev) => ({
@@ -272,6 +300,15 @@ export function OCForm({
     if (hayFinanciacionActiva) return "Financiado"
     return "Contado"
   })()
+
+  // Precio TOTAL de la OC = unidad principal + unidades extra. Es lo que tiene
+  // que cubrir el balance / los pagos.
+  const precioPrincipalNum = parseInt(data.precioVenta || "0") || 0
+  const totalUnidadesExtra = ventas.reduce(
+    (s, v) => s + (parseInt(v.precio || "0") || 0),
+    0
+  )
+  const precioTotalOC = precioPrincipalNum + totalUnidadesExtra
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -354,6 +391,24 @@ export function OCForm({
       }))
     formData.append("pagos", JSON.stringify(pagosFiltrados))
 
+    // Unidades EXTRA vendidas — solo las que tienen algún dato cargado.
+    const ventasFiltradas = ventas
+      .filter((v) => v.descripcion.trim() || v.modeloId || v.precio.trim())
+      .map((v) => ({
+        id: v.id ?? null,
+        modeloId: v.modeloId || null,
+        descripcion: v.descripcion.trim() || "Unidad",
+        marca: v.marca.trim() || null,
+        anio: v.anio ? parseInt(v.anio) : null,
+        kilometros: v.kilometros ? parseInt(v.kilometros) : null,
+        patente: v.patente.trim().toUpperCase() || null,
+        chasis: v.chasis.trim() || null,
+        motor: v.motor.trim() || null,
+        precio: v.precio ? parseInt(v.precio) : 0,
+        moneda: v.moneda || data.moneda || "ARS",
+      }))
+    formData.append("ventasExtra", JSON.stringify(ventasFiltradas))
+
     // Garante (solo tiene sentido si hay financiacion)
     if (hayFinanciacionActiva) {
       formData.append("garanteNombre", garante.nombre.trim())
@@ -409,7 +464,7 @@ export function OCForm({
         {/* Balance: precio vs cobertura, siempre visible arriba para que
             sepas en cualquier momento si la OC esta cuadrada o no. */}
         <BalanceCard
-          precioVenta={parseInt(data.precioVenta || "0") || 0}
+          precioVenta={precioTotalOC}
           monedaOC={data.moneda || "ARS"}
           pagosPorMoneda={pagos.reduce(
             (acc, p) => {
@@ -563,8 +618,184 @@ export function OCForm({
             <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
               Forma de pago: <strong>{formaPagoCalculada}</strong> (se
               calcula segun lo que cargues abajo).
+              {ventas.length > 0 && (
+                <>
+                  {" "}· Precio de arriba = unidad principal. Total OC:{" "}
+                  <strong>
+                    {data.moneda === "USD" ? "USD " : "$ "}
+                    {precioTotalOC.toLocaleString("es-AR")}
+                  </strong>
+                </>
+              )}
             </p>
           </CardContent>
+        </Card>
+
+        {/* Otras unidades a vender — pestañita plegable (espejo de permutas).
+            Sirve para vender 2+ vehículos en una misma OC. Cada unidad tiene
+            su propio precio; el total de la OC suma todas. */}
+        <Card className="overflow-hidden">
+          <button
+            type="button"
+            onClick={() => {
+              if (ventas.length === 0) {
+                setVentas([ventaVacia(data.moneda || "ARS")])
+                setVentasAbierto(true)
+              } else {
+                setVentasAbierto((v) => !v)
+              }
+            }}
+            className="w-full flex items-center justify-between gap-2 px-6 py-4 text-left hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors"
+          >
+            <div>
+              <CardTitle>Vender otra unidad</CardTitle>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                {ventas.length > 0
+                  ? `${ventas.length} unidad${ventas.length === 1 ? "" : "es"} extra además de la principal`
+                  : "¿Vendés más de un vehículo en esta orden? Tocá para agregar"}
+              </p>
+            </div>
+            {ventas.length > 0 ? (
+              ventasAbierto ? (
+                <ChevronUp className="h-5 w-5 text-gray-400 shrink-0" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-gray-400 shrink-0" />
+              )
+            ) : (
+              <Plus className="h-5 w-5 text-[#6B4F7A] shrink-0" />
+            )}
+          </button>
+          {ventas.length > 0 && ventasAbierto && (
+            <CardContent className="space-y-4 pt-0">
+              {ventas.map((vv, idx) => (
+                <div
+                  key={vv.id ?? `nueva-${idx}`}
+                  className="rounded-lg border border-gray-200 dark:border-neutral-800 p-4 space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm font-semibold">Unidad extra #{idx + 1}</p>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      className="text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                      onClick={() =>
+                        setVentas((prev) => prev.filter((_, i) => i !== idx))
+                      }
+                    >
+                      Quitar
+                    </Button>
+                  </div>
+                  <div>
+                    <Label>Elegí del catálogo o cargá una nueva</Label>
+                    <MotoSelector
+                      modelos={modelosDisponibles}
+                      value={vv.modeloId}
+                      onChange={(id) => setVenta(idx, { modeloId: id })}
+                      onPick={(m) =>
+                        setVenta(idx, {
+                          modeloId: m.id,
+                          descripcion: m.nombre,
+                          marca: m.marca || vv.marca,
+                          anio: m.anio ? String(m.anio) : vv.anio,
+                          kilometros:
+                            m.kilometros != null ? String(m.kilometros) : vv.kilometros,
+                          chasis: m.chasis || vv.chasis,
+                          motor: m.motor || vv.motor,
+                          patente: m.patente || vv.patente,
+                          precio: m.precio ? String(m.precio) : vv.precio,
+                          moneda: m.moneda || vv.moneda,
+                        })
+                      }
+                      onNuevaMoto={(m) => setModelosExtras((prev) => [m, ...prev])}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="md:col-span-2">
+                      <Label>Descripción</Label>
+                      <Input
+                        value={vv.descripcion}
+                        onChange={(e) => setVenta(idx, { descripcion: e.target.value })}
+                        placeholder="Ej: Honda Wave 110 2024"
+                      />
+                    </div>
+                    <div>
+                      <Label>Año</Label>
+                      <Input
+                        type="number"
+                        value={vv.anio}
+                        onChange={(e) => setVenta(idx, { anio: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label>Km</Label>
+                      <Input
+                        type="number"
+                        value={vv.kilometros}
+                        onChange={(e) => setVenta(idx, { kilometros: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label>Nº chasis</Label>
+                      <Input
+                        value={vv.chasis}
+                        onChange={(e) => setVenta(idx, { chasis: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label>Nº motor</Label>
+                      <Input
+                        value={vv.motor}
+                        onChange={(e) => setVenta(idx, { motor: e.target.value })}
+                      />
+                    </div>
+                    <div>
+                      <Label>Patente</Label>
+                      <Input
+                        value={vv.patente}
+                        onChange={(e) =>
+                          setVenta(idx, { patente: e.target.value.toUpperCase() })
+                        }
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-[1fr_120px] gap-3">
+                    <div>
+                      <Label>Precio de esta unidad</Label>
+                      <Input
+                        type="number"
+                        value={vv.precio}
+                        onChange={(e) => setVenta(idx, { precio: e.target.value })}
+                        placeholder="1500000"
+                      />
+                    </div>
+                    <div>
+                      <Label>Moneda</Label>
+                      <select
+                        value={vv.moneda}
+                        onChange={(e) => setVenta(idx, { moneda: e.target.value })}
+                        className="w-full h-10 rounded-md border border-gray-200 dark:border-neutral-800 px-3 text-sm"
+                      >
+                        <option value="ARS">ARS ($)</option>
+                        <option value="USD">USD</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() =>
+                  setVentas((prev) => [...prev, ventaVacia(data.moneda || "ARS")])
+                }
+              >
+                <Plus className="h-3.5 w-3.5 mr-1" />
+                Agregar otra unidad
+              </Button>
+            </CardContent>
+          )}
         </Card>
 
         {/* Pagos: cualquier combinación (efectivo, transferencia, tarjeta,
@@ -582,7 +813,7 @@ export function OCForm({
             <PagosEditor
               pagos={pagos}
               setPagos={setPagos}
-              precioVenta={parseInt(data.precioVenta || "0") || 0}
+              precioVenta={precioTotalOC}
               monedaOC={data.moneda || "ARS"}
               totalPermutas={permutas.reduce(
                 (s, p) => s + (parseInt(p.valor || "0") || 0),
