@@ -109,6 +109,7 @@ const navEntries: NavEntry[] = [
     items: [
       { href: "/admin/tesoreria", label: "Resumen", icon: LayoutDashboard, seccion: "TESORERIA" },
       { href: "/admin/tesoreria/financiaciones", label: "Financiaciones", icon: CreditCard, seccion: "TESORERIA" },
+      { href: "/admin/facturacion", label: "Facturación (ARCA)", icon: FileText, soloAdmin: true },
       { href: "/admin/contador", label: "Contador (vencimientos)", icon: Receipt, soloAdmin: true },
     ],
   },
