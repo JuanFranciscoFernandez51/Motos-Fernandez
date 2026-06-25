@@ -12,10 +12,10 @@ import {
   Megaphone,
 } from "lucide-react"
 import { InstagramIcon, FacebookIcon } from "@/components/icons/social"
-import { formatDate, formatMoney } from "@/lib/admin-helpers"
-import { MetaPublishButton } from "./publish-button"
+import { formatDate } from "@/lib/admin-helpers"
 import { MetaClearErrorsButton } from "./clear-errors-button"
 import { MetaBulkPublishButton } from "./bulk-publish-button"
+import { MetaMotosTable } from "./meta-motos-table"
 
 export const dynamic = "force-dynamic"
 
@@ -308,73 +308,21 @@ export default async function MetaAdminPage({
             </div>
           </CardHeader>
           <CardContent>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead className="text-xs uppercase tracking-wider text-gray-500 dark:text-gray-400">
-                  <tr className="border-b">
-                    <th className="text-left px-2 py-2">Moto</th>
-                    <th className="text-right px-2 py-2">Precio</th>
-                    <th className="text-left px-2 py-2">Estado</th>
-                    <th className="text-left px-2 py-2">Última pub.</th>
-                    <th className="text-right px-2 py-2 w-32"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {motos.map((m) => (
-                    <tr key={m.id} className="border-b border-gray-50 dark:border-neutral-900 last:border-0">
-                      <td className="px-2 py-2">
-                        <Link href={`/admin/modelos/${m.id}`} className="hover:underline">
-                          <p className="font-medium">{m.marca} {m.nombre}{m.anio ? ` ${m.anio}` : ""}</p>
-                          <p className="text-xs font-mono text-gray-500 dark:text-gray-400">{m.slug}</p>
-                        </Link>
-                      </td>
-                      <td className="px-2 py-2 text-right font-mono">
-                        {m.precio ? formatMoney(m.precio, m.moneda) : "—"}
-                      </td>
-                      <td className="px-2 py-2">
-                        {m.igPostId ? (
-                          <Badge variant="secondary" className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
-                            Publicada
-                          </Badge>
-                        ) : (
-                          <span className="text-xs text-gray-400">No publicada</span>
-                        )}
-                      </td>
-                      <td className="px-2 py-2 text-xs text-gray-500 dark:text-gray-400">
-                        {m.igUltimaSync ? formatDate(m.igUltimaSync) : "—"}
-                      </td>
-                      <td className="px-2 py-2 text-right">
-                        <div className="flex items-center gap-1 justify-end">
-                          {m.igPermalink && (
-                            <a
-                              href={m.igPermalink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center size-7 rounded hover:bg-gray-100 dark:hover:bg-neutral-800"
-                              title="Ver en Instagram"
-                            >
-                              <InstagramIcon className="size-3.5" />
-                            </a>
-                          )}
-                          {m.fbPermalink && (
-                            <a
-                              href={m.fbPermalink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center justify-center size-7 rounded hover:bg-gray-100 dark:hover:bg-neutral-800"
-                              title="Ver en Facebook"
-                            >
-                              <FacebookIcon className="size-3.5" />
-                            </a>
-                          )}
-                          <MetaPublishButton modeloId={m.id} yaPublicada={!!m.igPostId} />
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <MetaMotosTable
+              motos={motos.map((m) => ({
+                id: m.id,
+                slug: m.slug,
+                nombre: m.nombre,
+                marca: m.marca,
+                anio: m.anio,
+                precio: m.precio,
+                moneda: m.moneda,
+                igPostId: m.igPostId,
+                igPermalink: m.igPermalink,
+                fbPermalink: m.fbPermalink,
+                igUltimaSync: m.igUltimaSync ? m.igUltimaSync.toISOString() : null,
+              }))}
+            />
           </CardContent>
         </Card>
       )}
