@@ -633,8 +633,10 @@ export function OCForm({
 
         {/* Otras unidades a vender — pestañita plegable (espejo de permutas).
             Sirve para vender 2+ vehículos en una misma OC. Cada unidad tiene
-            su propio precio; el total de la OC suma todas. */}
-        <Card className="overflow-hidden">
+            su propio precio; el total de la OC suma todas.
+            overflow-visible: el MotoSelector abre un desplegable que NO debe
+            recortarse (a diferencia de permutas, que usan campos simples). */}
+        <Card className="overflow-visible">
           <button
             type="button"
             onClick={() => {
@@ -666,11 +668,11 @@ export function OCForm({
             )}
           </button>
           {ventas.length > 0 && ventasAbierto && (
-            <CardContent className="space-y-4 pt-0">
+            <CardContent className="space-y-4 pt-0 overflow-visible">
               {ventas.map((vv, idx) => (
                 <div
                   key={vv.id ?? `nueva-${idx}`}
-                  className="rounded-lg border border-gray-200 dark:border-neutral-800 p-4 space-y-3"
+                  className="rounded-lg border border-gray-200 dark:border-neutral-800 p-4 space-y-3 overflow-visible"
                 >
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-semibold">Unidad extra #{idx + 1}</p>
