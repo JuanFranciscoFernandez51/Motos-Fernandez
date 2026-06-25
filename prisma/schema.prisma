@@ -42,65 +42,65 @@ model Modelo {
   // usadas/permutas/unidades vendidas). El slug se mantiene atado a la
   // URL pública. Se asigna automático en el helper de creación.
   codigo            String?           @unique
-  marca             String            // Campo libre: "Honda", "Yamaha", "Suzuki", etc.
+  marca             String // Campo libre: "Honda", "Yamaha", "Suzuki", etc.
   categoriaVehiculo CategoriaVehiculo @default(MOTOCICLETA)
-  condicion         String            @default("0KM")  // "0KM" o "USADA"
-  anio              Int?              // año del modelo/unidad (ej: 2026)
-  kilometros        Int?              // km recorridos (null o 0 para 0km)
-  observaciones     String?           @db.Text  // observaciones breves para usadas
-  cilindrada        String?           // "150cc", "250cc", "450cc", etc.
+  condicion         String            @default("0KM") // "0KM" o "USADA"
+  anio              Int? // año del modelo/unidad (ej: 2026)
+  kilometros        Int? // km recorridos (null o 0 para 0km)
+  observaciones     String?           @db.Text // observaciones breves para usadas
+  cilindrada        String? // "150cc", "250cc", "450cc", etc.
   // Atributos requeridos por Mercado Libre (mapeados al publicar)
-  transmision       String?           // "Manual" | "Automática" | "Semiautomática"
-  combustible       String?           // "Nafta" | "Eléctrica" | "Híbrido"
-  color             String?           // color principal (ej "Negro", "Rojo")
+  transmision       String? // "Manual" | "Automática" | "Semiautomática"
+  combustible       String? // "Nafta" | "Eléctrica" | "Híbrido"
+  color             String? // color principal (ej "Negro", "Rojo")
   // Atributos opcionales para ML — mejoran calidad y posicionamiento
-  frenos            String?           // "Delantero y trasero" | "Solo delantero" | "ABS" | "Disco hidráulico"
-  tipoMotor         String?           // "4 tiempos" | "2 tiempos" | "Eléctrico"
-  potenciaHp        Int?              // potencia en HP (ej 23)
+  frenos            String? // "Delantero y trasero" | "Solo delantero" | "ABS" | "Disco hidráulico"
+  tipoMotor         String? // "4 tiempos" | "2 tiempos" | "Eléctrico"
+  potenciaHp        Int? // potencia en HP (ej 23)
   garantiaFabrica   Boolean           @default(false)
   aceptaPermuta     Boolean           @default(true)
   precioNegociable  Boolean           @default(true)
   unicoDueno        Boolean           @default(false)
   tieneAlarma       Boolean           @default(false)
   entradaUsb        Boolean           @default(false)
-  distanciaEjesCm   Int?              // distancia entre ejes en cm
-  largoMm           Int?              // largo en mm
-  alturaMm          Int?              // altura en mm
-  anchoMm           Int?              // ancho en mm
-  pesoKg            Int?              // peso en kg
+  distanciaEjesCm   Int? // distancia entre ejes en cm
+  largoMm           Int? // largo en mm
+  alturaMm          Int? // altura en mm
+  anchoMm           Int? // ancho en mm
+  pesoKg            Int? // peso en kg
   // Equipamiento (atributos opcionales adicionales de ML)
-  marcaMotor        String?           // marca del motor (ej "Honda")
-  capacidadTanque   Int?              // capacidad del tanque en cc
-  sistemaArranque   String?           // "Eléctrico" | "A patada" | "Eléctrico y a patada"
-  velocidadMaxima   Int?              // km/h
-  numeroVelocidades Int?              // cantidad de marchas (5, 6...)
-  alturaAsiento     Int?              // cm
+  marcaMotor        String? // marca del motor (ej "Honda")
+  capacidadTanque   Int? // capacidad del tanque en cc
+  sistemaArranque   String? // "Eléctrico" | "A patada" | "Eléctrico y a patada"
+  velocidadMaxima   Int? // km/h
+  numeroVelocidades Int? // cantidad de marchas (5, 6...)
+  alturaAsiento     Int? // cm
   gps               Boolean           @default(false)
-  eficienciaKmL     Float?            // km/l (consumo)
+  eficienciaKmL     Float? // km/l (consumo)
   // Solo aplica a motos eléctricas
   tipoBateria       String?
   cantidadBaterias  Int?
-  capacidadBateria  Float?            // Ah
-  voltajeBateria    Float?            // V
-  autonomiaKm       Int?              // km de autonomía con batería
-  tiempoCarga       Float?            // horas
-  pesoBateriaG      Int?              // peso de batería en gramos
+  capacidadBateria  Float? // Ah
+  voltajeBateria    Float? // V
+  autonomiaKm       Int? // km de autonomía con batería
+  tiempoCarga       Float? // horas
+  pesoBateriaG      Int? // peso de batería en gramos
   tipoCargador      String?
-  precio            Int?              // valor numérico de PUBLICACIÓN, null = "consultar"
-  moneda            String            @default("ARS")  // "ARS" o "USD"
+  precio            Int? // valor numérico de PUBLICACIÓN, null = "consultar"
+  moneda            String            @default("ARS") // "ARS" o "USD"
   // Valor de TOMA (lo que se pagó al recibirla en parte de pago). INTERNO:
   // nunca se expone al público — solo se ve en Stock motos. El precio de
   // publicación (precio) arranca vacío y se completa aparte.
-  valorToma         Int?              // null si no entró por toma
-  valorTomaMoneda   String?           // "ARS" o "USD" del valor de toma
+  valorToma         Int? // null si no entró por toma
+  valorTomaMoneda   String? // "ARS" o "USD" del valor de toma
   descripcion       String?           @db.Text
-  specs             Json?             // { "Motor": "150cc", "Potencia": "14 HP", ... }
-  financiacion      Json?             // [{ "plan": "12 cuotas", "cuota": 150000, "entrega": 500000 }, ...]
+  specs             Json? // { "Motor": "150cc", "Potencia": "14 HP", ... }
+  financiacion      Json? // [{ "plan": "12 cuotas", "cuota": 150000, "entrega": 500000 }, ...]
   colores           ModeloColor[]
-  fotos             String[]          // URLs de fotos generales
+  fotos             String[] // URLs de fotos generales
   activo            Boolean           @default(true)
   destacado         Boolean           @default(false)
-  etiqueta          String?           // "DISPONIBLE", "ULTIMA_UNIDAD", "RECIEN_INGRESADA", "CONSULTAR_STOCK", "RESERVADA"
+  etiqueta          String? // "DISPONIBLE", "ULTIMA_UNIDAD", "RECIEN_INGRESADA", "CONSULTAR_STOCK", "RESERVADA"
   // Dónde está físicamente la moto. EN_LOCAL = en la concesionaria
   // (entra a stock motos, se puede visitar). EN_DOMICILIO = mandato
   // externo, la moto está en lo del titular, NO entra a stock, la card
@@ -110,35 +110,35 @@ model Modelo {
   orden             Int               @default(0)
 
   // Venta (solo admin) — al marcar vendida desaparece del catálogo público
-  vendida           Boolean           @default(false)
-  fechaVenta        DateTime?
+  vendida    Boolean   @default(false)
+  fechaVenta DateTime?
 
   // Archivada: cuando un cliente retira su moto (no se vendio) o por
   // cualquier motivo se da de baja del stock sin ser venta. Sale del
   // listado activo de Stock motos. Se conserva el registro completo.
-  archivada         Boolean           @default(false)
-  fechaArchivada    DateTime?
-  motivoArchivada   String?
+  archivada       Boolean   @default(false)
+  fechaArchivada  DateTime?
+  motivoArchivada String?
 
   // Datos internos (solo admin, nunca se muestran en la web pública)
-  chasis            String?
-  motor             String?
-  patente           String?
-  clienteNombre     String?
-  clienteContacto   String?           // teléfono/email del comprador
-  notasInternas     String?           @db.Text
+  chasis          String?
+  motor           String?
+  patente         String?
+  clienteNombre   String?
+  clienteContacto String? // teléfono/email del comprador
+  notasInternas   String? @db.Text
 
   // Proveedor (relevante sobre todo para 0KM)
-  proveedorId       String?
-  proveedor         Proveedor?        @relation(fields: [proveedorId], references: [id])
+  proveedorId String?
+  proveedor   Proveedor? @relation(fields: [proveedorId], references: [id])
 
   // Origen de la unidad (trazabilidad de stock)
-  origen            String?           @default("STOCK_PROPIO")  // STOCK_PROPIO | PARTE_DE_PAGO | MANDATO | UNIDAD_VENDIDA_0KM
+  origen              String?      @default("STOCK_PROPIO") // STOCK_PROPIO | PARTE_DE_PAGO | MANDATO | UNIDAD_VENDIDA_0KM
   // Si vino por parte de pago: cliente que la entregó + OC en la que ingresó
   clienteEntregaId    String?
-  clienteEntrega      Cliente?        @relation("ClienteEntregaModelo", fields: [clienteEntregaId], references: [id])
+  clienteEntrega      Cliente?     @relation("ClienteEntregaModelo", fields: [clienteEntregaId], references: [id])
   ordenCompraOrigenId String?
-  ordenCompraOrigen   OrdenCompra?    @relation("OCOrigenModelo", fields: [ordenCompraOrigenId], references: [id])
+  ordenCompraOrigen   OrdenCompra? @relation("OCOrigenModelo", fields: [ordenCompraOrigenId], references: [id])
 
   // Para "unidades vendidas" de modelos 0KM: este Modelo es un CLON del
   // "modeloOrigen" (modelo padre que sigue activo en stock). Lo creamos
@@ -146,40 +146,40 @@ model Modelo {
   // específicos de la unidad entregada, vendida=true y clienteId del
   // comprador. El modelo padre NO se marca como vendido — sigue
   // disponible en el catálogo porque hay más stock.
-  modeloOrigenId      String?
-  modeloOrigen        Modelo?         @relation("UnidadesVendidas", fields: [modeloOrigenId], references: [id])
-  unidadesVendidas    Modelo[]        @relation("UnidadesVendidas")
+  modeloOrigenId     String?
+  modeloOrigen       Modelo?      @relation("UnidadesVendidas", fields: [modeloOrigenId], references: [id])
+  unidadesVendidas   Modelo[]     @relation("UnidadesVendidas")
   // Si el modelo es una unidad vendida, OC que generó la venta
-  ordenCompraVentaId  String?         @unique
-  ordenCompraVenta    OrdenCompra?    @relation("OCVentaUnidad", fields: [ordenCompraVentaId], references: [id], onDelete: SetNull)
+  ordenCompraVentaId String?      @unique
+  ordenCompraVenta   OrdenCompra? @relation("OCVentaUnidad", fields: [ordenCompraVentaId], references: [id], onDelete: SetNull)
 
-  createdAt         DateTime          @default(now())
-  updatedAt         DateTime          @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  leads  Lead[]
-  turnos Turno[]
+  leads              Lead[]
+  turnos             Turno[]
   // Relaciones admin operativo
-  mandato        MandatoVenta?  @relation("MandatoModelo")
-  ordenesCompra  OrdenCompra[]
-  ocComoMotoRecibida OrdenCompra[] @relation("MotoRecibidaOC")
-  ocPermuta      OCPermuta? @relation("OCPermutaMotoRecibida")
-  ordenesTrabajo OrdenTrabajo[]
+  mandato            MandatoVenta?  @relation("MandatoModelo")
+  ordenesCompra      OrdenCompra[]
+  ocComoMotoRecibida OrdenCompra[]  @relation("MotoRecibidaOC")
+  ocPermuta          OCPermuta?     @relation("OCPermutaMotoRecibida")
+  ordenesTrabajo     OrdenTrabajo[]
 
   // Mercado Libre
-  mlListingId   String?    @unique  // MLA1234567890
-  mlPermalink   String?              // url publica de la publicacion
-  mlEstado      String?              // "active" | "paused" | "closed"
-  mlUltimaSync  DateTime?            // ultima vez que sincronizamos
-  mlError       String?    @db.Text  // si hubo error en la ultima sync
-  mlListingType String?    @default("free")  // free | silver | gold | gold_premium
+  mlListingId   String?   @unique // MLA1234567890
+  mlPermalink   String? // url publica de la publicacion
+  mlEstado      String? // "active" | "paused" | "closed"
+  mlUltimaSync  DateTime? // ultima vez que sincronizamos
+  mlError       String?   @db.Text // si hubo error en la ultima sync
+  mlListingType String?   @default("free") // free | silver | gold | gold_premium
 
   // Meta (Instagram + Facebook)
-  igPostId      String?              // id del post de IG (formato 1234_5678)
-  igPermalink   String?              // url publica del post de IG
-  fbPostId      String?              // id del post de FB
-  fbPermalink   String?              // url publica del post de FB
-  igUltimaSync  DateTime?            // ultima vez que se publicó/actualizó
-  igError       String?    @db.Text  // ultimo error si hubo
+  igPostId     String? // id del post de IG (formato 1234_5678)
+  igPermalink  String? // url publica del post de IG
+  fbPostId     String? // id del post de FB
+  fbPermalink  String? // url publica del post de FB
+  igUltimaSync DateTime? // ultima vez que se publicó/actualizó
+  igError      String?   @db.Text // ultimo error si hubo
 
   // Marketing flags (brief calendario/ads):
   // - activeForMarketing: bandera para excluir esta moto de posts
@@ -187,8 +187,8 @@ model Modelo {
   //   catálogo público (ej: moto reservada).
   // - metaCatalogProductId: ID en el Catálogo de Vehicles de Meta cuando
   //   se sume Dynamic Product Ads (roadmap futuro).
-  activeForMarketing    Boolean   @default(true)
-  metaCatalogProductId  String?
+  activeForMarketing   Boolean @default(true)
+  metaCatalogProductId String?
 
   // Relaciones inversas con las tablas nuevas de calendario/ads
   scheduledPosts ScheduledPost[] @relation("ScheduledPostMoto")
@@ -204,8 +204,8 @@ enum CategoriaVehiculo {
 
 model ModeloColor {
   id       String  @id @default(cuid())
-  nombre   String  // "Rojo Racing", "Negro Mate"
-  hex      String  // "#C2002F"
+  nombre   String // "Rojo Racing", "Negro Mate"
+  hex      String // "#C2002F"
   foto     String? // URL de la foto en ese color
   modeloId String
   modelo   Modelo  @relation(fields: [modeloId], references: [id], onDelete: Cascade)
@@ -231,18 +231,18 @@ model Noticia {
 // ==================== TESTIMONIOS ====================
 
 model Testimonio {
-  id          String   @id @default(cuid())
-  nombre      String
-  ubicacion   String?  // ej: "Bahía Blanca"
-  modelo      String?  // moto/producto al que se refiere (texto libre)
-  rating      Int      @default(5)  // 1 a 5
-  contenido   String   @db.Text
-  foto        String?  // URL de Cloudinary, opcional
-  destacado   Boolean  @default(false)
-  publicado   Boolean  @default(true)
-  orden       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  nombre    String
+  ubicacion String? // ej: "Bahía Blanca"
+  modelo    String? // moto/producto al que se refiere (texto libre)
+  rating    Int      @default(5) // 1 a 5
+  contenido String   @db.Text
+  foto      String? // URL de Cloudinary, opcional
+  destacado Boolean  @default(false)
+  publicado Boolean  @default(true)
+  orden     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ==================== TIENDA ====================
@@ -390,9 +390,9 @@ model LeadReminder {
 
 enum OrigenLead {
   WEB
-  POPUP_BIENVENIDA  // popup que captura email/tel para cupón 10%
-  RECOMENDADOR     // termino el quiz y dejo datos para que lo contacten
-  META_ADS         // landings dedicadas para campañas pagas en FB/IG
+  POPUP_BIENVENIDA // popup que captura email/tel para cupón 10%
+  RECOMENDADOR // termino el quiz y dejo datos para que lo contacten
+  META_ADS // landings dedicadas para campañas pagas en FB/IG
   WHATSAPP
   INSTAGRAM
   MARKETPLACE
@@ -422,28 +422,28 @@ enum EtapaLead {
 // ==================== TURNOS ====================
 
 model Turno {
-  id              String      @id @default(cuid())
+  id              String        @id @default(cuid())
   nombre          String
   apellido        String?
-  dni             String?     // ahora obligatorio en el form publico/admin; opcional en DB para compat con turnos viejos
+  dni             String? // ahora obligatorio en el form publico/admin; opcional en DB para compat con turnos viejos
   telefono        String
   email           String?
   modeloMoto      String?
   modeloId        String?
-  modelo          Modelo?     @relation(fields: [modeloId], references: [id])
+  modelo          Modelo?       @relation(fields: [modeloId], references: [id])
   tipoServicio    String
   fechaPreferida  DateTime?
   fechaConfirmada DateTime?
-  comentarios     String?     @db.Text
-  estado          EstadoTurno @default(PENDIENTE)
+  comentarios     String?       @db.Text
+  estado          EstadoTurno   @default(PENDIENTE)
   // Cliente vinculado (si se "guardó" el turno como cliente del CRM)
   clienteId       String?
-  cliente         Cliente?    @relation(fields: [clienteId], references: [id])
+  cliente         Cliente?      @relation(fields: [clienteId], references: [id])
   // Orden de trabajo creada a partir del turno (si aplica)
-  ordenTrabajoId  String?     @unique
+  ordenTrabajoId  String?       @unique
   ordenTrabajo    OrdenTrabajo? @relation("OTDeTurno", fields: [ordenTrabajoId], references: [id])
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 }
 
 enum EstadoTurno {
@@ -499,29 +499,29 @@ model Cupon {
 // ==================== CONFIGURACION ====================
 
 model SiteConfig {
-  id                   String   @id @default("singleton")
-  nombre               String   @default("Motos Fernandez")
-  descripcion          String?
-  whatsapp             String   @default("5492915788671")
-  email                String   @default("info@motosfernandez.com.ar")
-  direccion            String   @default("Brown 1052, Bahia Blanca")
-  horarioLV            String   @default("8:30 - 12:30 / 15:30 - 19:30")
-  horarioSab           String   @default("9:00 - 13:00")
-  mercadopagoHabilitado Boolean @default(true)
-  enviosHabilitados    Boolean  @default(true)
-  retiroHabilitado     Boolean  @default(true)
+  id                    String    @id @default("singleton")
+  nombre                String    @default("Motos Fernandez")
+  descripcion           String?
+  whatsapp              String    @default("5492915788671")
+  email                 String    @default("info@motosfernandez.com.ar")
+  direccion             String    @default("Brown 1052, Bahia Blanca")
+  horarioLV             String    @default("8:30 - 12:30 / 15:30 - 19:30")
+  horarioSab            String    @default("9:00 - 13:00")
+  mercadopagoHabilitado Boolean   @default(true)
+  enviosHabilitados     Boolean   @default(true)
+  retiroHabilitado      Boolean   @default(true)
   // Modo Mundial 🇦🇷 — switch manual + ventana de fechas opcional.
-  mundialActivo        Boolean  @default(false)
-  mundialDesde         DateTime?
-  mundialHasta         DateTime?
+  mundialActivo         Boolean   @default(false)
+  mundialDesde          DateTime?
+  mundialHasta          DateTime?
   // Estilo de la barra: "bandera" | "marquee". Confetti on/off + nivel.
-  mundialBarraEstilo   String   @default("bandera")
-  mundialConfetti      Boolean  @default(true)
-  mundialConfettiNivel String   @default("sutil") // "sutil" | "medio" | "trapo"
+  mundialBarraEstilo    String    @default("bandera")
+  mundialConfetti       Boolean   @default(true)
+  mundialConfettiNivel  String    @default("sutil") // "sutil" | "medio" | "trapo"
   // Promo "Envío gratis al Sur" (Mundial). Aplica a motos <= 650cc (regla en datos,
   // no se muestra el limite como copy). Activa dentro de la ventana del Mundial.
-  promoEnvioActiva     Boolean  @default(false)
-  updatedAt            DateTime @updatedAt
+  promoEnvioActiva      Boolean   @default(false)
+  updatedAt             DateTime  @updatedAt
 }
 
 // ==================== CONTACTO ====================
@@ -540,11 +540,11 @@ model ContactForm {
 
 model PlanFinanciacion {
   id             String   @id @default(cuid())
-  nombre         String   // Ej: "12 cuotas", "24 cuotas con tarjeta"
-  tipo           String   @default("PROPIA")  // "PROPIA" | "TARJETA"
+  nombre         String // Ej: "12 cuotas", "24 cuotas con tarjeta"
+  tipo           String   @default("PROPIA") // "PROPIA" | "TARJETA"
   cuotas         Int
-  coeficiente    Float    // Multiplicador mensual: cuota = monto_financiado × coeficiente
-  anticipoMinimo Float    @default(0)  // % mínimo de anticipo para este plan
+  coeficiente    Float // Multiplicador mensual: cuota = monto_financiado × coeficiente
+  anticipoMinimo Float    @default(0) // % mínimo de anticipo para este plan
   descripcion    String?
   activo         Boolean  @default(true)
   orden          Int      @default(0)
@@ -566,7 +566,7 @@ model NewsletterSubscriber {
   id        String   @id @default(cuid())
   email     String   @unique
   nombre    String?
-  origen    String?  // "footer", "popup", "checkout", "landing", etc.
+  origen    String? // "footer", "popup", "checkout", "landing", etc.
   activo    Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -607,22 +607,22 @@ model Conversion {
 // ==================== PROVEEDORES ====================
 
 model Proveedor {
-  id            String    @id @default(cuid())
-  nombre        String    // razón social o nombre del proveedor
-  contacto      String?   // persona de contacto (legacy / contacto principal)
-  telefono      String?   // teléfono principal (legacy)
-  email         String?   // email general del proveedor
-  cuit          String?
-  direccion     String?
-  ciudad        String?
-  rubro         String?   // "motos 0km", "accesorios", "repuestos", "cascos", etc.
-  sitio         String?   // sitio web o URL
-  notas         String?   @db.Text
-  activo        Boolean   @default(true)
+  id        String  @id @default(cuid())
+  nombre    String // razón social o nombre del proveedor
+  contacto  String? // persona de contacto (legacy / contacto principal)
+  telefono  String? // teléfono principal (legacy)
+  email     String? // email general del proveedor
+  cuit      String?
+  direccion String?
+  ciudad    String?
+  rubro     String? // "motos 0km", "accesorios", "repuestos", "cascos", etc.
+  sitio     String? // sitio web o URL
+  notas     String? @db.Text
+  activo    Boolean @default(true)
 
   // Contactos múltiples — administración, vendedores, posventa, etc.
   // Estructura: [{ id, nombre, rol, telefono, email }]
-  contactos     Json?
+  contactos Json?
 
   // Cuentas bancarias múltiples
   // Estructura: [{ id, banco, tipo, numero, cbu, alias, titular, moneda }]
@@ -630,13 +630,13 @@ model Proveedor {
 
   // Lista de precios manual (filas tipo tabla)
   // Estructura: [{ id, concepto, precio, moneda, notas }]
-  listaPrecios  Json?
+  listaPrecios Json?
 
-  modelos       Modelo[]
-  productos     Producto[]
+  modelos   Modelo[]
+  productos Producto[]
 
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([activo])
 }
@@ -644,36 +644,36 @@ model Proveedor {
 // ==================== TESORERÍA - FINANCIACIONES ====================
 
 model FinanciacionOC {
-  id              String   @id @default(cuid())
-  numero          Int      @unique @default(autoincrement())  // FIN-0001
+  id     String @id @default(cuid())
+  numero Int    @unique @default(autoincrement()) // FIN-0001
 
   // Vínculos
-  ordenCompraId   String?  @unique
-  ordenCompra     OrdenCompra? @relation(fields: [ordenCompraId], references: [id], onDelete: SetNull)
-  clienteId       String
-  cliente         Cliente  @relation(fields: [clienteId], references: [id])
+  ordenCompraId String?      @unique
+  ordenCompra   OrdenCompra? @relation(fields: [ordenCompraId], references: [id], onDelete: SetNull)
+  clienteId     String
+  cliente       Cliente      @relation(fields: [clienteId], references: [id])
 
   // Descripción/info
-  descripcion     String?  // ej: "Honda XR150L 2025" — snapshot en caso de que se borre la OC
-  origen          String   @default("OC_AUTOMATICA")  // OC_AUTOMATICA | MANUAL
+  descripcion String? // ej: "Honda XR150L 2025" — snapshot en caso de que se borre la OC
+  origen      String  @default("OC_AUTOMATICA") // OC_AUTOMATICA | MANUAL
 
   // Datos económicos
-  montoTotal      Int      // monto a financiar (capital)
-  entrega         Int      @default(0)
-  cantidadCuotas  Int
-  valorCuota      Int
-  moneda          String   @default("ARS")
+  montoTotal     Int // monto a financiar (capital)
+  entrega        Int    @default(0)
+  cantidadCuotas Int
+  valorCuota     Int
+  moneda         String @default("ARS")
 
   // Fechas
-  fechaInicio     DateTime @default(now())
-  diaVencimiento  Int      @default(10)  // día del mes que vence cada cuota
-  fechaFin        DateTime?  // cuándo termina (calculada)
+  fechaInicio    DateTime  @default(now())
+  diaVencimiento Int       @default(10) // día del mes que vence cada cuota
+  fechaFin       DateTime? // cuándo termina (calculada)
 
   // Estado
-  estado          EstadoFinanciacion @default(ACTIVA)
+  estado EstadoFinanciacion @default(ACTIVA)
 
   // Cuotas relacionadas
-  cuotas          CuotaFinanciacion[]
+  cuotas CuotaFinanciacion[]
 
   // Garante (opcional, texto libre)
   garanteNombre    String?
@@ -682,10 +682,10 @@ model FinanciacionOC {
   garanteTelefono  String?
   garanteDireccion String?
 
-  observaciones   String?  @db.Text
+  observaciones String? @db.Text
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([clienteId])
   @@index([estado])
@@ -693,24 +693,24 @@ model FinanciacionOC {
 }
 
 model CuotaFinanciacion {
-  id              String   @id @default(cuid())
-  numero          Int      // 1, 2, 3...
-  financiacionId  String
-  financiacion    FinanciacionOC @relation(fields: [financiacionId], references: [id], onDelete: Cascade)
+  id             String         @id @default(cuid())
+  numero         Int // 1, 2, 3...
+  financiacionId String
+  financiacion   FinanciacionOC @relation(fields: [financiacionId], references: [id], onDelete: Cascade)
 
-  monto           Int
+  monto            Int
   fechaVencimiento DateTime
-  fechaPago       DateTime?
-  estado          EstadoCuota @default(PENDIENTE)
-  metodoPago      String?  // "Efectivo", "Transferencia", "Tarjeta", etc.
-  comprobante     String?  // URL o nº de comprobante
-  observaciones   String?
+  fechaPago        DateTime?
+  estado           EstadoCuota @default(PENDIENTE)
+  metodoPago       String? // "Efectivo", "Transferencia", "Tarjeta", etc.
+  comprobante      String? // URL o nº de comprobante
+  observaciones    String?
 
   // Tareas de outreach (recordatorios CUOTA_PROXIMA / CUOTA_VENCIDA)
-  outreachTareas  OutreachTarea[]
+  outreachTareas OutreachTarea[]
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([financiacionId, numero])
   @@index([fechaVencimiento])
@@ -734,9 +734,9 @@ enum EstadoCuota {
 // ==================== CLIENTES (CRM OPERATIVO) ====================
 
 model Cliente {
-  id              String   @id @default(cuid())
+  id              String           @id @default(cuid())
   // Identificación
-  dni             String?  @unique  // null para empresas u otros casos
+  dni             String?          @unique // null para empresas u otros casos
   cuit            String?
   nombre          String
   apellido        String
@@ -753,19 +753,20 @@ model Cliente {
   fechaNacimiento DateTime?
   ocupacion       String?
   // Notas internas
-  notasInternas   String?  @db.Text
+  notasInternas   String?          @db.Text
   // Documentos digitales del cliente (DNI, CUIT, comprobantes, etc.)
   // Estructura: [{ id, nombre, categoria, url, publicId, mimeType, tamano, notas, uploadedAt }]
   documentos      Json?
   // Relaciones
   mandatos        MandatoVenta[]
   ordenesCompra   OrdenCompra[]
-  motosEntregadas Modelo[]      @relation("ClienteEntregaModelo")
+  motosEntregadas Modelo[]         @relation("ClienteEntregaModelo")
   presupuestos    Presupuesto[]
   financiaciones  FinanciacionOC[]
   ordenesTrabajo  OrdenTrabajo[]
   turnos          Turno[]
   outreachTareas  OutreachTarea[]
+  facturas        Factura[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -778,71 +779,71 @@ model Cliente {
 // ==================== MANDATOS DE VENTA (CONSIGNACIÓN) ====================
 
 model MandatoVenta {
-  id              String    @id @default(cuid())
-  numero          Int       @unique @default(autoincrement())  // MV-0001, MV-0002...
-  fechaFirma      DateTime?
+  id               String        @id @default(cuid())
+  numero           Int           @unique @default(autoincrement()) // MV-0001, MV-0002...
+  fechaFirma       DateTime?
   fechaVencimiento DateTime?
-  estado          EstadoMandato @default(PENDIENTE)
+  estado           EstadoMandato @default(PENDIENTE)
 
   // Cliente (dueño de la moto)
-  clienteId       String
-  cliente         Cliente   @relation(fields: [clienteId], references: [id])
+  clienteId String
+  cliente   Cliente @relation(fields: [clienteId], references: [id])
 
   // Moto (datos completos — si después se publica se crea un Modelo linkeado)
-  marca           String
-  modelo          String    // nombre del modelo
-  anio            Int?
-  kilometros      Int?
-  cilindrada      String?
-  color           String?
-  chasis          String?
-  motor           String?
-  patente         String?
+  marca      String
+  modelo     String // nombre del modelo
+  anio       Int?
+  kilometros Int?
+  cilindrada String?
+  color      String?
+  chasis     String?
+  motor      String?
+  patente    String?
 
   // Tenencia física: EN_LOCAL = la moto se trae a Brown 1052 (caso
   // tradicional, entra a stock). EN_DOMICILIO = consignación externa, la
   // moto queda en lo del titular y nosotros publicamos por la web. En la
   // card pública se muestra "SOLO WEB". Se propaga al Modelo al publicar.
-  tipoTenencia       String  @default("EN_LOCAL")
-  direccionTenencia  String? // si está en domicilio, dónde queda
+  tipoTenencia      String  @default("EN_LOCAL")
+  direccionTenencia String? // si está en domicilio, dónde queda
 
   // Documentación
-  tieneTitulo              Boolean @default(false)
-  tituloANombreCliente     Boolean @default(false)
-  tieneTarjetaVerde        Boolean @default(false)
-  tienePrenda              Boolean @default(false)
-  detallePrenda            String?
-  tieneVTV                 Boolean @default(false)  // VTV vigente
-  verificacionTecnica      Boolean @default(false)  // legacy — mantenido por compat
-  tieneManual              Boolean @default(false)
-  tieneSegundaLlave        Boolean @default(false)
+  tieneTitulo          Boolean @default(false)
+  tituloANombreCliente Boolean @default(false)
+  tieneTarjetaVerde    Boolean @default(false)
+  tienePrenda          Boolean @default(false)
+  detallePrenda        String?
+  tieneVTV             Boolean @default(false) // VTV vigente
+  verificacionTecnica  Boolean @default(false) // legacy — mantenido por compat
+  tieneManual          Boolean @default(false)
+  tieneSegundaLlave    Boolean @default(false)
 
   // Económico
-  precioVenta     Int       // precio acordado con el dueño
-  precioMinimo    Int?      // piso negociable
-  comisionPorc    Float?    // % de comisión
-  comisionMonto   Int?      // o monto fijo
-  moneda          String    @default("ARS")
+  precioVenta   Int // precio acordado con el dueño
+  precioMinimo  Int? // piso negociable
+  comisionPorc  Float? // % de comisión
+  comisionMonto Int? // o monto fijo
+  moneda        String @default("ARS")
 
   // Fotos de la moto (se reutilizan al publicar en catálogo)
-  fotos           String[]
+  fotos String[]
 
   // Publicación en catálogo (opcional)
-  modeloId        String?   @unique
-  modelo_         Modelo?   @relation("MandatoModelo", fields: [modeloId], references: [id])
+  modeloId String? @unique
+  modelo_  Modelo? @relation("MandatoModelo", fields: [modeloId], references: [id])
 
   // Orden de compra (venta concretada de la moto en consignación)
-  ordenCompraId   String?   @unique
-  ordenCompra     OrdenCompra? @relation(fields: [ordenCompraId], references: [id])
+  ordenCompraId String?      @unique
+  ordenCompra   OrdenCompra? @relation(fields: [ordenCompraId], references: [id])
 
   // Permuta de origen: si este mandato se creó a partir de una moto
   // tomada como parte de pago, linkea a la OCPermuta. 1-1: cada permuta
   // genera como mucho un mandato (el unique garantiza idempotencia y
   // evita duplicados si se edita la OC).
-  ocPermutaId     String?   @unique
-  ocPermuta       OCPermuta? @relation("MandatoDesdePermuta", fields: [ocPermutaId], references: [id], onDelete: SetNull)
+  ocPermutaId String?    @unique
+  ocPermuta   OCPermuta? @relation("MandatoDesdePermuta", fields: [ocPermutaId], references: [id], onDelete: SetNull)
 
-  observaciones   String?   @db.Text
+  observaciones String? @db.Text
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -852,31 +853,31 @@ model MandatoVenta {
 }
 
 enum EstadoMandato {
-  PENDIENTE       // recién cargado, falta firmar
-  ACTIVO          // firmado, en venta
-  VENDIDO         // se concretó la venta
-  CANCELADO       // el cliente retiró la moto
-  VENCIDO         // pasó fecha vencimiento
+  PENDIENTE // recién cargado, falta firmar
+  ACTIVO // firmado, en venta
+  VENDIDO // se concretó la venta
+  CANCELADO // el cliente retiró la moto
+  VENCIDO // pasó fecha vencimiento
 }
 
 // ==================== ÓRDENES DE COMPRA (VENTAS DE MOTOS) ====================
 
 model OrdenCompra {
-  id              String    @id @default(cuid())
-  numero          Int       @unique @default(autoincrement())  // OC-0001, OC-0002...
-  fecha           DateTime  @default(now())
-  estado          EstadoVenta @default(BORRADOR)
+  id     String      @id @default(cuid())
+  numero Int         @unique @default(autoincrement()) // OC-0001, OC-0002...
+  fecha  DateTime    @default(now())
+  estado EstadoVenta @default(BORRADOR)
 
   // Cliente comprador
-  clienteId       String
-  cliente         Cliente   @relation(fields: [clienteId], references: [id])
+  clienteId String
+  cliente   Cliente @relation(fields: [clienteId], references: [id])
 
   // Moto vendida (del catálogo)
-  modeloId        String?
-  modelo          Modelo?   @relation(fields: [modeloId], references: [id])
+  modeloId String?
+  modelo   Modelo? @relation(fields: [modeloId], references: [id])
 
   // Snapshot de datos de la moto al momento de la venta
-  motoDescripcion String    // "Honda XR150L 2025" — por si el modelo se elimina luego
+  motoDescripcion String // "Honda XR150L 2025" — por si el modelo se elimina luego
   motoChasis      String?
   motoMotor       String?
   motoPatente     String?
@@ -884,55 +885,55 @@ model OrdenCompra {
   motoKilometros  Int?
 
   // Económico
-  precioVenta     Int
-  moneda          String    @default("ARS")
-  formaPago       String?   // "Contado", "Financiado", "Permuta", "Mixta"
-  sena            Int?      @default(0)
-  saldo           Int?
-  detallePago     String?   @db.Text  // ej: "Seña $500.000, saldo al retirar"
+  precioVenta Int
+  moneda      String  @default("ARS")
+  formaPago   String? // "Contado", "Financiado", "Permuta", "Mixta"
+  sena        Int?    @default(0)
+  saldo       Int?
+  detallePago String? @db.Text // ej: "Seña $500.000, saldo al retirar"
 
   // Permuta (si aplica)
   permutaDescripcion String?
   permutaValor       Int?
   // Si la permuta se subió al stock como moto usada → linkeo
-  motoRecibidaId  String?
-  motoRecibida    Modelo? @relation("MotoRecibidaOC", fields: [motoRecibidaId], references: [id])
+  motoRecibidaId     String?
+  motoRecibida       Modelo? @relation("MotoRecibidaOC", fields: [motoRecibidaId], references: [id])
 
   // Financiación (si aplica)
-  cuotas          Int?
-  valorCuota      Int?
-  entrega         Int?
+  cuotas     Int?
+  valorCuota Int?
+  entrega    Int?
 
   // Mandato relacionado (si salió de una consignación)
-  mandato         MandatoVenta?
+  mandato MandatoVenta?
 
   // Relación inversa: motos en stock que entraron por esta OC (parte de pago)
-  motosOrigen     Modelo[] @relation("OCOrigenModelo")
+  motosOrigen Modelo[] @relation("OCOrigenModelo")
 
   // Unidad 0KM vendida en esta OC (clon del modelo padre con
   // chasis/motor de la unidad entregada). 1-1: una OC puede vender
   // como mucho una unidad 0KM (la moto principal de la OC).
-  unidadVendida   Modelo? @relation("OCVentaUnidad")
+  unidadVendida Modelo? @relation("OCVentaUnidad")
 
   // Financiación vinculada (si la OC tiene cuotas)
-  financiacion    FinanciacionOC?
+  financiacion FinanciacionOC?
 
   // Permutas (parte de pago) — N motos que el cliente entrega como
   // parte del pago. Permite que una OC tenga 0, 1 o varias.
   // Los campos legacy permutaDescripcion, permutaValor, motoRecibidaId
   // se siguen usando para OCs viejas con una sola permuta.
-  permutas        OCPermuta[]
+  permutas OCPermuta[]
 
   // Pagos directos (efectivo, transferencia, tarjeta, etc) — combinables.
   // Una OC puede tener N pagos. Excluye permutas (van en OCPermuta) y
   // financiación (va en FinanciacionOC). El total se computa sumando
   // pagos + permutas + monto financiado y debería igualar a precioVenta.
-  pagos           OCPago[]
+  pagos OCPago[]
 
   // Tareas de outreach (service post-venta + NPS) generadas a partir de esta OC.
-  outreachTareas  OutreachTarea[]
+  outreachTareas OutreachTarea[]
 
-  observaciones   String?   @db.Text
+  observaciones String? @db.Text
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -945,9 +946,9 @@ model OrdenCompra {
 }
 
 enum EstadoVenta {
-  BORRADOR        // se está armando
-  RESERVADA       // seña pagada, falta saldo/entrega
-  CONCRETADA      // vendida y entregada
+  BORRADOR // se está armando
+  RESERVADA // seña pagada, falta saldo/entrega
+  CONCRETADA // vendida y entregada
   CANCELADA
 }
 
@@ -962,13 +963,13 @@ model OCPago {
 
   // EFECTIVO | TRANSFERENCIA | TARJETA_DEBITO | TARJETA_CREDITO |
   // MERCADO_PAGO | CHEQUE | DEPOSITO | DOLARES | OTRO
-  metodo        String
-  monto         Int
-  moneda        String      @default("ARS")  // "ARS" o "USD". Cada pago lleva su propia moneda — una OC puede tener mezcla.
-  detalle       String?     // texto libre opcional ("Visa 12 sin interés", "Cheque 30 días", etc)
-  fecha         DateTime?   // opcional: cuándo se acreditó (default = fecha de OC)
+  metodo  String
+  monto   Int
+  moneda  String    @default("ARS") // "ARS" o "USD". Cada pago lleva su propia moneda — una OC puede tener mezcla.
+  detalle String? // texto libre opcional ("Visa 12 sin interés", "Cheque 30 días", etc)
+  fecha   DateTime? // opcional: cuándo se acreditó (default = fecha de OC)
 
-  createdAt     DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([ordenCompraId])
 }
@@ -982,39 +983,39 @@ model OCPermuta {
   ordenCompra   OrdenCompra @relation(fields: [ordenCompraId], references: [id], onDelete: Cascade)
 
   // Datos de la moto entregada
-  marca         String?
-  modelo        String?
-  anio          Int?
-  kilometros    Int?
-  patente       String?
-  chasis        String?
-  motor         String?
-  descripcion   String?     @db.Text
-  valor         Int         // valor tomado por esta permuta
-  moneda        String      @default("ARS")  // "ARS" o "USD". Una OC puede tomar permutas valuadas en moneda distinta a la del precio de venta.
+  marca       String?
+  modelo      String?
+  anio        Int?
+  kilometros  Int?
+  patente     String?
+  chasis      String?
+  motor       String?
+  descripcion String? @db.Text
+  valor       Int // valor tomado por esta permuta
+  moneda      String  @default("ARS") // "ARS" o "USD". Una OC puede tomar permutas valuadas en moneda distinta a la del precio de venta.
 
   // Checklist de qué entrega el cliente con la moto. Se copia a las
   // notasInternas de la moto al subirla al stock para que el vendedor
   // sepa qué accesorios trae cuando va a venderla.
-  tieneTitulo        Boolean @default(false)
-  tieneManual        Boolean @default(false)
-  tieneSegundaLlave  Boolean @default(false)
-  tieneCasco         Boolean @default(false)
-  tieneVtv           Boolean @default(false)
-  tieneSeguro        Boolean @default(false)
-  tieneFactura       Boolean @default(false) // factura de compra original
-  tieneFichaTecnica  Boolean @default(false)
-  accesoriosExtra    String? @db.Text // texto libre: "Maleta lateral, GPS, etc"
+  tieneTitulo       Boolean @default(false)
+  tieneManual       Boolean @default(false)
+  tieneSegundaLlave Boolean @default(false)
+  tieneCasco        Boolean @default(false)
+  tieneVtv          Boolean @default(false)
+  tieneSeguro       Boolean @default(false)
+  tieneFactura      Boolean @default(false) // factura de compra original
+  tieneFichaTecnica Boolean @default(false)
+  accesoriosExtra   String? @db.Text // texto libre: "Maleta lateral, GPS, etc"
 
   // Si se subió al stock como moto usada → linkeo
-  motoRecibidaId String?    @unique
-  motoRecibida   Modelo?    @relation("OCPermutaMotoRecibida", fields: [motoRecibidaId], references: [id])
+  motoRecibidaId String? @unique
+  motoRecibida   Modelo? @relation("OCPermutaMotoRecibida", fields: [motoRecibidaId], references: [id])
 
   // Mandato generado automaticamente al tomar esta moto en parte de pago.
   // Sirve como ficha de venta para revenderla.
-  mandato       MandatoVenta? @relation("MandatoDesdePermuta")
+  mandato MandatoVenta? @relation("MandatoDesdePermuta")
 
-  createdAt     DateTime    @default(now())
+  createdAt DateTime @default(now())
 
   @@index([ordenCompraId])
 }
@@ -1022,52 +1023,52 @@ model OCPermuta {
 // ==================== TALLER - ÓRDENES DE TRABAJO ====================
 
 model OrdenTrabajo {
-  id              String    @id @default(cuid())
-  numero          Int       @unique @default(autoincrement())  // OT-0001, OT-0002...
-  fechaIngreso    DateTime  @default(now())
-  fechaPrometida  DateTime?
-  fechaEntrega    DateTime?
-  estado          EstadoOT  @default(INGRESADA)
+  id             String    @id @default(cuid())
+  numero         Int       @unique @default(autoincrement()) // OT-0001, OT-0002...
+  fechaIngreso   DateTime  @default(now())
+  fechaPrometida DateTime?
+  fechaEntrega   DateTime?
+  estado         EstadoOT  @default(INGRESADA)
 
   // Cliente
-  clienteId       String
-  cliente         Cliente   @relation(fields: [clienteId], references: [id])
+  clienteId String
+  cliente   Cliente @relation(fields: [clienteId], references: [id])
 
   // Moto (puede o no estar en el catálogo — ej: cliente externo que trae su moto)
-  modeloId        String?
-  modelo          Modelo?   @relation(fields: [modeloId], references: [id])
+  modeloId String?
+  modelo   Modelo? @relation(fields: [modeloId], references: [id])
 
   // Snapshot de la moto (si no está en catálogo)
-  motoMarca       String
-  motoModelo      String
-  motoAnio        Int?
-  motoPatente     String?
-  motoKilometros  Int?
+  motoMarca      String
+  motoModelo     String
+  motoAnio       Int?
+  motoPatente    String?
+  motoKilometros Int?
 
   // Trabajo
-  tipoServicioId  String?
-  tipoServicio    TipoServicio? @relation(fields: [tipoServicioId], references: [id])
-  motivoIngreso   String    @db.Text   // lo que dice el cliente
-  diagnostico     String?   @db.Text   // lo que detecta el mecánico
-  trabajosRealizados String? @db.Text
+  tipoServicioId     String?
+  tipoServicio       TipoServicio? @relation(fields: [tipoServicioId], references: [id])
+  motivoIngreso      String        @db.Text // lo que dice el cliente
+  diagnostico        String?       @db.Text // lo que detecta el mecánico
+  trabajosRealizados String?       @db.Text
 
   // Items (repuestos y mano de obra en JSON simple, no necesitamos otra tabla por ahora)
-  items           Json?     // [{ descripcion, cantidad, precio, tipo: "repuesto"|"mano_obra" }]
+  items Json? // [{ descripcion, cantidad, precio, tipo: "repuesto"|"mano_obra" }]
 
   // Económico
-  subtotal        Int       @default(0)
-  descuento       Int       @default(0)
-  total           Int       @default(0)
-  pagado          Int       @default(0)
-  saldo           Int       @default(0)
+  subtotal  Int @default(0)
+  descuento Int @default(0)
+  total     Int @default(0)
+  pagado    Int @default(0)
+  saldo     Int @default(0)
 
   // Notas internas
-  observaciones   String?   @db.Text
+  observaciones String? @db.Text
 
   // Si vino de un presupuesto previo
-  presupuesto     Presupuesto? @relation("PresupuestoOT")
+  presupuesto Presupuesto? @relation("PresupuestoOT")
   // Si vino de un turno agendado
-  turno           Turno? @relation("OTDeTurno")
+  turno       Turno?       @relation("OTDeTurno")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1079,14 +1080,14 @@ model OrdenTrabajo {
 }
 
 enum EstadoOT {
-  INGRESADA          // recién llegó al taller
-  EN_DIAGNOSTICO     // revisando
-  PRESUPUESTADA      // esperando aprobación del cliente
-  APROBADA           // aprobó, en trabajo
-  EN_REPARACION      // trabajando
-  LISTA              // terminada, lista para entregar
-  ENTREGADA          // retirada por el cliente
-  CANCELADA          // cliente canceló
+  INGRESADA // recién llegó al taller
+  EN_DIAGNOSTICO // revisando
+  PRESUPUESTADA // esperando aprobación del cliente
+  APROBADA // aprobó, en trabajo
+  EN_REPARACION // trabajando
+  LISTA // terminada, lista para entregar
+  ENTREGADA // retirada por el cliente
+  CANCELADA // cliente canceló
 }
 
 // ==================== PRESUPUESTOS DE TRABAJO ====================
@@ -1094,43 +1095,43 @@ enum EstadoOT {
 // dar al cliente. Si el cliente acepta, se puede convertir en OT.
 
 model Presupuesto {
-  id              String    @id @default(cuid())
-  numero          Int       @unique @default(autoincrement())  // PRE-0001, PRE-0002...
-  fecha           DateTime  @default(now())
-  validezDias     Int       @default(15)  // dias que vale el presupuesto
-  estado          EstadoPresupuesto @default(BORRADOR)
+  id          String            @id @default(cuid())
+  numero      Int               @unique @default(autoincrement()) // PRE-0001, PRE-0002...
+  fecha       DateTime          @default(now())
+  validezDias Int               @default(15) // dias que vale el presupuesto
+  estado      EstadoPresupuesto @default(BORRADOR)
 
   // Cliente (opcional para presupuestos a "potencial cliente")
   clienteId       String?
-  cliente         Cliente?  @relation(fields: [clienteId], references: [id])
+  cliente         Cliente? @relation(fields: [clienteId], references: [id])
   // Datos del cliente como snapshot (por si no esta en la base)
-  clienteNombre   String?   // "Juan Perez" si no hay clienteId
-  clienteContacto String?   // tel/email/dni
+  clienteNombre   String? // "Juan Perez" si no hay clienteId
+  clienteContacto String? // tel/email/dni
 
   // Moto del trabajo (texto libre, no requiere catalogo)
-  motoMarca       String?
-  motoModelo      String?
-  motoAnio        Int?
-  motoPatente     String?
-  motoKilometros  Int?
+  motoMarca      String?
+  motoModelo     String?
+  motoAnio       Int?
+  motoPatente    String?
+  motoKilometros Int?
 
   // Trabajo
-  motivoIngreso   String?   @db.Text
-  trabajosACotizar String?  @db.Text
+  motivoIngreso    String? @db.Text
+  trabajosACotizar String? @db.Text
 
   // Items (mismo formato que OT: [{ descripcion, cantidad, precio, tipo }])
-  items           Json?
+  items Json?
 
   // Económico
-  subtotal        Int       @default(0)
-  descuento       Int       @default(0)
-  total           Int       @default(0)
+  subtotal  Int @default(0)
+  descuento Int @default(0)
+  total     Int @default(0)
 
-  observaciones   String?   @db.Text
+  observaciones String? @db.Text
 
   // Si se convirtio en OT, link a la OT creada
-  ordenTrabajoId  String?   @unique
-  ordenTrabajo    OrdenTrabajo? @relation("PresupuestoOT", fields: [ordenTrabajoId], references: [id])
+  ordenTrabajoId String?       @unique
+  ordenTrabajo   OrdenTrabajo? @relation("PresupuestoOT", fields: [ordenTrabajoId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1141,11 +1142,11 @@ model Presupuesto {
 }
 
 enum EstadoPresupuesto {
-  BORRADOR     // se está armando
-  ENVIADO      // enviado al cliente, esperando respuesta
-  ACEPTADO     // cliente aprobó (idealmente se convierte en OT)
-  RECHAZADO    // cliente rechazó
-  VENCIDO      // pasó la validezDias sin respuesta
+  BORRADOR // se está armando
+  ENVIADO // enviado al cliente, esperando respuesta
+  ACEPTADO // cliente aprobó (idealmente se convierte en OT)
+  RECHAZADO // cliente rechazó
+  VENCIDO // pasó la validezDias sin respuesta
 }
 
 // ==================== MERCADO LIBRE ====================
@@ -1154,8 +1155,8 @@ enum EstadoPresupuesto {
 
 model MLConfig {
   id            String    @id @default("default")
-  userId        String?              // ID del usuario en ML (despues del OAuth)
-  nickname      String?              // nombre de usuario en ML
+  userId        String? // ID del usuario en ML (despues del OAuth)
+  nickname      String? // nombre de usuario en ML
   email         String?
   accessToken   String?   @db.Text
   refreshToken  String?   @db.Text
@@ -1175,22 +1176,22 @@ model MLConfig {
 // dura ~60 días renovable. Asociado a UNA página de FB y UNA cuenta IG
 // Business linkeada a esa página.
 model MetaConfig {
-  id              String    @id @default("default")
-  userId          String?              // ID del user de Facebook que conectó
-  userName        String?              // Nombre del user
-  pageId          String?              // ID de la página de FB
-  pageName        String?              // Nombre de la página
+  id               String    @id @default("default")
+  userId           String? // ID del user de Facebook que conectó
+  userName         String? // Nombre del user
+  pageId           String? // ID de la página de FB
+  pageName         String? // Nombre de la página
   // pageAccessToken: encriptado con AES-256-GCM (prefijo "enc:v1:"). Si
   // hay valores legacy en texto plano, se manejan transparentemente al
   // leer (ver src/lib/crypto/tokens.ts).
-  pageAccessToken String?   @db.Text
-  igUserId        String?              // ID de la cuenta IG Business (vinculada a la page)
-  igUsername      String?              // @motosfernandez
-  expiresAt       DateTime?            // del user token (page token suele no expirar)
-  scope           String?
+  pageAccessToken  String?   @db.Text
+  igUserId         String? // ID de la cuenta IG Business (vinculada a la page)
+  igUsername       String? // @motosfernandez
+  expiresAt        DateTime? // del user token (page token suele no expirar)
+  scope            String?
   // Versión de Graph API que usamos para este config. Permite rollear
   // versiones en el futuro sin redeploy de código (cambiar la fila en DB).
-  apiVersion      String    @default("v25.0")
+  apiVersion       String    @default("v25.0")
   // Última vez que se verificó que el token sigue válido. Lo setea el
   // cron check-token-health.
   lastTokenCheckAt DateTime?
@@ -1198,12 +1199,12 @@ model MetaConfig {
   // === MARKETING API (brief Fase 4 — Meta Ads) ===
   // Ad account dedicado de Motos Fernandez en Meta Business Manager.
   // Formato: "act_XXXXXXXXXX". Lo setea el wizard de configuración de Ads.
-  adAccountId       String?
+  adAccountId        String?
   // System User (recomendado por Meta para automatización server-to-server).
   // Su token NO expira. Setup manual en Meta Business Manager.
   adsSystemUserId    String?
   // Encriptado con AES-256-GCM (mismo helper que pageAccessToken).
-  adsSystemUserToken String?  @db.Text
+  adsSystemUserToken String? @db.Text
   // Lista de scopes activos (para detectar si falta alguno tras reconectar).
   // Ej: ["ads_management", "ads_read", "pages_manage_ads"].
   adsTokenScopes     Json?
@@ -1214,8 +1215,8 @@ model MetaConfig {
   // Catálogo de Vehicles para Dynamic Product Ads (roadmap futuro).
   metaCatalogId      String?
 
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ==================== JOB LOG (crons / tareas automaticas) ====================
@@ -1223,13 +1224,13 @@ model MetaConfig {
 // resultado. Sirve para que el admin vea desde el panel si los jobs
 // estan corriendo y si hubo errores.
 model JobLog {
-  id          String   @id @default(cuid())
-  job         String   // "backup-sheets" | "backup-json" | "verificar-publicaciones" | "outreach-generator"
-  ok          Boolean
-  message     String?  @db.Text
-  durationMs  Int?
-  metadata    Json?    // datos extra: cantidad de filas, IDs procesados, etc.
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  job        String // "backup-sheets" | "backup-json" | "verificar-publicaciones" | "outreach-generator"
+  ok         Boolean
+  message    String?  @db.Text
+  durationMs Int?
+  metadata   Json? // datos extra: cantidad de filas, IDs procesados, etc.
+  createdAt  DateTime @default(now())
 
   @@index([job, createdAt])
   @@index([createdAt])
@@ -1242,39 +1243,39 @@ model JobLog {
 // wa.me con el mensaje pre-cargado. Cuando lo marca enviado, queda
 // registrado en la tarea.
 model OutreachTarea {
-  id              String        @id @default(cuid())
-  tipo            TipoOutreach
-  estado          EstadoOutreach @default(PROGRAMADA)
+  id     String         @id @default(cuid())
+  tipo   TipoOutreach
+  estado EstadoOutreach @default(PROGRAMADA)
 
   // Cliente al que se le manda
-  clienteId       String
-  cliente         Cliente       @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  clienteId String
+  cliente   Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
 
   // OC origen (si aplica): para post-venta sabemos qué moto compró
-  ordenCompraId   String?
-  ordenCompra     OrdenCompra?  @relation(fields: [ordenCompraId], references: [id], onDelete: SetNull)
+  ordenCompraId String?
+  ordenCompra   OrdenCompra? @relation(fields: [ordenCompraId], references: [id], onDelete: SetNull)
 
   // Cuota origen (si aplica): para recordatorios CUOTA_PROXIMA / CUOTA_VENCIDA.
   // Si la cuota se paga, podemos cancelar la tarea automaticamente buscando por
   // este id. SetNull en delete para no perder la traza si la cuota se elimina.
-  cuotaId         String?
-  cuota           CuotaFinanciacion? @relation(fields: [cuotaId], references: [id], onDelete: SetNull)
+  cuotaId String?
+  cuota   CuotaFinanciacion? @relation(fields: [cuotaId], references: [id], onDelete: SetNull)
 
   // Snapshot del contacto al momento de generar la tarea
-  telefono        String?       // si lo modificamos en Cliente, este queda fijo (lo que se uso)
-  mensaje         String        @db.Text  // texto exacto que se manda
+  telefono String? // si lo modificamos en Cliente, este queda fijo (lo que se uso)
+  mensaje  String  @db.Text // texto exacto que se manda
 
   // Fechas
-  fechaProgramada DateTime      @default(now())  // cuando deberia mandarse
-  enviadaAt       DateTime?     // cuando el admin la marco como enviada
+  fechaProgramada DateTime  @default(now()) // cuando deberia mandarse
+  enviadaAt       DateTime? // cuando el admin la marco como enviada
   descartadaAt    DateTime?
 
   // Resultado opcional (para NPS): texto libre de lo que respondio el cliente
-  respuesta       String?       @db.Text
-  notaInterna     String?       @db.Text
+  respuesta   String? @db.Text
+  notaInterna String? @db.Text
 
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([estado, fechaProgramada])
   @@index([clienteId])
@@ -1283,30 +1284,30 @@ model OutreachTarea {
 }
 
 enum TipoOutreach {
-  SERVICE_POSTVENTA  // recordatorio de service a los X meses de comprar
-  NPS                // encuesta de satisfaccion + pedido de review
-  CUOTA_PROXIMA      // recordatorio 3 dias antes del vencimiento
-  CUOTA_VENCIDA      // aviso de cuota atrasada
+  SERVICE_POSTVENTA // recordatorio de service a los X meses de comprar
+  NPS // encuesta de satisfaccion + pedido de review
+  CUOTA_PROXIMA // recordatorio 3 dias antes del vencimiento
+  CUOTA_VENCIDA // aviso de cuota atrasada
 }
 
 enum EstadoOutreach {
-  PROGRAMADA   // generada por el cron, falta despachar
-  ENVIADA      // el admin la mando por WhatsApp
-  DESCARTADA   // el admin decidio no mandar
-  RESPONDIDA   // el cliente respondio (admin lo registra)
+  PROGRAMADA // generada por el cron, falta despachar
+  ENVIADA // el admin la mando por WhatsApp
+  DESCARTADA // el admin decidio no mandar
+  RESPONDIDA // el cliente respondio (admin lo registra)
 }
 
 // ==================== TIPOS DE SERVICIO (TALLER) ====================
 
 model TipoServicio {
-  id              String    @id @default(cuid())
-  nombre          String    @unique  // "Service 1000km", "Cambio de aceite", "Reparación general"
-  descripcion     String?   @db.Text
-  precioBase      Int?      // precio orientativo
-  duracionMin     Int?      // duración estimada en minutos
-  activo          Boolean   @default(true)
-  orden           Int       @default(0)
-  ordenes         OrdenTrabajo[]
+  id          String         @id @default(cuid())
+  nombre      String         @unique // "Service 1000km", "Cambio de aceite", "Reparación general"
+  descripcion String?        @db.Text
+  precioBase  Int? // precio orientativo
+  duracionMin Int? // duración estimada en minutos
+  activo      Boolean        @default(true)
+  orden       Int            @default(0)
+  ordenes     OrdenTrabajo[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1335,37 +1336,37 @@ model TipoServicio {
 /// un worker queda muerto, lockedAt < now - 10min se considera zombi y
 /// el siguiente cron lo recupera.
 model ScheduledPost {
-  id              String   @id @default(cuid())
-  motoId          String
-  moto            Modelo   @relation("ScheduledPostMoto", fields: [motoId], references: [id], onDelete: Cascade)
+  id            String    @id @default(cuid())
+  motoId        String
+  moto          Modelo    @relation("ScheduledPostMoto", fields: [motoId], references: [id], onDelete: Cascade)
   // Array de plataformas: ["IG"], ["FB"], o ["IG","FB"]
-  platforms       String[]
-  scheduledAt     DateTime // En UTC. Se convierte a AR solo en la UI.
-  customCaption   String?  @db.Text
+  platforms     String[]
+  scheduledAt   DateTime // En UTC. Se convierte a AR solo en la UI.
+  customCaption String?   @db.Text
   // Tipo de media a publicar:
   // - PHOTO_CAROUSEL (default): usa moto.fotos como carrusel IG + foto principal FB.
   // - VIDEO: video al feed (IG video feed, FB video). videoUrls debe tener 1 URL.
   // - REEL: Reels de IG (vertical 9:16, máx 90s) + Reel de FB. videoUrls debe tener 1 URL.
-  mediaType       String   @default("PHOTO_CAROUSEL")
+  mediaType     String    @default("PHOTO_CAROUSEL")
   // Override de assets si el admin no quiere usar las fotos del modelo.
   // Cloudinary URLs. Para VIDEO/REEL se usa el primero.
-  videoUrls       String[] @default([])
-  customFotos     String[] @default([])
-  status          String   @default("PENDING")
-  publishedAt     DateTime?
+  videoUrls     String[]  @default([])
+  customFotos   String[]  @default([])
+  status        String    @default("PENDING")
+  publishedAt   DateTime?
   // Estructura: { ig: { postId, permalink, publishedAt }, fb: { postId, permalink, publishedAt } }
-  publishedRefs   Json?
-  errorMessage    String?  @db.Text
-  errorCode       Int?
-  retryCount      Int      @default(0)
-  lastAttemptAt   DateTime?
+  publishedRefs Json?
+  errorMessage  String?   @db.Text
+  errorCode     Int?
+  retryCount    Int       @default(0)
+  lastAttemptAt DateTime?
   // Optimistic locking del cron.
-  lockedAt        DateTime?
-  lockedBy        String?
-  createdById     String?
-  createdBy       User?    @relation("ScheduledPostCreator", fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  lockedAt      DateTime?
+  lockedBy      String?
+  createdById   String?
+  createdBy     User?     @relation("ScheduledPostCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([status, scheduledAt])
   @@index([motoId, scheduledAt])
@@ -1378,53 +1379,53 @@ model ScheduledPost {
 /// Importante: TODA campaña arranca DRAFT/IN_META_PAUSED. La activación
 /// requiere doble-confirmación explícita del admin desde la UI.
 model AdCampaign {
-  id                    String   @id @default(cuid())
-  motoId                String
-  moto                  Modelo   @relation("AdCampaignMoto", fields: [motoId], references: [id], onDelete: Cascade)
+  id                   String    @id @default(cuid())
+  motoId               String
+  moto                 Modelo    @relation("AdCampaignMoto", fields: [motoId], references: [id], onDelete: Cascade)
   // Auto-generado: "MF — {marca} {modelo} {año} — {YYYY-MM-DD}"
-  name                  String
+  name                 String
   // Nomenclatura ODAX (no las legacy de Meta):
   // OUTCOME_TRAFFIC, OUTCOME_ENGAGEMENT, OUTCOME_LEADS, OUTCOME_AWARENESS
-  objective             String
+  objective            String
   // IDs en Meta tras creación. Quedan null mientras el status sea DRAFT.
-  metaCampaignId        String?  @unique
-  metaAdSetId           String?  @unique
-  metaAdId              String?  @unique
-  metaCreativeId        String?
+  metaCampaignId       String?   @unique
+  metaAdSetId          String?   @unique
+  metaAdId             String?   @unique
+  metaCreativeId       String?
   // Presupuesto diario en CENTAVOS de ARS para evitar floats (ej 1000000 = $10000).
-  dailyBudgetCents      Int
-  startDate             DateTime
-  endDate               DateTime
-  status                String   @default("DRAFT")
+  dailyBudgetCents     Int
+  startDate            DateTime
+  endDate              DateTime
+  status               String    @default("DRAFT")
   // Validado por Zod antes de persistir. Estructura: { ageMin, ageMax,
   // genders, locations[], interests[], languages[] }. Ver brief §6.5.
-  audienceConfig        Json
-  creativeImageUrl      String   @db.Text
+  audienceConfig       Json
+  creativeImageUrl     String    @db.Text
   // Tipo de creative del wizard rápido: "PHOTO" (default) | "VIDEO" | "REEL".
   // Para el editor avanzado, cada AdCampaignAd tiene su propio mediaType.
-  creativeMediaType     String   @default("PHOTO")
+  creativeMediaType    String    @default("PHOTO")
   // URL de Cloudinary del video cuando creativeMediaType es VIDEO/REEL.
-  creativeVideoUrl      String?  @db.Text
-  creativeCaption       String   @db.Text
+  creativeVideoUrl     String?   @db.Text
+  creativeCaption      String    @db.Text
   // CTA: LEARN_MORE | MESSAGE_PAGE | WHATSAPP_MESSAGE | GET_DIRECTIONS | etc.
-  creativeCallToAction  String
-  destinationUrl        String?  @db.Text
+  creativeCallToAction String
+  destinationUrl       String?   @db.Text
   // Cache de insights: { reach, impressions, clicks, ctr, cpm, cpc, spend,
   // results, costPerResult, syncedAt }. Actualizado por cron sync cada 6h.
-  insightsCache         Json?
-  lastSyncedAt          DateTime?
-  errorMessage          String?  @db.Text
-  errorCode             Int?
-  createdById           String?
-  createdBy             User?    @relation("AdCampaignCreator", fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt             DateTime @default(now())
-  updatedAt             DateTime @updatedAt
+  insightsCache        Json?
+  lastSyncedAt         DateTime?
+  errorMessage         String?   @db.Text
+  errorCode            Int?
+  createdById          String?
+  createdBy            User?     @relation("AdCampaignCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 
   // Estructura jerárquica (Fase 7): una campaña tiene N adsets,
   // cada adset tiene N ads. Los campos metaAdSetId/metaAdId/etc de
   // arriba quedan por backward-compat (apuntan al primer adset/ad
   // creado vía la versión simple). El editor nuevo usa adSets[].
-  adSets                AdCampaignAdSet[]
+  adSets AdCampaignAdSet[]
 
   @@index([status, endDate])
   @@index([motoId])
@@ -1439,34 +1440,34 @@ model AdCampaign {
 /// Naming: `AdCampaignAdSet` (no `AdSet`) para evitar colisión con
 /// nombres genéricos y dejar claro que es hijo de AdCampaign.
 model AdCampaignAdSet {
-  id                  String      @id @default(cuid())
-  campaignId          String
-  campaign            AdCampaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
-  name                String
-  metaAdSetId         String?     @unique
+  id               String     @id @default(cuid())
+  campaignId       String
+  campaign         AdCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  name             String
+  metaAdSetId      String?    @unique
   // El presupuesto diario es opcional acá: si la campaña padre tiene
   // CBO (Campaign Budget Optimization) activado, el budget vive en
   // la campaña. Si no, vive en cada adset.
-  dailyBudgetCents    Int?
-  startDate           DateTime
-  endDate             DateTime
+  dailyBudgetCents Int?
+  startDate        DateTime
+  endDate          DateTime
   // Status sigue el mismo enum que AdCampaign (DRAFT, IN_META_PAUSED,
   // ACTIVE, PAUSED_BY_USER, COMPLETED, FAILED).
-  status              String      @default("DRAFT")
+  status           String     @default("DRAFT")
   // Audiencia + targeting. Mismo shape que AdCampaign.audienceConfig.
-  audienceConfig      Json
+  audienceConfig   Json
   // Insights cacheados (refrescados por cron sync). Estructura igual
   // a la de AdCampaign pero a nivel adset.
-  insightsCache       Json?
-  lastSyncedAt        DateTime?
-  errorMessage        String?     @db.Text
-  errorCode           Int?
+  insightsCache    Json?
+  lastSyncedAt     DateTime?
+  errorMessage     String?    @db.Text
+  errorCode        Int?
   // Orden de presentación en la UI (botones reordenar).
-  orden               Int         @default(0)
-  createdAt           DateTime    @default(now())
-  updatedAt           DateTime    @updatedAt
+  orden            Int        @default(0)
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
 
-  ads                 AdCampaignAd[]
+  ads AdCampaignAd[]
 
   @@index([campaignId])
   @@index([status])
@@ -1478,37 +1479,37 @@ model AdCampaignAdSet {
 /// CTA. Acá está la verdadera variación creativa: testear "Reel
 /// dinámico" vs "carrusel de fotos" vs "foto sola con texto fuerte".
 model AdCampaignAd {
-  id                    String              @id @default(cuid())
-  adSetId               String
-  adSet                 AdCampaignAdSet     @relation(fields: [adSetId], references: [id], onDelete: Cascade)
-  name                  String
-  metaAdId              String?             @unique
-  metaCreativeId        String?
-  status                String              @default("DRAFT")
+  id             String          @id @default(cuid())
+  adSetId        String
+  adSet          AdCampaignAdSet @relation(fields: [adSetId], references: [id], onDelete: Cascade)
+  name           String
+  metaAdId       String?         @unique
+  metaCreativeId String?
+  status         String          @default("DRAFT")
   // Tipo de creative:
   // - PHOTO: una imagen fija (link_data con picture).
   // - PHOTO_CAROUSEL: carrusel de varias imágenes.
   // - VIDEO: un video al feed.
   // - REEL: video vertical 9:16.
-  mediaType             String              @default("PHOTO")
+  mediaType      String          @default("PHOTO")
   // URLs a Cloudinary. Según mediaType:
   // - PHOTO: 1 url en imageUrls
   // - PHOTO_CAROUSEL: 2-10 urls en imageUrls
   // - VIDEO/REEL: 1 url en videoUrls
-  imageUrls             String[]            @default([])
-  videoUrls             String[]            @default([])
-  caption               String              @db.Text
+  imageUrls      String[]        @default([])
+  videoUrls      String[]        @default([])
+  caption        String          @db.Text
   // CTA: LEARN_MORE | MESSAGE_PAGE | WHATSAPP_MESSAGE | etc.
-  callToAction          String
-  destinationUrl        String?             @db.Text
+  callToAction   String
+  destinationUrl String?         @db.Text
   // Insights por ad — para ver qué creative funcionó mejor.
-  insightsCache         Json?
-  lastSyncedAt          DateTime?
-  errorMessage          String?             @db.Text
-  errorCode             Int?
-  orden                 Int                 @default(0)
-  createdAt             DateTime            @default(now())
-  updatedAt             DateTime            @updatedAt
+  insightsCache  Json?
+  lastSyncedAt   DateTime?
+  errorMessage   String?         @db.Text
+  errorCode      Int?
+  orden          Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
 
   @@index([adSetId])
   @@index([status])
@@ -1522,21 +1523,21 @@ model AdCampaignAd {
 ///
 /// Retención 30 días con cron de cleanup semanal.
 model MetaApiLog {
-  id                      String   @id @default(cuid())
+  id                     String   @id @default(cuid())
   // OUTBOUND: nosotros llamamos a Meta. INBOUND: webhooks de Meta (futuro).
-  direction               String   @default("OUTBOUND")
-  endpoint                String
-  method                  String
+  direction              String   @default("OUTBOUND")
+  endpoint               String
+  method                 String
   // Token redactado antes de guardar.
-  requestBody             Json?
-  responseStatus          Int?
-  responseBody            Json?
-  durationMs              Int?
-  errorCode               Int?
-  errorSubcode            Int?
-  relatedScheduledPostId  String?
-  relatedAdCampaignId     String?
-  createdAt               DateTime @default(now())
+  requestBody            Json?
+  responseStatus         Int?
+  responseBody           Json?
+  durationMs             Int?
+  errorCode              Int?
+  errorSubcode           Int?
+  relatedScheduledPostId String?
+  relatedAdCampaignId    String?
+  createdAt              DateTime @default(now())
 
   @@index([createdAt])
   @@index([relatedScheduledPostId])
@@ -1584,4 +1585,70 @@ model Vencimiento {
   @@unique([obligacionId, periodo])
   @@index([fechaVencimiento])
   @@index([estado])
+}
+
+// ==================== FACTURACIÓN ELECTRÓNICA (ARCA / AFIP) ====================
+
+/// Cache del Ticket de Acceso de WSAA (token + sign). Dura ~12h; ARCA rechaza
+/// pedir uno nuevo mientras hay otro válido, así que se reusa hasta que expira.
+model ArcaTicket {
+  id        String   @id @default(cuid())
+  service   String   @unique // "wsfe", "ws_sr_padron_a13", etc.
+  token     String   @db.Text
+  sign      String   @db.Text
+  expiresAt DateTime
+  updatedAt DateTime @updatedAt
+}
+
+/// Comprobante electrónico emitido (o en borrador) contra ARCA.
+/// Los importes se guardan en pesos con 2 decimales (Float) porque el IVA
+/// genera fracciones (neto = total / 1.21).
+model Factura {
+  id                String    @id @default(cuid())
+  // Identificación AFIP
+  puntoVenta        Int
+  tipoCbte          Int // 1=Fact A, 6=Fact B, 11=Fact C, 3=NC A, 8=NC B, 13=NC C, etc.
+  numero            Int? // asignado por ARCA al obtener CAE (correlativo)
+  concepto          Int       @default(1) // 1=Productos, 2=Servicios, 3=Productos y Servicios
+  fechaCbte         DateTime
+  // Receptor
+  clienteId         String?
+  cliente           Cliente?  @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+  docTipo           Int // 80=CUIT, 86=CUIL, 96=DNI, 99=Consumidor Final
+  docNro            String
+  receptorNombre    String
+  receptorDomicilio String?
+  condIvaReceptorId Int? // RG 5616: 1=RI, 4=Exento, 5=Cons.Final, 6=Monotributo
+  // Importes (pesos, 2 decimales)
+  impNeto           Float     @default(0) // neto gravado
+  impIva            Float     @default(0)
+  impTotConc        Float     @default(0) // no gravado
+  impOpEx           Float     @default(0) // exento
+  impTrib           Float     @default(0) // otros tributos
+  impTotal          Float     @default(0)
+  moneda            String    @default("PES")
+  cotizacion        Float     @default(1)
+  // Detalle e IVA discriminado (JSON)
+  // items:     [{ descripcion, cantidad, precioUnit, alicuotaIva, subtotal }]
+  // alicuotas: [{ id, baseImp, importe }]  (id AFIP: 3=0%,4=10.5%,5=21%,6=27%)
+  items             Json
+  alicuotas         Json
+  // Resultado ARCA
+  estado            String    @default("BORRADOR") // BORRADOR | EMITIDA | RECHAZADA | ANULADA
+  cae               String?
+  caeVto            DateTime?
+  arcaResultado     String? // A=Aprobado, R=Rechazado, P=Parcial
+  arcaObs           Json? // observaciones/errores devueltos por ARCA
+  // Vínculos opcionales con el resto del sistema
+  ventaId           String?
+  mandatoId         String?
+  pdfUrl            String?
+  notas             String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([puntoVenta, tipoCbte, numero])
+  @@index([estado])
+  @@index([fechaCbte])
+  @@index([clienteId])
 }
