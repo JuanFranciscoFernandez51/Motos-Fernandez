@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
   letra: { fontSize: 30, fontWeight: 700, lineHeight: 1 },
   codigo: { fontSize: 6.5, marginTop: 1 },
   logo: { width: 150, height: 46, objectFit: "contain", marginBottom: 4 },
-  razon: { fontSize: 12, fontWeight: 700 },
+  razon: { fontSize: 9.5, fontWeight: 700 },
   small: { fontSize: 8, color: "#333", marginTop: 1 },
   docTitle: { fontSize: 13, fontWeight: 700 },
   rowLine: { flexDirection: "row", justifyContent: "space-between", marginTop: 1.5 },
@@ -110,6 +110,9 @@ export interface FacturaPDFData {
   impNeto: number
   impIva: number
   impTotal: number
+  // Desglose de IVA por alícuota (para discriminar en Factura A)
+  ivaDetalle?: { label: string; importe: number }[]
+  condicionVenta?: string
   cae: string
   caeVto: Date | null
   qrDataUrl: string
@@ -166,6 +169,18 @@ function Copia({ data, copia }: { data: FacturaPDFData; copia: string }) {
               <Text>{d.emisor.inicioActividades}</Text>
             </View>
           ) : null}
+          {d.emisor.telefono ? (
+            <View style={styles.rowLine}>
+              <Text>Tel.:</Text>
+              <Text>{d.emisor.telefono}</Text>
+            </View>
+          ) : null}
+          {d.emisor.email ? (
+            <View style={styles.rowLine}>
+              <Text>Email:</Text>
+              <Text>{d.emisor.email}</Text>
+            </View>
+          ) : null}
         </View>
       </View>
 
@@ -182,6 +197,7 @@ function Copia({ data, copia }: { data: FacturaPDFData; copia: string }) {
         {d.receptor.domicilio ? (
           <Text style={styles.small}>Domicilio: {d.receptor.domicilio}</Text>
         ) : null}
+        <Text style={styles.small}>Condición de venta: {d.condicionVenta || "Contado"}</Text>
       </View>
 
       {/* Ítems */}
@@ -202,7 +218,7 @@ function Copia({ data, copia }: { data: FacturaPDFData; copia: string }) {
         </View>
       ))}
 
-      {/* Totales */}
+      {/* Totales — en Factura A se discriminan neto e IVA por alícuota */}
       <View style={styles.totals}>
         {esA ? (
           <>
@@ -210,10 +226,19 @@ function Copia({ data, copia }: { data: FacturaPDFData; copia: string }) {
               <Text style={styles.totalLbl}>Neto gravado:</Text>
               <Text style={styles.totalVal}>{money(d.impNeto)}</Text>
             </View>
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLbl}>IVA:</Text>
-              <Text style={styles.totalVal}>{money(d.impIva)}</Text>
-            </View>
+            {d.ivaDetalle && d.ivaDetalle.length > 0 ? (
+              d.ivaDetalle.map((iv, i) => (
+                <View style={styles.totalRow} key={i}>
+                  <Text style={styles.totalLbl}>IVA {iv.label}:</Text>
+                  <Text style={styles.totalVal}>{money(iv.importe)}</Text>
+                </View>
+              ))
+            ) : (
+              <View style={styles.totalRow}>
+                <Text style={styles.totalLbl}>IVA:</Text>
+                <Text style={styles.totalVal}>{money(d.impIva)}</Text>
+              </View>
+            )}
           </>
         ) : null}
         <View style={styles.totalRow}>

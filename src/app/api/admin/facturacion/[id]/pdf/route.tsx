@@ -40,6 +40,14 @@ export async function GET(
     alicuotaIva: number
   }[]) || []
 
+  // Desglose de IVA por alícuota (para discriminar en Factura A)
+  const alicuotasRaw =
+    (f.alicuotas as unknown as { id: number; baseImp: number; importe: number }[]) || []
+  const ivaDetalle = alicuotasRaw.map((a) => ({
+    label: `${IVA_PCT[a.id] ?? 0}%`.replace(".", ","),
+    importe: a.importe,
+  }))
+
   const items = itemsRaw.map((it) => {
     const pct = IVA_PCT[it.alicuotaIva] ?? 0
     const brutoUnit = it.precioUnit
@@ -101,6 +109,7 @@ export async function GET(
         impNeto: f.impNeto,
         impIva: f.impIva,
         impTotal: f.impTotal,
+        ivaDetalle,
         cae: f.cae,
         caeVto: f.caeVto,
         qrDataUrl,
