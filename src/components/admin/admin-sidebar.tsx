@@ -61,6 +61,7 @@ const isGroup = (e: NavEntry): e is NavGroup => "items" in e
 
 const navEntries: NavEntry[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, seccion: "DASHBOARD" },
+  { href: "/admin/crm", label: "CRM / Leads", icon: Users, seccion: "CRM" },
 
   // Pedidos online — acceso directo de primer nivel
   { href: "/admin/pedidos", label: "Pedidos", icon: Package, seccion: "PEDIDOS" },
@@ -107,19 +108,21 @@ const navEntries: NavEntry[] = [
     label: "Tesorería",
     icon: Wallet,
     items: [
-      { href: "/admin/tesoreria", label: "Resumen", icon: LayoutDashboard, seccion: "TESORERIA" },
-      { href: "/admin/tesoreria/financiaciones", label: "Financiaciones", icon: CreditCard, seccion: "TESORERIA" },
       { href: "/admin/facturacion", label: "Facturación (ARCA)", icon: FileText, soloAdmin: true },
       { href: "/admin/contador", label: "Contador (vencimientos)", icon: Receipt, soloAdmin: true },
     ],
   },
-  // CRM y Mercado Libre quedan como entradas top-level (fuera de Marketing)
-  // porque son herramientas operativas, no campañas.
-  { href: "/admin/crm", label: "CRM / Leads", icon: Users, seccion: "CRM" },
-  { href: "/admin/ml", label: "Mercado Libre", icon: ShoppingBag, seccion: "ML" },
-  { href: "/admin/meta", label: "Instagram + FB", icon: InstagramIcon as LucideIcon, seccion: "META" },
-  // Meta Ads separado: gasta presupuesto real, va con permiso aparte.
-  { href: "/admin/meta/ads", label: "Meta Ads", icon: Megaphone, seccion: "META_ADS" },
+  // Publicaciones: canales donde publicamos las motos
+  {
+    id: "publicaciones",
+    label: "Publicaciones",
+    icon: InstagramIcon as LucideIcon,
+    items: [
+      { href: "/admin/ml", label: "Mercado Libre", icon: ShoppingBag, seccion: "ML" },
+      { href: "/admin/meta", label: "Instagram + FB", icon: InstagramIcon as LucideIcon, seccion: "META" },
+      { href: "/admin/meta/ads", label: "Meta Ads", icon: Megaphone, seccion: "META_ADS" },
+    ],
+  },
 
   // Marketing y comunicación
   {
@@ -139,9 +142,17 @@ const navEntries: NavEntry[] = [
 
   { href: "/admin/outreach", label: "Outreach", icon: MessageCircleHeart, seccion: "OUTREACH" },
   { href: "/admin/asistente", label: "Asistente IA", icon: Bot, seccion: "ASISTENTE_IA" },
-  { href: "/admin/sistema", label: "Sistema", icon: ListChecks, seccion: "SISTEMA" },
-  { href: "/admin/usuarios", label: "Usuarios", icon: Users, soloAdmin: true },
-  { href: "/admin/configuracion", label: "Config", icon: Settings, seccion: "CONFIGURACION" },
+  // Configuración: ajustes del negocio, sistema y usuarios
+  {
+    id: "configuracion",
+    label: "Configuración",
+    icon: Settings,
+    items: [
+      { href: "/admin/configuracion", label: "General", icon: Settings, seccion: "CONFIGURACION" },
+      { href: "/admin/sistema", label: "Sistema", icon: ListChecks, seccion: "SISTEMA" },
+      { href: "/admin/usuarios", label: "Usuarios", icon: Users, soloAdmin: true },
+    ],
+  },
 ]
 
 /**
