@@ -295,17 +295,28 @@ export function OCPDF({ data }: { data: OCPDFData }) {
   const totalPermutasOC =
     moneda === "USD" ? permutasPorMoneda.USD : permutasPorMoneda.ARS
 
-  const totalFinanciado =
+  const tieneFinanciacion =
+    !!(data.economico.cuotas && data.economico.cuotas > 0)
+  // ¿La financiación ya está cargada como un pago (método Financiación)?
+  // En ese caso su CAPITAL ya está dentro de totalPagosOC.
+  const finEnPagos = (data.pagos || []).some((p) => p.metodo === "FINANCIACION")
+  // Total del PLAN de cuotas: lo que paga el cliente (incluye interés). Es
+  // informativo para la sección de financiación, NO entra en el cuadre.
+  const totalPlanCuotas =
     data.economico.cuotas && data.economico.valorCuota
       ? data.economico.cuotas * data.economico.valorCuota +
         (data.economico.entrega || 0)
       : 0
+  // Para el CUADRE del boleto: si la financiación ya es un pago, su capital
+  // ya está contado; si no (OCs viejas), absorbe el saldo restante del precio.
+  // El interés es margen interno y nunca entra acá.
+  const finCuadre =
+    tieneFinanciacion && !finEnPagos
+      ? Math.max(0, data.economico.precioVenta - totalPagosOC - totalPermutasOC)
+      : 0
   // El cubierto en la moneda de la OC. Lo que está en otra moneda no se mezcla.
-  const totalCubierto = totalPagosOC + totalPermutasOC + totalFinanciado
+  const totalCubierto = totalPagosOC + totalPermutasOC + finCuadre
   const restante = data.economico.precioVenta - totalCubierto
-
-  const tieneFinanciacion =
-    !!(data.economico.cuotas && data.economico.cuotas > 0)
   const tieneGarante =
     !!data.garante &&
     !!(
@@ -635,7 +646,7 @@ export function OCPDF({ data }: { data: OCPDFData }) {
                   {data.economico.entrega ? " + entrega" : ""}):
                 </Text>
                 <Text style={styles.finHighlightValue}>
-                  {money(totalFinanciado, moneda)}
+                  {money(totalPlanCuotas, moneda)}
                 </Text>
               </View>
             )}
@@ -709,10 +720,10 @@ export function OCPDF({ data }: { data: OCPDFData }) {
                 </Text>
               </View>
             )}
-            {totalFinanciado > 0 && (
+            {finCuadre > 0 && (
               <View style={styles.resumenRow}>
-                <Text style={styles.resumenLabel}>Financiación</Text>
-                <Text style={styles.resumenValue}>{money(totalFinanciado, moneda)}</Text>
+                <Text style={styles.resumenLabel}>Financiación (capital)</Text>
+                <Text style={styles.resumenValue}>{money(finCuadre, moneda)}</Text>
               </View>
             )}
             <View style={styles.resumenTotalRow}>
@@ -721,25 +732,16 @@ export function OCPDF({ data }: { data: OCPDFData }) {
               </Text>
               <Text style={styles.resumenTotalValue}>{money(totalCubierto, moneda)}</Text>
             </View>
-            {restante !== 0 && (
+            {/* Solo mostramos el saldo cuando REALMENTE falta cubrir. La
+                sobre-cobertura por intereses de financiación es interna y no
+                se muestra en el boleto. */}
+            {restante > 0 && (
               <View style={styles.resumenRow}>
-                <Text
-                  style={[
-                    styles.resumenLabel,
-                    { color: restante > 0 ? "#B91C1C" : "#B45309" },
-                  ]}
-                >
-                  {restante > 0
-                    ? `Falta cubrir (${moneda})`
-                    : `Cubre de más (${moneda})`}
+                <Text style={[styles.resumenLabel, { color: "#B91C1C" }]}>
+                  Falta cubrir ({moneda})
                 </Text>
-                <Text
-                  style={[
-                    styles.resumenValue,
-                    { color: restante > 0 ? "#B91C1C" : "#B45309" },
-                  ]}
-                >
-                  {money(Math.abs(restante), moneda)}
+                <Text style={[styles.resumenValue, { color: "#B91C1C" }]}>
+                  {money(restante, moneda)}
                 </Text>
               </View>
             )}
