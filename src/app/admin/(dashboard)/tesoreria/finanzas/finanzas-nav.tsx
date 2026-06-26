@@ -14,6 +14,7 @@ const TABS: { href: string; label: string; enabled: boolean }[] = [
   { href: "/admin/tesoreria/finanzas/cuentas", label: "Cuentas", enabled: true },
   { href: "/admin/tesoreria/finanzas/costos", label: "Costos fijos", enabled: true },
   { href: "/admin/tesoreria/finanzas/calculador", label: "Calculador", enabled: true },
+  { href: "/admin/tesoreria/finanzas/ia", label: "Cargar con IA", enabled: true },
 ]
 
 export function FinanzasNav() {
