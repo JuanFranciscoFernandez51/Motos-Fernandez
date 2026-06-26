@@ -1,6 +1,33 @@
 import { prisma } from "@/lib/prisma"
 import { efectoSaldo, rangoMes, resultadoCaja, type MovParaResultado } from "@/lib/finanzas"
 
+/** Movimientos de un mes con filtros opcionales, ordenados por fecha desc. */
+export async function getMovimientos(opts: {
+  anio: number
+  mes: number
+  cuentaId?: string
+  tipo?: string
+  q?: string
+}) {
+  const { desde, hasta } = rangoMes(opts.anio, opts.mes)
+  const where: Record<string, unknown> = { fecha: { gte: desde, lt: hasta } }
+  if (opts.cuentaId) where.cuentaId = opts.cuentaId
+  if (opts.tipo) where.tipo = opts.tipo
+  if (opts.q) {
+    where.OR = [
+      { descripcion: { contains: opts.q, mode: "insensitive" } },
+      { categoria: { contains: opts.q, mode: "insensitive" } },
+      { observaciones: { contains: opts.q, mode: "insensitive" } },
+    ]
+  }
+  const movs = await prisma.movimientoFinanciero.findMany({
+    where,
+    orderBy: [{ fecha: "desc" }, { createdAt: "desc" }],
+    include: { cuenta: { select: { nombre: true, moneda: true } } },
+  })
+  return movs
+}
+
 /** Cuentas activas con su saldo computado (saldoInicial + Σ movimientos). */
 export async function getCuentasConSaldo() {
   const cuentas = await prisma.cuentaFinanciera.findMany({
