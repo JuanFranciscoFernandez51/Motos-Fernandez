@@ -88,6 +88,80 @@ export async function getResumenMes(anio: number, mes1a12: number) {
   }
 }
 
+/** Neto (cambio de saldo) por cuenta en un mes — incluye transferencias. */
+export async function getNetoPorCuentaMes(anio: number, mes1a12: number) {
+  const { desde, hasta } = rangoMes(anio, mes1a12)
+  const movs = await prisma.movimientoFinanciero.findMany({
+    where: { fecha: { gte: desde, lt: hasta } },
+    include: { cuenta: { select: { nombre: true, moneda: true } } },
+  })
+  const map = new Map<string, { nombre: string; moneda: string; neto: number }>()
+  for (const m of movs) {
+    const acc = map.get(m.cuentaId) || { nombre: m.cuenta.nombre, moneda: m.cuenta.moneda, neto: 0 }
+    acc.neto += efectoSaldo(m)
+    map.set(m.cuentaId, acc)
+  }
+  return [...map.values()].sort((a, b) => Math.abs(b.neto) - Math.abs(a.neto))
+}
+
+/**
+ * Dashboard anual (ARS, cuentas no excluidas): por mes ingresos/gastos/resultado
+ * + acumulado, matriz de categorías × 12 meses, totales.
+ */
+export async function getDashboardAnual(anio: number) {
+  const desde = new Date(Date.UTC(anio, 0, 1))
+  const hasta = new Date(Date.UTC(anio + 1, 0, 1))
+  const movs = await prisma.movimientoFinanciero.findMany({
+    where: { fecha: { gte: desde, lt: hasta }, tipo: { in: ["INGRESO", "GASTO"] }, moneda: "ARS" },
+    include: { cuenta: { select: { excluirDeResultado: true } } },
+  })
+
+  const meses = Array.from({ length: 12 }, () => ({ ingresos: 0, gastos: 0, blancoIng: 0, blancoGas: 0 }))
+  const catMap = new Map<string, { tipo: string; montos: number[] }>()
+
+  for (const m of movs) {
+    if (m.cuenta.excluirDeResultado) continue
+    const i = new Date(m.fecha).getUTCMonth() // fecha a mediodía UTC → mes correcto
+    if (m.tipo === "INGRESO") {
+      meses[i].ingresos += m.monto
+      if (m.registrado) meses[i].blancoIng += m.monto
+    } else {
+      meses[i].gastos += m.monto
+      if (m.registrado) meses[i].blancoGas += m.monto
+    }
+    const c = catMap.get(m.categoria) || { tipo: m.tipo, montos: Array(12).fill(0) }
+    c.montos[i] += m.monto
+    catMap.set(m.categoria, c)
+  }
+
+  let acum = 0
+  const mensual = meses.map((mm, i) => {
+    const resultado = mm.ingresos - mm.gastos
+    acum += resultado
+    return {
+      mes: i + 1,
+      ingresos: mm.ingresos,
+      gastos: mm.gastos,
+      resultado,
+      acumulado: acum,
+      resultadoBlanco: mm.blancoIng - mm.blancoGas,
+    }
+  })
+  const categorias = [...catMap.entries()]
+    .map(([nombre, v]) => ({ nombre, tipo: v.tipo, montos: v.montos, total: v.montos.reduce((s, x) => s + x, 0) }))
+    .sort((a, b) => b.total - a.total)
+
+  const totalIngresos = mensual.reduce((s, m) => s + m.ingresos, 0)
+  const totalGastos = mensual.reduce((s, m) => s + m.gastos, 0)
+  return {
+    mensual,
+    categorias,
+    totalIngresos,
+    totalGastos,
+    resultadoAnual: totalIngresos - totalGastos,
+  }
+}
+
 /**
  * Posición total (ARS): saldos en cuentas + por cobrar pendiente + valor del
  * stock PROPIO. Las motos en consignación (mandato) NO son activo nuestro: solo
