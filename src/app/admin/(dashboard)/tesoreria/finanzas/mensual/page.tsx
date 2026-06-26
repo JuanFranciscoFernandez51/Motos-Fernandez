@@ -27,7 +27,11 @@ export default async function ResumenMensualPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <h1 className="text-2xl font-bold">Finanzas</h1>
-        <MesSelector mes={mesStr} basePath={BASE} />
+        <div className="flex items-center gap-2">
+          <a href={`/api/admin/finanzas/export?tipo=mensual&mes=${mesStr}`} className="rounded-lg border border-gray-300 dark:border-neutral-700 px-3 py-1.5 text-xs hover:bg-gray-50 dark:hover:bg-neutral-800" title="Solo movimientos registrados (blanco)">Excel contador</a>
+          <a href={`/api/admin/finanzas/export?tipo=mensual&mes=${mesStr}&incluirNegro=1`} className="rounded-lg border border-gray-300 dark:border-neutral-700 px-3 py-1.5 text-xs hover:bg-gray-50 dark:hover:bg-neutral-800" title="Incluye todo (blanco + negro)">Excel completo</a>
+          <MesSelector mes={mesStr} basePath={BASE} />
+        </div>
       </div>
       <FinanzasNav />
 
