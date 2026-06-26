@@ -12,8 +12,8 @@ const TABS: { href: string; label: string; enabled: boolean }[] = [
   { href: "/admin/tesoreria/finanzas/mensual", label: "Resumen mensual", enabled: true },
   { href: "/admin/tesoreria/finanzas/anual", label: "Dashboard anual", enabled: true },
   { href: "/admin/tesoreria/finanzas/cuentas", label: "Cuentas", enabled: true },
-  { href: "/admin/tesoreria/finanzas/costos", label: "Costos fijos", enabled: false },
-  { href: "/admin/tesoreria/finanzas/calculador", label: "Calculador", enabled: false },
+  { href: "/admin/tesoreria/finanzas/costos", label: "Costos fijos", enabled: true },
+  { href: "/admin/tesoreria/finanzas/calculador", label: "Calculador", enabled: true },
 ]
 
 export function FinanzasNav() {
