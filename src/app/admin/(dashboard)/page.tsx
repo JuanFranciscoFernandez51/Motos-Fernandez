@@ -118,6 +118,7 @@ export default async function AdminDashboardPage() {
     leadsPorOrigenRaw,
     visitasHoy,
     visitasSemana,
+    visitasMes,
     visitasPorPagina,
     ciudades,
     // Nuevas métricas
@@ -199,6 +200,10 @@ export default async function AdminDashboardPage() {
     // Visitas de los últimos 7 días
     prisma.visita.count({
       where: { createdAt: { gte: weekAgoUTC } },
+    }),
+    // Visitas del mes calendario actual
+    prisma.visita.count({
+      where: { createdAt: { gte: monthStartUTC } },
     }),
     // Visitas por página (top 5, últimos 7 días). Excluimos las páginas de
     // detalle (/catalogo/slug, /tienda/slug) — esas van en sus propios
@@ -843,6 +848,19 @@ export default async function AdminDashboardPage() {
                 <div>
                   <p className="text-2xl font-bold">{visitasSemana}</p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">Visitas esta semana</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50 dark:bg-purple-950/30">
+                  <Eye className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{visitasMes}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Visitas este mes</p>
                 </div>
               </div>
             </CardContent>
