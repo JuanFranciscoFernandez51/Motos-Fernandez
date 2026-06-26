@@ -34,6 +34,7 @@ import {
   ListChecks,
   Truck as TruckIcon,
   Wallet,
+  Coins,
 } from "lucide-react"
 import { InstagramIcon } from "@/components/icons/social"
 import { Button } from "@/components/ui/button"
@@ -108,6 +109,7 @@ const navEntries: NavEntry[] = [
     label: "Tesorería",
     icon: Wallet,
     items: [
+      { href: "/admin/tesoreria/finanzas", label: "Finanzas", icon: Coins, soloAdmin: true },
       { href: "/admin/facturacion", label: "Facturación (ARCA)", icon: FileText, soloAdmin: true },
       { href: "/admin/contador", label: "Contador (vencimientos)", icon: Receipt, soloAdmin: true },
     ],
