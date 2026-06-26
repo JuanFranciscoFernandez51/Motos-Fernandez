@@ -1,7 +1,8 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useState, useTransition } from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
@@ -13,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Search, X, Pencil, CreditCard } from "lucide-react"
+import { Search, X, Pencil, CreditCard, HandCoins, Loader2 } from "lucide-react"
 import {
   formatDate,
   formatMoney,
@@ -44,10 +45,37 @@ type Row = {
   fechaInicio: Date
 }
 
-export function FinanciacionesList({ rows }: { rows: Row[] }) {
+export function FinanciacionesList({
+  rows,
+  cobrarProximaCuota,
+}: {
+  rows: Row[]
+  cobrarProximaCuota: (financiacionId: string) => Promise<void>
+}) {
+  const router = useRouter()
   const [query, setQuery] = useState("")
   const [estadoFilter, setEstadoFilter] = useState("")
   const [monedaFilter, setMonedaFilter] = useState("")
+  const [cobrandoId, setCobrandoId] = useState<string | null>(null)
+  const [, startTransition] = useTransition()
+
+  const handleCobrar = (r: Row) => {
+    const montoTxt = r.proximaCuotaMonto
+      ? `${r.moneda === "USD" ? "USD " : "$ "}${r.proximaCuotaMonto.toLocaleString("es-AR")}`
+      : ""
+    if (
+      !confirm(
+        `Registrar el pago de la próxima cuota de ${r.clienteNombre}${montoTxt ? ` (${montoTxt})` : ""} en efectivo, con fecha de hoy?\n\nPara otro método, fecha o comprobante, entrá al detalle.`
+      )
+    )
+      return
+    setCobrandoId(r.id)
+    startTransition(async () => {
+      await cobrarProximaCuota(r.id)
+      setCobrandoId(null)
+      router.refresh()
+    })
+  }
 
   const counts = useMemo(
     () => ({
@@ -169,7 +197,7 @@ export function FinanciacionesList({ rows }: { rows: Row[] }) {
               <TableHead>Próximo venc.</TableHead>
               <TableHead>Saldo</TableHead>
               <TableHead>Estado</TableHead>
-              <TableHead className="w-20">Acciones</TableHead>
+              <TableHead className="w-36">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -250,13 +278,33 @@ export function FinanciacionesList({ rows }: { rows: Row[] }) {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        render={<Link href={`/admin/tesoreria/financiaciones/${r.id}`} />}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center gap-0.5">
+                        {r.proximaCuotaFecha && r.estado !== "COMPLETADA" && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleCobrar(r)}
+                            disabled={cobrandoId === r.id}
+                            title="Cobrar próxima cuota (efectivo, hoy)"
+                            className="text-green-600 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-950/30"
+                          >
+                            {cobrandoId === r.id ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <HandCoins className="h-4 w-4" />
+                            )}
+                            <span className="ml-1 text-xs hidden sm:inline">Cobrar</span>
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          render={<Link href={`/admin/tesoreria/financiaciones/${r.id}`} />}
+                          title="Ver detalle"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )
