@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Search, Users, ExternalLink, Phone, Mail, Plus, Download } from "lucide-react"
+import { LeadEstadoSelect } from "./lead-estado-select"
 
 export const dynamic = "force-dynamic"
 
@@ -44,6 +45,10 @@ export default async function CRMPage({
   const temperaturas = Object.entries(TEMPERATURA_LABELS)
   const etapas = Object.entries(ETAPA_LABELS)
   const origenes = Object.entries(ORIGEN_LABELS)
+
+  // Opciones para los selects inline de la tabla
+  const tempOpciones = temperaturas.map(([key, v]) => ({ key, label: v.label, color: v.color }))
+  const etapaOpciones = etapas.map(([key, v]) => ({ key, label: v.label, color: v.color }))
 
   function buildUrl(params: Record<string, string | undefined>) {
     const base = "/admin/crm"
@@ -162,8 +167,6 @@ export default async function CRMPage({
               </TableRow>
             ) : (
               leads.map((lead) => {
-                const tempInfo = TEMPERATURA_LABELS[lead.temperatura]
-                const etapaInfo = ETAPA_LABELS[lead.etapa]
                 const origenInfo = ORIGEN_LABELS[lead.origen]
                 return (
                   <TableRow key={lead.id} className="hover:bg-gray-50 dark:hover:bg-neutral-900">
@@ -194,14 +197,20 @@ export default async function CRMPage({
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className={`text-xs ${tempInfo?.color || ""}`}>
-                        {tempInfo?.label || lead.temperatura}
-                      </Badge>
+                      <LeadEstadoSelect
+                        leadId={lead.id}
+                        field="temperatura"
+                        value={lead.temperatura}
+                        options={tempOpciones}
+                      />
                     </TableCell>
                     <TableCell>
-                      <Badge variant="secondary" className={`text-xs ${etapaInfo?.color || ""}`}>
-                        {etapaInfo?.label || lead.etapa}
-                      </Badge>
+                      <LeadEstadoSelect
+                        leadId={lead.id}
+                        field="etapa"
+                        value={lead.etapa}
+                        options={etapaOpciones}
+                      />
                     </TableCell>
                     <TableCell className="text-sm text-gray-500 dark:text-gray-400">
                       {lead.createdAt.toLocaleDateString("es-AR")}
