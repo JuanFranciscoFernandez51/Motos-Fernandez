@@ -1,8 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { formatMoney } from "@/lib/admin-helpers"
-import { getCuentasConSaldo, getResumenMes, getPosicionTotal } from "@/lib/finanzas-data"
+import { getCuentasConSaldo, getResumenMes, getPosicionTotal, getProximosVencimientos } from "@/lib/finanzas-data"
 import { FinanzasNav } from "./finanzas-nav"
-import { Wallet, TrendingUp, TrendingDown, Banknote } from "lucide-react"
+import { Wallet, TrendingUp, TrendingDown, Banknote, AlertTriangle } from "lucide-react"
 
 export const dynamic = "force-dynamic"
 
@@ -17,10 +17,11 @@ export default async function FinanzasPage() {
   const anio = ar.getUTCFullYear()
   const mes = ar.getUTCMonth() + 1
 
-  const [cuentas, resumen, posicion] = await Promise.all([
+  const [cuentas, resumen, posicion, vencimientos] = await Promise.all([
     getCuentasConSaldo(),
     getResumenMes(anio, mes),
     getPosicionTotal(),
+    getProximosVencimientos(7),
   ])
 
   const { ars, usd } = resumen
@@ -37,6 +38,36 @@ export default async function FinanzasPage() {
       </div>
 
       <FinanzasNav />
+
+      {/* Alertas de vencimientos (cheques + cuentas por cobrar/pagar de la semana) */}
+      {vencimientos.length > 0 && (
+        <div className="rounded-xl border border-amber-300 dark:border-amber-900/50 bg-amber-50/60 dark:bg-amber-950/20 p-4">
+          <p className="text-sm font-semibold text-amber-800 dark:text-amber-300 flex items-center gap-2 mb-2">
+            <AlertTriangle className="size-4" /> Vencimientos esta semana
+          </p>
+          <div className="space-y-1">
+            {vencimientos.map((v, i) => {
+              const dias = Math.round((new Date(v.fecha).setHours(0,0,0,0) - new Date().setHours(0,0,0,0)) / 86400000)
+              return (
+                <div key={i} className="flex items-center justify-between text-sm gap-2">
+                  <span className="truncate">
+                    <span className="text-xs rounded bg-amber-200/60 dark:bg-amber-900/40 px-1.5 py-0.5 mr-1">{v.clase}</span>
+                    {v.detalle}
+                  </span>
+                  <span className="flex items-center gap-2 shrink-0">
+                    <span className={`text-xs ${dias < 0 ? "text-red-600 font-semibold" : "text-amber-700 dark:text-amber-300"}`}>
+                      {dias < 0 ? `atrasado ${-dias}d` : dias === 0 ? "hoy" : `en ${dias}d`}
+                    </span>
+                    <span className={`font-bold ${v.entra ? "text-green-700 dark:text-green-300" : "text-red-600 dark:text-red-300"}`}>
+                      {v.entra ? "+ " : "- "}{formatMoney(v.monto, v.moneda)}
+                    </span>
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Resultado del mes actual */}
       <div>

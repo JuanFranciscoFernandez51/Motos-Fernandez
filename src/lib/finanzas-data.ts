@@ -88,6 +88,41 @@ export async function getResumenMes(anio: number, mes1a12: number) {
   }
 }
 
+/** Vencimientos próximos (≤ N días) o atrasados: cheques + cuentas por cobrar/pagar. */
+export async function getProximosVencimientos(dias = 7) {
+  const limite = new Date()
+  limite.setDate(limite.getDate() + dias)
+  const [cheques, cxc] = await Promise.all([
+    prisma.cheque.findMany({
+      where: { estado: "PENDIENTE", fechaVencimiento: { lte: limite } },
+      orderBy: { fechaVencimiento: "asc" },
+    }),
+    prisma.cuentaPorCobrar.findMany({
+      where: { estado: "PENDIENTE", fechaVencimiento: { not: null, lte: limite } },
+      orderBy: { fechaVencimiento: "asc" },
+    }),
+  ])
+  const items = [
+    ...cheques.map((c) => ({
+      clase: "Cheque",
+      detalle: `${c.tipo === "A_COBRAR" ? "A cobrar" : "A pagar"} · ${c.beneficiario}`,
+      monto: c.monto,
+      moneda: c.moneda,
+      fecha: c.fechaVencimiento,
+      entra: c.tipo === "A_COBRAR",
+    })),
+    ...cxc.map((c) => ({
+      clase: c.sentido === "COBRAR" ? "A cobrar" : "A pagar",
+      detalle: `${c.cliente} · ${c.tipo}`,
+      monto: c.monto,
+      moneda: c.moneda,
+      fecha: c.fechaVencimiento!,
+      entra: c.sentido === "COBRAR",
+    })),
+  ].sort((a, b) => a.fecha.getTime() - b.fecha.getTime())
+  return items
+}
+
 /** Neto (cambio de saldo) por cuenta en un mes — incluye transferencias. */
 export async function getNetoPorCuentaMes(anio: number, mes1a12: number) {
   const { desde, hasta } = rangoMes(anio, mes1a12)
