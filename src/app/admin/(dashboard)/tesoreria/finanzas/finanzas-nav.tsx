@@ -8,7 +8,7 @@ import { usePathname } from "next/navigation"
 const TABS: { href: string; label: string; enabled: boolean }[] = [
   { href: "/admin/tesoreria/finanzas", label: "Resumen general", enabled: true },
   { href: "/admin/tesoreria/finanzas/movimientos", label: "Movimientos", enabled: true },
-  { href: "/admin/tesoreria/finanzas/cuentas-cheques", label: "Cuentas y cheques", enabled: false },
+  { href: "/admin/tesoreria/finanzas/cuentas-cheques", label: "Cuentas y cheques", enabled: true },
   { href: "/admin/tesoreria/finanzas/mensual", label: "Resumen mensual", enabled: true },
   { href: "/admin/tesoreria/finanzas/anual", label: "Dashboard anual", enabled: true },
   { href: "/admin/tesoreria/finanzas/cuentas", label: "Cuentas", enabled: true },
