@@ -9,20 +9,21 @@ export default async function StockMotosPage() {
   const session = await requireSection("STOCK_MOTOS")
   if (!session) redirect("/admin")
 
-  // Cargamos clientes para el ClienteSelector del modal de edicion rapida.
-  const clientes = await prisma.cliente.findMany({
-    orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
-    select: {
-      id: true,
-      nombre: true,
-      apellido: true,
-      dni: true,
-      telefono: true,
-      email: true,
-    },
-  })
-
-  const motosRaw = await prisma.modelo.findMany({
+  // Clientes (para el ClienteSelector del modal) + motos en paralelo: son
+  // queries independientes, así no se suma la latencia de una y otra.
+  const [clientes, motosRaw] = await Promise.all([
+    prisma.cliente.findMany({
+      orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
+      select: {
+        id: true,
+        nombre: true,
+        apellido: true,
+        dni: true,
+        telefono: true,
+        email: true,
+      },
+    }),
+    prisma.modelo.findMany({
     orderBy: [{ codigo: "desc" }, { createdAt: "desc" }],
     select: {
       id: true,
@@ -71,7 +72,8 @@ export default async function StockMotosPage() {
         },
       },
     },
-  })
+    }),
+  ])
 
   // Stock = lo que REALMENTE existe físicamente. Lo definimos por
   // EXCLUSIÓN: dejamos afuera SOLO las 0KM del catálogo publicitario
