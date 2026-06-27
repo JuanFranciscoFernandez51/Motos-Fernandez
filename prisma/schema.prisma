@@ -885,12 +885,16 @@ model OrdenCompra {
   motoKilometros  Int?
 
   // Económico
-  precioVenta Int
-  moneda      String  @default("ARS")
-  formaPago   String? // "Contado", "Financiado", "Permuta", "Mixta"
-  sena        Int?    @default(0)
-  saldo       Int?
-  detallePago String? @db.Text // ej: "Seña $500.000, saldo al retirar"
+  precioVenta   Int
+  moneda        String  @default("ARS")
+  // Ganancia bruta REAL de esta venta (margen propia = precio - costo;
+  // comisión consignación = 5% / precio - mínimo / monto pactado). Se sugiere
+  // sola al concretar y es editable. Alimenta el promedio para el breakeven.
+  gananciaBruta Int?
+  formaPago     String? // "Contado", "Financiado", "Permuta", "Mixta"
+  sena          Int?    @default(0)
+  saldo         Int?
+  detallePago   String? @db.Text // ej: "Seña $500.000, saldo al retirar"
 
   // Permuta (si aplica)
   permutaDescripcion String?

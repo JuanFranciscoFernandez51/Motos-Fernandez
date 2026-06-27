@@ -8,6 +8,7 @@ import { checklistPermutaTexto } from "@/lib/admin-helpers"
 import { crearMandatoDesdePermuta } from "@/lib/mandato-helpers"
 import { manejarVentaDeMoto, crearModeloDesdeOCSinModelo } from "@/lib/venta-moto-helpers"
 import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
+import { autoCargarGananciaBruta } from "@/lib/margen-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -376,6 +377,9 @@ async function createOrdenCompra(formData: FormData) {
         garanteTelefono: get("garanteTelefono") || null,
         garanteDireccion: get("garanteDireccion") || null,
       })
+
+      // Si la venta se concretó, cargar la ganancia bruta sugerida (editable luego).
+      await autoCargarGananciaBruta(tx, orden.id)
 
       return orden
     })
