@@ -23,14 +23,29 @@ async function pagarCuota(
   cuotaId: string,
   fechaPago: string,
   metodoPago: string,
-  observaciones: string
+  observaciones: string,
+  montoAhora?: number
 ) {
   "use server"
+
+  // Cuánto se cobra AHORA. Si no viene monto, se asume el saldo completo de la
+  // cuota (comportamiento clásico: paga toda la cuota).
+  const actual = await prisma.cuotaFinanciacion.findUnique({
+    where: { id: cuotaId },
+    select: { monto: true, montoPagado: true },
+  })
+  if (!actual) return
+  const saldoCuota = Math.max(0, actual.monto - actual.montoPagado)
+  const pagaAhora = montoAhora != null && montoAhora > 0 ? Math.round(montoAhora) : saldoCuota
+  const nuevoPagado = actual.montoPagado + pagaAhora
+  // PAGADA si se cubrió toda la cuota; si no, queda PARCIAL con saldo.
+  const quedaSaldada = nuevoPagado >= actual.monto
 
   const cuota = await prisma.cuotaFinanciacion.update({
     where: { id: cuotaId },
     data: {
-      estado: "PAGADA",
+      montoPagado: Math.min(nuevoPagado, actual.monto),
+      estado: quedaSaldada ? "PAGADA" : "PARCIAL",
       fechaPago: new Date(fechaPago),
       metodoPago: metodoPago || null,
       observaciones: observaciones || null,
@@ -86,6 +101,7 @@ async function desmarcarPago(cuotaId: string) {
     where: { id: cuotaId },
     data: {
       estado: "PENDIENTE",
+      montoPagado: 0,
       fechaPago: null,
       metodoPago: null,
     },
@@ -129,10 +145,16 @@ export default async function FinanciacionDetallePage({
   if (!financiacion) notFound()
 
   const cuotasPagadas = financiacion.cuotas.filter((c) => c.estado === "PAGADA")
-  const totalPagado = cuotasPagadas.reduce((s, c) => s + c.monto, 0)
-  const saldoPendiente = financiacion.cuotas
-    .filter((c) => c.estado !== "PAGADA" && c.estado !== "CANCELADA")
+  // Pagado y saldo por MONTO (no por cuota), para que los pagos parciales
+  // se reflejen bien.
+  const totalCuotas = financiacion.cuotas
+    .filter((c) => c.estado !== "CANCELADA")
     .reduce((s, c) => s + c.monto, 0)
+  const totalPagado = financiacion.cuotas.reduce((s, c) => s + c.montoPagado, 0)
+  const saldoPendiente = financiacion.cuotas
+    .filter((c) => c.estado !== "CANCELADA")
+    .reduce((s, c) => s + (c.monto - c.montoPagado), 0)
+  const pctPagado = totalCuotas > 0 ? Math.round((totalPagado / totalCuotas) * 100) : 0
 
   return (
     <div className="space-y-6">
@@ -328,13 +350,11 @@ export default async function FinanciacionDetallePage({
               <div className="mt-2 h-3 bg-gray-200 dark:bg-neutral-800 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-emerald-400 to-green-600 transition-all"
-                  style={{
-                    width: `${(cuotasPagadas.length / financiacion.cantidadCuotas) * 100}%`,
-                  }}
+                  style={{ width: `${pctPagado}%` }}
                 />
               </div>
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {Math.round((cuotasPagadas.length / financiacion.cantidadCuotas) * 100)}% completado
+                {pctPagado}% completado
               </p>
             </div>
           </div>
@@ -352,6 +372,7 @@ export default async function FinanciacionDetallePage({
               id: c.id,
               numero: c.numero,
               monto: c.monto,
+              montoPagado: c.montoPagado,
               fechaVencimiento: c.fechaVencimiento,
               fechaPago: c.fechaPago,
               estado: c.estado,

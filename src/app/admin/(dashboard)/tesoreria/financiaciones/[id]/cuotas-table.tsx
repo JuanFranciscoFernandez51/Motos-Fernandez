@@ -27,6 +27,7 @@ type Cuota = {
   id: string
   numero: number
   monto: number
+  montoPagado: number
   fechaVencimiento: Date
   fechaPago: Date | null
   estado: string
@@ -46,7 +47,8 @@ export function CuotasTable({
     id: string,
     fechaPago: string,
     metodoPago: string,
-    observaciones: string
+    observaciones: string,
+    montoAhora?: number
   ) => Promise<void>
   desmarcarPago: (id: string) => Promise<void>
 }) {
@@ -54,18 +56,23 @@ export function CuotasTable({
   const [fechaPago, setFechaPago] = useState(new Date().toISOString().split("T")[0])
   const [metodoPago, setMetodoPago] = useState("Efectivo")
   const [observaciones, setObservaciones] = useState("")
+  const [montoAhora, setMontoAhora] = useState("")
   const [isPending, startTransition] = useTransition()
 
-  const handleAbrirPago = (id: string) => {
-    setPagandoId(id)
+  const saldoDe = (c: Cuota) => Math.max(0, c.monto - c.montoPagado)
+
+  const handleAbrirPago = (c: Cuota) => {
+    setPagandoId(c.id)
     setFechaPago(new Date().toISOString().split("T")[0])
-    setMetodoPago("Efectivo")
+    setMetodoPago(c.metodoPago || "Efectivo")
     setObservaciones("")
+    // Prellena con el saldo restante; si pagan menos, queda parcial.
+    setMontoAhora(String(saldoDe(c)))
   }
 
   const handleConfirmarPago = (id: string) => {
     startTransition(async () => {
-      await pagarCuota(id, fechaPago, metodoPago, observaciones)
+      await pagarCuota(id, fechaPago, metodoPago, observaciones, Number(montoAhora) || undefined)
       setPagandoId(null)
     })
   }
@@ -134,6 +141,11 @@ export function CuotasTable({
                   </TableCell>
                   <TableCell className="font-medium">
                     {formatMoney(c.monto, moneda)}
+                    {c.montoPagado > 0 && c.estado !== "PAGADA" && (
+                      <p className="text-[10px] font-normal text-blue-600 dark:text-blue-300">
+                        Pagó {formatMoney(c.montoPagado, moneda)} · falta {formatMoney(saldoDe(c), moneda)}
+                      </p>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge variant="secondary" className={ESTADO_CUOTA_STYLES[c.estado]}>
@@ -173,13 +185,13 @@ export function CuotasTable({
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleAbrirPago(c.id)}
+                        onClick={() => handleAbrirPago(c)}
                         disabled={isPending}
                         className="text-green-600 dark:text-green-300 hover:bg-green-50 dark:hover:bg-green-950/30"
-                        title="Marcar pagada"
+                        title="Registrar pago"
                       >
                         <Check className="size-4" />
-                        <span className="ml-1 text-xs">Pagar</span>
+                        <span className="ml-1 text-xs">{c.estado === "PARCIAL" ? "Pagar saldo" : "Pagar"}</span>
                       </Button>
                     )}
                   </TableCell>
@@ -230,10 +242,25 @@ export function CuotasTable({
                             </select>
                           </div>
                           <div>
-                            <Label>Monto</Label>
-                            <p className="h-10 flex items-center font-bold text-[#7C3AED]">
-                              {formatMoney(c.monto, moneda)}
-                            </p>
+                            <Label htmlFor="montoAhora">Monto que paga ahora</Label>
+                            <Input
+                              id="montoAhora"
+                              type="number"
+                              value={montoAhora}
+                              onChange={(e) => setMontoAhora(e.target.value)}
+                            />
+                            {/* El aviso de pago parcial aparece solo si paga
+                                menos que el saldo de la cuota. */}
+                            {Number(montoAhora) > 0 && Number(montoAhora) < saldoDe(c) ? (
+                              <p className="text-[11px] text-blue-600 dark:text-blue-300 mt-1 font-medium">
+                                Pago parcial: queda un saldo de{" "}
+                                {formatMoney(saldoDe(c) - Number(montoAhora), moneda)} para después.
+                              </p>
+                            ) : (
+                              <p className="text-[11px] text-gray-400 mt-1">
+                                Saldo de la cuota: {formatMoney(saldoDe(c), moneda)}
+                              </p>
+                            )}
                           </div>
                           <div className="md:col-span-3">
                             <Label htmlFor="observaciones">Observaciones (opcional)</Label>

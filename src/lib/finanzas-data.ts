@@ -123,14 +123,15 @@ export async function getCreditosClientes() {
     where: { estado: { in: ["ACTIVA", "ATRASADA"] } },
     include: {
       cliente: { select: { nombre: true, apellido: true, telefono: true } },
-      cuotas: { select: { estado: true, monto: true, fechaVencimiento: true } },
+      cuotas: { select: { estado: true, monto: true, montoPagado: true, fechaVencimiento: true } },
     },
   })
   const now = new Date()
   const items = fins
     .map((f) => {
       const pend = f.cuotas.filter((c) => c.estado !== "PAGADA" && c.estado !== "CANCELADA")
-      const saldo = pend.reduce((a, c) => a + c.monto, 0)
+      // Saldo = lo que falta cobrar (descuenta pagos parciales).
+      const saldo = pend.reduce((a, c) => a + (c.monto - c.montoPagado), 0)
       const prox = pend
         .slice()
         .sort((a, b) => new Date(a.fechaVencimiento).getTime() - new Date(b.fechaVencimiento).getTime())[0]
@@ -141,7 +142,7 @@ export async function getCreditosClientes() {
         moneda: f.moneda,
         saldo,
         proxFecha: prox?.fechaVencimiento ?? null,
-        proxMonto: prox?.monto ?? null,
+        proxMonto: prox ? prox.monto - prox.montoPagado : null,
         vencido: !!prox && new Date(prox.fechaVencimiento) < now,
         cuotasPend: pend.length,
       }

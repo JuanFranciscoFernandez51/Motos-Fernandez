@@ -108,6 +108,7 @@ export const ESTADO_FINANCIACION_LABELS: Record<string, string> = {
 
 export const ESTADO_CUOTA_STYLES: Record<string, string> = {
   PENDIENTE: "bg-yellow-100 text-yellow-800",
+  PARCIAL: "bg-blue-100 text-blue-800",
   PAGADA: "bg-green-100 text-green-800",
   ATRASADA: "bg-red-100 text-red-800",
   CANCELADA: "bg-gray-100 text-gray-600",
@@ -115,6 +116,7 @@ export const ESTADO_CUOTA_STYLES: Record<string, string> = {
 
 export const ESTADO_CUOTA_LABELS: Record<string, string> = {
   PENDIENTE: "Pendiente",
+  PARCIAL: "Pago parcial",
   PAGADA: "Pagada",
   ATRASADA: "Atrasada",
   CANCELADA: "Cancelada",

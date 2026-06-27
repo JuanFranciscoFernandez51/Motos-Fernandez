@@ -202,16 +202,18 @@ export async function cobrarProximaCuota(
   opts?: { metodoPago?: string; fechaPago?: Date }
 ): Promise<{ numero: number; monto: number } | null> {
   const proxima = await db.cuotaFinanciacion.findFirst({
-    where: { financiacionId, estado: { in: ["PENDIENTE", "ATRASADA"] } },
+    where: { financiacionId, estado: { in: ["PENDIENTE", "PARCIAL", "ATRASADA"] } },
     orderBy: { fechaVencimiento: "asc" },
     select: { id: true, numero: true, monto: true },
   })
   if (!proxima) return null
 
+  // Cobro inline = se salda la cuota completa (montoPagado = monto).
   await db.cuotaFinanciacion.update({
     where: { id: proxima.id },
     data: {
       estado: "PAGADA",
+      montoPagado: proxima.monto,
       fechaPago: opts?.fechaPago ?? new Date(),
       metodoPago: opts?.metodoPago ?? "Efectivo",
     },

@@ -32,7 +32,7 @@ export default async function FinanciacionesPage() {
         select: { id: true, nombre: true, apellido: true, telefono: true, dni: true },
       },
       cuotas: {
-        select: { id: true, estado: true, monto: true, fechaVencimiento: true, fechaPago: true },
+        select: { id: true, estado: true, monto: true, montoPagado: true, fechaVencimiento: true, fechaPago: true },
       },
     },
     orderBy: { createdAt: "desc" },
@@ -42,14 +42,14 @@ export default async function FinanciacionesPage() {
     const cuotasPagadas = f.cuotas.filter((c) => c.estado === "PAGADA").length
     const cuotasAtrasadas = f.cuotas.filter((c) => c.estado === "ATRASADA").length
     const proximaCuota = f.cuotas
-      .filter((c) => c.estado === "PENDIENTE" || c.estado === "ATRASADA")
+      .filter((c) => c.estado === "PENDIENTE" || c.estado === "PARCIAL" || c.estado === "ATRASADA")
       .sort(
         (a, b) =>
           new Date(a.fechaVencimiento).getTime() - new Date(b.fechaVencimiento).getTime()
       )[0]
     const saldoPendiente = f.cuotas
       .filter((c) => c.estado !== "PAGADA" && c.estado !== "CANCELADA")
-      .reduce((s, c) => s + c.monto, 0)
+      .reduce((s, c) => s + (c.monto - c.montoPagado), 0)
     return {
       id: f.id,
       numero: f.numero,
@@ -65,7 +65,7 @@ export default async function FinanciacionesPage() {
       cuotasAtrasadas,
       saldoPendiente,
       proximaCuotaFecha: proximaCuota?.fechaVencimiento ?? null,
-      proximaCuotaMonto: proximaCuota?.monto ?? null,
+      proximaCuotaMonto: proximaCuota ? proximaCuota.monto - proximaCuota.montoPagado : null,
       estado: f.estado,
       origen: f.origen,
       fechaInicio: f.fechaInicio,

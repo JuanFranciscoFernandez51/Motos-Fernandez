@@ -699,6 +699,9 @@ model CuotaFinanciacion {
   financiacion   FinanciacionOC @relation(fields: [financiacionId], references: [id], onDelete: Cascade)
 
   monto            Int
+  // Cuánto se cobró efectivamente de esta cuota. Permite pagos parciales:
+  // pagan una parte ahora y el resto después. PAGADA cuando montoPagado >= monto.
+  montoPagado      Int         @default(0)
   fechaVencimiento DateTime
   fechaPago        DateTime?
   estado           EstadoCuota @default(PENDIENTE)
@@ -726,6 +729,7 @@ enum EstadoFinanciacion {
 
 enum EstadoCuota {
   PENDIENTE
+  PARCIAL // pagaron una parte; queda saldo
   PAGADA
   ATRASADA
   CANCELADA
