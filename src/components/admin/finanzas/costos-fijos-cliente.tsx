@@ -26,9 +26,12 @@ export function CostosFijosCliente({
 }) {
   const router = useRouter()
   const [motos, setMotos] = useState(String(config.motosEstimadasMes))
-  const [margen, setMargen] = useState(String(config.margenBrutoMoto))
   const [savingCfg, setSavingCfg] = useState(false)
   const [agregando, setAgregando] = useState(false)
+
+  // El breakeven usa el MARGEN BRUTO REAL de las ventas cargadas (no se carga
+  // a mano acá). Si todavía no hay ventas con costo, cae al valor guardado.
+  const margenParaBreakeven = margenReal.promedio > 0 ? margenReal.promedio : (config.margenBrutoMoto || 1)
 
   // Form de alta de un nuevo costo fijo
   const [nuevoConcepto, setNuevoConcepto] = useState("")
@@ -45,8 +48,8 @@ export function CostosFijosCliente({
   }, [costos])
 
   const metricas = useMemo(
-    () => calcularMetricasCostosFijos(costos, { motosEstimadasMes: Number(motos) || 1, margenBrutoMoto: Number(margen) || 1 }),
-    [costos, motos, margen]
+    () => calcularMetricasCostosFijos(costos, { motosEstimadasMes: Number(motos) || 1, margenBrutoMoto: margenParaBreakeven }),
+    [costos, motos, margenParaBreakeven]
   )
 
   const porCategoria = useMemo(() => {
@@ -61,7 +64,7 @@ export function CostosFijosCliente({
     setSavingCfg(true)
     const res = await fetch("/api/admin/finanzas/config", {
       method: "PUT", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ motosEstimadasMes: Number(motos), margenBrutoMoto: Number(margen) }),
+      body: JSON.stringify({ motosEstimadasMes: Number(motos) }),
     })
     setSavingCfg(false)
     if (res.ok) { toast.success("Parámetros guardados"); router.refresh() } else toast.error("Error")
@@ -117,23 +120,12 @@ export function CostosFijosCliente({
             <Label className="text-xs">Motos vendidas estimadas / mes</Label>
             <Input type="number" value={motos} onChange={(e) => setMotos(e.target.value)} className="w-44" />
           </div>
-          <div>
-            <Label className="text-xs">Margen bruto por moto (venta − costo)</Label>
-            <Input type="number" value={margen} onChange={(e) => setMargen(e.target.value)} className="w-52" />
-            {margenReal.cantidad > 0 && (
-              <button
-                type="button"
-                onClick={() => setMargen(String(margenReal.promedio))}
-                className="block mt-1 text-[11px] text-[#7C3AED] hover:underline text-left"
-                title="Usar el promedio real de tus ventas cargadas"
-              >
-                Real: {formatMoney(margenReal.promedio)} (de {margenReal.cantidad} venta{margenReal.cantidad === 1 ? "" : "s"}) — usar
-              </button>
-            )}
-          </div>
           <Button onClick={guardarParams} disabled={savingCfg} variant="outline">{savingCfg ? "Guardando…" : "Guardar parámetros"}</Button>
           <p className="text-xs text-gray-400 flex-1 min-w-[200px]">
-            Necesitás vender <strong className="text-[#CE9F33]">{metricas.motosMinimas.toFixed(1)} motos por mes</strong> solo para cubrir los costos fijos.
+            Necesitás vender <strong className="text-[#CE9F33]">{metricas.motosMinimas.toFixed(1)} motos por mes</strong> para cubrir los costos fijos
+            {margenReal.cantidad > 0
+              ? <> (con tu margen bruto real de {formatMoney(margenReal.promedio)}).</>
+              : <>. El margen bruto se toma solo de tus ventas cargadas.</>}
           </p>
         </CardContent>
       </Card>
