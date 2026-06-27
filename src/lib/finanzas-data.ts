@@ -49,9 +49,13 @@ export async function getValorStock() {
       activo: true,
       origen: { not: "MANDATO" },
     },
-    select: { precio: true },
+    select: { precio: true, valorToma: true },
   })
-  const valorMotos = motos.reduce((a, m) => a + (m.precio || 0), 0)
+  // Valuamos a VALOR DE TOMA (costo): es lo que realmente pusimos en la moto.
+  // La diferencia con el precio de venta se carga como ganancia al vender
+  // (gananciaBruta de la OC). Si una moto no tiene costo cargado, caemos al
+  // precio de publicación como mejor estimación disponible.
+  const valorMotos = motos.reduce((a, m) => a + (m.valorToma ?? m.precio ?? 0), 0)
   const unidadesMotos = motos.length
 
   // Productos de tienda, separados en Repuestos vs Indumentaria/Accesorios (resto)

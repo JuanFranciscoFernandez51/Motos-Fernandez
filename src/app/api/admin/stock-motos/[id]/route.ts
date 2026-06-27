@@ -128,7 +128,12 @@ const CAMPOS_PERMITIDOS = [
   "clienteEntregaId",
   "color",
   "activo",
+  "origen",
+  "valorToma",
+  "valorTomaMoneda",
 ] as const
+
+const ORIGENES_VALIDOS = ["STOCK_PROPIO", "PARTE_DE_PAGO", "MANDATO"]
 
 type CampoPermitido = (typeof CAMPOS_PERMITIDOS)[number]
 
@@ -155,13 +160,19 @@ export async function PATCH(
     }
     if (k === "activo") {
       data[k] = Boolean(raw)
-    } else if (k === "anio" || k === "kilometros" || k === "precio") {
+    } else if (k === "anio" || k === "kilometros" || k === "precio" || k === "valorToma") {
       const n = parseInt(String(raw))
       data[k] = Number.isFinite(n) ? n : null
     } else if (k === "patente" || k === "chasis" || k === "motor") {
       data[k] = String(raw).trim().toUpperCase() || null
-    } else if (k === "moneda") {
+    } else if (k === "moneda" || k === "valorTomaMoneda") {
       data[k] = String(raw) === "USD" ? "USD" : "ARS"
+    } else if (k === "origen") {
+      const o = String(raw).trim().toUpperCase()
+      if (!ORIGENES_VALIDOS.includes(o)) {
+        return NextResponse.json({ error: "Origen inválido" }, { status: 400 })
+      }
+      data[k] = o
     } else {
       data[k] = String(raw).trim() || null
     }

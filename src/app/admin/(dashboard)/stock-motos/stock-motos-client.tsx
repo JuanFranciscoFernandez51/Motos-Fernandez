@@ -144,6 +144,28 @@ export function StockMotosClient({
     }
   }
 
+  // Cambiar origen (propia ↔ parte de pago ↔ consignación) inline desde la
+  // lista. Afecta valuación de stock, márgenes y comisión.
+  const cambiarOrigen = async (moto: StockMotoUI, origen: string) => {
+    if ((moto.origen || "STOCK_PROPIO") === origen) return
+    setAccionLoading(moto.id)
+    try {
+      const res = await fetch(`/api/admin/stock-motos/${moto.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ origen }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        alert(data.error || `Error ${res.status}`)
+        return
+      }
+      router.refresh()
+    } finally {
+      setAccionLoading(null)
+    }
+  }
+
   // Para los contadores aplicamos el filtro de tenencia (lo que estás viendo
   // ahora), pero la fila "total/disponibles" del header sigue dependiendo
   // del tab visible — así si filtrás "en domicilio" ves los conteos de
@@ -505,9 +527,18 @@ export function StockMotosClient({
                         )}
                       </td>
                       <td className="px-3 py-2.5 text-xs whitespace-nowrap">
-                        <span className={`inline-block px-2 py-0.5 rounded-full font-medium ${oc.color}`}>
-                          {oc.label}
-                        </span>
+                        <select
+                          value={m.origen || "STOCK_PROPIO"}
+                          disabled={accionLoading === m.id}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => cambiarOrigen(m, e.target.value)}
+                          title="Cambiar origen: propia / parte de pago / consignación"
+                          className={`px-2 py-0.5 rounded-full font-medium border-0 cursor-pointer outline-none focus:ring-2 focus:ring-[#7C3AED]/40 disabled:opacity-50 ${oc.color}`}
+                        >
+                          <option value="STOCK_PROPIO">Stock propio</option>
+                          <option value="PARTE_DE_PAGO">Parte de pago</option>
+                          <option value="MANDATO">Cliente (consignación)</option>
+                        </select>
                         {m.proveedor && (
                           <p className="text-[10px] text-gray-400 mt-0.5">
                             {m.proveedor}
