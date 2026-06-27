@@ -31,6 +31,36 @@ export const CATEGORIAS_GASTO = [
 
 export const CATEGORIA_TRANSFERENCIA = "Transferencia entre cuentas"
 
+// ─────────────────────────────────────────────────────────────
+// Categorías de COSTOS FIJOS (concesionaria de motos AR).
+// Set realista y completo. Editables a futuro; la UI permite
+// además cargar una categoría custom ("Otra…").
+// ─────────────────────────────────────────────────────────────
+export const CATEGORIAS_COSTO_FIJO = [
+  "Alquiler del local",
+  "Expensas",
+  "Sueldos",
+  "Cargas sociales (SUSS)",
+  "Servicios (luz/gas/agua)",
+  "Internet / Teléfono",
+  "Impuestos nacionales (ARCA/IVA/Ganancias)",
+  "Ingresos Brutos (IIBB)",
+  "Tasa municipal / Seguridad e Higiene",
+  "Honorarios contador",
+  "Seguros (local / resp. civil)",
+  "Sistemas / Software / Suscripciones",
+  "Marketing y publicidad",
+  "Mantenimiento del local",
+  "Limpieza",
+  "Papelería e insumos",
+  "Fletes y logística",
+  "Alarma / Seguridad / Monitoreo",
+  "Comisiones bancarias / Posnet",
+  "Cuota préstamo / Leasing",
+  "Combustible / Movilidad",
+  "Otros",
+] as const
+
 // Tipos de cuentas a cobrar
 export const TIPOS_POR_COBRAR = [
   "Crédito personal",

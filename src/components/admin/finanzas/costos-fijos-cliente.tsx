@@ -3,15 +3,17 @@
 import { useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { Plus, Trash2, CalendarDays, Bike, TrendingUp, Target } from "lucide-react"
+import { Plus, Trash2, CalendarDays, Bike, TrendingUp, Target, Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent } from "@/components/ui/card"
 import { InlineEdit } from "@/components/admin/inline-edit"
 import { formatMoney } from "@/lib/admin-helpers"
-import { calcularMetricasCostosFijos } from "@/lib/finanzas"
+import { calcularMetricasCostosFijos, CATEGORIAS_COSTO_FIJO } from "@/lib/finanzas"
 import type { CostoFijo, FinanzasConfig } from "@prisma/client"
+
+const CATEGORIA_OTRA = "__otra__"
 
 export function CostosFijosCliente({
   costos,
@@ -26,6 +28,21 @@ export function CostosFijosCliente({
   const [motos, setMotos] = useState(String(config.motosEstimadasMes))
   const [margen, setMargen] = useState(String(config.margenBrutoMoto))
   const [savingCfg, setSavingCfg] = useState(false)
+  const [agregando, setAgregando] = useState(false)
+
+  // Form de alta de un nuevo costo fijo
+  const [nuevoConcepto, setNuevoConcepto] = useState("")
+  const [nuevaCategoria, setNuevaCategoria] = useState<string>(CATEGORIAS_COSTO_FIJO[0])
+  const [nuevaCategoriaCustom, setNuevaCategoriaCustom] = useState("")
+  const [nuevoMonto, setNuevoMonto] = useState("")
+
+  // Opciones para el <select> inline de categoría. Incluye cualquier
+  // categoría presente en los datos que no esté en la lista estándar.
+  const categoriaOptions = useMemo(() => {
+    const set = new Set<string>(CATEGORIAS_COSTO_FIJO)
+    for (const c of costos) if (c.categoria) set.add(c.categoria)
+    return Array.from(set).map((c) => ({ value: c, label: c }))
+  }, [costos])
 
   const metricas = useMemo(
     () => calcularMetricasCostosFijos(costos, { motosEstimadasMes: Number(motos) || 1, margenBrutoMoto: Number(margen) || 1 }),
@@ -38,6 +55,8 @@ export function CostosFijosCliente({
     return Array.from(m.entries()).map(([categoria, monto]) => ({ categoria, monto })).sort((a, b) => b.monto - a.monto)
   }, [costos])
 
+  const cantInactivos = useMemo(() => costos.filter((c) => !c.activo).length, [costos])
+
   async function guardarParams() {
     setSavingCfg(true)
     const res = await fetch("/api/admin/finanzas/config", {
@@ -49,11 +68,29 @@ export function CostosFijosCliente({
   }
 
   async function agregar() {
+    const concepto = nuevoConcepto.trim()
+    if (!concepto) { toast.error("Poné un concepto"); return }
+    const categoria = nuevaCategoria === CATEGORIA_OTRA ? nuevaCategoriaCustom.trim() : nuevaCategoria
+    if (!categoria) { toast.error("Elegí o escribí una categoría"); return }
+    setAgregando(true)
     const res = await fetch("/api/admin/finanzas/costos-fijos", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ concepto: "Nuevo costo", categoria: "Otros", monto: 0 }),
+      body: JSON.stringify({ concepto, categoria, monto: Number(nuevoMonto) || 0 }),
     })
-    if (res.ok) { router.refresh() } else toast.error("Error")
+    setAgregando(false)
+    if (res.ok) {
+      toast.success("Costo agregado")
+      setNuevoConcepto(""); setNuevoMonto(""); setNuevaCategoria(CATEGORIAS_COSTO_FIJO[0]); setNuevaCategoriaCustom("")
+      router.refresh()
+    } else toast.error("Error")
+  }
+
+  async function toggleActivo(c: CostoFijo) {
+    const res = await fetch(`/api/admin/finanzas/costos-fijos/${c.id}`, {
+      method: "PATCH", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ activo: !c.activo }),
+    })
+    if (res.ok) { toast.success(c.activo ? "Excluido del total" : "Incluido en el total"); router.refresh() } else toast.error("Error")
   }
 
   async function borrar(id: string) {
@@ -121,36 +158,101 @@ export function CostosFijosCliente({
         </Card>
       )}
 
+      {/* Alta de un nuevo costo fijo */}
+      <Card>
+        <CardContent className="p-5">
+          <h2 className="font-semibold text-gray-800 mb-3 text-sm flex items-center gap-2"><Plus className="h-4 w-4 text-[#7C3AED]" /> Agregar costo fijo</h2>
+          <div className="flex flex-wrap items-end gap-3">
+            <div className="flex-1 min-w-[180px]">
+              <Label className="text-xs">Concepto</Label>
+              <Input
+                value={nuevoConcepto}
+                onChange={(e) => setNuevoConcepto(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") agregar() }}
+                placeholder="Ej: Alquiler local Av. Colón"
+              />
+            </div>
+            <div className="min-w-[200px]">
+              <Label className="text-xs">Categoría</Label>
+              <select
+                value={nuevaCategoria}
+                onChange={(e) => setNuevaCategoria(e.target.value)}
+                className="w-full h-9 rounded-md border border-gray-300 px-2 text-sm bg-white focus:border-[#9D5CF0] focus:outline-none"
+              >
+                {CATEGORIAS_COSTO_FIJO.map((c) => <option key={c} value={c}>{c}</option>)}
+                <option value={CATEGORIA_OTRA}>Otra…</option>
+              </select>
+            </div>
+            {nuevaCategoria === CATEGORIA_OTRA && (
+              <div className="min-w-[180px]">
+                <Label className="text-xs">Categoría nueva</Label>
+                <Input value={nuevaCategoriaCustom} onChange={(e) => setNuevaCategoriaCustom(e.target.value)} placeholder="Nombre de la categoría" />
+              </div>
+            )}
+            <div className="w-40">
+              <Label className="text-xs">Monto mensual</Label>
+              <Input
+                type="number"
+                value={nuevoMonto}
+                onChange={(e) => setNuevoMonto(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") agregar() }}
+                placeholder="0"
+                className="text-right"
+              />
+            </div>
+            <Button onClick={agregar} disabled={agregando} style={{ backgroundColor: "#7C3AED" }} className="text-white hover:opacity-90">
+              {agregando ? "Agregando…" : "Agregar"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Tabla de costos */}
       <div className="rounded-xl border border-gray-200 overflow-hidden">
         <div className="flex items-center justify-between bg-gray-50 px-4 py-2.5">
           <span className="text-sm font-semibold text-gray-700">Conceptos de costo fijo</span>
-          <Button size="sm" variant="outline" onClick={agregar}><Plus className="h-4 w-4 mr-1" /> Agregar</Button>
+          {cantInactivos > 0 && (
+            <span className="text-[11px] text-gray-400">{cantInactivos} excluido{cantInactivos === 1 ? "" : "s"} del total</span>
+          )}
         </div>
         <table className="w-full text-sm">
           <thead className="text-gray-500 text-xs border-b border-gray-100">
             <tr>
               <th className="text-left font-medium px-4 py-2">Concepto</th>
-              <th className="text-left font-medium px-4 py-2">Categoría</th>
+              <th className="text-left font-medium px-4 py-2 w-56">Categoría</th>
+              <th className="text-left font-medium px-4 py-2">Notas</th>
               <th className="text-right font-medium px-4 py-2 w-40">Monto mensual</th>
               <th className="text-right font-medium px-4 py-2 w-20">% del total</th>
+              <th className="text-center font-medium px-4 py-2 w-14">Activo</th>
               <th className="px-4 py-2 w-10"></th>
             </tr>
           </thead>
           <tbody>
             {costos.map((c) => (
-              <tr key={c.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50">
+              <tr key={c.id} className={`border-b border-gray-50 last:border-0 hover:bg-gray-50 ${c.activo ? "" : "opacity-50"}`}>
                 <td className="px-4 py-2">
                   <InlineEdit endpoint={`/api/admin/finanzas/costos-fijos/${c.id}`} field="concepto" value={c.concepto} />
                 </td>
                 <td className="px-4 py-2 text-gray-600">
-                  <InlineEdit endpoint={`/api/admin/finanzas/costos-fijos/${c.id}`} field="categoria" value={c.categoria} />
+                  <InlineEdit endpoint={`/api/admin/finanzas/costos-fijos/${c.id}`} field="categoria" value={c.categoria} options={categoriaOptions} />
+                </td>
+                <td className="px-4 py-2 text-gray-500">
+                  <InlineEdit endpoint={`/api/admin/finanzas/costos-fijos/${c.id}`} field="notas" value={c.notas} placeholder="—" />
                 </td>
                 <td className="px-4 py-2 text-right">
                   <InlineEdit endpoint={`/api/admin/finanzas/costos-fijos/${c.id}`} field="monto" value={c.monto} type="number" alignRight display={(v) => formatMoney(Number(v))} />
                 </td>
                 <td className="px-4 py-2 text-right tabular-nums text-gray-500">
-                  {metricas.totalMensual > 0 ? `${((c.monto / metricas.totalMensual) * 100).toFixed(1)}%` : "—"}
+                  {c.activo && metricas.totalMensual > 0 ? `${((c.monto / metricas.totalMensual) * 100).toFixed(1)}%` : "—"}
+                </td>
+                <td className="px-4 py-2 text-center">
+                  <button
+                    onClick={() => toggleActivo(c)}
+                    className={`p-1.5 rounded hover:bg-gray-100 ${c.activo ? "text-[#7C3AED]" : "text-gray-400"}`}
+                    title={c.activo ? "Activo (cuenta en el total). Click para excluir." : "Excluido del total. Click para incluir."}
+                  >
+                    {c.activo ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                  </button>
                 </td>
                 <td className="px-4 py-2 text-right">
                   <button onClick={() => borrar(c.id)} className="p-1.5 rounded hover:bg-red-100 text-red-500"><Trash2 className="h-3.5 w-3.5" /></button>
@@ -158,15 +260,15 @@ export function CostosFijosCliente({
               </tr>
             ))}
             <tr className="border-t-2 border-gray-200 font-bold bg-gray-50">
-              <td className="px-4 py-2.5" colSpan={2}>TOTAL COSTO FIJO MENSUAL</td>
+              <td className="px-4 py-2.5" colSpan={3}>TOTAL COSTO FIJO MENSUAL</td>
               <td className="px-4 py-2.5 text-right tabular-nums" style={{ color: "#7C3AED" }}>{formatMoney(metricas.totalMensual)}</td>
               <td className="px-4 py-2.5 text-right">100%</td>
-              <td></td>
+              <td colSpan={2}></td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p className="text-xs text-gray-400">Hacé click en cualquier celda para editarla. El total y las métricas se recalculan solos.</p>
+      <p className="text-xs text-gray-400">Hacé click en cualquier celda para editarla. El ojo excluye un costo del total sin borrarlo. El total y las métricas se recalculan solos.</p>
     </div>
   )
 }
