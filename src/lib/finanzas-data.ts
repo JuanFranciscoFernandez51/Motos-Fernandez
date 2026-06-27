@@ -39,9 +39,16 @@ export async function getCategorias(): Promise<{ ingreso: string[]; gasto: strin
  * Replica la hoja "Saldos por Cuenta" → bloque VALOR DE STOCK.
  */
 export async function getValorStock() {
-  // Motos en stock USADAS (físicas, no las publicaciones 0KM): precio del catálogo.
+  // Valor de stock = SOLO motos NUESTRAS (no las de consignación/mandato, que no
+  // son un activo nuestro). Tampoco las 0KM publicitarias. Físicas y disponibles:
+  // usadas activas, no vendidas, con origen propio (stock propio o parte de pago).
   const motos = await prisma.modelo.findMany({
-    where: { condicion: "USADA", vendida: false, activo: true },
+    where: {
+      condicion: "USADA",
+      vendida: false,
+      activo: true,
+      origen: { not: "MANDATO" },
+    },
     select: { precio: true },
   })
   const valorMotos = motos.reduce((a, m) => a + (m.precio || 0), 0)
