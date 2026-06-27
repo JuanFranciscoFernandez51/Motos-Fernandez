@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Search, X, Pencil, CreditCard, HandCoins, Loader2 } from "lucide-react"
+import { Search, X, Pencil, CreditCard, HandCoins, Loader2, MessageCircle } from "lucide-react"
 import {
   formatDate,
   formatMoney,
@@ -58,6 +58,24 @@ export function FinanciacionesList({
   const [monedaFilter, setMonedaFilter] = useState("")
   const [cobrandoId, setCobrandoId] = useState<string | null>(null)
   const [, startTransition] = useTransition()
+
+  // Link de WhatsApp con recordatorio pre-armado de la próxima cuota.
+  const whatsappLink = (r: Row): string | null => {
+    if (!r.clienteTelefono) return null
+    const tel = r.clienteTelefono.replace(/\D/g, "")
+    if (!tel) return null
+    const nombre = r.clienteNombre.split(",")[1]?.trim() || r.clienteNombre
+    const monto = r.proximaCuotaMonto
+      ? `${r.moneda === "USD" ? "USD " : "$ "}${r.proximaCuotaMonto.toLocaleString("es-AR")}`
+      : ""
+    const fecha = r.proximaCuotaFecha ? formatDate(r.proximaCuotaFecha) : ""
+    const msg =
+      `Hola ${nombre}! Te escribimos de Motos Fernández para recordarte tu próxima cuota` +
+      (monto ? ` de ${monto}` : "") +
+      (fecha ? ` con vencimiento el ${fecha}` : "") +
+      `. Cualquier consulta quedamos a disposición. ¡Gracias!`
+    return `https://wa.me/${tel}?text=${encodeURIComponent(msg)}`
+  }
 
   const handleCobrar = (r: Row) => {
     const montoTxt = r.proximaCuotaMonto
@@ -294,6 +312,17 @@ export function FinanciacionesList({
                               <HandCoins className="h-4 w-4" />
                             )}
                             <span className="ml-1 text-xs hidden sm:inline">Cobrar</span>
+                          </Button>
+                        )}
+                        {r.proximaCuotaFecha && r.estado !== "COMPLETADA" && whatsappLink(r) && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            render={<a href={whatsappLink(r)!} target="_blank" rel="noopener noreferrer" />}
+                            title="Avisar al cliente por WhatsApp"
+                            className="text-emerald-600 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+                          >
+                            <MessageCircle className="h-4 w-4" />
                           </Button>
                         )}
                         <Button

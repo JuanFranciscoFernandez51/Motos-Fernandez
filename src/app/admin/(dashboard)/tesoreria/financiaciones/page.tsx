@@ -105,10 +105,10 @@ export default async function FinanciacionesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Financiaciones</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Créditos personales</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Seguimiento de pagos de financiación. Las financiaciones se crean
-            automáticamente cuando una OC tiene cuotas; también podés cargar manualmente.
+            Lo que los clientes nos deben en cuotas. Se crean solos cuando una OC
+            tiene financiación; podés cobrar la cuota y avisar al cliente desde acá.
           </p>
         </div>
         <Button
