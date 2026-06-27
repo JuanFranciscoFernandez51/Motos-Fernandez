@@ -83,6 +83,7 @@ export default async function EditarOTPage({
     prisma.ordenTrabajo.findUnique({ where: { id } }),
     prisma.cliente.findMany({
       orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
+      take: 15, // semilla: ClienteSelector busca server-side al tipear
       select: {
         id: true, nombre: true, apellido: true, dni: true, telefono: true, email: true,
       },

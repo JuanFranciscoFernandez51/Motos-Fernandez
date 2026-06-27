@@ -14,6 +14,7 @@ export default async function StockMotosPage() {
   const [clientes, motosRaw] = await Promise.all([
     prisma.cliente.findMany({
       orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
+      take: 15, // semilla: ClienteSelector busca server-side al tipear
       select: {
         id: true,
         nombre: true,

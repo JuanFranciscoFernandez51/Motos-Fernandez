@@ -1,7 +1,7 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { Search, User, Plus, X, Check, Pencil } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
+import { Search, User, Plus, X, Check, Pencil, Loader2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { ClienteQuickCreateModal } from "./cliente-quick-create-modal"
 import { ClienteQuickEditModal } from "./cliente-quick-edit-modal"
@@ -16,20 +16,23 @@ export type ClienteOption = {
 }
 
 export function ClienteSelector({
-  clientes: initialClientes,
+  clientes: initialClientes = [],
   value,
   onChange,
 }: {
-  clientes: ClienteOption[]
+  clientes?: ClienteOption[]
   value: string
   onChange: (id: string) => void
 }) {
-  // Mantiene estado local de clientes para poder agregar recién creados sin recargar
+  // Estado local de clientes: arranca con la semilla (si vino) y se va
+  // llenando con los resultados de la búsqueda server-side a medida que se tipea.
   const [clientes, setClientes] = useState<ClienteOption[]>(initialClientes)
   const [query, setQuery] = useState("")
   const [open, setOpen] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [modalOpen, setModalOpen] = useState(false)
   const [editOpen, setEditOpen] = useState(false)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const selected = clientes.find((c) => c.id === value) ?? null
 
@@ -39,22 +42,38 @@ export function ClienteSelector({
     setClientes((prev) => prev.map((x) => (x.id === c.id ? c : x)))
   }
 
-  const filtered = useMemo(() => {
-    const norm = (s: string) =>
-      s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
-    const q = norm(query.trim())
-    if (!q) return clientes.slice(0, 15)
-    return clientes
-      .filter((c) => {
-        const hay = norm(
-          [c.nombre, c.apellido, c.dni, c.telefono, c.email]
-            .filter(Boolean)
-            .join(" ")
-        )
-        return hay.includes(q)
+  // Si hay un cliente seleccionado (ej. al editar una OC) pero no está en la
+  // lista local, lo traemos por id para poder mostrar su ficha.
+  useEffect(() => {
+    if (!value || clientes.some((c) => c.id === value)) return
+    let cancel = false
+    fetch(`/api/admin/clientes/search?id=${encodeURIComponent(value)}`)
+      .then((r) => r.json())
+      .then((d) => {
+        const c = d.clientes?.[0]
+        if (!cancel && c) setClientes((prev) => (prev.some((x) => x.id === c.id) ? prev : [c, ...prev]))
       })
-      .slice(0, 15)
-  }, [clientes, query])
+      .catch(() => {})
+    return () => { cancel = true }
+  }, [value, clientes])
+
+  // Búsqueda server-side con debounce (o "más recientes" al abrir sin texto).
+  // Reemplaza la precarga de los ~2700 clientes en cada formulario.
+  useEffect(() => {
+    if (!open) return
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    setLoading(true)
+    debounceRef.current = setTimeout(() => {
+      fetch(`/api/admin/clientes/search?q=${encodeURIComponent(query.trim())}`)
+        .then((r) => r.json())
+        .then((d) => setClientes(d.clientes || []))
+        .catch(() => {})
+        .finally(() => setLoading(false))
+    }, 250)
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
+  }, [query, open])
+
+  const filtered = clientes
 
   const handleCreated = (c: ClienteOption) => {
     setClientes((prev) => [c, ...prev])
@@ -149,7 +168,11 @@ export function ClienteSelector({
 
         {open && (
           <div className="absolute z-40 mt-1 w-full rounded-md border bg-white dark:bg-neutral-900 shadow-lg max-h-80 overflow-y-auto">
-            {filtered.length === 0 ? (
+            {loading && filtered.length === 0 ? (
+              <div className="p-4 flex items-center justify-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                <Loader2 className="size-4 animate-spin" /> Buscando…
+              </div>
+            ) : filtered.length === 0 ? (
               <div className="p-4 text-center">
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Sin resultados</p>
                 <button

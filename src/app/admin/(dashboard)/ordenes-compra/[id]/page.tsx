@@ -741,6 +741,7 @@ export default async function EditarOrdenCompraPage({
     }),
     prisma.cliente.findMany({
       orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
+      take: 15, // semilla: ClienteSelector busca server-side al tipear
       select: {
         id: true,
         nombre: true,

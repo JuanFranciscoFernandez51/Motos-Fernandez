@@ -168,6 +168,7 @@ export default async function NuevoModeloPage() {
   const [clientes, proveedores] = await Promise.all([
     prisma.cliente.findMany({
       orderBy: [{ apellido: "asc" }, { nombre: "asc" }],
+      take: 15, // semilla: ClienteSelector busca server-side al tipear
       select: {
         id: true,
         nombre: true,
