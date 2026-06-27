@@ -1,14 +1,35 @@
 import Link from "next/link"
-import { TrendingUp, Wallet, Clock, Package, DollarSign, ArrowRight, AlertTriangle } from "lucide-react"
+import { TrendingUp, Wallet, Clock, Package, DollarSign, ArrowRight, AlertTriangle, Target, Bike, Gauge } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { FinanzasNav } from "@/components/admin/finanzas/finanzas-nav"
 import { getPosicionTotal, getResumenCuentasCheques } from "@/lib/finanzas-data"
+import { getMargenPromedioReal } from "@/lib/margen-helpers"
+import { calcularMetricasCostosFijos } from "@/lib/finanzas"
+import { prisma } from "@/lib/prisma"
 import { formatMoney, formatDate } from "@/lib/admin-helpers"
 
 export const dynamic = "force-dynamic"
 
 export default async function FinanzasPage() {
-  const [pos, cyc] = await Promise.all([getPosicionTotal(), getResumenCuentasCheques()])
+  const ahora = new Date()
+  const inicioMes = new Date(ahora.getFullYear(), ahora.getMonth(), 1)
+  const [pos, cyc, margenReal, config, costos, vendidasMes] = await Promise.all([
+    getPosicionTotal(),
+    getResumenCuentasCheques(),
+    getMargenPromedioReal(prisma),
+    prisma.finanzasConfig.findFirst(),
+    prisma.costoFijo.findMany(),
+    prisma.ordenCompra.count({ where: { estado: "CONCRETADA", fecha: { gte: inicioMes } } }),
+  ])
+
+  // Breakeven calculado con el MARGEN REAL (si hay ventas cargadas); si no,
+  // cae al margen configurado a mano.
+  const margenUsado = margenReal.promedio > 0 ? margenReal.promedio : (config?.margenBrutoMoto || 1)
+  const metr = calcularMetricasCostosFijos(costos, {
+    motosEstimadasMes: config?.motosEstimadasMes || 1,
+    margenBrutoMoto: margenUsado,
+  })
+  const faltanParaCubrir = Math.max(0, metr.motosMinimas - vendidasMes)
 
   const kpis = [
     { label: "Posición total", valor: pos.posicionTotal, icon: TrendingUp, color: "#7C3AED", hint: "Saldos + por cobrar + stock" },
@@ -25,6 +46,61 @@ export default async function FinanzasPage() {
       </div>
 
       <FinanzasNav />
+
+      {/* Banda de RENTABILIDAD — breakeven con margen real, bien arriba */}
+      <div className="rounded-2xl border border-[#7C3AED]/20 bg-gradient-to-br from-[#7C3AED]/[0.06] to-transparent p-4 md:p-5">
+        <div className="flex items-center gap-2 mb-3">
+          <Gauge className="h-4 w-4 text-[#7C3AED]" />
+          <h2 className="text-sm font-semibold text-gray-800">Rentabilidad del mes</h2>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="rounded-xl bg-white border border-gray-100 p-4">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Margen bruto x moto</span>
+              <TrendingUp className="h-4 w-4 text-[#7C3AED]" />
+            </div>
+            <div className="text-xl md:text-2xl font-bold text-gray-900 tabular-nums">{formatMoney(margenReal.promedio)}</div>
+            <div className="text-[11px] text-gray-400 mt-1">
+              {margenReal.cantidad > 0 ? `promedio real de ${margenReal.cantidad} venta${margenReal.cantidad === 1 ? "" : "s"}` : "sin ventas con costo cargado aún"}
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-white border border-gray-100 p-4">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Costo fijo mensual</span>
+              <Wallet className="h-4 w-4 text-[#9D5CF0]" />
+            </div>
+            <div className="text-xl md:text-2xl font-bold text-gray-900 tabular-nums">{formatMoney(metr.totalMensual)}</div>
+            <div className="text-[11px] text-gray-400 mt-1">{formatMoney(Math.round(metr.costoPorDia))} por día</div>
+          </div>
+
+          <div className="rounded-xl bg-white border border-gray-100 p-4">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Breakeven</span>
+              <Target className="h-4 w-4 text-[#CE9F33]" />
+            </div>
+            <div className="text-xl md:text-2xl font-bold text-gray-900 tabular-nums">{metr.motosMinimas.toFixed(1)} <span className="text-sm font-medium text-gray-400">motos/mes</span></div>
+            <div className="text-[11px] text-gray-400 mt-1">
+              para cubrir costos {margenReal.promedio > 0 ? "(con margen real)" : "(margen estimado)"}
+            </div>
+          </div>
+
+          <div className="rounded-xl bg-white border border-gray-100 p-4">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Vendidas este mes</span>
+              <Bike className="h-4 w-4 text-[#7C8B9A]" />
+            </div>
+            <div className="text-xl md:text-2xl font-bold text-gray-900 tabular-nums">{vendidasMes}</div>
+            <div className="text-[11px] mt-1">
+              {faltanParaCubrir <= 0 ? (
+                <span className="text-emerald-600 font-semibold">✓ costos fijos cubiertos</span>
+              ) : (
+                <span className="text-gray-400">faltan <strong className="text-[#CE9F33]">{faltanParaCubrir.toFixed(1)}</strong> para el breakeven</span>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
