@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { Search, X, Pencil, CreditCard, HandCoins, Loader2, MessageCircle } from "lucide-react"
+import { Search, X, Pencil, CreditCard, HandCoins, Loader2, MessageCircle, Trash2, Check } from "lucide-react"
 import {
   formatDate,
   formatMoney,
@@ -58,6 +58,50 @@ export function FinanciacionesList({
   const [monedaFilter, setMonedaFilter] = useState("")
   const [cobrandoId, setCobrandoId] = useState<string | null>(null)
   const [, startTransition] = useTransition()
+
+  // Edición inline (descripción / total) y borrado con confirmación en 2 pasos.
+  const [editing, setEditing] = useState<{ id: string; field: "descripcion" | "montoTotal" } | null>(null)
+  const [editVal, setEditVal] = useState("")
+  const [confirmDel, setConfirmDel] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+
+  const startEdit = (r: Row, field: "descripcion" | "montoTotal") => {
+    setEditing({ id: r.id, field })
+    setEditVal(field === "montoTotal" ? String(r.montoTotal) : r.descripcion)
+  }
+
+  const saveEdit = async () => {
+    if (!editing) return
+    const payload =
+      editing.field === "montoTotal"
+        ? { montoTotal: Number(editVal) }
+        : { descripcion: editVal }
+    setBusy(true)
+    try {
+      const res = await fetch(`/api/admin/tesoreria/financiaciones/${editing.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+      if (!res.ok) { alert("No se pudo guardar"); return }
+      setEditing(null)
+      router.refresh()
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const eliminar = async (id: string) => {
+    setBusy(true)
+    try {
+      const res = await fetch(`/api/admin/tesoreria/financiaciones/${id}`, { method: "DELETE" })
+      if (!res.ok) { alert("No se pudo eliminar"); return }
+      setConfirmDel(null)
+      router.refresh()
+    } finally {
+      setBusy(false)
+    }
+  }
 
   // Link de WhatsApp con recordatorio pre-armado de la próxima cuota.
   const whatsappLink = (r: Row): string | null => {
@@ -248,9 +292,52 @@ export function FinanciacionesList({
                         <p className="text-xs text-gray-500 dark:text-gray-400">{r.clienteTelefono}</p>
                       )}
                     </TableCell>
-                    <TableCell className="text-sm">{r.descripcion}</TableCell>
+                    <TableCell className="text-sm">
+                      {editing?.id === r.id && editing.field === "descripcion" ? (
+                        <span className="flex items-center gap-1">
+                          <Input
+                            autoFocus
+                            value={editVal}
+                            onChange={(e) => setEditVal(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter") saveEdit(); if (e.key === "Escape") setEditing(null) }}
+                            className="h-7 text-sm"
+                          />
+                          <button onClick={saveEdit} disabled={busy} className="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30 rounded" title="Guardar">
+                            <Check className="size-4" />
+                          </button>
+                          <button onClick={() => setEditing(null)} className="p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded" title="Cancelar">
+                            <X className="size-4" />
+                          </button>
+                        </span>
+                      ) : (
+                        <button onClick={() => startEdit(r, "descripcion")} className="text-left hover:underline decoration-dotted" title="Editar descripción">
+                          {r.descripcion || <span className="text-gray-400 italic">sin descripción</span>}
+                        </button>
+                      )}
+                    </TableCell>
                     <TableCell className="whitespace-nowrap text-sm font-medium">
-                      {formatMoney(r.montoTotal, r.moneda)}
+                      {editing?.id === r.id && editing.field === "montoTotal" ? (
+                        <span className="flex items-center gap-1">
+                          <Input
+                            autoFocus
+                            type="number"
+                            value={editVal}
+                            onChange={(e) => setEditVal(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter") saveEdit(); if (e.key === "Escape") setEditing(null) }}
+                            className="h-7 w-28 text-sm"
+                          />
+                          <button onClick={saveEdit} disabled={busy} className="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-950/30 rounded" title="Guardar">
+                            <Check className="size-4" />
+                          </button>
+                          <button onClick={() => setEditing(null)} className="p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-neutral-800 rounded" title="Cancelar">
+                            <X className="size-4" />
+                          </button>
+                        </span>
+                      ) : (
+                        <button onClick={() => startEdit(r, "montoTotal")} className="hover:underline decoration-dotted" title="Editar total del crédito">
+                          {formatMoney(r.montoTotal, r.moneda)}
+                        </button>
+                      )}
                     </TableCell>
                     <TableCell className="text-sm">
                       <span className="font-medium text-green-700 dark:text-green-300">{r.cuotasPagadas}</span>
@@ -333,6 +420,34 @@ export function FinanciacionesList({
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
+                        {confirmDel === r.id ? (
+                          <span className="flex items-center gap-1">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => eliminar(r.id)}
+                              disabled={busy}
+                              title="Confirmar eliminación"
+                              className="text-red-600 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30"
+                            >
+                              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                              <span className="ml-1 text-xs">Confirmar</span>
+                            </Button>
+                            <Button variant="ghost" size="sm" onClick={() => setConfirmDel(null)} title="Cancelar" className="text-gray-400">
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </span>
+                        ) : (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setConfirmDel(r.id)}
+                            title="Eliminar crédito"
+                            className="text-red-500 dark:text-red-300 hover:bg-red-50 dark:hover:bg-red-950/30"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
