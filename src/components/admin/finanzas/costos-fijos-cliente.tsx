@@ -13,7 +13,15 @@ import { formatMoney } from "@/lib/admin-helpers"
 import { calcularMetricasCostosFijos } from "@/lib/finanzas"
 import type { CostoFijo, FinanzasConfig } from "@prisma/client"
 
-export function CostosFijosCliente({ costos, config }: { costos: CostoFijo[]; config: FinanzasConfig }) {
+export function CostosFijosCliente({
+  costos,
+  config,
+  margenReal = { promedio: 0, cantidad: 0 },
+}: {
+  costos: CostoFijo[]
+  config: FinanzasConfig
+  margenReal?: { promedio: number; cantidad: number }
+}) {
   const router = useRouter()
   const [motos, setMotos] = useState(String(config.motosEstimadasMes))
   const [margen, setMargen] = useState(String(config.margenBrutoMoto))
@@ -75,6 +83,16 @@ export function CostosFijosCliente({ costos, config }: { costos: CostoFijo[]; co
           <div>
             <Label className="text-xs">Margen bruto por moto (venta − costo)</Label>
             <Input type="number" value={margen} onChange={(e) => setMargen(e.target.value)} className="w-52" />
+            {margenReal.cantidad > 0 && (
+              <button
+                type="button"
+                onClick={() => setMargen(String(margenReal.promedio))}
+                className="block mt-1 text-[11px] text-[#7C3AED] hover:underline text-left"
+                title="Usar el promedio real de tus ventas cargadas"
+              >
+                Real: {formatMoney(margenReal.promedio)} (de {margenReal.cantidad} venta{margenReal.cantidad === 1 ? "" : "s"}) — usar
+              </button>
+            )}
           </div>
           <Button onClick={guardarParams} disabled={savingCfg} variant="outline">{savingCfg ? "Guardando…" : "Guardar parámetros"}</Button>
           <p className="text-xs text-gray-400 flex-1 min-w-[200px]">

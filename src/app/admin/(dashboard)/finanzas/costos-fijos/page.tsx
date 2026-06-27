@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma"
 import { FinanzasNav } from "@/components/admin/finanzas/finanzas-nav"
 import { CostosFijosCliente } from "@/components/admin/finanzas/costos-fijos-cliente"
+import { getMargenPromedioReal } from "@/lib/margen-helpers"
 
 export const dynamic = "force-dynamic"
 
@@ -8,6 +9,7 @@ export default async function CostosFijosPage() {
   let config = await prisma.finanzasConfig.findFirst()
   if (!config) config = await prisma.finanzasConfig.create({ data: {} })
   const costos = await prisma.costoFijo.findMany({ orderBy: { orden: "asc" } })
+  const margenReal = await getMargenPromedioReal(prisma)
 
   return (
     <div className="space-y-6">
@@ -19,6 +21,7 @@ export default async function CostosFijosPage() {
       <CostosFijosCliente
         costos={JSON.parse(JSON.stringify(costos))}
         config={JSON.parse(JSON.stringify(config))}
+        margenReal={margenReal}
       />
     </div>
   )

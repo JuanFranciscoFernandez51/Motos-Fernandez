@@ -129,6 +129,7 @@ async function createOrdenCompra(formData: FormData) {
           motoAnio: num("motoAnio"),
           motoKilometros: num("motoKilometros"),
           precioVenta: precioVentaTotal,
+          gananciaBruta: num("gananciaBruta"),
           moneda: get("moneda") || "ARS",
           formaPago,
           sena: num("sena"),

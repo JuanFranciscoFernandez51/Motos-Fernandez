@@ -92,6 +92,7 @@ export type OCData = {
   motoAnio: string
   motoKilometros: string
   precioVenta: string
+  gananciaBruta: string
   moneda: string
   // formaPago se sigue calculando y guardando en DB, pero ya no se elige
   // a mano en el UI nuevo — se infiere de lo cargado (pagos + permutas
@@ -132,6 +133,7 @@ const EMPTY: OCData = {
   motoAnio: "",
   motoKilometros: "",
   precioVenta: "",
+  gananciaBruta: "",
   moneda: "ARS",
   formaPago: "Contado",
   sena: "",
@@ -614,6 +616,21 @@ export function OCForm({
                   <option value="USD">USD</option>
                 </select>
               </div>
+            </div>
+            <div className="mt-3">
+              <Label htmlFor="gananciaBruta">Ganancia bruta de la venta (opcional)</Label>
+              <Input
+                id="gananciaBruta"
+                type="number"
+                value={data.gananciaBruta}
+                onChange={(e) => set("gananciaBruta", e.target.value)}
+                placeholder="Se calcula sola si lo dejás vacío"
+              />
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-1">
+                Si lo dejás vacío, al concretar se calcula solo: propia = precio −
+                valor de toma; consignación = 5% (o lo pactado). Cargalo/ajustalo
+                para los casos especiales. Alimenta el promedio para el breakeven.
+              </p>
             </div>
             <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-2">
               Forma de pago: <strong>{formaPagoCalculada}</strong> (se
