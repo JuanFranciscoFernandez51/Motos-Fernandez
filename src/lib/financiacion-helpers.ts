@@ -188,3 +188,51 @@ export async function actualizarEstadosVencidos(tx: TxClient) {
     })
   }
 }
+
+/**
+ * Cobra (marca pagada) la PRÓXIMA cuota pendiente/atrasada de una financiación.
+ * Fuente única de verdad usada por Tesorería (Créditos personales) y por
+ * Finanzas (Cuentas y cheques), para que el cobro quede espejado en ambos lados.
+ * Recalcula el estado de la financiación y cancela los avisos pendientes.
+ * Devuelve la cuota cobrada (monto, número) o null si no había pendientes.
+ */
+export async function cobrarProximaCuota(
+  db: TxClient,
+  financiacionId: string,
+  opts?: { metodoPago?: string; fechaPago?: Date }
+): Promise<{ numero: number; monto: number } | null> {
+  const proxima = await db.cuotaFinanciacion.findFirst({
+    where: { financiacionId, estado: { in: ["PENDIENTE", "ATRASADA"] } },
+    orderBy: { fechaVencimiento: "asc" },
+    select: { id: true, numero: true, monto: true },
+  })
+  if (!proxima) return null
+
+  await db.cuotaFinanciacion.update({
+    where: { id: proxima.id },
+    data: {
+      estado: "PAGADA",
+      fechaPago: opts?.fechaPago ?? new Date(),
+      metodoPago: opts?.metodoPago ?? "Efectivo",
+    },
+  })
+  await db.outreachTarea.updateMany({
+    where: { cuotaId: proxima.id, estado: "PROGRAMADA" },
+    data: {
+      estado: "DESCARTADA",
+      descartadaAt: new Date(),
+      notaInterna: "Cancelada automaticamente: la cuota fue pagada.",
+    },
+  })
+  const all = await db.cuotaFinanciacion.findMany({
+    where: { financiacionId },
+    select: { estado: true },
+  })
+  const allPagadas = all.every((c) => c.estado === "PAGADA" || c.estado === "CANCELADA")
+  const hayAtrasada = all.some((c) => c.estado === "ATRASADA")
+  await db.financiacionOC.update({
+    where: { id: financiacionId },
+    data: { estado: allPagadas ? "COMPLETADA" : hayAtrasada ? "ATRASADA" : "ACTIVA" },
+  })
+  return { numero: proxima.numero, monto: proxima.monto }
+}

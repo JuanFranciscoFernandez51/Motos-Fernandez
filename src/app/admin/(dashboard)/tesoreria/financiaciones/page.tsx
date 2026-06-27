@@ -4,51 +4,22 @@ import { prisma } from "@/lib/prisma"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { FinanciacionesList } from "./financiaciones-list"
-import { actualizarEstadosVencidos } from "@/lib/financiacion-helpers"
+import { actualizarEstadosVencidos, cobrarProximaCuota as cobrarCuotaHelper } from "@/lib/financiacion-helpers"
 
 export const dynamic = "force-dynamic"
 
 /**
- * Cobra (marca pagada) la PRÓXIMA cuota pendiente/atrasada de una financiación
- * directo desde la lista — pago en efectivo, fecha de hoy. Para registrar otro
- * método/fecha o adjuntar comprobante, se entra al detalle.
+ * Cobra la próxima cuota desde la lista (efectivo, hoy). Usa el helper
+ * compartido (misma fuente que Finanzas → espejado). Para otro método/fecha o
+ * comprobante, se entra al detalle.
  */
 async function cobrarProximaCuota(financiacionId: string) {
   "use server"
-  const proxima = await prisma.cuotaFinanciacion.findFirst({
-    where: { financiacionId, estado: { in: ["PENDIENTE", "ATRASADA"] } },
-    orderBy: { fechaVencimiento: "asc" },
-    select: { id: true },
-  })
-  if (!proxima) return
-
-  await prisma.cuotaFinanciacion.update({
-    where: { id: proxima.id },
-    data: { estado: "PAGADA", fechaPago: new Date(), metodoPago: "Efectivo" },
-  })
-  // Cancelar avisos pendientes de esa cuota
-  await prisma.outreachTarea.updateMany({
-    where: { cuotaId: proxima.id, estado: "PROGRAMADA" },
-    data: {
-      estado: "DESCARTADA",
-      descartadaAt: new Date(),
-      notaInterna: "Cancelada automaticamente: la cuota fue pagada.",
-    },
-  })
-  // Recalcular el estado de la financiación
-  const allCuotas = await prisma.cuotaFinanciacion.findMany({
-    where: { financiacionId },
-    select: { estado: true },
-  })
-  const allPagadas = allCuotas.every((c) => c.estado === "PAGADA" || c.estado === "CANCELADA")
-  const hayAtrasada = allCuotas.some((c) => c.estado === "ATRASADA")
-  await prisma.financiacionOC.update({
-    where: { id: financiacionId },
-    data: { estado: allPagadas ? "COMPLETADA" : hayAtrasada ? "ATRASADA" : "ACTIVA" },
-  })
-
+  await cobrarCuotaHelper(prisma, financiacionId)
   revalidatePath("/admin/tesoreria/financiaciones")
   revalidatePath("/admin/tesoreria")
+  revalidatePath("/admin/finanzas/cuentas-y-cheques")
+  revalidatePath("/admin/finanzas")
 }
 
 export default async function FinanciacionesPage() {

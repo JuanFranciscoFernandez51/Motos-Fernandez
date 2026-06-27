@@ -111,6 +111,49 @@ export async function getCuentasACobrar() {
 }
 
 /**
+ * Créditos personales de clientes = financiaciones de OC con saldo pendiente.
+ * Derivado de FinanciacionOC/cuotas (fuente única) → espejado con Tesorería.
+ */
+export async function getCreditosClientes() {
+  const fins = await prisma.financiacionOC.findMany({
+    where: { estado: { in: ["ACTIVA", "ATRASADA"] } },
+    include: {
+      cliente: { select: { nombre: true, apellido: true, telefono: true } },
+      cuotas: { select: { estado: true, monto: true, fechaVencimiento: true } },
+    },
+  })
+  const now = new Date()
+  const items = fins
+    .map((f) => {
+      const pend = f.cuotas.filter((c) => c.estado !== "PAGADA" && c.estado !== "CANCELADA")
+      const saldo = pend.reduce((a, c) => a + c.monto, 0)
+      const prox = pend
+        .slice()
+        .sort((a, b) => new Date(a.fechaVencimiento).getTime() - new Date(b.fechaVencimiento).getTime())[0]
+      return {
+        id: f.id,
+        cliente: `${f.cliente.apellido}, ${f.cliente.nombre}`,
+        telefono: f.cliente.telefono,
+        moneda: f.moneda,
+        saldo,
+        proxFecha: prox?.fechaVencimiento ?? null,
+        proxMonto: prox?.monto ?? null,
+        vencido: !!prox && new Date(prox.fechaVencimiento) < now,
+        cuotasPend: pend.length,
+      }
+    })
+    .filter((i) => i.saldo > 0)
+    .sort((a, b) => {
+      const fa = a.proxFecha ? new Date(a.proxFecha).getTime() : Infinity
+      const fb = b.proxFecha ? new Date(b.proxFecha).getTime() : Infinity
+      return fa - fb
+    })
+  const totalArs = items.filter((i) => i.moneda === "ARS").reduce((a, i) => a + i.saldo, 0)
+  const vencidoArs = items.filter((i) => i.vencido && i.moneda === "ARS").reduce((a, i) => a + i.saldo, 0)
+  return { items, totalArs, vencidoArs }
+}
+
+/**
  * Detalle de cuentas a cobrar (estilo hoja "Cuentas a Plazo" del Excel):
  * por financiación, con monto pendiente, próximo vencimiento, tipo de crédito
  * (Bancario/Personal) y si está vencido.

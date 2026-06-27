@@ -1,16 +1,19 @@
 import { prisma } from "@/lib/prisma"
 import { FinanzasNav } from "@/components/admin/finanzas/finanzas-nav"
 import { CuentasYChequesCliente } from "@/components/admin/finanzas/cuentas-y-cheques-cliente"
+import { CreditosClientesCard } from "@/components/admin/finanzas/creditos-clientes-card"
+import { getCreditosClientes } from "@/lib/finanzas-data"
 
 export const dynamic = "force-dynamic"
 
 export default async function CuentasYChequesPage() {
-  const [cuentas, cheques, cuentasFinancieras] = await Promise.all([
+  const [cuentas, cheques, cuentasFinancieras, creditos] = await Promise.all([
     prisma.cuentaPorCobrar.findMany({
       orderBy: [{ estado: "asc" }, { fechaVencimiento: "asc" }, { createdAt: "desc" }],
     }),
     prisma.cheque.findMany({ orderBy: { fechaVencimiento: "asc" } }),
     prisma.cuentaFinanciera.findMany({ where: { activa: true }, orderBy: { orden: "asc" } }),
+    getCreditosClientes(),
   ])
 
   const cobros = cuentas.filter((c) => c.sentido === "COBRAR")
@@ -32,6 +35,12 @@ export default async function CuentasYChequesPage() {
         <p className="text-sm text-gray-500">Cuentas a cobrar, cuentas a pagar y cheques — en un solo lugar.</p>
       </div>
       <FinanzasNav />
+      <CreditosClientesCard
+        creditos={JSON.parse(JSON.stringify(creditos.items))}
+        totalArs={creditos.totalArs}
+        vencidoArs={creditos.vencidoArs}
+        cuentas={JSON.parse(JSON.stringify(cuentasFinancieras.map((c) => ({ id: c.id, nombre: c.nombre, moneda: c.moneda }))))}
+      />
       <CuentasYChequesCliente
         cobros={JSON.parse(JSON.stringify(cobros))}
         pagos={JSON.parse(JSON.stringify(pagos))}
