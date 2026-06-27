@@ -1,66 +1,58 @@
-import { NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
-import { requireAdmin } from "@/lib/admin-auth"
+import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { revalidatePath } from "next/cache"
+import { fechaDeInput } from "@/lib/finanzas"
 
-/**
- * PATCH — concretar (cobrado/pagado, opcionalmente registra movimiento) o anular.
- * body: { accion: "concretar" | "anular" | "pendiente", cuentaId?, registrado? }
- */
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const session = await requireAdmin()
-  if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
-
-  const { id } = await params
-  const b = await request.json().catch(() => ({}))
-  const cheque = await prisma.cheque.findUnique({ where: { id } })
-  if (!cheque) return NextResponse.json({ error: "No encontrado" }, { status: 404 })
-
+/** PATCH → editar cheque o marcar concretado/anulado. */
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    if (b.accion === "concretar") {
-      await prisma.cheque.update({
-        where: { id },
-        data: { estado: "CONCRETADO", fechaConcretado: new Date() },
-      })
-      if (b.cuentaId) {
+    const { id } = await params
+    const b = await req.json()
+    const data: Record<string, unknown> = {}
+    if ("beneficiario" in b) data.beneficiario = b.beneficiario
+    if ("monto" in b) data.monto = Math.abs(Math.round(Number(b.monto)))
+    if ("fechaVencimiento" in b) data.fechaVencimiento = fechaDeInput(b.fechaVencimiento)
+    if ("formato" in b) data.formato = b.formato || "E-Cheq"
+    if ("observaciones" in b) data.observaciones = b.observaciones || null
+    if ("estado" in b) {
+      data.estado = b.estado
+      data.fechaConcretado = b.estado === "CONCRETADO" ? new Date() : null
+    }
+    const cheque = await prisma.cheque.update({ where: { id }, data })
+
+    // Cerrar el círculo: registrar el movimiento de caja al concretar
+    if (b.estado === "CONCRETADO" && b.crearMovimiento && b.cuentaId) {
+      const cuenta = await prisma.cuentaFinanciera.findUnique({ where: { id: b.cuentaId } })
+      if (cuenta) {
+        const esCobrar = cheque.tipo === "A_COBRAR"
         await prisma.movimientoFinanciero.create({
           data: {
-            fecha: new Date(),
-            tipo: cheque.tipo === "A_COBRAR" ? "INGRESO" : "GASTO",
-            categoria: cheque.tipo === "A_COBRAR" ? "Otros ingresos" : "Otros gastos",
-            descripcion: `Cheque ${cheque.formato} — ${cheque.beneficiario}`,
+            fecha: fechaDeInput(new Date()),
+            tipo: esCobrar ? "INGRESO" : "GASTO",
+            categoria: esCobrar ? "Otros Ingresos" : "Otros Gastos",
+            descripcion: `Cheque ${cheque.beneficiario}`,
             monto: cheque.monto,
-            moneda: cheque.moneda,
-            registrado: b.registrado ?? true,
-            cuentaId: String(b.cuentaId),
-            observaciones: "Generado al concretar un cheque",
+            moneda: cuenta.moneda,
+            cuentaId: cuenta.id,
+            observaciones: esCobrar ? "Cheque cobrado" : "Cheque pagado",
           },
         })
       }
-    } else if (b.accion === "anular") {
-      await prisma.cheque.update({ where: { id }, data: { estado: "ANULADO" } })
-    } else if (b.accion === "pendiente") {
-      await prisma.cheque.update({ where: { id }, data: { estado: "PENDIENTE", fechaConcretado: null } })
     }
-    revalidatePath("/admin/tesoreria/finanzas/cuentas-cheques")
-    revalidatePath("/admin/tesoreria/finanzas")
-    return NextResponse.json({ ok: true })
-  } catch (e) {
-    return NextResponse.json({ error: e instanceof Error ? e.message : "Error" }, { status: 500 })
+    revalidatePath("/admin/finanzas")
+    return NextResponse.json(cheque)
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Error" }, { status: 500 })
   }
 }
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const session = await requireAdmin()
-  if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
-  const { id } = await params
-  await prisma.cheque.delete({ where: { id } })
-  revalidatePath("/admin/tesoreria/finanzas/cuentas-cheques")
-  return NextResponse.json({ ok: true })
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params
+    await prisma.cheque.delete({ where: { id } })
+    revalidatePath("/admin/finanzas")
+    return NextResponse.json({ ok: true })
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Error" }, { status: 500 })
+  }
 }

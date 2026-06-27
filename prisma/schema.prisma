@@ -1691,26 +1691,16 @@ model Factura {
   @@index([clienteId])
 }
 
-// ==================== FINANZAS (libro de caja / tesorería) ====================
-
-/// Cada caja / banco / billetera. El saldo se computa: saldoInicial + Σ movimientos.
-model CuentaFinanciera {
-  id                 String                 @id @default(cuid())
-  nombre             String                 @unique // "Efectivo", "Banco Nación", "MercadoPago", "USD"
-  moneda             String                 @default("ARS") // ARS | USD
-  saldoInicial       Int                    @default(0)
-  excluirDeResultado Boolean                @default(false) // no cuenta para ingresos/gastos (ej: cuenta de un socio)
-  orden              Int                    @default(0)
-  activa             Boolean                @default(true)
-  movimientos        MovimientoFinanciero[]
-  createdAt          DateTime               @default(now())
-  updatedAt          DateTime               @updatedAt
+// ==================== FINANZAS (replicado de Vespa Bahía) ====================
+enum TipoMovimiento {
+  INGRESO
+  GASTO
+  TRANSFERENCIA
 }
 
-/// Categorías editables desde la UI (no hardcodear). Se valida por nombre+tipo.
 model CategoriaFinanciera {
   id        String   @id @default(cuid())
-  nombre    String
+  nombre    String // "Venta de Motos", "Alquiler del Local", etc.
   tipo      String // INGRESO | GASTO
   orden     Int      @default(0)
   activa    Boolean  @default(true)
@@ -1719,52 +1709,121 @@ model CategoriaFinanciera {
   @@unique([nombre, tipo])
 }
 
-/// Libro de caja (fuente de verdad, cash-basis). registrado: true=blanco, false=negro.
-model MovimientoFinanciero {
-  id              String           @id @default(cuid())
-  fecha           DateTime
-  tipo            String // INGRESO | GASTO | TRANSFERENCIA
-  categoria       String // nombre de la categoría
-  descripcion     String           @default("")
-  monto           Int // en TRANSFERENCIA va con signo (sale negativo / entra positivo)
-  moneda          String           @default("ARS")
-  registrado      Boolean          @default(true) // true = blanco, false = en negro
-  cuentaId        String
-  cuenta          CuentaFinanciera @relation(fields: [cuentaId], references: [id])
-  comprobante     String?
-  observaciones   String?
-  transferenciaId String? // vincula las dos patas de una transferencia
-  createdAt       DateTime         @default(now())
+model CuentaFinanciera {
+  id                 String  @id @default(cuid())
+  nombre             String  @unique // "BBVA Francés", "Efectivo", "USD Banco", "Cuenta Papá"
+  moneda             String  @default("ARS") // ARS | USD
+  saldoInicial       Int     @default(0)
+  excluirDeResultado Boolean @default(false) // Cuenta Papá: no cuenta en ingresos/gastos
+  orden              Int     @default(0)
+  activa             Boolean @default(true)
 
-  @@index([fecha])
-  @@index([cuentaId])
-  @@index([tipo])
+  movimientos MovimientoFinanciero[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
-/// Cheques a cobrar / a pagar (devengado, informativo).
+model MovimientoFinanciero {
+  id          String         @id @default(cuid())
+  fecha       DateTime
+  tipo        TipoMovimiento
+  categoria   String
+  descripcion String
+  // monto: positivo para INGRESO/GASTO; con signo para TRANSFERENCIA (salida negativa, entrada positiva)
+  monto       Int
+  moneda      String         @default("ARS")
+
+  cuentaId String
+  cuenta   CuentaFinanciera @relation(fields: [cuentaId], references: [id], onDelete: Restrict)
+
+  comprobante   String?
+  observaciones String?
+
+  // Vincula las dos patas de una transferencia entre cuentas
+  transferenciaId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([fecha])
+  @@index([tipo])
+  @@index([cuentaId])
+  @@index([categoria])
+  @@index([transferenciaId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// FINANZAS — Etapa 2: Costos Fijos, Cheques, Calculador de Precios
+// ─────────────────────────────────────────────────────────────
+
+// Singleton de parámetros (costos fijos + markups del calculador)
+model FinanzasConfig {
+  id                 String   @id @default(cuid())
+  // Costos fijos
+  motosEstimadasMes  Int      @default(5)
+  margenBrutoMoto    Int      @default(1300000)
+  // Calculador de precios (markups por categoría, 0.6 = 60%)
+  markupIndumentaria Float    @default(0.6)
+  markupCascos       Float    @default(0.5)
+  markupRepuestos    Float    @default(0.4)
+  markupAccesorios   Float    @default(0.45)
+  ivaPorcentaje      Float    @default(21)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}
+
+model CostoFijo {
+  id        String   @id @default(cuid())
+  concepto  String
+  categoria String   @default("Otros")
+  monto     Int      @default(0)
+  notas     String?
+  orden     Int      @default(0)
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum TipoCheque {
+  A_COBRAR
+  A_PAGAR
+}
+
+enum EstadoCheque {
+  PENDIENTE
+  CONCRETADO // cobrado (a cobrar) o pagado (a pagar)
+  ANULADO
+}
+
 model Cheque {
-  id               String    @id @default(cuid())
-  tipo             String // A_COBRAR | A_PAGAR
+  id               String       @id @default(cuid())
+  tipo             TipoCheque
   beneficiario     String
   monto            Int
-  moneda           String    @default("ARS")
+  moneda           String       @default("ARS")
   fechaVencimiento DateTime
-  fechaConcretado  DateTime?
-  formato          String    @default("E-Cheq")
-  estado           String    @default("PENDIENTE") // PENDIENTE | CONCRETADO | ANULADO
+  fechaConcretado  DateTime? // cuándo se cobró/pagó
+  formato          String       @default("E-Cheq")
+  estado           EstadoCheque @default(PENDIENTE)
   observaciones    String?
-  createdAt        DateTime  @default(now())
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 
+  @@index([tipo])
   @@index([estado])
   @@index([fechaVencimiento])
 }
 
-/// Créditos a clientes y deudas a proveedores (devengado, informativo).
+// ─────────────────────────────────────────────────────────────
+// FINANZAS — Cuentas a cobrar (créditos personales/prendarios,
+// liberaciones de tarjeta, saldos por indumentaria/accesorios/reparaciones)
+// ─────────────────────────────────────────────────────────────
 model CuentaPorCobrar {
   id               String    @id @default(cuid())
-  sentido          String    @default("COBRAR") // COBRAR | PAGAR
+  sentido          String    @default("COBRAR") // COBRAR (nos deben) | PAGAR (debemos)
   cliente          String
-  tipo             String
+  tipo             String    @default("Crédito personal")
   descripcion      String?
   monto            Int
   moneda           String    @default("ARS")
@@ -1773,29 +1832,8 @@ model CuentaPorCobrar {
   estado           String    @default("PENDIENTE") // PENDIENTE | COBRADO | ANULADO
   observaciones    String?
   createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   @@index([estado])
-  @@index([sentido])
-}
-
-/// Costos fijos mensuales (para breakeven).
-model CostoFijo {
-  id        String  @id @default(cuid())
-  concepto  String
-  categoria String?
-  monto     Int
-  notas     String?
-  orden     Int     @default(0)
-  activo    Boolean @default(true)
-}
-
-/// Parámetros del negocio (singleton).
-model FinanzasConfig {
-  id                 String @id @default("singleton")
-  ventasEstimadasMes Int    @default(0)
-  margenBrutoVenta   Int    @default(0)
-  ivaPorcentaje      Int    @default(21)
-  markupRepuestos    Float  @default(0.4)
-  markupAccesorios   Float  @default(0.45)
-  markupServicio     Float  @default(0.5)
+  @@index([fechaVencimiento])
 }

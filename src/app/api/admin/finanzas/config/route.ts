@@ -1,26 +1,40 @@
-import { NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
-import { requireAdmin } from "@/lib/admin-auth"
+import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { revalidatePath } from "next/cache"
 
-/** PATCH /api/admin/finanzas/config — actualizar parámetros del negocio (singleton). */
-export async function PATCH(request: Request) {
-  const session = await requireAdmin()
-  if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
+async function getConfig() {
+  let c = await prisma.finanzasConfig.findFirst()
+  if (!c) c = await prisma.finanzasConfig.create({ data: {} })
+  return c
+}
 
-  const b = await request.json().catch(() => ({}))
-  const data: Record<string, unknown> = {}
-  const intFields = ["ventasEstimadasMes", "margenBrutoVenta", "ivaPorcentaje"]
-  for (const f of intFields) if (f in b) data[f] = Math.max(0, Math.round(Number(b[f]) || 0))
-  const floatFields = ["markupRepuestos", "markupAccesorios", "markupServicio"]
-  for (const f of floatFields) if (f in b) data[f] = Math.max(0, Number(b[f]) || 0)
+export async function GET() {
+  return NextResponse.json(await getConfig())
+}
 
-  await prisma.finanzasConfig.upsert({
-    where: { id: "singleton" },
-    create: { id: "singleton", ...data },
-    update: data,
-  })
-  revalidatePath("/admin/tesoreria/finanzas/costos")
-  revalidatePath("/admin/tesoreria/finanzas/calculador")
-  return NextResponse.json({ ok: true })
+/** PUT → actualiza parámetros (motos/mes, margen bruto) y markups del calculador. */
+export async function PUT(req: NextRequest) {
+  try {
+    const b = await req.json()
+    const c = await getConfig()
+    const num = (v: unknown, fallback: number) => (v == null || v === "" || Number.isNaN(Number(v)) ? fallback : Number(v))
+
+    const updated = await prisma.finanzasConfig.update({
+      where: { id: c.id },
+      data: {
+        motosEstimadasMes: b.motosEstimadasMes != null ? Math.max(1, Math.round(num(b.motosEstimadasMes, c.motosEstimadasMes))) : undefined,
+        margenBrutoMoto: b.margenBrutoMoto != null ? Math.round(num(b.margenBrutoMoto, c.margenBrutoMoto)) : undefined,
+        markupIndumentaria: b.markupIndumentaria != null ? num(b.markupIndumentaria, c.markupIndumentaria) : undefined,
+        markupCascos: b.markupCascos != null ? num(b.markupCascos, c.markupCascos) : undefined,
+        markupRepuestos: b.markupRepuestos != null ? num(b.markupRepuestos, c.markupRepuestos) : undefined,
+        markupAccesorios: b.markupAccesorios != null ? num(b.markupAccesorios, c.markupAccesorios) : undefined,
+        ivaPorcentaje: b.ivaPorcentaje != null ? num(b.ivaPorcentaje, c.ivaPorcentaje) : undefined,
+      },
+    })
+    revalidatePath("/admin/finanzas")
+    return NextResponse.json(updated)
+  } catch (err) {
+    console.error("PUT config finanzas:", err)
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Error" }, { status: 500 })
+  }
 }

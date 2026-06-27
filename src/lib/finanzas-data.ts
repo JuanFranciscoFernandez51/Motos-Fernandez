@@ -1,242 +1,232 @@
 import { prisma } from "@/lib/prisma"
-import { efectoSaldo, rangoMes, resultadoCaja, type MovParaResultado } from "@/lib/finanzas"
-
-/** Movimientos de un mes con filtros opcionales, ordenados por fecha desc. */
-export async function getMovimientos(opts: {
-  anio: number
-  mes: number
-  cuentaId?: string
-  tipo?: string
-  q?: string
-}) {
-  const { desde, hasta } = rangoMes(opts.anio, opts.mes)
-  const where: Record<string, unknown> = { fecha: { gte: desde, lt: hasta } }
-  if (opts.cuentaId) where.cuentaId = opts.cuentaId
-  if (opts.tipo) where.tipo = opts.tipo
-  if (opts.q) {
-    where.OR = [
-      { descripcion: { contains: opts.q, mode: "insensitive" } },
-      { categoria: { contains: opts.q, mode: "insensitive" } },
-      { observaciones: { contains: opts.q, mode: "insensitive" } },
-    ]
-  }
-  const movs = await prisma.movimientoFinanciero.findMany({
-    where,
-    orderBy: [{ fecha: "desc" }, { createdAt: "desc" }],
-    include: { cuenta: { select: { nombre: true, moneda: true } } },
-  })
-  return movs
-}
-
-/** Cuentas activas con su saldo computado (saldoInicial + Σ movimientos). */
-export async function getCuentasConSaldo() {
-  const cuentas = await prisma.cuentaFinanciera.findMany({
-    where: { activa: true },
-    orderBy: [{ orden: "asc" }, { nombre: "asc" }],
-    include: { movimientos: { select: { tipo: true, monto: true } } },
-  })
-  return cuentas.map((c) => ({
-    id: c.id,
-    nombre: c.nombre,
-    moneda: c.moneda,
-    excluirDeResultado: c.excluirDeResultado,
-    saldoInicial: c.saldoInicial,
-    saldo: c.saldoInicial + c.movimientos.reduce((s, m) => s + efectoSaldo(m), 0),
-    movimientos: c.movimientos.length,
-  }))
-}
-
-/** Resumen de un mes: resultado de caja (ARS) + bloque USD + por categoría. */
-export async function getResumenMes(anio: number, mes1a12: number) {
-  const { desde, hasta } = rangoMes(anio, mes1a12)
-  const movs = await prisma.movimientoFinanciero.findMany({
-    where: { fecha: { gte: desde, lt: hasta }, tipo: { in: ["INGRESO", "GASTO"] } },
-    include: { cuenta: { select: { excluirDeResultado: true } } },
-  })
-
-  const paraResultado: MovParaResultado[] = movs.map((m) => ({
-    tipo: m.tipo,
-    monto: m.monto,
-    categoria: m.categoria,
-    moneda: m.moneda,
-    registrado: m.registrado,
-    excluido: m.cuenta.excluirDeResultado,
-  }))
-
-  const ars = resultadoCaja(paraResultado, "ARS")
-  const usd = resultadoCaja(paraResultado, "USD")
-
-  // Por categoría (ARS, cuentas no excluidas)
-  const porCategoria = new Map<string, { tipo: string; total: number; blanco: number }>()
-  for (const m of paraResultado) {
-    if (m.excluido || m.moneda !== "ARS") continue
-    const acc = porCategoria.get(m.categoria) || { tipo: m.tipo, total: 0, blanco: 0 }
-    acc.total += m.monto
-    if (m.registrado) acc.blanco += m.monto
-    porCategoria.set(m.categoria, acc)
-  }
-  const categorias = [...porCategoria.entries()]
-    .map(([nombre, v]) => ({ nombre, ...v }))
-    .sort((a, b) => b.total - a.total)
-
-  return {
-    ars,
-    usd,
-    ingresosCategorias: categorias.filter((c) => c.tipo === "INGRESO"),
-    gastosCategorias: categorias.filter((c) => c.tipo === "GASTO"),
-    cantidad: movs.length,
-  }
-}
-
-/** Vencimientos próximos (≤ N días) o atrasados: cheques + cuentas por cobrar/pagar. */
-export async function getProximosVencimientos(dias = 7) {
-  const limite = new Date()
-  limite.setDate(limite.getDate() + dias)
-  const [cheques, cxc] = await Promise.all([
-    prisma.cheque.findMany({
-      where: { estado: "PENDIENTE", fechaVencimiento: { lte: limite } },
-      orderBy: { fechaVencimiento: "asc" },
-    }),
-    prisma.cuentaPorCobrar.findMany({
-      where: { estado: "PENDIENTE", fechaVencimiento: { not: null, lte: limite } },
-      orderBy: { fechaVencimiento: "asc" },
-    }),
-  ])
-  const items = [
-    ...cheques.map((c) => ({
-      clase: "Cheque",
-      detalle: `${c.tipo === "A_COBRAR" ? "A cobrar" : "A pagar"} · ${c.beneficiario}`,
-      monto: c.monto,
-      moneda: c.moneda,
-      fecha: c.fechaVencimiento,
-      entra: c.tipo === "A_COBRAR",
-    })),
-    ...cxc.map((c) => ({
-      clase: c.sentido === "COBRAR" ? "A cobrar" : "A pagar",
-      detalle: `${c.cliente} · ${c.tipo}`,
-      monto: c.monto,
-      moneda: c.moneda,
-      fecha: c.fechaVencimiento!,
-      entra: c.sentido === "COBRAR",
-    })),
-  ].sort((a, b) => a.fecha.getTime() - b.fecha.getTime())
-  return items
-}
-
-/** Neto (cambio de saldo) por cuenta en un mes — incluye transferencias. */
-export async function getNetoPorCuentaMes(anio: number, mes1a12: number) {
-  const { desde, hasta } = rangoMes(anio, mes1a12)
-  const movs = await prisma.movimientoFinanciero.findMany({
-    where: { fecha: { gte: desde, lt: hasta } },
-    include: { cuenta: { select: { nombre: true, moneda: true } } },
-  })
-  const map = new Map<string, { nombre: string; moneda: string; neto: number }>()
-  for (const m of movs) {
-    const acc = map.get(m.cuentaId) || { nombre: m.cuenta.nombre, moneda: m.cuenta.moneda, neto: 0 }
-    acc.neto += efectoSaldo(m)
-    map.set(m.cuentaId, acc)
-  }
-  return [...map.values()].sort((a, b) => Math.abs(b.neto) - Math.abs(a.neto))
-}
+import { calcularSaldos, type SaldoCuenta, CATEGORIAS_INGRESO, CATEGORIAS_GASTO } from "@/lib/finanzas"
 
 /**
- * Dashboard anual (ARS, cuentas no excluidas): por mes ingresos/gastos/resultado
- * + acumulado, matriz de categorías × 12 meses, totales.
+ * Reintenta una operación de DB ante fallas transitorias (ej: cold-start de Neon,
+ * timeout de conexión). Evita que un hipo momentáneo tire la página de Finanzas.
  */
-export async function getDashboardAnual(anio: number) {
-  const desde = new Date(Date.UTC(anio, 0, 1))
-  const hasta = new Date(Date.UTC(anio + 1, 0, 1))
-  const movs = await prisma.movimientoFinanciero.findMany({
-    where: { fecha: { gte: desde, lt: hasta }, tipo: { in: ["INGRESO", "GASTO"] }, moneda: "ARS" },
-    include: { cuenta: { select: { excluirDeResultado: true } } },
-  })
-
-  const meses = Array.from({ length: 12 }, () => ({ ingresos: 0, gastos: 0, blancoIng: 0, blancoGas: 0 }))
-  const catMap = new Map<string, { tipo: string; montos: number[] }>()
-
-  for (const m of movs) {
-    if (m.cuenta.excluirDeResultado) continue
-    const i = new Date(m.fecha).getUTCMonth() // fecha a mediodía UTC → mes correcto
-    if (m.tipo === "INGRESO") {
-      meses[i].ingresos += m.monto
-      if (m.registrado) meses[i].blancoIng += m.monto
-    } else {
-      meses[i].gastos += m.monto
-      if (m.registrado) meses[i].blancoGas += m.monto
+async function conReintento<T>(fn: () => Promise<T>, intentos = 3): Promise<T> {
+  let ultimoError: unknown
+  for (let i = 0; i < intentos; i++) {
+    try {
+      return await fn()
+    } catch (e) {
+      ultimoError = e
+      await new Promise((r) => setTimeout(r, 250 * (i + 1)))
     }
-    const c = catMap.get(m.categoria) || { tipo: m.tipo, montos: Array(12).fill(0) }
-    c.montos[i] += m.monto
-    catMap.set(m.categoria, c)
   }
+  throw ultimoError
+}
 
-  let acum = 0
-  const mensual = meses.map((mm, i) => {
-    const resultado = mm.ingresos - mm.gastos
-    acum += resultado
-    return {
-      mes: i + 1,
-      ingresos: mm.ingresos,
-      gastos: mm.gastos,
-      resultado,
-      acumulado: acum,
-      resultadoBlanco: mm.blancoIng - mm.blancoGas,
-    }
-  })
-  const categorias = [...catMap.entries()]
-    .map(([nombre, v]) => ({ nombre, tipo: v.tipo, montos: v.montos, total: v.montos.reduce((s, x) => s + x, 0) }))
-    .sort((a, b) => b.total - a.total)
-
-  const totalIngresos = mensual.reduce((s, m) => s + m.ingresos, 0)
-  const totalGastos = mensual.reduce((s, m) => s + m.gastos, 0)
+/**
+ * Categorías de ingresos/gastos configuradas (editables desde la UI).
+ * Si la tabla está vacía (instalación nueva), cae a las constantes por defecto.
+ */
+export async function getCategorias(): Promise<{ ingreso: string[]; gasto: string[] }> {
+  const cats = await conReintento(() =>
+    prisma.categoriaFinanciera.findMany({ where: { activa: true }, orderBy: { orden: "asc" } })
+  )
+  const ingreso = cats.filter((c) => c.tipo === "INGRESO").map((c) => c.nombre)
+  const gasto = cats.filter((c) => c.tipo === "GASTO").map((c) => c.nombre)
   return {
-    mensual,
-    categorias,
-    totalIngresos,
-    totalGastos,
-    resultadoAnual: totalIngresos - totalGastos,
+    ingreso: ingreso.length ? ingreso : [...CATEGORIAS_INGRESO],
+    gasto: gasto.length ? gasto : [...CATEGORIAS_GASTO],
   }
 }
 
 /**
- * Posición total (ARS): saldos en cuentas + por cobrar pendiente + valor del
- * stock PROPIO. Las motos en consignación (mandato) NO son activo nuestro: solo
- * contamos las que entraron como parte de pago / compra propia (valorToma).
+ * Valor del stock de mercadería (motos en stock + productos de tienda).
+ * Replica la hoja "Saldos por Cuenta" → bloque VALOR DE STOCK.
+ */
+export async function getValorStock() {
+  // Motos en stock USADAS (físicas, no las publicaciones 0KM): precio del catálogo.
+  const motos = await prisma.modelo.findMany({
+    where: { condicion: "USADA", vendida: false, activo: true },
+    select: { precio: true },
+  })
+  const valorMotos = motos.reduce((a, m) => a + (m.precio || 0), 0)
+  const unidadesMotos = motos.length
+
+  // Productos de tienda, separados en Repuestos vs Indumentaria/Accesorios (resto)
+  const productos = await prisma.producto.findMany({
+    where: { activo: true },
+    select: { stock: true, precio: true, categoria: { select: { nombre: true } } },
+  })
+  let valorRepuestos = 0, unidadesRepuestos = 0, valorIndum = 0, unidadesIndum = 0
+  for (const p of productos) {
+    const v = p.stock * p.precio
+    if ((p.categoria?.nombre || "").toLowerCase().includes("repuesto")) {
+      valorRepuestos += v; unidadesRepuestos += p.stock
+    } else {
+      valorIndum += v; unidadesIndum += p.stock
+    }
+  }
+  const valorProductos = valorRepuestos + valorIndum
+  const unidadesProductos = unidadesRepuestos + unidadesIndum
+  const valorTotal = valorMotos + valorProductos
+
+  // Desglose por categoría con % del total (como la hoja "Saldos" del Excel)
+  const desglose = [
+    { label: "Motos", unidades: unidadesMotos, valor: valorMotos },
+    { label: "Repuestos", unidades: unidadesRepuestos, valor: valorRepuestos },
+    { label: "Indumentaria y accesorios", unidades: unidadesIndum, valor: valorIndum },
+  ].map((d) => ({ ...d, pct: valorTotal > 0 ? (d.valor / valorTotal) * 100 : 0 }))
+
+  return {
+    valorMotos,
+    unidadesMotos,
+    valorRepuestos,
+    unidadesRepuestos,
+    valorIndum,
+    unidadesIndum,
+    valorProductos,
+    unidadesProductos,
+    valorTotal,
+    desglose,
+  }
+}
+
+/**
+ * Cuentas a cobrar pendientes (créditos personales/prendarios, liberaciones de
+ * tarjeta, saldos por indumentaria/accesorios/reparaciones).
+ */
+export async function getCuentasACobrar() {
+  const cobros = await prisma.cuentaPorCobrar.findMany({
+    where: { estado: "PENDIENTE", moneda: "ARS" },
+    select: { monto: true, fechaVencimiento: true },
+  })
+  const total = cobros.reduce((a, c) => a + c.monto, 0)
+  const now = new Date()
+  const vencido = cobros
+    .filter((c) => c.fechaVencimiento && new Date(c.fechaVencimiento) < now)
+    .reduce((a, c) => a + c.monto, 0)
+  return { total, vencido, cantidad: cobros.length }
+}
+
+/**
+ * Detalle de cuentas a cobrar (estilo hoja "Cuentas a Plazo" del Excel):
+ * por financiación, con monto pendiente, próximo vencimiento, tipo de crédito
+ * (Bancario/Personal) y si está vencido.
+ */
+export async function getPorCobrarDetalle() {
+  const cobros = await conReintento(() => prisma.cuentaPorCobrar.findMany({
+    where: { estado: "PENDIENTE" },
+    orderBy: [{ fechaVencimiento: "asc" }, { createdAt: "desc" }],
+  }))
+  const now = new Date()
+  const items = cobros.map((c) => ({
+    id: c.id,
+    cliente: c.cliente,
+    descripcion: c.descripcion || "",
+    moneda: c.moneda,
+    tipo: c.tipo,
+    montoPendiente: c.monto,
+    proxVenc: c.fechaVencimiento,
+    vencido: !!c.fechaVencimiento && new Date(c.fechaVencimiento) < now,
+  }))
+
+  const total = items.filter((i) => i.moneda === "ARS").reduce((a, i) => a + i.montoPendiente, 0)
+  const vencido = items.filter((i) => i.vencido && i.moneda === "ARS").reduce((a, i) => a + i.montoPendiente, 0)
+  // Totales por tipo (solo ARS)
+  const porTipo = new Map<string, number>()
+  for (const i of items) if (i.moneda === "ARS") porTipo.set(i.tipo, (porTipo.get(i.tipo) ?? 0) + i.montoPendiente)
+  const tipos = Array.from(porTipo.entries()).map(([tipo, monto]) => ({ tipo, monto })).sort((a, b) => b.monto - a.monto)
+
+  return { items, total, vencido, tipos }
+}
+
+/**
+ * Resumen completo de cuentas y cheques (a cobrar + a pagar + neto),
+ * combinando cuentas a cobrar/pagar y cheques. Para la card del resumen general.
+ */
+export async function getResumenCuentasCheques() {
+  const [cuentas, cheques] = await conReintento(() =>
+    Promise.all([
+      prisma.cuentaPorCobrar.findMany({ where: { estado: "PENDIENTE" } }),
+      prisma.cheque.findMany({ where: { estado: "PENDIENTE" } }),
+    ])
+  )
+  const now = new Date()
+  const sumARS = (arr: { monto: number; moneda: string }[]) =>
+    arr.filter((x) => x.moneda === "ARS").reduce((a, x) => a + x.monto, 0)
+
+  const aCobrar = sumARS(cuentas.filter((c) => c.sentido === "COBRAR")) + sumARS(cheques.filter((c) => c.tipo === "A_COBRAR"))
+  const aPagar = sumARS(cuentas.filter((c) => c.sentido === "PAGAR")) + sumARS(cheques.filter((c) => c.tipo === "A_PAGAR"))
+
+  const items = [
+    ...cuentas.map((c) => ({ dir: c.sentido === "COBRAR" ? "cobrar" : "pagar", label: c.cliente, sub: c.tipo, monto: c.monto, moneda: c.moneda, venc: c.fechaVencimiento })),
+    ...cheques.map((c) => ({ dir: c.tipo === "A_COBRAR" ? "cobrar" : "pagar", label: c.beneficiario, sub: "Cheque", monto: c.monto, moneda: c.moneda, venc: c.fechaVencimiento })),
+  ]
+    .map((i) => ({ ...i, vencido: !!i.venc && new Date(i.venc) < now }))
+    .sort((a, b) => (a.venc ? new Date(a.venc).getTime() : Infinity) - (b.venc ? new Date(b.venc).getTime() : Infinity))
+
+  return { aCobrar, aPagar, neto: aCobrar - aPagar, items }
+}
+
+/**
+ * Posición total: saldos en cuentas (ARS) + cuentas a cobrar + valor de stock.
+ * Más el detalle de saldos USD por separado.
  */
 export async function getPosicionTotal() {
-  const [cuentas, porCobrar, porPagar, stockPropio] = await Promise.all([
-    getCuentasConSaldo(),
-    prisma.cuentaPorCobrar.aggregate({
-      where: { sentido: "COBRAR", estado: "PENDIENTE", moneda: "ARS" },
-      _sum: { monto: true },
-    }),
-    prisma.cuentaPorCobrar.aggregate({
-      where: { sentido: "PAGAR", estado: "PENDIENTE", moneda: "ARS" },
-      _sum: { monto: true },
-    }),
-    prisma.modelo.aggregate({
-      where: { origen: "PARTE_DE_PAGO", vendida: false, valorTomaMoneda: "ARS" },
-      _sum: { valorToma: true },
-    }),
-  ])
+  const [cuentas, movimientos, valorStock, porCobrar] = await conReintento(() =>
+    Promise.all([
+      prisma.cuentaFinanciera.findMany({ orderBy: { orden: "asc" } }),
+      prisma.movimientoFinanciero.findMany({
+        select: { cuentaId: true, tipo: true, monto: true },
+      }),
+      getValorStock(),
+      getCuentasACobrar(),
+    ])
+  )
 
-  const saldosArs = cuentas
-    .filter((c) => c.moneda === "ARS" && !c.excluirDeResultado)
-    .reduce((s, c) => s + c.saldo, 0)
-  const saldosUsd = cuentas
-    .filter((c) => c.moneda === "USD" && !c.excluirDeResultado)
-    .reduce((s, c) => s + c.saldo, 0)
+  const saldos = calcularSaldos(cuentas, movimientos)
+  const saldosARS = saldos.filter((s) => s.cuenta.moneda === "ARS" && !s.cuenta.excluirDeResultado)
+  const saldosUSD = saldos.filter((s) => s.cuenta.moneda === "USD")
+  const cuentaPapa = saldos.filter((s) => s.cuenta.excluirDeResultado)
+
+  const totalEnCuentasARS = saldosARS.reduce((a, s) => a + s.saldoActual, 0)
+  const totalEnCuentasUSD = saldosUSD.reduce((a, s) => a + s.saldoActual, 0)
+
+  const posicionTotal = totalEnCuentasARS + porCobrar.total + valorStock.valorTotal
 
   return {
-    saldosArs,
-    saldosUsd,
-    porCobrar: porCobrar._sum.monto || 0,
-    porPagar: porPagar._sum.monto || 0,
-    stockPropio: stockPropio._sum.valorToma || 0,
-    // Posición = caja + por cobrar - por pagar + stock propio (solo ARS)
-    posicionArs:
-      saldosArs +
-      (porCobrar._sum.monto || 0) -
-      (porPagar._sum.monto || 0) +
-      (stockPropio._sum.valorToma || 0),
+    saldos,
+    saldosARS,
+    saldosUSD,
+    cuentaPapa,
+    totalEnCuentasARS,
+    totalEnCuentasUSD,
+    porCobrar,
+    valorStock,
+    posicionTotal,
   }
 }
+
+/**
+ * Unidades vendidas por modelo en un mes/año (desde Stock Motos, no del Excel).
+ * Mucho más confiable que contar descripciones de movimientos.
+ */
+export async function getUnidadesVendidasPorModelo(anio: number) {
+  const vendidasRaw = await prisma.modelo.findMany({
+    where: { vendida: true, fechaVenta: { not: null } },
+    select: { nombre: true, marca: true, fechaVenta: true },
+  })
+  const vendidas = vendidasRaw.map((v) => ({
+    modelo: `${v.marca || ""} ${v.nombre}`.trim(),
+    fechaVenta: v.fechaVenta,
+  }))
+  // { modelo: [12 meses] }
+  const mapa = new Map<string, number[]>()
+  for (const v of vendidas) {
+    if (!v.fechaVenta) continue
+    const f = new Date(v.fechaVenta)
+    if (f.getFullYear() !== anio) continue
+    if (!mapa.has(v.modelo)) mapa.set(v.modelo, Array(12).fill(0))
+    mapa.get(v.modelo)![f.getMonth()]++
+  }
+  return Array.from(mapa.entries())
+    .map(([modelo, meses]) => ({ modelo, meses, total: meses.reduce((a, b) => a + b, 0) }))
+    .sort((a, b) => b.total - a.total)
+}
+
+export type { SaldoCuenta }

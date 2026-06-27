@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { Toaster } from "sonner"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { AdminFloatingAssistant } from "@/components/admin/admin-floating-assistant"
 
@@ -35,6 +36,9 @@ export default async function AdminDashboardLayout({
 
       {/* Botón flotante del Asistente IA — visible en todas las páginas del admin */}
       <AdminFloatingAssistant />
+
+      {/* Toasts (usados por Finanzas y otros) */}
+      <Toaster richColors position="top-right" />
     </div>
   )
 }

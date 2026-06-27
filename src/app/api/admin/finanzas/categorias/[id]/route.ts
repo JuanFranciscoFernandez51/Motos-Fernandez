@@ -1,61 +1,64 @@
-import { NextResponse } from "next/server"
-import { revalidatePath } from "next/cache"
-import { requireAdmin } from "@/lib/admin-auth"
+import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
+import { revalidatePath } from "next/cache"
 
-/**
- * PATCH — renombrar (arrastra los movimientos con el nombre viejo) o activar/desactivar.
- */
-export async function PATCH(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const session = await requireAdmin()
-  if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
-
-  const { id } = await params
-  const b = await request.json().catch(() => ({}))
-  const cat = await prisma.categoriaFinanciera.findUnique({ where: { id } })
-  if (!cat) return NextResponse.json({ error: "No encontrada" }, { status: 404 })
-
+/** PATCH → renombrar / activar-desactivar / reordenar. Al renombrar, arrastra los movimientos. */
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    if ("nombre" in b && b.nombre && String(b.nombre).trim() !== cat.nombre) {
-      const nuevo = String(b.nombre).trim()
-      // Arrastrar los movimientos que usaban el nombre viejo
-      await prisma.$transaction([
-        prisma.categoriaFinanciera.update({ where: { id }, data: { nombre: nuevo } }),
-        prisma.movimientoFinanciero.updateMany({
-          where: { categoria: cat.nombre },
-          data: { categoria: nuevo },
-        }),
-      ])
+    const { id } = await params
+    const b = await req.json()
+    const actual = await prisma.categoriaFinanciera.findUnique({ where: { id } })
+    if (!actual) return NextResponse.json({ error: "No encontrada" }, { status: 404 })
+
+    const data: Record<string, unknown> = {}
+    let nuevoNombre: string | null = null
+    if ("nombre" in b) {
+      nuevoNombre = String(b.nombre || "").trim()
+      if (!nuevoNombre) return NextResponse.json({ error: "El nombre no puede quedar vacío" }, { status: 400 })
+      data.nombre = nuevoNombre
     }
-    if ("activa" in b) {
-      await prisma.categoriaFinanciera.update({ where: { id }, data: { activa: !!b.activa } })
+    if ("activa" in b) data.activa = !!b.activa
+    if ("orden" in b) data.orden = Math.round(Number(b.orden))
+
+    const cat = await prisma.categoriaFinanciera.update({ where: { id }, data })
+
+    // Si cambió el nombre, arrastramos los movimientos que tenían la categoría vieja
+    if (nuevoNombre && nuevoNombre !== actual.nombre) {
+      await prisma.movimientoFinanciero.updateMany({
+        where: { categoria: actual.nombre, tipo: actual.tipo as "INGRESO" | "GASTO" },
+        data: { categoria: nuevoNombre },
+      })
     }
-    revalidatePath("/admin/tesoreria/finanzas/cuentas")
-    revalidatePath("/admin/tesoreria/finanzas/movimientos")
-    return NextResponse.json({ ok: true })
-  } catch (e) {
-    const msg = e instanceof Error && e.message.includes("Unique") ? "Ya existe esa categoría" : "Error al guardar"
-    return NextResponse.json({ error: msg }, { status: 500 })
+    revalidatePath("/admin/finanzas")
+    return NextResponse.json(cat)
+  } catch (err) {
+    if (err && typeof err === "object" && "code" in err && err.code === "P2002") {
+      return NextResponse.json({ error: "Ya existe una categoría con ese nombre y tipo" }, { status: 400 })
+    }
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Error" }, { status: 500 })
   }
 }
 
-/** DELETE — borra la categoría (los movimientos conservan el texto). */
-export async function DELETE(
-  _request: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  const session = await requireAdmin()
-  if (!session) return NextResponse.json({ error: "No autorizado" }, { status: 401 })
-
-  const { id } = await params
+/** DELETE → elimina la categoría de la lista. Los movimientos viejos conservan su nombre. */
+export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params
+    const cat = await prisma.categoriaFinanciera.findUnique({ where: { id } })
+    if (!cat) return NextResponse.json({ error: "No encontrada" }, { status: 404 })
+
+    const enUso = await prisma.movimientoFinanciero.count({
+      where: { categoria: cat.nombre, tipo: cat.tipo as "INGRESO" | "GASTO" },
+    })
+    // Si está en uso, la desactivamos (no se pierde el historial). Si no, se borra.
+    if (enUso > 0) {
+      await prisma.categoriaFinanciera.update({ where: { id }, data: { activa: false } })
+      revalidatePath("/admin/finanzas")
+      return NextResponse.json({ ok: true, desactivada: true, enUso })
+    }
     await prisma.categoriaFinanciera.delete({ where: { id } })
-    revalidatePath("/admin/tesoreria/finanzas/cuentas")
-    return NextResponse.json({ ok: true })
-  } catch {
-    return NextResponse.json({ error: "Error al eliminar" }, { status: 500 })
+    revalidatePath("/admin/finanzas")
+    return NextResponse.json({ ok: true, eliminada: true })
+  } catch (err) {
+    return NextResponse.json({ error: err instanceof Error ? err.message : "Error" }, { status: 500 })
   }
 }
