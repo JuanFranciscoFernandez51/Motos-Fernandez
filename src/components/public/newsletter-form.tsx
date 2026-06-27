@@ -76,7 +76,7 @@ export function NewsletterForm({ origen = "footer" }: NewsletterFormProps) {
         <button
           type="submit"
           disabled={status === "loading" || status === "success"}
-          className="inline-flex items-center justify-center gap-2 rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] px-4 py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
+          className="inline-flex items-center justify-center gap-2 rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] px-4 py-2.5 text-sm font-semibold text-white transition-colors disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"
         >
           {status === "loading" ? (
             <>

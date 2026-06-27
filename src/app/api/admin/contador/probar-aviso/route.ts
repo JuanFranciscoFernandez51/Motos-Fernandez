@@ -43,7 +43,7 @@ export async function POST() {
           <thead><tr style="background:#f5f5f5"><th style="padding:8px 12px;text-align:left">Obligación</th><th style="padding:8px 12px;text-align:left">Vence</th><th style="padding:8px 12px;text-align:right">Monto</th></tr></thead>
           <tbody>${filas}</tbody>
         </table>
-        <p style="margin-top:20px"><a href="https://www.motosfernandez.com.ar/admin/contador" style="background:#6B4F7A;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none">Abrir el Contador</a></p>
+        <p style="margin-top:20px"><a href="https://www.motosfernandez.com.ar/admin/contador" style="background:#7C3AED;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none">Abrir el Contador</a></p>
       </div>`
 
     const destino = process.env.CONTADOR_AVISO_EMAIL || "administracion@vespabahia.com"

@@ -105,7 +105,7 @@ export function NuevaMotoQuickModal({
       >
         <div className="flex items-center justify-between border-b border-gray-100 dark:border-neutral-800 px-5 py-3">
           <h3 className="font-semibold flex items-center gap-2">
-            <Plus className="size-5 text-[#6B4F7A]" />
+            <Plus className="size-5 text-[#7C3AED]" />
             Cargar moto rápida al catálogo
           </h3>
           <button
@@ -248,7 +248,7 @@ export function NuevaMotoQuickModal({
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#8B6F9A] disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-md bg-[#7C3AED] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#9D5CF0] disabled:opacity-50"
           >
             {loading ? (
               <Loader2 className="size-4 animate-spin" />

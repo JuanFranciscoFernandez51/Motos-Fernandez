@@ -118,7 +118,7 @@ export default function ConsignaPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325]">
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
-        <div className="absolute -top-40 -right-40 size-[600px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -top-40 -right-40 size-[600px] rounded-full bg-[#7C3AED]/15 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 size-[400px] rounded-full bg-[#C8C8D0]/[0.08] blur-3xl pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
@@ -140,7 +140,7 @@ export default function ConsignaPage() {
             <div className="mt-10 flex flex-wrap gap-4">
               <a
                 href="#formulario"
-                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-8 py-4 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-8 py-4 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
               >
                 <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
                 <span className="relative">Dejar mis datos</span>
@@ -164,7 +164,7 @@ export default function ConsignaPage() {
       <section className="relative py-20 sm:py-24 bg-white dark:bg-neutral-900 overflow-hidden">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#7C3AED] mb-3">
               Simple y transparente
             </p>
             <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
@@ -180,11 +180,11 @@ export default function ConsignaPage() {
               <div key={idx} className="group relative flex flex-col items-center text-center">
                 {/* Conector entre pasos */}
                 {idx < PASOS.length - 1 && (
-                  <div className="hidden md:block absolute top-9 left-[calc(50%+3rem)] right-[calc(-50%+3rem)] h-px bg-gradient-to-r from-[#6B4F7A]/40 to-transparent" />
+                  <div className="hidden md:block absolute top-9 left-[calc(50%+3rem)] right-[calc(-50%+3rem)] h-px bg-gradient-to-r from-[#7C3AED]/40 to-transparent" />
                 )}
-                <div className="relative flex items-center justify-center size-18 rounded-2xl bg-gradient-to-br from-[#3D2649] to-[#6B4F7A] text-white mb-5 shadow-violeta-glow group-hover:scale-105 transition-transform p-4">
+                <div className="relative flex items-center justify-center size-18 rounded-2xl bg-gradient-to-br from-[#3D2649] to-[#7C3AED] text-white mb-5 shadow-violeta-glow group-hover:scale-105 transition-transform p-4">
                   <paso.icon className="size-7" />
-                  <span className="absolute -top-2 -right-2 flex items-center justify-center size-7 rounded-full bg-white text-[11px] font-extrabold text-[#6B4F7A] border-2 border-[#6B4F7A] shadow">
+                  <span className="absolute -top-2 -right-2 flex items-center justify-center size-7 rounded-full bg-white text-[11px] font-extrabold text-[#7C3AED] border-2 border-[#7C3AED] shadow">
                     {idx + 1}
                   </span>
                 </div>
@@ -204,7 +204,7 @@ export default function ConsignaPage() {
       <section className="relative py-20 sm:py-24 bg-[#F8F5FA] dark:bg-neutral-950 overflow-hidden">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#7C3AED] mb-3">
               Beneficios
             </p>
             <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
@@ -220,9 +220,9 @@ export default function ConsignaPage() {
             {BENEFICIOS.map((b, idx) => (
               <article
                 key={idx}
-                className="group h-full flex flex-col items-center text-center p-7 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
+                className="group h-full flex flex-col items-center text-center p-7 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#7C3AED]/30 hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-gradient-to-br group-hover:from-[#3D2649] group-hover:to-[#6B4F7A] group-hover:text-white transition-all duration-300">
+                <div className="flex items-center justify-center size-14 rounded-2xl bg-[#7C3AED]/10 text-[#7C3AED] mb-5 group-hover:bg-gradient-to-br group-hover:from-[#3D2649] group-hover:to-[#7C3AED] group-hover:text-white transition-all duration-300">
                   <b.icon className="size-6" />
                 </div>
                 <h3 className="font-heading text-base font-bold text-[#1A1A1A] dark:text-white mb-2">
@@ -298,7 +298,7 @@ export default function ConsignaPage() {
                     value={form.nombre}
                     onChange={handleChange}
                     placeholder="Juan García"
-                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
+                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-[#7C3AED] transition-colors"
                   />
                 </div>
                 <div>
@@ -312,7 +312,7 @@ export default function ConsignaPage() {
                     value={form.telefono}
                     onChange={handleChange}
                     placeholder="291 555-0000"
-                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
+                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-[#7C3AED] transition-colors"
                   />
                 </div>
               </div>
@@ -328,7 +328,7 @@ export default function ConsignaPage() {
                   value={form.marcaModelo}
                   onChange={handleChange}
                   placeholder="Honda CB 250 Twister"
-                  className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
+                  className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-[#7C3AED] transition-colors"
                 />
               </div>
 
@@ -344,7 +344,7 @@ export default function ConsignaPage() {
                     placeholder="2020"
                     min="1970"
                     max={new Date().getFullYear()}
-                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
+                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-[#7C3AED] transition-colors"
                   />
                 </div>
                 <div>
@@ -358,7 +358,7 @@ export default function ConsignaPage() {
                     value={form.km}
                     onChange={handleChange}
                     placeholder="15.000"
-                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
+                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-[#7C3AED] transition-colors"
                   />
                 </div>
                 <div>
@@ -372,14 +372,14 @@ export default function ConsignaPage() {
                     value={form.precio}
                     onChange={handleChange}
                     placeholder="800.000"
-                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A] transition-colors"
+                    className="w-full rounded-xl border border-white/15 bg-white/8 dark:bg-neutral-900/8 px-4 py-3 text-sm text-white placeholder-gray-500 focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-[#7C3AED] transition-colors"
                   />
                 </div>
               </div>
 
               <button
                 type="submit"
-                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#6B4F7A] px-6 py-4 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors shadow-lg shadow-[#6B4F7A]/30 mt-2"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#7C3AED] px-6 py-4 text-sm font-semibold text-white hover:bg-[#9D5CF0] transition-colors shadow-lg shadow-[#7C3AED]/30 mt-2"
               >
                 <MessageCircle className="size-4" />
                 Enviar consulta por WhatsApp
@@ -393,7 +393,7 @@ export default function ConsignaPage() {
       </section>
 
       {/* ===== CTA FINAL ===== */}
-      <section className="relative py-20 bg-gradient-to-r from-[#6B4F7A] to-[#9B59B6] overflow-hidden">
+      <section className="relative py-20 bg-gradient-to-r from-[#7C3AED] to-[#9B59B6] overflow-hidden">
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-10" />
         <div className="absolute -top-20 -right-20 size-80 rounded-full bg-white/5 dark:bg-neutral-900/5 blur-3xl" />
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
@@ -409,7 +409,7 @@ export default function ConsignaPage() {
               href={whatsappGeneral}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors shadow-lg"
+              className="inline-flex items-center gap-2 rounded-xl bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-semibold text-[#7C3AED] hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors shadow-lg"
             >
               <MessageCircle className="size-4" />
               Escribinos al {BUSINESS.whatsappDisplay}

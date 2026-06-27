@@ -36,8 +36,8 @@ export function CompareButton({
         title={active ? "Quitar del comparador" : "Comparar modelo"}
         className={`size-9 rounded-full backdrop-blur-sm shadow-sm transition-all flex items-center justify-center ${
           active
-            ? "bg-[#6B4F7A] text-white hover:bg-[#8B6F9A]"
-            : "bg-white/95 dark:bg-neutral-900/95 text-[#6B4F7A] hover:bg-white dark:hover:bg-neutral-900"
+            ? "bg-[#7C3AED] text-white hover:bg-[#9D5CF0]"
+            : "bg-white/95 dark:bg-neutral-900/95 text-[#7C3AED] hover:bg-white dark:hover:bg-neutral-900"
         } ${className}`}
       >
         <Scale className="size-4" />
@@ -54,8 +54,8 @@ export function CompareButton({
       title={active ? "Quitar del comparador" : "Comparar modelo"}
       className={`inline-flex size-10 items-center justify-center rounded-full border transition-colors ${
         active
-          ? "border-[#6B4F7A] bg-[#6B4F7A] text-white hover:bg-[#8B6F9A]"
-          : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#6B4F7A] hover:border-[#6B4F7A] hover:bg-[#6B4F7A]/5"
+          ? "border-[#7C3AED] bg-[#7C3AED] text-white hover:bg-[#9D5CF0]"
+          : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#7C3AED] hover:border-[#7C3AED] hover:bg-[#7C3AED]/5"
       } ${className}`}
     >
       <Scale className="size-4" />

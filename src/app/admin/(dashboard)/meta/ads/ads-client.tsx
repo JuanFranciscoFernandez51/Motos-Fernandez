@@ -140,7 +140,7 @@ export function AdsClient({
             </Button>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Megaphone className="size-6 text-[#6B4F7A]" />
+            <Megaphone className="size-6 text-[#7C3AED]" />
             Meta Ads
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -152,7 +152,7 @@ export function AdsClient({
         </div>
         <Button
           onClick={() => setShowCreateModal(true)}
-          className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+          className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
           disabled={!featureEnabled || motos.length === 0}
           title={
             !featureEnabled
@@ -330,7 +330,7 @@ function CampaignRow({ campaign }: { campaign: CampaignLite }) {
               size="sm"
               onClick={handlePublish}
               disabled={loading !== null}
-              className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+              className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
             >
               {loading === "publish" ? (
                 <Loader2 className="size-3.5 animate-spin" />
@@ -391,7 +391,7 @@ function CampaignRow({ campaign }: { campaign: CampaignLite }) {
             size="sm"
             variant="outline"
             render={<Link href={`/admin/meta/ads/${campaign.id}`} />}
-            className="border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10"
+            className="border-[#7C3AED] text-[#7C3AED] hover:bg-[#7C3AED]/10"
             title="Ver conjuntos y ads · A/B testing"
           >
             <Eye className="size-3.5 mr-1" />
@@ -498,7 +498,7 @@ function AdAccountSetup({ featureEnabled }: { featureEnabled: boolean }) {
           Volver
         </Button>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2 mt-2">
-          <Megaphone className="size-6 text-[#6B4F7A]" />
+          <Megaphone className="size-6 text-[#7C3AED]" />
           Meta Ads — setup inicial
         </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -539,7 +539,7 @@ function AdAccountSetup({ featureEnabled }: { featureEnabled: boolean }) {
                       key={a.id}
                       type="button"
                       onClick={() => setSelected(a.id)}
-                      className={`w-full text-left p-3 rounded-lg border-2 transition-colors ${selected === a.id ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/50"}`}
+                      className={`w-full text-left p-3 rounded-lg border-2 transition-colors ${selected === a.id ? "border-[#7C3AED] bg-[#7C3AED]/5" : "border-gray-200 dark:border-neutral-800 hover:border-[#7C3AED]/50"}`}
                     >
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
@@ -554,7 +554,7 @@ function AdAccountSetup({ featureEnabled }: { featureEnabled: boolean }) {
                           {a.account_status === 1 ? "Activa" : `Estado ${a.account_status}`}
                         </span>
                         {selected === a.id && (
-                          <CheckCircle2 className="size-4 text-[#6B4F7A] ml-auto" />
+                          <CheckCircle2 className="size-4 text-[#7C3AED] ml-auto" />
                         )}
                       </div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -567,7 +567,7 @@ function AdAccountSetup({ featureEnabled }: { featureEnabled: boolean }) {
                 <Button
                   onClick={handleSaveLista}
                   disabled={!selected || saving}
-                  className="bg-[#6B4F7A] hover:bg-[#8B6F9A] w-full"
+                  className="bg-[#7C3AED] hover:bg-[#9D5CF0] w-full"
                 >
                   {saving ? (
                     <Loader2 className="size-4 mr-2 animate-spin" />
@@ -612,7 +612,7 @@ function AdAccountSetup({ featureEnabled }: { featureEnabled: boolean }) {
                     href="https://business.facebook.com/settings/ad-accounts"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline text-[#6B4F7A]"
+                    className="underline text-[#7C3AED]"
                   >
                     Business Manager → Cuentas publicitarias
                   </a>{" "}
@@ -622,7 +622,7 @@ function AdAccountSetup({ featureEnabled }: { featureEnabled: boolean }) {
                 <Button
                   type="submit"
                   disabled={saving || !manualId.trim()}
-                  className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+                  className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
                 >
                   {saving ? (
                     <Loader2 className="size-4 mr-2 animate-spin" />
@@ -860,7 +860,7 @@ function CreateCampaignModal({
                   key={m.id}
                   type="button"
                   onClick={() => setMotoId(m.id)}
-                  className={`w-full text-left p-2 flex items-center gap-2 border-b last:border-b-0 border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800 ${motoId === m.id ? "bg-[#6B4F7A]/10" : ""}`}
+                  className={`w-full text-left p-2 flex items-center gap-2 border-b last:border-b-0 border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800 ${motoId === m.id ? "bg-[#7C3AED]/10" : ""}`}
                 >
                   {m.fotoPrincipal && (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -871,7 +871,7 @@ function CreateCampaignModal({
                     />
                   )}
                   <span className="text-sm">{m.marca} {m.nombre}</span>
-                  {motoId === m.id && <CheckCircle2 className="size-4 text-[#6B4F7A] ml-auto" />}
+                  {motoId === m.id && <CheckCircle2 className="size-4 text-[#7C3AED] ml-auto" />}
                 </button>
               ))}
             </div>
@@ -887,7 +887,7 @@ function CreateCampaignModal({
                     key={obj}
                     type="button"
                     onClick={() => setObjective(obj)}
-                    className={`text-left rounded-lg border-2 p-3 transition-colors ${objective === obj ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/50"}`}
+                    className={`text-left rounded-lg border-2 p-3 transition-colors ${objective === obj ? "border-[#7C3AED] bg-[#7C3AED]/5" : "border-gray-200 dark:border-neutral-800 hover:border-[#7C3AED]/50"}`}
                   >
                     <p className={`text-xs ${objective === obj ? "font-bold" : "font-semibold"} text-gray-900 dark:text-gray-100`}>
                       {OBJECTIVE_LABELS[obj]}
@@ -895,7 +895,7 @@ function CreateCampaignModal({
                     <p className="text-[10px] text-gray-500 dark:text-gray-400 mt-1 leading-snug">
                       {info.desc}
                     </p>
-                    <p className="text-[10px] text-[#6B4F7A] mt-1.5 font-medium">
+                    <p className="text-[10px] text-[#7C3AED] mt-1.5 font-medium">
                       Recomendado: ${info.recommendedBudgetARS.toLocaleString("es-AR")}/día
                     </p>
                   </button>
@@ -994,7 +994,7 @@ function CreateCampaignModal({
                   key={t}
                   type="button"
                   onClick={() => setMediaType(t)}
-                  className={`rounded-lg border-2 p-2 text-center transition-colors ${mediaType === t ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/50"}`}
+                  className={`rounded-lg border-2 p-2 text-center transition-colors ${mediaType === t ? "border-[#7C3AED] bg-[#7C3AED]/5" : "border-gray-200 dark:border-neutral-800 hover:border-[#7C3AED]/50"}`}
                 >
                   <p className="text-xs font-semibold text-gray-900 dark:text-gray-100">
                     {t === "PHOTO" ? "Foto" : t === "VIDEO" ? "Video" : "Reel"}
@@ -1037,7 +1037,7 @@ function CreateCampaignModal({
                 variant="outline"
                 onClick={handleGenerarCaption}
                 disabled={generatingCaption || !motoSel}
-                className="text-xs border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10"
+                className="text-xs border-[#7C3AED] text-[#7C3AED] hover:bg-[#7C3AED]/10"
                 title="Genera un copy profesional con IA según la moto y el objetivo"
               >
                 {generatingCaption ? (
@@ -1099,7 +1099,7 @@ function CreateCampaignModal({
                   <p className="text-[11px] text-gray-500 dark:text-gray-400 truncate">
                     motosfernandez.com.ar
                   </p>
-                  <span className="text-[11px] font-semibold text-[#6B4F7A]">
+                  <span className="text-[11px] font-semibold text-[#7C3AED]">
                     {cta.replace(/_/g, " ")}
                   </span>
                 </div>
@@ -1143,7 +1143,7 @@ function CreateCampaignModal({
             </Button>
             <Button
               type="submit"
-              className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+              className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
               disabled={submitting}
             >
               {submitting ? (

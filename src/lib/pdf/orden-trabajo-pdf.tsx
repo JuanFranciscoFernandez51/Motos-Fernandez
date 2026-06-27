@@ -3,16 +3,16 @@ import { Document, Page, Text, View, Image, StyleSheet } from "@react-pdf/render
 // Estilos compactos: una OT típica entra en 1 hoja A4.
 const styles = StyleSheet.create({
   page: { padding: 28, fontSize: 9, fontFamily: "Helvetica", color: "#1A1A1A" },
-  header: { borderBottom: "1.5px solid #6B4F7A", paddingBottom: 8, marginBottom: 10 },
+  header: { borderBottom: "1.5px solid #7C3AED", paddingBottom: 8, marginBottom: 10 },
   headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
   logo: { width: 130, height: 46, objectFit: "contain" },
   brandSub: { fontSize: 7.5, color: "#666", marginTop: 1 },
   docInfo: { textAlign: "right" },
   docTitle: { fontSize: 12, fontWeight: 700 },
-  docNumber: { fontSize: 10, color: "#6B4F7A", marginTop: 1 },
+  docNumber: { fontSize: 10, color: "#7C3AED", marginTop: 1 },
   docDate: { fontSize: 7.5, color: "#666", marginTop: 1 },
   h2: {
-    fontSize: 9.5, fontWeight: 700, color: "#6B4F7A",
+    fontSize: 9.5, fontWeight: 700, color: "#7C3AED",
     textTransform: "uppercase", marginTop: 8, marginBottom: 3,
     borderBottom: "1px solid #E5E5E5", paddingBottom: 2,
   },
@@ -41,12 +41,12 @@ const styles = StyleSheet.create({
   totalValue: { width: 90, textAlign: "right", fontWeight: 700 },
   totalGrande: {
     flexDirection: "row", justifyContent: "flex-end",
-    marginTop: 5, paddingTop: 4, borderTop: "1.5px solid #6B4F7A",
+    marginTop: 5, paddingTop: 4, borderTop: "1.5px solid #7C3AED",
   },
   totalGrandeLabel: { width: 90, textAlign: "right", paddingRight: 6, fontWeight: 700 },
   totalGrandeValue: {
     width: 90, textAlign: "right", fontWeight: 700,
-    fontSize: 11, color: "#6B4F7A",
+    fontSize: 11, color: "#7C3AED",
   },
   footer: {
     position: "absolute", bottom: 12, left: 28, right: 28,

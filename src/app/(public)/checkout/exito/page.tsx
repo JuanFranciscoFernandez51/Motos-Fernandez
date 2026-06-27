@@ -73,7 +73,7 @@ export default async function CheckoutExitoPage({
 
             <Link
               href="/tienda"
-              className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
+              className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-[#7C3AED] hover:text-[#7C3AED] transition-colors"
             >
               <ShoppingBag className="size-4" />
               Seguir comprando

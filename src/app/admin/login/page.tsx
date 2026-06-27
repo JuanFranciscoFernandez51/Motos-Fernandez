@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-neutral-950 px-4">
       <Card className="w-full max-w-md border-neutral-800 bg-neutral-900">
         <CardHeader className="text-center space-y-4 pb-2">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#6B4F7A] text-white font-bold text-2xl">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#7C3AED] text-white font-bold text-2xl">
             MF
           </div>
           <div>
@@ -89,7 +89,7 @@ export default function AdminLoginPage() {
 
             <Button
               type="submit"
-              className="w-full bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white"
+              className="w-full bg-[#7C3AED] hover:bg-[#9D5CF0] text-white"
               disabled={loading}
             >
               {loading ? "Ingresando..." : "Ingresar"}

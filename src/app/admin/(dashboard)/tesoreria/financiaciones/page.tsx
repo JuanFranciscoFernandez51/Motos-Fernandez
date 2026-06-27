@@ -113,7 +113,7 @@ export default async function FinanciacionesPage() {
         </div>
         <Button
           render={<Link href="/admin/tesoreria/financiaciones/nueva" />}
-          className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+          className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nueva financiación

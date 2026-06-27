@@ -21,7 +21,7 @@ type Categorias = { ingreso: string[]; gasto: string[] }
 const catsDe = (cats: Categorias, tipo: string) => (tipo === "INGRESO" ? cats.ingreso : cats.gasto)
 
 const inputCls =
-  "w-full h-10 rounded-md border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#7ECAD6]/40"
+  "w-full h-10 rounded-md border border-gray-300 px-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C4A5F7]/40"
 
 function hoyISO() {
   const d = new Date()
@@ -83,7 +83,7 @@ export function MovimientosCliente({
     <div className="space-y-5">
       {/* Acciones */}
       <div className="flex flex-wrap items-center gap-2">
-        <Button onClick={() => { setEditando(null); setMovDialog(true) }} className="bg-[#5BB5C2] hover:bg-[#3A8B96]">
+        <Button onClick={() => { setEditando(null); setMovDialog(true) }} className="bg-[#9D5CF0] hover:bg-[#7C3AED]">
           <Plus className="h-4 w-4 mr-1.5" /> Nuevo movimiento
         </Button>
         <Button variant="outline" onClick={() => setTransferDialog(true)}>
@@ -164,7 +164,7 @@ export function MovimientosCliente({
                   <span className={
                     m.tipo === "INGRESO" ? "text-emerald-700 text-xs font-semibold"
                     : m.tipo === "GASTO" ? "text-red-700 text-xs font-semibold"
-                    : "text-[#3A8B96] text-xs font-semibold"
+                    : "text-[#7C3AED] text-xs font-semibold"
                   }>
                     {m.tipo === "INGRESO" ? "Ingreso" : m.tipo === "GASTO" ? "Gasto" : "Transf."}
                   </span>
@@ -341,14 +341,14 @@ function ImportarExtractoDialog({
               </select>
             </div>
             <input ref={fileRef} type="file" accept=".xls,.xlsx,application/pdf,image/*" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) subir(f) }} />
-            <Button onClick={() => fileRef.current?.click()} disabled={analizando} className="bg-[#5BB5C2] hover:bg-[#3A8B96]">
+            <Button onClick={() => fileRef.current?.click()} disabled={analizando} className="bg-[#9D5CF0] hover:bg-[#7C3AED]">
               {analizando ? <><Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> Leyendo…</> : <><Upload className="h-4 w-4 mr-1.5" /> Subir extracto</>}
             </Button>
           </div>
 
           {items.length === 0 ? (
             <button onClick={() => fileRef.current?.click()} disabled={analizando}
-              className="w-full rounded-xl border-2 border-dashed border-gray-300 py-8 text-center text-gray-400 hover:border-[#7ECAD6] hover:text-[#3A8B96] transition-colors">
+              className="w-full rounded-xl border-2 border-dashed border-gray-300 py-8 text-center text-gray-400 hover:border-[#C4A5F7] hover:text-[#7C3AED] transition-colors">
               <FileText className="h-6 w-6 mx-auto mb-1.5" />
               <span className="text-sm">Subí el extracto del banco (Excel, PDF o foto)</span>
             </button>
@@ -404,7 +404,7 @@ function ImportarExtractoDialog({
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
           {items.length > 0 && (
-            <Button onClick={cargar} disabled={guardando} className="bg-[#5BB5C2] hover:bg-[#3A8B96]">
+            <Button onClick={cargar} disabled={guardando} className="bg-[#9D5CF0] hover:bg-[#7C3AED]">
               {guardando ? "Cargando…" : `Cargar ${items.length} movimientos`}
             </Button>
           )}
@@ -515,7 +515,7 @@ function MovimientoDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={guardar} disabled={saving} className="bg-[#5BB5C2] hover:bg-[#3A8B96]">
+          <Button onClick={guardar} disabled={saving} className="bg-[#9D5CF0] hover:bg-[#7C3AED]">
             {saving ? "Guardando…" : "Guardar"}
           </Button>
         </DialogFooter>
@@ -618,7 +618,7 @@ function TransferenciaDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={guardar} disabled={saving} className="bg-[#5BB5C2] hover:bg-[#3A8B96]">
+          <Button onClick={guardar} disabled={saving} className="bg-[#9D5CF0] hover:bg-[#7C3AED]">
             {saving ? "Guardando…" : editando ? "Guardar cambios" : "Cargar transferencia"}
           </Button>
         </DialogFooter>

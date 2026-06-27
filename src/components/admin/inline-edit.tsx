@@ -71,7 +71,7 @@ export function InlineEdit({
           onClick={stop}
           onChange={(e) => setVal(e.target.value)}
           onBlur={guardar}
-          className="w-full h-8 rounded border border-[#5BB5C2] px-1.5 text-sm bg-white"
+          className="w-full h-8 rounded border border-[#9D5CF0] px-1.5 text-sm bg-white"
         >
           {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
@@ -87,7 +87,7 @@ export function InlineEdit({
         onChange={(e) => setVal(e.target.value)}
         onBlur={guardar}
         onKeyDown={(e) => { if (e.key === "Enter") guardar(); if (e.key === "Escape") { setVal(value == null ? "" : String(value)); setEditing(false) } }}
-        className={`w-full h-8 rounded border border-[#5BB5C2] px-1.5 text-sm bg-white ${alignRight ? "text-right" : ""}`}
+        className={`w-full h-8 rounded border border-[#9D5CF0] px-1.5 text-sm bg-white ${alignRight ? "text-right" : ""}`}
       />
     )
   }
@@ -96,7 +96,7 @@ export function InlineEdit({
     <button
       type="button"
       onClick={(e) => { e.stopPropagation(); setEditing(true) }}
-      className={`group/inline inline-flex items-center gap-1 rounded px-1 -mx-1 hover:bg-[#7ECAD6]/20 ${alignRight ? "justify-end w-full" : ""}`}
+      className={`group/inline inline-flex items-center gap-1 rounded px-1 -mx-1 hover:bg-[#C4A5F7]/20 ${alignRight ? "justify-end w-full" : ""}`}
       title="Click para editar"
     >
       <span>{display ? display(value) : (value === null || value === "" ? <span className="text-gray-300">{placeholder}</span> : value)}</span>

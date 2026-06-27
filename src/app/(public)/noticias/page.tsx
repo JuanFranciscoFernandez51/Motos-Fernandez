@@ -63,7 +63,7 @@ export default async function NoticiasPage() {
                         </div>
                       )}
                       {noticia.categoria && (
-                        <span className="absolute top-3 left-3 bg-gradient-to-r from-[#3D2649] to-[#6B4F7A]  text-white text-[10px] font-bold uppercase tracking-wide px-3 py-1 rounded-full shadow-lg">
+                        <span className="absolute top-3 left-3 bg-gradient-to-r from-[#3D2649] to-[#7C3AED]  text-white text-[10px] font-bold uppercase tracking-wide px-3 py-1 rounded-full shadow-lg">
                           {noticia.categoria}
                         </span>
                       )}
@@ -78,7 +78,7 @@ export default async function NoticiasPage() {
                           year: "numeric",
                         })}
                       </p>
-                      <h2 className="font-heading text-lg font-semibold text-[#1A1A1A] dark:text-white leading-snug group-hover:text-[#6B4F7A] transition-colors line-clamp-2">
+                      <h2 className="font-heading text-lg font-semibold text-[#1A1A1A] dark:text-white leading-snug group-hover:text-[#7C3AED] transition-colors line-clamp-2">
                         {noticia.titulo}
                       </h2>
                       {noticia.resumen && (

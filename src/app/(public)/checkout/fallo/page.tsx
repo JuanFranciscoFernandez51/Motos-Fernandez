@@ -40,7 +40,7 @@ export default async function CheckoutFalloPage({
           <div className="space-y-3">
             <Link
               href="/checkout"
-              className="flex items-center justify-center gap-2 w-full rounded-lg bg-[#6B4F7A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+              className="flex items-center justify-center gap-2 w-full rounded-lg bg-[#7C3AED] px-6 py-3 text-sm font-semibold text-white hover:bg-[#9D5CF0] transition-colors"
             >
               <RefreshCw className="size-4" />
               Reintentar pago

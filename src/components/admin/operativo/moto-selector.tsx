@@ -149,7 +149,7 @@ export function MotoSelector({
                 setShowQuickCreate(true)
                 setOpen(false)
               }}
-              className="w-full text-left px-3 py-2 hover:bg-[#6B4F7A]/5 border-b border-gray-100 dark:border-neutral-800 flex items-center gap-2 text-[#6B4F7A] font-medium text-sm"
+              className="w-full text-left px-3 py-2 hover:bg-[#7C3AED]/5 border-b border-gray-100 dark:border-neutral-800 flex items-center gap-2 text-[#7C3AED] font-medium text-sm"
             >
               <Plus className="size-4" />
               Cargar moto nueva al catálogo
@@ -195,7 +195,7 @@ export function MotoSelector({
                   </div>
                 </div>
                 {value === m.id && (
-                  <Check className="size-4 text-[#6B4F7A]" />
+                  <Check className="size-4 text-[#7C3AED]" />
                 )}
               </button>
             ))

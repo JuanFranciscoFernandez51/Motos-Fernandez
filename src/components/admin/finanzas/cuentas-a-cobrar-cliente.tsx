@@ -93,7 +93,7 @@ export function CuentasACobrarCliente({
       )}
 
       <div className="flex justify-end">
-        <Button onClick={() => setNuevo(true)} className="bg-[#5BB5C2] hover:bg-[#3A8B96]"><Plus className="h-4 w-4 mr-1.5" /> Nueva cuenta a {verboInf}</Button>
+        <Button onClick={() => setNuevo(true)} className="bg-[#9D5CF0] hover:bg-[#7C3AED]"><Plus className="h-4 w-4 mr-1.5" /> Nueva cuenta a {verboInf}</Button>
       </div>
 
       <Tabla titulo="Pendientes" verboInf={verboInf} cobros={pendientes} router={router} patch={patch} borrar={borrar} onEdit={setEditar} onConcretar={setConcretando} />
@@ -228,7 +228,7 @@ function CobroDialog({ cobro, sentido, tipos, onClose, onSaved }: { cobro: Cobro
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={guardar} disabled={saving} className="bg-[#5BB5C2] hover:bg-[#3A8B96]">{saving ? "Guardando…" : "Guardar"}</Button>
+          <Button onClick={guardar} disabled={saving} className="bg-[#9D5CF0] hover:bg-[#7C3AED]">{saving ? "Guardando…" : "Guardar"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

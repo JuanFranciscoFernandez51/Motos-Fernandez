@@ -80,7 +80,7 @@ export function OCList({ ordenes }: { ordenes: Row[] }) {
         <button
           onClick={() => setEstadoFilter("")}
           className={`rounded-lg border p-3 text-left transition-colors ${
-            estadoFilter === "" ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
+            estadoFilter === "" ? "border-[#7C3AED] bg-[#7C3AED]/5" : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Total</p>
@@ -166,7 +166,7 @@ export function OCList({ ordenes }: { ordenes: Row[] }) {
                   className="cursor-pointer select-none"
                   title="Doble click para editar"
                 >
-                  <TableCell className="font-mono text-xs font-semibold text-[#6B4F7A]">
+                  <TableCell className="font-mono text-xs font-semibold text-[#7C3AED]">
                     {formatNumero("OC", o.numero)}
                   </TableCell>
                   <TableCell className="text-sm font-medium">{o.motoDescripcion}</TableCell>

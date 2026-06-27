@@ -104,15 +104,15 @@ export function CalendarioMes({
               <button
                 key={i}
                 onClick={() => setDiaSeleccionado(c.dia)}
-                className={`text-left border-b border-r border-gray-50 dark:border-neutral-900 last:border-r-0 p-1.5 min-h-[100px] hover:bg-[#6B4F7A]/5 transition-colors ${
+                className={`text-left border-b border-r border-gray-50 dark:border-neutral-900 last:border-r-0 p-1.5 min-h-[100px] hover:bg-[#7C3AED]/5 transition-colors ${
                   esFinDeSemana ? "bg-gray-50/30 dark:bg-neutral-900/50" : ""
-                } ${esHoy ? "ring-2 ring-[#6B4F7A] ring-inset z-10 relative" : ""}`}
+                } ${esHoy ? "ring-2 ring-[#7C3AED] ring-inset z-10 relative" : ""}`}
               >
                 <div className="flex items-center justify-between">
                   <span
                     className={`inline-flex items-center justify-center size-6 text-xs ${
                       esHoy
-                        ? "bg-[#6B4F7A] text-white rounded-full font-bold"
+                        ? "bg-[#7C3AED] text-white rounded-full font-bold"
                         : "text-gray-700 dark:text-gray-300 font-semibold"
                     }`}
                   >

@@ -155,7 +155,7 @@ function FilaModelos({
         </h3>
         <Link
           href={href}
-          className="group inline-flex items-center gap-1.5 text-sm font-bold text-[#6B4F7A] hover:text-[#8B6F9A] transition-colors whitespace-nowrap"
+          className="group inline-flex items-center gap-1.5 text-sm font-bold text-[#7C3AED] hover:text-[#9D5CF0] transition-colors whitespace-nowrap"
         >
           {hrefLabel}
           <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
@@ -170,7 +170,7 @@ function FilaModelos({
               key={i}
               aria-hidden
               className={`h-1 rounded-full transition-all duration-500 ${
-                i === pageIndex ? "w-8 bg-[#6B4F7A]" : "w-1.5 bg-gray-300 dark:bg-neutral-700"
+                i === pageIndex ? "w-8 bg-[#7C3AED]" : "w-1.5 bg-gray-300 dark:bg-neutral-700"
               }`}
             />
           ))}
@@ -258,7 +258,7 @@ function ModeloCard({
               badge de tenencia, queda más limpio). */}
           {(model.condicion || "0KM") === "0KM" && (
             <span
-              className="rounded-md px-2 py-0.5 text-[10px] font-bold bg-[#6B4F7A] text-white text-right"
+              className="rounded-md px-2 py-0.5 text-[10px] font-bold bg-[#7C3AED] text-white text-right"
               title="Consultanos disponibilidad y entrega de esta unidad 0KM"
             >
               CONSULTAR DISPONIBILIDAD
@@ -310,7 +310,7 @@ function ModeloCard({
                 : "Consultar"}
             </p>
           </div>
-          <ArrowRight className="size-4 text-[#6B4F7A] group-hover:translate-x-1 transition-transform" />
+          <ArrowRight className="size-4 text-[#7C3AED] group-hover:translate-x-1 transition-transform" />
         </div>
         </div>
       </div>

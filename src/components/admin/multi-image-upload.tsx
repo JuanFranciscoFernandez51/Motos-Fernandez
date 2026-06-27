@@ -56,7 +56,7 @@ function SortableItem({ id, url, index, onRemove, onCrop }: SortableItemProps) {
 
       {/* Badge "Portada" en la primera */}
       {index === 0 && (
-        <span className="absolute top-1.5 left-1.5 bg-[#6B4F7A] text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">
+        <span className="absolute top-1.5 left-1.5 bg-[#7C3AED] text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wide">
           Portada
         </span>
       )}
@@ -351,17 +351,17 @@ export function MultiImageUpload({ value, onChange, folder = "modelos" }: MultiI
         onClick={() => inputRef.current?.click()}
         onDragOver={(e) => e.preventDefault()}
         onDrop={handleDrop}
-        className="border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded-xl p-8 hover:border-[#6B4F7A] hover:bg-[#6B4F7A]/5 cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 min-h-[140px]"
+        className="border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded-xl p-8 hover:border-[#7C3AED] hover:bg-[#7C3AED]/5 cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 min-h-[140px]"
       >
         {uploading ? (
           <>
-            <Loader2 className="size-8 text-[#6B4F7A] animate-spin" />
+            <Loader2 className="size-8 text-[#7C3AED] animate-spin" />
             <p className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Subiendo {progress.current} de {progress.total}...
             </p>
             <div className="w-full max-w-xs bg-gray-200 rounded-full h-1.5 overflow-hidden">
               <div
-                className="bg-[#6B4F7A] h-full transition-all"
+                className="bg-[#7C3AED] h-full transition-all"
                 style={{
                   width: progress.total > 0 ? `${(progress.current / progress.total) * 100}%` : "0%",
                 }}

@@ -127,7 +127,7 @@ function formatMessage(text: string) {
             href={href}
             target={isInternal ? "_self" : "_blank"}
             rel={isInternal ? undefined : "noopener noreferrer"}
-            className="text-[#6B4F7A] font-medium underline underline-offset-2 hover:text-[#8B6F9A]"
+            className="text-[#7C3AED] font-medium underline underline-offset-2 hover:text-[#9D5CF0]"
           >
             {match.group1}
           </a>
@@ -263,7 +263,7 @@ export function Chatbot() {
                 <div
                   className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
                     msg.role === "user"
-                      ? "bg-[#6B4F7A] text-white rounded-br-sm"
+                      ? "bg-[#7C3AED] text-white rounded-br-sm"
                       : "bg-white dark:bg-neutral-900 text-gray-800 dark:text-gray-100 rounded-bl-sm shadow-sm border border-gray-100 dark:border-neutral-800"
                   }`}
                 >
@@ -293,12 +293,12 @@ export function Chatbot() {
               onKeyDown={handleKeyDown}
               placeholder="Escribí tu consulta..."
               disabled={loading}
-              className="flex-1 text-sm bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl px-3 py-2 outline-none focus:border-[#6B4F7A] focus:ring-1 focus:ring-[#6B4F7A] disabled:opacity-50 transition-colors"
+              className="flex-1 text-sm bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl px-3 py-2 outline-none focus:border-[#7C3AED] focus:ring-1 focus:ring-[#7C3AED] disabled:opacity-50 transition-colors"
             />
             <button
               type="submit"
               disabled={loading || !input.trim()}
-              className="size-9 rounded-xl bg-[#6B4F7A] text-white flex items-center justify-center hover:bg-[#8B6F9A] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+              className="size-9 rounded-xl bg-[#7C3AED] text-white flex items-center justify-center hover:bg-[#9D5CF0] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-shrink-0"
               aria-label="Enviar mensaje"
             >
               <Send className="size-4" />
@@ -310,7 +310,7 @@ export function Chatbot() {
       {/* Botón flotante */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="size-14 rounded-full bg-[#6B4F7A] text-white shadow-lg flex items-center justify-center hover:bg-[#8B6F9A] transition-all hover:scale-110 active:scale-95"
+        className="size-14 rounded-full bg-[#7C3AED] text-white shadow-lg flex items-center justify-center hover:bg-[#9D5CF0] transition-all hover:scale-110 active:scale-95"
         aria-label={open ? "Cerrar asistente" : "Abrir asistente"}
       >
         {open ? <X className="size-6" /> : <MessageSquare className="size-7" />}

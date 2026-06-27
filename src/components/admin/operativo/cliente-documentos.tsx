@@ -124,7 +124,7 @@ export function ClienteDocumentos({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Folder className="size-5 text-[#6B4F7A]" />
+          <Folder className="size-5 text-[#7C3AED]" />
           <h2 className="text-base font-bold text-gray-900 dark:text-gray-100">
             Documentos
             <span className="ml-1.5 text-xs font-normal text-gray-500 dark:text-gray-400">
@@ -135,7 +135,7 @@ export function ClienteDocumentos({
         <button
           type="button"
           onClick={() => setShowUpload(!showUpload)}
-          className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white text-xs font-semibold px-2.5 py-1.5 transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] text-white text-xs font-semibold px-2.5 py-1.5 transition-colors"
         >
           {showUpload ? <X className="size-3.5" /> : <Plus className="size-3.5" />}
           {showUpload ? "Cancelar" : "Subir archivo"}
@@ -144,7 +144,7 @@ export function ClienteDocumentos({
 
       {/* Upload form */}
       {showUpload && (
-        <div className="rounded-lg border border-[#6B4F7A]/30 bg-[#6B4F7A]/5 p-4 space-y-3">
+        <div className="rounded-lg border border-[#7C3AED]/30 bg-[#7C3AED]/5 p-4 space-y-3">
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
               Categoría
@@ -188,7 +188,7 @@ export function ClienteDocumentos({
             type="button"
             onClick={() => fileRef.current?.click()}
             disabled={uploading}
-            className="w-full inline-flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-[#6B4F7A]/40 bg-white dark:bg-neutral-900 hover:bg-[#6B4F7A]/5 px-4 py-6 text-sm font-medium text-[#6B4F7A] transition-colors disabled:opacity-50"
+            className="w-full inline-flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-[#7C3AED]/40 bg-white dark:bg-neutral-900 hover:bg-[#7C3AED]/5 px-4 py-6 text-sm font-medium text-[#7C3AED] transition-colors disabled:opacity-50"
           >
             {uploading ? (
               <>
@@ -216,7 +216,7 @@ export function ClienteDocumentos({
             onClick={() => setCategoriaActiva("todos")}
             className={`text-xs px-3 py-1.5 rounded-full font-semibold transition-colors ${
               categoriaActiva === "todos"
-                ? "bg-[#6B4F7A] text-white"
+                ? "bg-[#7C3AED] text-white"
                 : "bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-700"
             }`}
           >
@@ -229,7 +229,7 @@ export function ClienteDocumentos({
               onClick={() => setCategoriaActiva(c.value)}
               className={`text-xs px-3 py-1.5 rounded-full font-semibold transition-colors ${
                 categoriaActiva === c.value
-                  ? "bg-[#6B4F7A] text-white"
+                  ? "bg-[#7C3AED] text-white"
                   : "bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-neutral-700"
               }`}
             >
@@ -262,7 +262,7 @@ export function ClienteDocumentos({
             return (
               <div
                 key={doc.id}
-                className="group rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 flex items-center gap-3 hover:border-[#6B4F7A]/30 hover:shadow-sm transition-all"
+                className="group rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 flex items-center gap-3 hover:border-[#7C3AED]/30 hover:shadow-sm transition-all"
               >
                 {/* Preview / Icon */}
                 {doc.resourceType === "image" ? (
@@ -274,7 +274,7 @@ export function ClienteDocumentos({
                     onClick={() => window.open(doc.url, "_blank")}
                   />
                 ) : (
-                  <div className="size-12 rounded bg-[#6B4F7A]/10 text-[#6B4F7A] flex items-center justify-center shrink-0">
+                  <div className="size-12 rounded bg-[#7C3AED]/10 text-[#7C3AED] flex items-center justify-center shrink-0">
                     <Icon className="size-6" />
                   </div>
                 )}
@@ -309,7 +309,7 @@ export function ClienteDocumentos({
                     href={doc.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="size-7 rounded flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-[#6B4F7A] hover:bg-[#6B4F7A]/10 transition-colors"
+                    className="size-7 rounded flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-[#7C3AED] hover:bg-[#7C3AED]/10 transition-colors"
                     title="Abrir / Descargar"
                   >
                     <Download className="size-3.5" />

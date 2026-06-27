@@ -100,7 +100,7 @@ export function ContadorClient({
       <div className="flex items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Calendar className="size-6 text-[#6B4F7A]" /> Contador — Vencimientos
+            <Calendar className="size-6 text-[#7C3AED]" /> Contador — Vencimientos
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Tus obligaciones del mes en un solo lugar. Marcá cada una al pagarla.
@@ -109,7 +109,7 @@ export function ContadorClient({
         <div className="flex flex-col items-end gap-2">
           <button
             onClick={() => setShowConfig((v) => !v)}
-            className="inline-flex items-center gap-1.5 text-sm text-[#6B4F7A] hover:underline whitespace-nowrap"
+            className="inline-flex items-center gap-1.5 text-sm text-[#7C3AED] hover:underline whitespace-nowrap"
           >
             <Settings2 className="size-4" /> Configurar fechas
           </button>
@@ -405,7 +405,7 @@ function ObligacionRow({ obligacion, onSaved }: { obligacion: ObligacionUI; onSa
             setActivo(e.target.checked)
             guardar({ activo: e.target.checked })
           }}
-          className="accent-[#6B4F7A]"
+          className="accent-[#7C3AED]"
         />
         Activa
       </label>

@@ -210,7 +210,7 @@ export function StockMotosClient({
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Bike className="size-6 text-[#6B4F7A]" />
+            <Bike className="size-6 text-[#7C3AED]" />
             Stock motos
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -230,8 +230,8 @@ export function StockMotosClient({
           onClick={() => setTenencia("EN_LOCAL")}
           className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
             tenencia === "EN_LOCAL"
-              ? "bg-[#6B4F7A] text-white"
-              : "border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A]"
+              ? "bg-[#7C3AED] text-white"
+              : "border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-[#7C3AED]"
           }`}
         >
           📍 En la concesionaria ({tenenciaCounts.enLocal})
@@ -314,12 +314,12 @@ export function StockMotosClient({
           onClick={() => setFiltro("TODAS")}
           className={`rounded-lg border p-3 text-left transition-colors ${
             filtro === "TODAS"
-              ? "border-[#6B4F7A] bg-[#6B4F7A]/5"
+              ? "border-[#7C3AED] bg-[#7C3AED]/5"
               : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-800"
           }`}
         >
           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Total histórico</p>
-          <p className="text-2xl font-bold text-[#6B4F7A]">{counts.total}</p>
+          <p className="text-2xl font-bold text-[#7C3AED]">{counts.total}</p>
         </button>
         <div className="rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3">
           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Condición</p>
@@ -343,7 +343,7 @@ export function StockMotosClient({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Buscar por código, marca, modelo, chasis, motor, patente..."
-            className="w-full pl-10 pr-9 py-2 text-sm rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 focus:ring-2 focus:ring-[#6B4F7A] outline-none"
+            className="w-full pl-10 pr-9 py-2 text-sm rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 focus:ring-2 focus:ring-[#7C3AED] outline-none"
           />
           {query && (
             <button
@@ -357,7 +357,7 @@ export function StockMotosClient({
         <select
           value={origenFiltro}
           onChange={(e) => setOrigenFiltro(e.target.value)}
-          className="px-3 py-2 text-sm rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 focus:ring-2 focus:ring-[#6B4F7A] outline-none"
+          className="px-3 py-2 text-sm rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 focus:ring-2 focus:ring-[#7C3AED] outline-none"
         >
           <option value="TODOS">Todos los orígenes</option>
           <option value="STOCK_PROPIO">Stock propio</option>
@@ -371,7 +371,7 @@ export function StockMotosClient({
         <button
           type="button"
           onClick={() => setShowNuevaModal(true)}
-          className="ml-auto inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white px-3 py-2 text-sm font-medium shadow-sm"
+          className="ml-auto inline-flex items-center gap-1.5 rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] text-white px-3 py-2 text-sm font-medium shadow-sm"
         >
           <Plus className="size-4" />
           Nueva moto
@@ -414,7 +414,7 @@ export function StockMotosClient({
                       className="border-t border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-900/50 cursor-pointer select-none"
                       title="Doble click para editar datos administrativos"
                     >
-                      <td className="px-3 py-2.5 font-mono text-xs font-semibold text-[#6B4F7A] whitespace-nowrap">
+                      <td className="px-3 py-2.5 font-mono text-xs font-semibold text-[#7C3AED] whitespace-nowrap">
                         {m.codigo || "—"}
                       </td>
                       <td className="px-3 py-2.5 min-w-[200px]">
@@ -527,7 +527,7 @@ export function StockMotosClient({
                           <a
                             href={`/admin/mandatos/${m.mandatoId}`}
                             onClick={(e) => e.stopPropagation()}
-                            className="text-[10px] text-[#6B4F7A] hover:underline mt-0.5 inline-block"
+                            className="text-[10px] text-[#7C3AED] hover:underline mt-0.5 inline-block"
                           >
                             Mandato MV-{String(m.mandatoNumero).padStart(4, "0")}
                           </a>
@@ -595,7 +595,7 @@ export function StockMotosClient({
                               e.stopPropagation()
                               setEditando(m)
                             }}
-                            className="inline-flex items-center gap-1 text-xs text-[#6B4F7A] hover:underline px-1.5"
+                            className="inline-flex items-center gap-1 text-xs text-[#7C3AED] hover:underline px-1.5"
                             title="Editar datos administrativos"
                           >
                             <Pencil className="size-3" />

@@ -58,7 +58,7 @@
   --card-foreground: oklch(0.15 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.15 0 0);
-  /* Violeta Fernandez #6B4F7A */
+  /* Violeta Fernandez #7C3AED */
   --primary: oklch(0.43 0.08 310);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.96 0 0);
@@ -87,8 +87,8 @@
   --sidebar-ring: oklch(0.43 0.08 310);
 
   /* Paleta Motos Fernandez — Brand Book */
-  --mf-violeta: #6B4F7A;
-  --mf-violeta-claro: #8B6F9A;
+  --mf-violeta: #7C3AED;
+  --mf-violeta-claro: #9D5CF0;
   --mf-violeta-electrico: #9B59B6;
   --mf-negro: #1A1A1A;
   --mf-gris-carbon: #4E4B48;
@@ -119,7 +119,7 @@
   /* Premium gradients */
   --gradient-violeta-deep: linear-gradient(135deg, #2A1A36 0%, #3D2649 50%, #5A3F6E 100%);
   --gradient-violeta-night: linear-gradient(180deg, #0E0B12 0%, #15121A 50%, #2A1A36 100%);
-  --gradient-violeta-cta: linear-gradient(135deg, #3D2649 0%, #6B4F7A 100%);
+  --gradient-violeta-cta: linear-gradient(135deg, #3D2649 0%, #7C3AED 100%);
   --gradient-pearl: linear-gradient(180deg, #FFFFFF 0%, #F8F5FA 100%);
 
   /* Borders premium */

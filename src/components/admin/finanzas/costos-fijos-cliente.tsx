@@ -58,11 +58,11 @@ export function CostosFijosCliente({ costos, config }: { costos: CostoFijo[]; co
     <div className="space-y-6">
       {/* Métricas */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
-        <Kpi label="Costo fijo mensual" valor={formatMoney(metricas.totalMensual)} icon={TrendingUp} color="#3A8B96" />
-        <Kpi label="Por día" valor={formatMoney(Math.round(metricas.costoPorDia))} icon={CalendarDays} color="#5BB5C2" />
+        <Kpi label="Costo fijo mensual" valor={formatMoney(metricas.totalMensual)} icon={TrendingUp} color="#7C3AED" />
+        <Kpi label="Por día" valor={formatMoney(Math.round(metricas.costoPorDia))} icon={CalendarDays} color="#9D5CF0" />
         <Kpi label="Por moto vendida" valor={formatMoney(Math.round(metricas.costoPorMoto))} icon={Bike} color="#7C8B9A" />
         <Kpi label="Motos p/ cubrir (breakeven)" valor={metricas.motosMinimas.toFixed(1)} icon={Target} color="#CE9F33" />
-        <Kpi label="Costo fijo anual" valor={formatMoney(metricas.costoAnual)} icon={TrendingUp} color="#3A8B96" />
+        <Kpi label="Costo fijo anual" valor={formatMoney(metricas.costoAnual)} icon={TrendingUp} color="#7C3AED" />
       </div>
 
       {/* Parámetros */}
@@ -141,7 +141,7 @@ export function CostosFijosCliente({ costos, config }: { costos: CostoFijo[]; co
             ))}
             <tr className="border-t-2 border-gray-200 font-bold bg-gray-50">
               <td className="px-4 py-2.5" colSpan={2}>TOTAL COSTO FIJO MENSUAL</td>
-              <td className="px-4 py-2.5 text-right tabular-nums" style={{ color: "#3A8B96" }}>{formatMoney(metricas.totalMensual)}</td>
+              <td className="px-4 py-2.5 text-right tabular-nums" style={{ color: "#7C3AED" }}>{formatMoney(metricas.totalMensual)}</td>
               <td className="px-4 py-2.5 text-right">100%</td>
               <td></td>
             </tr>

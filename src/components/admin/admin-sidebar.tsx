@@ -224,7 +224,7 @@ function NavLink({
         "flex items-center gap-3 rounded-lg py-2 text-sm transition-colors",
         nested ? "px-3 pl-9 font-normal" : "px-3 font-medium py-2.5",
         isActive
-          ? "bg-[#6B4F7A]/10 text-[#6B4F7A] font-semibold"
+          ? "bg-[#7C3AED]/10 text-[#7C3AED] font-semibold"
           : "text-neutral-400 hover:bg-neutral-800 hover:text-neutral-100"
       )}
     >

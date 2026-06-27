@@ -111,7 +111,7 @@ export default async function CalendarioPage({
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Calendar className="size-6 text-[#6B4F7A]" />
+            <Calendar className="size-6 text-[#7C3AED]" />
             Calendario
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">

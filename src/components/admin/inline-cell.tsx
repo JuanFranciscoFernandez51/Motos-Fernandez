@@ -69,7 +69,7 @@ export function InlineTextCell({
           }}
           placeholder={placeholder}
           disabled={isPending}
-          className={`h-8 w-full rounded border border-[#6B4F7A] bg-white dark:bg-neutral-900 px-2 text-sm outline-none ${className}`}
+          className={`h-8 w-full rounded border border-[#7C3AED] bg-white dark:bg-neutral-900 px-2 text-sm outline-none ${className}`}
         />
         {isPending && <Loader2 className="size-3 animate-spin text-gray-400 shrink-0" />}
       </div>
@@ -80,7 +80,7 @@ export function InlineTextCell({
     <button
       type="button"
       onClick={() => setEditing(true)}
-      className="group w-full text-left rounded px-1 -mx-1 py-0.5 hover:bg-[#6B4F7A]/5 transition-colors"
+      className="group w-full text-left rounded px-1 -mx-1 py-0.5 hover:bg-[#7C3AED]/5 transition-colors"
     >
       {display ?? (
         <span className={value ? "" : "text-gray-400 italic"}>

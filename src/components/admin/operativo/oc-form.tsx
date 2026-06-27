@@ -448,7 +448,7 @@ export function OCForm({
             {initialData?.id ? "Editar OC" : "Nueva OC"}
           </h1>
         </div>
-        <Button type="submit" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]" disabled={isPending}>
+        <Button type="submit" className="bg-[#7C3AED] hover:bg-[#9D5CF0]" disabled={isPending}>
           {isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
           {isPending ? "Guardando..." : "Guardar"}
         </Button>
@@ -664,7 +664,7 @@ export function OCForm({
                 <ChevronDown className="h-5 w-5 text-gray-400 shrink-0" />
               )
             ) : (
-              <Plus className="h-5 w-5 text-[#6B4F7A] shrink-0" />
+              <Plus className="h-5 w-5 text-[#7C3AED] shrink-0" />
             )}
           </button>
           {ventas.length > 0 && ventasAbierto && (
@@ -873,7 +873,7 @@ export function OCForm({
                 <ChevronDown className="h-5 w-5 text-gray-400 shrink-0" />
               )
             ) : (
-              <Plus className="h-5 w-5 text-[#6B4F7A] shrink-0" />
+              <Plus className="h-5 w-5 text-[#7C3AED] shrink-0" />
             )}
           </button>
           {permutas.length > 0 && permutasAbierto && (

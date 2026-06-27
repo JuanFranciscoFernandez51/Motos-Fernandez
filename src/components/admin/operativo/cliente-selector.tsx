@@ -67,7 +67,7 @@ export function ClienteSelector({
       <>
         <div className="rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="size-9 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center text-[#6B4F7A]">
+            <div className="size-9 rounded-full bg-[#7C3AED]/10 flex items-center justify-center text-[#7C3AED]">
               <User className="size-4" />
             </div>
             <div>
@@ -84,7 +84,7 @@ export function ClienteSelector({
             <button
               type="button"
               onClick={() => setEditOpen(true)}
-              className="inline-flex items-center gap-1 text-xs text-[#6B4F7A] hover:bg-[#6B4F7A]/10 px-2 py-1 rounded"
+              className="inline-flex items-center gap-1 text-xs text-[#7C3AED] hover:bg-[#7C3AED]/10 px-2 py-1 rounded"
               title="Editar datos del cliente"
             >
               <Pencil className="size-3" />
@@ -141,7 +141,7 @@ export function ClienteSelector({
             type="button"
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => setModalOpen(true)}
-            className="absolute right-1 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 rounded-md bg-[#6B4F7A] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A]"
+            className="absolute right-1 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 rounded-md bg-[#7C3AED] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#9D5CF0]"
           >
             <Plus className="size-3" /> Nuevo
           </button>
@@ -156,7 +156,7 @@ export function ClienteSelector({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => setModalOpen(true)}
-                  className="inline-flex items-center gap-1 rounded-md bg-[#6B4F7A] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A]"
+                  className="inline-flex items-center gap-1 rounded-md bg-[#7C3AED] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#9D5CF0]"
                 >
                   <Plus className="size-3" /> Crear cliente {query && `"${query}"`}
                 </button>
@@ -185,7 +185,7 @@ export function ClienteSelector({
                       </p>
                     </div>
                     {value === c.id && (
-                      <Check className="size-4 text-[#6B4F7A]" />
+                      <Check className="size-4 text-[#7C3AED]" />
                     )}
                   </button>
                 ))}
@@ -193,7 +193,7 @@ export function ClienteSelector({
                   type="button"
                   onMouseDown={(e) => e.preventDefault()}
                   onClick={() => setModalOpen(true)}
-                  className="w-full flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-neutral-900 text-[#6B4F7A] hover:bg-[#6B4F7A]/5 text-sm font-medium border-t"
+                  className="w-full flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-neutral-900 text-[#7C3AED] hover:bg-[#7C3AED]/5 text-sm font-medium border-t"
                 >
                   <Plus className="size-4" /> Crear cliente nuevo
                 </button>

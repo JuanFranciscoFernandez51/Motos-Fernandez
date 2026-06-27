@@ -79,7 +79,7 @@ export default function UbicacionPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325] py-14 sm:py-18">
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
-        <div className="absolute -top-32 -right-32 size-[400px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -top-32 -right-32 size-[400px] rounded-full bg-[#7C3AED]/15 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 size-[320px] rounded-full bg-[#C8C8D0]/[0.06] blur-3xl pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -98,7 +98,7 @@ export default function UbicacionPage() {
               href={directionsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-6 py-3 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-6 py-3 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
             >
               <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
               <Navigation className="relative size-4" />
@@ -144,8 +144,8 @@ export default function UbicacionPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Dirección y contacto */}
             <div className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-[#F7F7F7] p-6">
-              <div className="size-10 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center mb-4">
-                <MapPin className="size-5 text-[#6B4F7A]" />
+              <div className="size-10 rounded-full bg-[#7C3AED]/10 flex items-center justify-center mb-4">
+                <MapPin className="size-5 text-[#7C3AED]" />
               </div>
               <h2 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-3">
                 Dónde estamos
@@ -159,7 +159,7 @@ export default function UbicacionPage() {
                 href={directionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-[#6B4F7A] hover:underline"
+                className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-[#7C3AED] hover:underline"
               >
                 Abrir en Google Maps
                 <Navigation className="size-3" />
@@ -168,8 +168,8 @@ export default function UbicacionPage() {
 
             {/* Horarios */}
             <div className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-[#F7F7F7] p-6">
-              <div className="size-10 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center mb-4">
-                <Clock className="size-5 text-[#6B4F7A]" />
+              <div className="size-10 rounded-full bg-[#7C3AED]/10 flex items-center justify-center mb-4">
+                <Clock className="size-5 text-[#7C3AED]" />
               </div>
               <h2 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-3">
                 Horarios
@@ -192,8 +192,8 @@ export default function UbicacionPage() {
 
             {/* Contacto rápido */}
             <div className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-[#F7F7F7] p-6">
-              <div className="size-10 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center mb-4">
-                <Phone className="size-5 text-[#6B4F7A]" />
+              <div className="size-10 rounded-full bg-[#7C3AED]/10 flex items-center justify-center mb-4">
+                <Phone className="size-5 text-[#7C3AED]" />
               </div>
               <h2 className="text-base font-bold text-[#1A1A1A] dark:text-white font-heading mb-3">
                 Contacto
@@ -202,7 +202,7 @@ export default function UbicacionPage() {
                 <li>
                   <a
                     href={`tel:${BUSINESS.phone}`}
-                    className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-[#6B4F7A] transition-colors"
+                    className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-[#7C3AED] transition-colors"
                   >
                     <Phone className="size-3.5 shrink-0" />
                     {BUSINESS.whatsappDisplay}
@@ -211,7 +211,7 @@ export default function UbicacionPage() {
                 <li>
                   <a
                     href={`mailto:${BUSINESS.email}`}
-                    className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-[#6B4F7A] transition-colors break-all"
+                    className="flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-[#7C3AED] transition-colors break-all"
                   >
                     <Mail className="size-3.5 shrink-0" />
                     {BUSINESS.email}
@@ -248,7 +248,7 @@ export default function UbicacionPage() {
               <div className="mt-6 space-y-4">
                 <div className="flex items-start gap-3">
                   <div className="size-9 shrink-0 rounded-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 flex items-center justify-center">
-                    <Car className="size-4 text-[#6B4F7A]" />
+                    <Car className="size-4 text-[#7C3AED]" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white">En auto</p>
@@ -259,7 +259,7 @@ export default function UbicacionPage() {
                 </div>
                 <div className="flex items-start gap-3">
                   <div className="size-9 shrink-0 rounded-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 flex items-center justify-center">
-                    <Bike className="size-4 text-[#6B4F7A]" />
+                    <Bike className="size-4 text-[#7C3AED]" />
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-[#1A1A1A] dark:text-white">En moto</p>
@@ -273,7 +273,7 @@ export default function UbicacionPage() {
                 href={directionsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+                className="mt-6 inline-flex items-center gap-2 rounded-lg bg-[#7C3AED] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#9D5CF0] transition-colors"
               >
                 <Navigation className="size-4" />
                 Trazar ruta en Google Maps
@@ -291,21 +291,21 @@ export default function UbicacionPage() {
               <div className="space-y-2.5">
                 <Link
                   href="/catalogo"
-                  className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 text-sm font-semibold text-[#1A1A1A] dark:text-white hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
+                  className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 text-sm font-semibold text-[#1A1A1A] dark:text-white hover:border-[#7C3AED] hover:text-[#7C3AED] transition-colors"
                 >
                   Ver catálogo
                   <span className="text-xs text-gray-400">→</span>
                 </Link>
                 <Link
                   href="/servicio-tecnico"
-                  className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 text-sm font-semibold text-[#1A1A1A] dark:text-white hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
+                  className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 text-sm font-semibold text-[#1A1A1A] dark:text-white hover:border-[#7C3AED] hover:text-[#7C3AED] transition-colors"
                 >
                   Pedir turno para servicio
                   <span className="text-xs text-gray-400">→</span>
                 </Link>
                 <Link
                   href="/contacto"
-                  className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 text-sm font-semibold text-[#1A1A1A] dark:text-white hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
+                  className="flex items-center justify-between gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 text-sm font-semibold text-[#1A1A1A] dark:text-white hover:border-[#7C3AED] hover:text-[#7C3AED] transition-colors"
                 >
                   Enviar consulta
                   <span className="text-xs text-gray-400">→</span>

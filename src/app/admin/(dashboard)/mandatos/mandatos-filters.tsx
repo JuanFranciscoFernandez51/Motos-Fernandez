@@ -146,7 +146,7 @@ export function MandatosListFilters({
           onClick={() => setEstadoFilter("")}
           className={`rounded-lg border p-3 text-left transition-colors ${
             estadoFilter === ""
-              ? "border-[#6B4F7A] bg-[#6B4F7A]/5"
+              ? "border-[#7C3AED] bg-[#7C3AED]/5"
               : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
@@ -199,8 +199,8 @@ export function MandatosListFilters({
           onClick={() => setTenenciaFilter("")}
           className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
             tenenciaFilter === ""
-              ? "bg-[#6B4F7A] text-white"
-              : "border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A]"
+              ? "bg-[#7C3AED] text-white"
+              : "border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-[#7C3AED]"
           }`}
         >
           Todas ({counts.total})
@@ -209,8 +209,8 @@ export function MandatosListFilters({
           onClick={() => setTenenciaFilter("EN_LOCAL")}
           className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
             tenenciaFilter === "EN_LOCAL"
-              ? "bg-[#6B4F7A] text-white"
-              : "border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A]"
+              ? "bg-[#7C3AED] text-white"
+              : "border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-[#7C3AED]"
           }`}
         >
           📍 En la conce ({counts.EN_LOCAL})
@@ -287,7 +287,7 @@ export function MandatosListFilters({
                     className="cursor-pointer select-none"
                     title="Doble click para editar"
                   >
-                    <TableCell className="font-mono text-xs font-semibold text-[#6B4F7A]">
+                    <TableCell className="font-mono text-xs font-semibold text-[#7C3AED]">
                       {formatNumero("MV", m.numero)}
                     </TableCell>
                     <TableCell>
@@ -339,7 +339,7 @@ export function MandatosListFilters({
                             handlePublicar(m.id, `${m.marca} ${m.modelo}`)
                           }
                           disabled={pendingThis || isPending}
-                          className="h-7 text-xs border-[#6B4F7A]/40 text-[#6B4F7A] hover:bg-[#6B4F7A]/5"
+                          className="h-7 text-xs border-[#7C3AED]/40 text-[#7C3AED] hover:bg-[#7C3AED]/5"
                         >
                           {pendingThis ? (
                             <Loader2 className="size-3 mr-1 animate-spin" />

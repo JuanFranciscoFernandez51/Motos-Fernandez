@@ -192,7 +192,7 @@ export function PlanesClient({
         {!showForm && (
           <Button
             onClick={startNew}
-            className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+            className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
           >
             <Plus className="h-4 w-4 mr-2" />
             Agregar plan
@@ -226,7 +226,7 @@ export function PlanesClient({
                 <select
                   value={form.tipo}
                   onChange={(e) => setForm({ ...form, tipo: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-[#7C3AED]"
                 >
                   <option value="PROPIA">Financiación propia</option>
                   <option value="TARJETA">Con tarjeta</option>
@@ -244,7 +244,7 @@ export function PlanesClient({
                   placeholder="Ej: 12 cuotas"
                   value={form.nombre}
                   onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-[#7C3AED]"
                 />
               </div>
 
@@ -260,7 +260,7 @@ export function PlanesClient({
                   placeholder="0"
                   value={form.anticipoMinimo}
                   onChange={(e) => setForm({ ...form, anticipoMinimo: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-[#7C3AED]"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">0 = sin anticipo mínimo</p>
               </div>
@@ -277,7 +277,7 @@ export function PlanesClient({
                   placeholder="12"
                   value={form.cuotas}
                   onChange={(e) => setForm({ ...form, cuotas: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-[#7C3AED]"
                 />
               </div>
 
@@ -294,7 +294,7 @@ export function PlanesClient({
                   placeholder="0.110"
                   value={form.coeficiente}
                   onChange={(e) => setForm({ ...form, coeficiente: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-[#7C3AED]"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Cuota mensual = monto financiado × coeficiente
@@ -311,7 +311,7 @@ export function PlanesClient({
                   placeholder="Ej: incluye seguro"
                   value={form.descripcion}
                   onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-[#7C3AED]"
                 />
               </div>
 
@@ -325,7 +325,7 @@ export function PlanesClient({
                   min={0}
                   value={form.orden}
                   onChange={(e) => setForm({ ...form, orden: e.target.value })}
-                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#6B4F7A] focus:outline-none focus:ring-1 focus:ring-[#6B4F7A]"
+                  className="w-full rounded-md border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm focus:border-[#7C3AED] focus:outline-none focus:ring-1 focus:ring-[#7C3AED]"
                 />
               </div>
 
@@ -336,7 +336,7 @@ export function PlanesClient({
                   id="activo"
                   checked={form.activo}
                   onChange={(e) => setForm({ ...form, activo: e.target.checked })}
-                  className="h-4 w-4 rounded border-gray-300 dark:border-neutral-700 text-[#6B4F7A] focus:ring-[#6B4F7A]"
+                  className="h-4 w-4 rounded border-gray-300 dark:border-neutral-700 text-[#7C3AED] focus:ring-[#7C3AED]"
                 />
                 <label htmlFor="activo" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                   Activo
@@ -350,7 +350,7 @@ export function PlanesClient({
 
             {/* Preview cuota */}
             {form.coeficiente && Number(form.coeficiente) > 0 && (
-              <div className="rounded-md bg-[#6B4F7A]/5 border border-[#6B4F7A]/20 px-4 py-2 text-sm text-[#6B4F7A]">
+              <div className="rounded-md bg-[#7C3AED]/5 border border-[#7C3AED]/20 px-4 py-2 text-sm text-[#7C3AED]">
                 Cuota por $1.000.000: <span className="font-bold">{formatPrice(1_000_000 * Number(form.coeficiente))}</span>
               </div>
             )}
@@ -359,7 +359,7 @@ export function PlanesClient({
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+                className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
               >
                 {loading ? "Guardando..." : editingId ? "Guardar cambios" : "Crear plan"}
               </Button>
@@ -413,7 +413,7 @@ export function PlanesClient({
                   <TableCell className="text-sm">{plan.cuotas}</TableCell>
                   <TableCell className="text-sm">{(plan.anticipoMinimo ?? 0) > 0 ? `${plan.anticipoMinimo}%` : "-"}</TableCell>
                   <TableCell className="text-sm font-mono">{plan.coeficiente}</TableCell>
-                  <TableCell className="text-sm font-semibold text-[#6B4F7A]">
+                  <TableCell className="text-sm font-semibold text-[#7C3AED]">
                     {formatPrice(1_000_000 * plan.coeficiente)}
                   </TableCell>
                   <TableCell className="text-sm text-gray-500 dark:text-gray-400">

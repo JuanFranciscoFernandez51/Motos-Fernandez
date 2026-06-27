@@ -108,7 +108,7 @@ export default async function MandatosPage() {
         </div>
         <Button
           render={<Link href="/admin/mandatos/nuevo" />}
-          className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+          className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nuevo mandato

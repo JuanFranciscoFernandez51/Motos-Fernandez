@@ -50,7 +50,7 @@ export function FloatingLogo({
       {/* Glow violeta detrás para profundidad */}
       <div
         aria-hidden
-        className="absolute inset-0 rounded-full blur-3xl bg-[#6B4F7A]/30 scale-75 animate-pulse"
+        className="absolute inset-0 rounded-full blur-3xl bg-[#7C3AED]/30 scale-75 animate-pulse"
         style={{ animationDuration: "6s" }}
       />
 

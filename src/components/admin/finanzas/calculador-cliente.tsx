@@ -113,7 +113,7 @@ export function CalculadorCliente({ config }: { config: FinanzasConfig }) {
               <span className="text-gray-500">%</span>
             </div>
           </div>
-          <Button onClick={guardar} disabled={saving} className="w-full bg-[#5BB5C2] hover:bg-[#3A8B96]">
+          <Button onClick={guardar} disabled={saving} className="w-full bg-[#9D5CF0] hover:bg-[#7C3AED]">
             <Save className="h-4 w-4 mr-1.5" /> {saving ? "Guardando…" : "Guardar markups"}
           </Button>
         </CardContent>
@@ -139,7 +139,7 @@ export function CalculadorCliente({ config }: { config: FinanzasConfig }) {
             <Fila label={`Markup aplicado`} valor={`${Math.round(calc.markup * 100)}%`} />
             <div className="flex items-center justify-between pt-2 border-t border-gray-200">
               <span className="font-semibold text-gray-800">Precio sugerido</span>
-              <span className="text-xl font-bold tabular-nums" style={{ color: "#3A8B96" }}>{formatMoney(calc.precioSugerido)}</span>
+              <span className="text-xl font-bold tabular-nums" style={{ color: "#7C3AED" }}>{formatMoney(calc.precioSugerido)}</span>
             </div>
             <Fila label="Ganancia" valor={formatMoney(Math.round(calc.ganancia))} verde />
             <Fila label="Margen" valor={`${calc.margen.toFixed(1)}%`} verde />
@@ -164,7 +164,7 @@ export function CalculadorCliente({ config }: { config: FinanzasConfig }) {
               className="hidden"
               onChange={(e) => { const f = e.target.files?.[0]; if (f) subirFactura(f) }}
             />
-            <Button onClick={() => fileRef.current?.click()} disabled={analizando} className="bg-[#5BB5C2] hover:bg-[#3A8B96]">
+            <Button onClick={() => fileRef.current?.click()} disabled={analizando} className="bg-[#9D5CF0] hover:bg-[#7C3AED]">
               {analizando ? <><Loader2 className="h-4 w-4 mr-1.5 animate-spin" /> Leyendo factura…</> : <><Upload className="h-4 w-4 mr-1.5" /> Subir factura</>}
             </Button>
           </div>
@@ -173,7 +173,7 @@ export function CalculadorCliente({ config }: { config: FinanzasConfig }) {
             <button
               onClick={() => fileRef.current?.click()}
               disabled={analizando}
-              className="w-full rounded-xl border-2 border-dashed border-gray-300 py-10 text-center text-gray-400 hover:border-[#7ECAD6] hover:text-[#3A8B96] transition-colors"
+              className="w-full rounded-xl border-2 border-dashed border-gray-300 py-10 text-center text-gray-400 hover:border-[#C4A5F7] hover:text-[#7C3AED] transition-colors"
             >
               <FileText className="h-7 w-7 mx-auto mb-2" />
               <span className="text-sm">Hacé click para subir una factura (PDF o imagen)</span>
@@ -211,7 +211,7 @@ export function CalculadorCliente({ config }: { config: FinanzasConfig }) {
                             </select>
                           </td>
                           <td className="px-3 py-2 text-right tabular-nums text-gray-600">{formatMoney(Math.round(it.costoNeto))}</td>
-                          <td className="px-3 py-2 text-right tabular-nums font-semibold" style={{ color: "#3A8B96" }}>{formatMoney(r.precioSugerido)}</td>
+                          <td className="px-3 py-2 text-right tabular-nums font-semibold" style={{ color: "#7C3AED" }}>{formatMoney(r.precioSugerido)}</td>
                           <td className="px-3 py-2 text-right tabular-nums text-emerald-700">{r.margen.toFixed(0)}%</td>
                         </tr>
                       )

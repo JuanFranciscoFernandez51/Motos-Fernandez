@@ -84,7 +84,7 @@ export default async function CRMPage({
           </a>
           <Link
             href="/admin/crm/nuevo"
-            className="flex items-center gap-2 px-3 py-2 text-sm bg-[#6B4F7A] text-white rounded-lg hover:bg-[#8B6F9A] transition-colors"
+            className="flex items-center gap-2 px-3 py-2 text-sm bg-[#7C3AED] text-white rounded-lg hover:bg-[#9D5CF0] transition-colors"
           >
             <Plus className="h-4 w-4" />
             Nuevo lead
@@ -116,27 +116,27 @@ export default async function CRMPage({
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs text-gray-500 dark:text-gray-400 w-20 shrink-0">Temperatura:</span>
           <div className="flex gap-1 flex-wrap">
-            <Link href={buildUrl({ temp: undefined })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${!temp ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>Todas</Link>
+            <Link href={buildUrl({ temp: undefined })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${!temp ? "bg-[#7C3AED] text-white border-[#7C3AED]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>Todas</Link>
             {temperaturas.map(([key, val]) => (
-              <Link key={key} href={buildUrl({ temp: key })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${temp === key ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>{val.label}</Link>
+              <Link key={key} href={buildUrl({ temp: key })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${temp === key ? "bg-[#7C3AED] text-white border-[#7C3AED]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>{val.label}</Link>
             ))}
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs text-gray-500 dark:text-gray-400 w-20 shrink-0">Etapa:</span>
           <div className="flex gap-1 flex-wrap">
-            <Link href={buildUrl({ etapa: undefined })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${!etapa ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>Todas</Link>
+            <Link href={buildUrl({ etapa: undefined })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${!etapa ? "bg-[#7C3AED] text-white border-[#7C3AED]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>Todas</Link>
             {etapas.map(([key, val]) => (
-              <Link key={key} href={buildUrl({ etapa: key })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${etapa === key ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>{val.label}</Link>
+              <Link key={key} href={buildUrl({ etapa: key })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${etapa === key ? "bg-[#7C3AED] text-white border-[#7C3AED]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>{val.label}</Link>
             ))}
           </div>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs text-gray-500 dark:text-gray-400 w-20 shrink-0">Origen:</span>
           <div className="flex gap-1 flex-wrap">
-            <Link href={buildUrl({ origen: undefined })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${!origen ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>Todos</Link>
+            <Link href={buildUrl({ origen: undefined })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${!origen ? "bg-[#7C3AED] text-white border-[#7C3AED]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>Todos</Link>
             {origenes.map(([key, val]) => (
-              <Link key={key} href={buildUrl({ origen: key })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${origen === key ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>{val.label}</Link>
+              <Link key={key} href={buildUrl({ origen: key })} className={`px-2.5 py-1 text-xs rounded-full border transition-colors ${origen === key ? "bg-[#7C3AED] text-white border-[#7C3AED]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}`}>{val.label}</Link>
             ))}
           </div>
         </div>
@@ -177,7 +177,7 @@ export default async function CRMPage({
                     <TableCell>
                       <div className="flex flex-col gap-0.5">
                         {lead.telefono && (
-                          <a href={`https://wa.me/${lead.telefono.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-[#6B4F7A] hover:underline flex items-center gap-1">
+                          <a href={`https://wa.me/${lead.telefono.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="text-xs text-[#7C3AED] hover:underline flex items-center gap-1">
                             <Phone className="h-3 w-3" />{lead.telefono}
                           </a>
                         )}
@@ -216,7 +216,7 @@ export default async function CRMPage({
                       {lead.createdAt.toLocaleDateString("es-AR")}
                     </TableCell>
                     <TableCell>
-                      <Link href={`/admin/crm/${lead.id}`} className="text-[#6B4F7A] hover:text-[#8B6F9A]">
+                      <Link href={`/admin/crm/${lead.id}`} className="text-[#7C3AED] hover:text-[#9D5CF0]">
                         <ExternalLink className="h-4 w-4" />
                       </Link>
                     </TableCell>

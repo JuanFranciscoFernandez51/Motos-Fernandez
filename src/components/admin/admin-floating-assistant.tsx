@@ -19,7 +19,7 @@ export function AdminFloatingAssistant() {
       href="/admin/asistente"
       title="Asistente IA"
       aria-label="Asistente IA"
-      className="group fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-[#3D2649] to-[#6B4F7A] text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5 px-4 py-3 sm:px-5 sm:py-3.5"
+      className="group fixed bottom-6 right-6 z-40 flex items-center gap-2 rounded-full bg-gradient-to-br from-[#3D2649] to-[#7C3AED] text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5 px-4 py-3 sm:px-5 sm:py-3.5"
     >
       <span className="relative flex">
         <span

@@ -52,12 +52,12 @@ export default function EliminacionDeDatosPage() {
             Tenés derecho a pedir que borremos toda la información personal que
             tenemos sobre vos. Para hacerlo, escribinos a:
           </p>
-          <div className="mt-3 rounded-lg bg-[#6B4F7A]/5 border border-[#6B4F7A]/20 p-4">
+          <div className="mt-3 rounded-lg bg-[#7C3AED]/5 border border-[#7C3AED]/20 p-4">
             <p className="text-sm">
-              <Mail className="inline size-4 mr-1.5 text-[#6B4F7A]" />
+              <Mail className="inline size-4 mr-1.5 text-[#7C3AED]" />
               <a
                 href={`mailto:${BUSINESS.email}?subject=Eliminaci%C3%B3n%20de%20datos%20personales`}
-                className="text-[#6B4F7A] font-semibold underline"
+                className="text-[#7C3AED] font-semibold underline"
               >
                 {BUSINESS.email}
               </a>
@@ -103,7 +103,7 @@ export default function EliminacionDeDatosPage() {
                 href="https://www.facebook.com/ads/preferences"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#6B4F7A] underline"
+                className="text-[#7C3AED] underline"
               >
                 Preferencias de anuncios de Facebook
               </a>
@@ -113,7 +113,7 @@ export default function EliminacionDeDatosPage() {
                 href="https://accountscenter.instagram.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#6B4F7A] underline"
+                className="text-[#7C3AED] underline"
               >
                 Centro de cuentas de Instagram
               </a>
@@ -129,15 +129,15 @@ export default function EliminacionDeDatosPage() {
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-10">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-sm text-[#6B4F7A] hover:underline mb-6"
+          className="inline-flex items-center gap-1.5 text-sm text-[#7C3AED] hover:underline mb-6"
         >
           <ArrowLeft className="size-4" />
           Volver al inicio
         </Link>
 
         <div className="flex items-center gap-3 mb-3">
-          <div className="size-12 rounded-xl bg-[#6B4F7A]/10 flex items-center justify-center">
-            <Trash2 className="size-6 text-[#6B4F7A]" />
+          <div className="size-12 rounded-xl bg-[#7C3AED]/10 flex items-center justify-center">
+            <Trash2 className="size-6 text-[#7C3AED]" />
           </div>
           <div>
             <h1 className="font-heading text-3xl sm:text-4xl font-bold leading-tight">
@@ -163,7 +163,7 @@ export default function EliminacionDeDatosPage() {
               className="rounded-xl border border-gray-200 dark:border-neutral-800 p-5"
             >
               <h2 className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-gray-100 mb-3">
-                <Icon className="size-5 text-[#6B4F7A]" />
+                <Icon className="size-5 text-[#7C3AED]" />
                 {title}
               </h2>
               <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">

@@ -56,7 +56,7 @@ export function TiposServicioList({
   return (
     <div className="space-y-4">
       {!adding && (
-        <Button onClick={() => setAdding(true)} className="bg-[#6B4F7A] hover:bg-[#8B6F9A]">
+        <Button onClick={() => setAdding(true)} className="bg-[#7C3AED] hover:bg-[#9D5CF0]">
           <Plus className="h-4 w-4 mr-2" />
           Nuevo tipo de servicio
         </Button>
@@ -89,7 +89,7 @@ export function TiposServicioList({
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button type="submit" size="sm" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]" disabled={isPending}>
+            <Button type="submit" size="sm" className="bg-[#7C3AED] hover:bg-[#9D5CF0]" disabled={isPending}>
               {isPending && <Loader2 className="size-3 animate-spin mr-1" />}
               Guardar
             </Button>
@@ -141,7 +141,7 @@ export function TiposServicioList({
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button type="submit" size="sm" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]" disabled={isPending}>
+                    <Button type="submit" size="sm" className="bg-[#7C3AED] hover:bg-[#9D5CF0]" disabled={isPending}>
                       <Check className="size-3 mr-1" /> Guardar
                     </Button>
                     <Button type="button" variant="outline" size="sm" onClick={() => setEditingId(null)}>

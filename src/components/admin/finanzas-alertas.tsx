@@ -39,7 +39,7 @@ export async function FinanzasAlertas() {
           <CalendarClock className="h-4 w-4 text-amber-500" />
           Vencimientos financieros (próximos días)
         </CardTitle>
-        <Link href="/admin/finanzas/cuentas-y-cheques" className="text-xs text-[#3A8B96] hover:underline inline-flex items-center gap-1">Ver todo <ArrowRight className="h-3 w-3" /></Link>
+        <Link href="/admin/finanzas/cuentas-y-cheques" className="text-xs text-[#7C3AED] hover:underline inline-flex items-center gap-1">Ver todo <ArrowRight className="h-3 w-3" /></Link>
       </CardHeader>
       <CardContent className="space-y-1.5 text-sm">
         {vencidos > 0 && (

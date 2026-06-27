@@ -174,7 +174,7 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
         {!showForm && (
           <Button
             onClick={openNueva}
-            className="bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white"
+            className="bg-[#7C3AED] hover:bg-[#9D5CF0] text-white"
           >
             <Plus className="h-4 w-4 mr-2" />
             Nueva promoción
@@ -276,7 +276,7 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
                   type="checkbox"
                   checked={form.activo}
                   onChange={(e) => setForm({ ...form, activo: e.target.checked })}
-                  className="h-4 w-4 rounded border-gray-300 dark:border-neutral-700 text-[#6B4F7A] accent-[#6B4F7A]"
+                  className="h-4 w-4 rounded border-gray-300 dark:border-neutral-700 text-[#7C3AED] accent-[#7C3AED]"
                 />
                 <Label htmlFor="activo" className="cursor-pointer">
                   Activa
@@ -294,7 +294,7 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
               <Button
                 type="submit"
                 disabled={loading}
-                className="bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white"
+                className="bg-[#7C3AED] hover:bg-[#9D5CF0] text-white"
               >
                 {loading ? "Guardando..." : editingId ? "Guardar cambios" : "Crear promoción"}
               </Button>
@@ -368,7 +368,7 @@ export function PromocionesClient({ promociones }: { promociones: Promocion[] })
                           href={p.link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs text-[#6B4F7A] hover:underline mt-0.5 block truncate max-w-[200px]"
+                          className="text-xs text-[#7C3AED] hover:underline mt-0.5 block truncate max-w-[200px]"
                         >
                           {p.link}
                         </a>

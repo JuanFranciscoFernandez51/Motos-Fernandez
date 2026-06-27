@@ -147,7 +147,7 @@ export default async function LeadDetailPage({
                         name="tipo"
                         value={tipo.value}
                         defaultChecked={tipo.value === "NOTA"}
-                        className="accent-[#6B4F7A]"
+                        className="accent-[#7C3AED]"
                       />
                       <span className="text-sm">{tipo.label}</span>
                     </label>
@@ -158,7 +158,7 @@ export default async function LeadDetailPage({
                   placeholder="Escribi el detalle de la interaccion..."
                   rows={3}
                 />
-                <Button type="submit" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]">
+                <Button type="submit" className="bg-[#7C3AED] hover:bg-[#9D5CF0]">
                   Agregar
                 </Button>
               </form>
@@ -187,7 +187,7 @@ export default async function LeadDetailPage({
                         <div className="absolute left-[15px] top-8 bottom-0 w-px bg-gray-200" />
                       )}
                       {/* Dot */}
-                      <div className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#6B4F7A]/10 text-[#6B4F7A]">
+                      <div className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#7C3AED]/10 text-[#7C3AED]">
                         <Clock className="h-4 w-4" />
                       </div>
                       {/* Content */}
@@ -236,7 +236,7 @@ export default async function LeadDetailPage({
                     href={`https://wa.me/${lead.telefono.replace(/\D/g, "")}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#6B4F7A] hover:underline"
+                    className="text-[#7C3AED] hover:underline"
                   >
                     {lead.telefono}
                   </a>
@@ -245,7 +245,7 @@ export default async function LeadDetailPage({
               {lead.email && (
                 <div className="flex items-center gap-2">
                   <Mail className="h-4 w-4 text-gray-400" />
-                  <a href={`mailto:${lead.email}`} className="text-[#6B4F7A] hover:underline">
+                  <a href={`mailto:${lead.email}`} className="text-[#7C3AED] hover:underline">
                     {lead.email}
                   </a>
                 </div>
@@ -280,7 +280,7 @@ export default async function LeadDetailPage({
                     name="temperatura"
                     value={key}
                     disabled={lead.temperatura === key}
-                    className={`px-2.5 py-1 text-xs rounded-full border transition-colors disabled:ring-2 disabled:ring-[#6B4F7A]/30 ${val.color}`}
+                    className={`px-2.5 py-1 text-xs rounded-full border transition-colors disabled:ring-2 disabled:ring-[#7C3AED]/30 ${val.color}`}
                   >
                     {val.label}
                   </button>
@@ -304,7 +304,7 @@ export default async function LeadDetailPage({
                     name="etapa"
                     value={key}
                     disabled={lead.etapa === key}
-                    className={`px-2.5 py-1 text-xs rounded-full border transition-colors disabled:ring-2 disabled:ring-[#6B4F7A]/30 ${val.color}`}
+                    className={`px-2.5 py-1 text-xs rounded-full border transition-colors disabled:ring-2 disabled:ring-[#7C3AED]/30 ${val.color}`}
                   >
                     {val.label}
                   </button>
@@ -327,7 +327,7 @@ export default async function LeadDetailPage({
                   placeholder="Notas sobre este lead..."
                   rows={4}
                 />
-                <Button type="submit" size="sm" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]">
+                <Button type="submit" size="sm" className="bg-[#7C3AED] hover:bg-[#9D5CF0]">
                   Guardar
                 </Button>
               </form>

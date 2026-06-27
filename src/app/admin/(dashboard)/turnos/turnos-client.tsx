@@ -208,7 +208,7 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
         <button
           type="button"
           onClick={() => setShowNuevoModal(true)}
-          className="inline-flex items-center gap-2 rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white px-3 py-2 text-sm font-medium"
+          className="inline-flex items-center gap-2 rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] text-white px-3 py-2 text-sm font-medium"
         >
           <Plus className="size-4" />
           Nuevo turno
@@ -237,7 +237,7 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
         </div>
         <div className="bg-white dark:bg-neutral-900 rounded-xl border p-4 flex items-center gap-3">
           <div className="w-10 h-10 rounded-full bg-[#F0EBF4] flex items-center justify-center">
-            <Calendar className="h-5 w-5 text-[#6B4F7A]" />
+            <Calendar className="h-5 w-5 text-[#7C3AED]" />
           </div>
           <div>
             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">{totalMes}</p>
@@ -295,12 +295,12 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
                 disabled={isLoading}
                 className={`relative rounded-lg p-1.5 text-sm text-center transition-colors min-h-[44px] flex flex-col items-center justify-start pt-2
                   ${isBloqueado ? "bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:bg-red-900/40" : "hover:bg-gray-50 dark:hover:bg-neutral-900"}
-                  ${isToday ? "ring-2 ring-[#6B4F7A]" : ""}
+                  ${isToday ? "ring-2 ring-[#7C3AED]" : ""}
                   ${isLoading ? "opacity-50" : ""}
                 `}
               >
                 <span className={`text-sm font-medium leading-none
-                  ${isBloqueado ? "text-red-500" : isToday ? "text-[#6B4F7A] font-bold" : "text-gray-700 dark:text-gray-300"}
+                  ${isBloqueado ? "text-red-500" : isToday ? "text-[#7C3AED] font-bold" : "text-gray-700 dark:text-gray-300"}
                 `}>
                   {day}
                 </span>
@@ -308,7 +308,7 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
                   <span className="text-[9px] text-red-400 mt-0.5 leading-none">Bloqueado</span>
                 )}
                 {turnoCount > 0 && !isBloqueado && (
-                  <span className="mt-1 w-1.5 h-1.5 rounded-full bg-[#6B4F7A] inline-block" />
+                  <span className="mt-1 w-1.5 h-1.5 rounded-full bg-[#7C3AED] inline-block" />
                 )}
               </button>
             )
@@ -353,7 +353,7 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
                 onClick={() => setFiltroEstado(estado)}
                 className={`px-3 py-1 text-xs rounded-full border transition-colors ${
                   filtroEstado === estado
-                    ? "bg-[#6B4F7A] text-white border-[#6B4F7A]"
+                    ? "bg-[#7C3AED] text-white border-[#7C3AED]"
                     : "hover:bg-gray-50 dark:hover:bg-neutral-900"
                 }`}
               >
@@ -387,7 +387,7 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
                     <a
                       href={`https://wa.me/${turno.telefono.replace(/\D/g, "")}`}
                       target="_blank" rel="noopener noreferrer"
-                      className="flex items-center gap-1 text-[#6B4F7A] hover:underline w-fit"
+                      className="flex items-center gap-1 text-[#7C3AED] hover:underline w-fit"
                     >
                       <Phone className="h-3 w-3" />
                       {turno.telefono}
@@ -439,7 +439,7 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
                       <button
                         onClick={() => guardarComoCliente(turno.id)}
                         disabled={loadingTurno === turno.id}
-                        className="px-3 py-1 text-xs rounded-lg border border-[#6B4F7A]/40 text-[#6B4F7A] hover:bg-[#6B4F7A]/5 inline-flex items-center gap-1 disabled:opacity-50"
+                        className="px-3 py-1 text-xs rounded-lg border border-[#7C3AED]/40 text-[#7C3AED] hover:bg-[#7C3AED]/5 inline-flex items-center gap-1 disabled:opacity-50"
                         title="Guardar a este contacto como cliente del CRM"
                       >
                         <UserPlus className="size-3" />
@@ -460,7 +460,7 @@ export function TurnosClient({ turnos: initialTurnos, diasBloqueados: initialBlo
                       <button
                         onClick={() => crearOT(turno.id)}
                         disabled={loadingTurno === turno.id}
-                        className="px-3 py-1 text-xs rounded-lg bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white inline-flex items-center gap-1 disabled:opacity-50"
+                        className="px-3 py-1 text-xs rounded-lg bg-[#7C3AED] hover:bg-[#9D5CF0] text-white inline-flex items-center gap-1 disabled:opacity-50"
                         title="Crear OT en el taller con este turno"
                       >
                         {loadingTurno === turno.id ? (

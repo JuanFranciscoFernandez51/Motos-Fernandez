@@ -48,7 +48,7 @@ export function MetaMotosTable({ motos }: { motos: MetaMotoRow[] }) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar moto por marca, modelo o año… (ej: KTM 390 Adventure)"
-          className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]"
+          className="w-full rounded-lg border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]"
         />
       </div>
       {query.trim() && (

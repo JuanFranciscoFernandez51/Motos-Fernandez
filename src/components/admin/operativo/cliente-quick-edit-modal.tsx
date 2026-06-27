@@ -152,7 +152,7 @@ export function ClienteQuickEditModal({
       >
         <div className="flex items-center justify-between border-b border-gray-100 dark:border-neutral-800 px-5 py-3">
           <h3 className="font-semibold flex items-center gap-2">
-            <UserPen className="size-5 text-[#6B4F7A]" />
+            <UserPen className="size-5 text-[#7C3AED]" />
             Editar cliente
           </h3>
           <button
@@ -207,7 +207,7 @@ export function ClienteQuickEditModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white px-4 py-2 text-sm font-medium"
+                className="rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] text-white px-4 py-2 text-sm font-medium"
               >
                 Entendido, cerrar
               </button>
@@ -329,7 +329,7 @@ export function ClienteQuickEditModal({
           <button
             type="submit"
             disabled={loadingFetch || loadingSave}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#8B6F9A] disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-md bg-[#7C3AED] px-3 py-1.5 text-sm font-medium text-white hover:bg-[#9D5CF0] disabled:opacity-50"
           >
             {loadingSave ? (
               <Loader2 className="size-4 animate-spin" />

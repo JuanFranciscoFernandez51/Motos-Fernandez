@@ -145,7 +145,7 @@ export default async function FinanciacionDetallePage({
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div>
-          <p className="font-mono text-sm text-[#6B4F7A]">
+          <p className="font-mono text-sm text-[#7C3AED]">
             {formatNumero("FIN", financiacion.numero)}
           </p>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
@@ -165,7 +165,7 @@ export default async function FinanciacionDetallePage({
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-sm flex items-center gap-2">
-              <User className="size-4 text-[#6B4F7A]" />
+              <User className="size-4 text-[#7C3AED]" />
               Cliente
             </CardTitle>
           </CardHeader>
@@ -208,7 +208,7 @@ export default async function FinanciacionDetallePage({
             {financiacion.ordenCompra && (
               <Link
                 href={`/admin/ordenes-compra/${financiacion.ordenCompra.id}`}
-                className="text-xs text-[#6B4F7A] hover:underline flex items-center gap-1 mt-1"
+                className="text-xs text-[#7C3AED] hover:underline flex items-center gap-1 mt-1"
               >
                 <FileText className="size-3" />
                 Ver OC {formatNumero("OC", financiacion.ordenCompra.numero)}
@@ -319,7 +319,7 @@ export default async function FinanciacionDetallePage({
             </div>
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Saldo pendiente</p>
-              <p className="text-2xl font-bold text-[#6B4F7A]">
+              <p className="text-2xl font-bold text-[#7C3AED]">
                 {formatMoney(saldoPendiente, financiacion.moneda)}
               </p>
             </div>

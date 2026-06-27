@@ -151,20 +151,20 @@ export function VideoUpload({
         </div>
       ) : (
         <div
-          className="border-2 border-dashed border-gray-200 dark:border-neutral-800 rounded-lg p-6 hover:border-[#6B4F7A] cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 min-h-[120px]"
+          className="border-2 border-dashed border-gray-200 dark:border-neutral-800 rounded-lg p-6 hover:border-[#7C3AED] cursor-pointer transition-colors flex flex-col items-center justify-center gap-2 min-h-[120px]"
           onClick={() => inputRef.current?.click()}
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
         >
           {uploading ? (
             <>
-              <Loader2 className="h-6 w-6 text-[#6B4F7A] animate-spin" />
+              <Loader2 className="h-6 w-6 text-[#7C3AED] animate-spin" />
               <span className="text-sm text-gray-600">
                 Subiendo… {progress}%
               </span>
               <div className="w-full max-w-xs h-1.5 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-[#6B4F7A] transition-all"
+                  className="h-full bg-[#7C3AED] transition-all"
                   style={{ width: `${progress}%` }}
                 />
               </div>

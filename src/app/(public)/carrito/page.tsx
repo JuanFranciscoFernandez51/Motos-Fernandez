@@ -62,7 +62,7 @@ export default function CarritoPage() {
             </p>
             <Link
               href="/tienda"
-              className="inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#7C3AED] px-6 py-3 text-sm font-semibold text-white hover:bg-[#9D5CF0] transition-colors"
             >
               Ir a la tienda
               <ArrowRight className="size-4" />
@@ -104,7 +104,7 @@ export default function CarritoPage() {
                         <div>
                           <Link
                             href={`/tienda/${item.slug}`}
-                            className="text-sm font-semibold text-[#1A1A1A] dark:text-white hover:text-[#6B4F7A] line-clamp-2 transition-colors"
+                            className="text-sm font-semibold text-[#1A1A1A] dark:text-white hover:text-[#7C3AED] line-clamp-2 transition-colors"
                           >
                             {item.nombre}
                           </Link>
@@ -130,7 +130,7 @@ export default function CarritoPage() {
                             onClick={() =>
                               updateQuantity(item.id, item.talle, item.cantidad - 1)
                             }
-                            className="flex items-center justify-center size-7 rounded-md text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-neutral-900 hover:text-[#6B4F7A] transition-colors"
+                            className="flex items-center justify-center size-7 rounded-md text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-neutral-900 hover:text-[#7C3AED] transition-colors"
                             aria-label="Reducir cantidad"
                           >
                             <Minus className="size-3.5" />
@@ -142,7 +142,7 @@ export default function CarritoPage() {
                             onClick={() =>
                               updateQuantity(item.id, item.talle, item.cantidad + 1)
                             }
-                            className="flex items-center justify-center size-7 rounded-md text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-neutral-900 hover:text-[#6B4F7A] transition-colors"
+                            className="flex items-center justify-center size-7 rounded-md text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-neutral-900 hover:text-[#7C3AED] transition-colors"
                             aria-label="Aumentar cantidad"
                           >
                             <Plus className="size-3.5" />
@@ -151,7 +151,7 @@ export default function CarritoPage() {
 
                         {/* Price */}
                         <div className="text-right">
-                          <p className="text-base font-bold text-[#6B4F7A]">
+                          <p className="text-base font-bold text-[#7C3AED]">
                             {formatPrice(precioUnitario * item.cantidad)}
                           </p>
                           {item.cantidad > 1 && (
@@ -220,7 +220,7 @@ export default function CarritoPage() {
                         {formatPrice(totalPrice)}
                       </p>
                     )}
-                    <span className="text-xl font-bold text-[#6B4F7A]">
+                    <span className="text-xl font-bold text-[#7C3AED]">
                       {formatPrice(totalConDescuento)}
                     </span>
                   </div>
@@ -229,7 +229,7 @@ export default function CarritoPage() {
                 <Link
                   href="/checkout"
                   onClick={() => trackInitiateCheckout(totalConDescuento)}
-                  className="flex items-center justify-center gap-2 w-full rounded-lg bg-[#6B4F7A] px-6 py-3.5 text-base font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+                  className="flex items-center justify-center gap-2 w-full rounded-lg bg-[#7C3AED] px-6 py-3.5 text-base font-semibold text-white hover:bg-[#9D5CF0] transition-colors"
                 >
                   Ir al checkout
                   <ArrowRight className="size-5" />
@@ -237,7 +237,7 @@ export default function CarritoPage() {
 
                 <Link
                   href="/tienda"
-                  className="mt-3 flex items-center justify-center w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
+                  className="mt-3 flex items-center justify-center w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-[#7C3AED] hover:text-[#7C3AED] transition-colors"
                 >
                   Seguir comprando
                 </Link>

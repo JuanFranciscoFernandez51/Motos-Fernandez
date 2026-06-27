@@ -88,7 +88,7 @@ export default function NosotrosPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325] py-20 sm:py-24">
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
-        <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#7C3AED]/15 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C8C8D0]/[0.06] blur-3xl pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -113,7 +113,7 @@ export default function NosotrosPage() {
       <section className="relative py-20 sm:py-24 bg-white dark:bg-neutral-900 overflow-hidden">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#7C3AED] mb-3">
               Lo que nos define
             </p>
             <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
@@ -127,9 +127,9 @@ export default function NosotrosPage() {
             {VALUES.map((v) => (
               <article
                 key={v.title}
-                className="group h-full relative flex flex-col p-7 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
+                className="group h-full relative flex flex-col p-7 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#7C3AED]/30 hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1"
               >
-                <div className="flex items-center justify-center size-12 rounded-xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5 group-hover:bg-[#6B4F7A] group-hover:text-white transition-colors">
+                <div className="flex items-center justify-center size-12 rounded-xl bg-[#7C3AED]/10 text-[#7C3AED] mb-5 group-hover:bg-[#7C3AED] group-hover:text-white transition-colors">
                   <v.icon className="size-5" />
                 </div>
                 <h3 className="font-heading text-lg font-bold text-[#1A1A1A] dark:text-white mb-2">
@@ -148,7 +148,7 @@ export default function NosotrosPage() {
       <section className="relative py-20 sm:py-24 bg-[#F8F5FA] dark:bg-neutral-950 overflow-hidden">
         <div className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#7C3AED] mb-3">
               Nuestra trayectoria
             </p>
             <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
@@ -157,12 +157,12 @@ export default function NosotrosPage() {
           </div>
           <div className="relative">
             {/* Vertical line */}
-            <div className="absolute left-7 top-0 bottom-0 w-px bg-gradient-to-b from-[#6B4F7A]/30 via-[#6B4F7A]/20 to-transparent" />
+            <div className="absolute left-7 top-0 bottom-0 w-px bg-gradient-to-b from-[#7C3AED]/30 via-[#7C3AED]/20 to-transparent" />
 
             <div className="space-y-8">
               {TIMELINE.map((item) => (
                 <div key={item.year} className="relative flex gap-6 items-start">
-                  <div className="relative z-10 flex items-center justify-center size-14 rounded-2xl bg-gradient-to-br from-[#3D2649] to-[#6B4F7A] text-white text-xs font-bold shrink-0 shadow-violeta-soft">
+                  <div className="relative z-10 flex items-center justify-center size-14 rounded-2xl bg-gradient-to-br from-[#3D2649] to-[#7C3AED] text-white text-xs font-bold shrink-0 shadow-violeta-soft">
                     {item.year}
                   </div>
                   <div className="pt-2 flex-1 rounded-xl bg-white dark:bg-neutral-900 p-5 shadow-premium-sm">
@@ -185,10 +185,10 @@ export default function NosotrosPage() {
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
-              <div className="inline-flex items-center justify-center size-12 rounded-xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-5">
+              <div className="inline-flex items-center justify-center size-12 rounded-xl bg-[#7C3AED]/10 text-[#7C3AED] mb-5">
                 <MapPin className="size-6" />
               </div>
-              <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+              <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#7C3AED] mb-3">
                 Visitanos
               </p>
               <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
@@ -200,15 +200,15 @@ export default function NosotrosPage() {
               </p>
               <div className="mt-7 space-y-2.5 rounded-2xl bg-[#F8F5FA] dark:bg-neutral-950 p-5 border border-gray-100 dark:border-neutral-800">
                 <p className="text-sm text-[#1A1A1A] dark:text-white">
-                  <span className="font-bold text-[10px] uppercase tracking-wider text-[#6B4F7A] block mb-0.5">Dirección</span>
+                  <span className="font-bold text-[10px] uppercase tracking-wider text-[#7C3AED] block mb-0.5">Dirección</span>
                   {BUSINESS.address}
                 </p>
                 <p className="text-sm text-[#1A1A1A] dark:text-white">
-                  <span className="font-bold text-[10px] uppercase tracking-wider text-[#6B4F7A] block mb-0.5">Teléfono</span>
+                  <span className="font-bold text-[10px] uppercase tracking-wider text-[#7C3AED] block mb-0.5">Teléfono</span>
                   {BUSINESS.whatsappDisplay}
                 </p>
                 <p className="text-sm text-[#1A1A1A] dark:text-white">
-                  <span className="font-bold text-[10px] uppercase tracking-wider text-[#6B4F7A] block mb-0.5">Email</span>
+                  <span className="font-bold text-[10px] uppercase tracking-wider text-[#7C3AED] block mb-0.5">Email</span>
                   {BUSINESS.email}
                 </p>
               </div>
@@ -217,7 +217,7 @@ export default function NosotrosPage() {
                   href={BUSINESS.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-6 py-3 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-6 py-3 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
                 >
                   <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
                   <MapPin className="relative size-4" />
@@ -225,7 +225,7 @@ export default function NosotrosPage() {
                 </a>
                 <Link
                   href="/contacto"
-                  className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white dark:bg-neutral-900 px-6 py-3 text-sm font-bold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 hover:border-[#6B4F7A]/60 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#7C3AED]/30 bg-white dark:bg-neutral-900 px-6 py-3 text-sm font-bold text-[#7C3AED] hover:bg-[#7C3AED]/5 hover:border-[#7C3AED]/60 transition-colors"
                 >
                   Contactanos
                   <ArrowRight className="size-4" />
@@ -235,7 +235,7 @@ export default function NosotrosPage() {
             <div className="aspect-[4/3] rounded-2xl bg-[#F8F5FA] dark:bg-neutral-950 overflow-hidden shadow-premium-sm border border-gray-100 dark:border-neutral-800">
               <div className="flex items-center justify-center h-full">
                 <div className="text-center">
-                  <MapPin className="size-12 text-[#6B4F7A]/30 mx-auto mb-2" />
+                  <MapPin className="size-12 text-[#7C3AED]/30 mx-auto mb-2" />
                   <p className="text-sm text-gray-400">{BUSINESS.address}</p>
                 </div>
               </div>

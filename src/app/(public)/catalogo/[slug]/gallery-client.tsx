@@ -185,7 +185,7 @@ export function ModelGallery({
               onClick={() => setCurrent(i)}
               className={`relative aspect-[4/3] rounded-lg overflow-hidden border-2 transition-colors ${
                 i === current
-                  ? "border-[#6B4F7A]"
+                  ? "border-[#7C3AED]"
                   : "border-transparent hover:border-gray-300 dark:border-neutral-700"
               }`}
             >
@@ -231,8 +231,8 @@ export function ModelGallery({
                   }
                   className={`group relative h-11 w-16 rounded-lg overflow-hidden shadow-sm transition-all duration-200 ${
                     activo
-                      ? "ring-2 ring-[#6B4F7A] ring-offset-2 ring-offset-white dark:ring-offset-neutral-900 scale-[1.03]"
-                      : "ring-1 ring-black/10 dark:ring-white/10 hover:ring-[#6B4F7A]/50 hover:scale-[1.03]"
+                      ? "ring-2 ring-[#7C3AED] ring-offset-2 ring-offset-white dark:ring-offset-neutral-900 scale-[1.03]"
+                      : "ring-1 ring-black/10 dark:ring-white/10 hover:ring-[#7C3AED]/50 hover:scale-[1.03]"
                   } ${tieneFoto ? "cursor-pointer" : "cursor-default opacity-70"}`}
                 >
                   {/* Pintura base + brillo diagonal (efecto chapa) */}

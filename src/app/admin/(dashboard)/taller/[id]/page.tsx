@@ -137,12 +137,12 @@ export default async function EditarOTPage({
 
   return (
     <div className="space-y-6">
-      <Card className="border-[#6B4F7A]/30">
+      <Card className="border-[#7C3AED]/30">
         <CardContent className="p-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Orden de trabajo</p>
-              <p className="font-mono text-lg font-bold text-[#6B4F7A]">
+              <p className="font-mono text-lg font-bold text-[#7C3AED]">
                 {formatNumero("OT", ot.numero)}
               </p>
             </div>
@@ -153,7 +153,7 @@ export default async function EditarOTPage({
           <div className="flex items-center gap-2">
             <a
               href={`/api/pdf/orden-trabajo/${ot.id}`}
-              className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white px-3 py-1.5 text-sm font-medium"
+              className="inline-flex items-center gap-1.5 rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] text-white px-3 py-1.5 text-sm font-medium"
               title="Descargar PDF para imprimir o entregar al cliente"
             >
               <Download className="size-4" /> Descargar PDF

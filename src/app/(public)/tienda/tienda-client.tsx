@@ -61,7 +61,7 @@ export function TiendaClient({
               onClick={() => setCategoriaId("TODAS")}
               className={`shrink-0 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors ${
                 categoriaId === "TODAS"
-                  ? "bg-[#6B4F7A] text-white"
+                  ? "bg-[#7C3AED] text-white"
                   : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
               }`}
             >
@@ -75,7 +75,7 @@ export function TiendaClient({
                   onClick={() => setCategoriaId(cat.id)}
                   className={`shrink-0 rounded-lg px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-colors ${
                     categoriaId === cat.id
-                      ? "bg-[#6B4F7A] text-white"
+                      ? "bg-[#7C3AED] text-white"
                       : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800"
                   }`}
                 >
@@ -94,7 +94,7 @@ export function TiendaClient({
               placeholder="Buscar producto..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 pl-10 pr-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+              className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 pl-10 pr-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
             />
           </div>
         </div>
@@ -142,7 +142,7 @@ export function TiendaClient({
                 )}
               </div>
               <div className="p-3 sm:p-4 lg:p-5 flex flex-col flex-1">
-                <p className="text-[10px] sm:text-xs font-medium text-[#8B6F9A] uppercase tracking-wider truncate">
+                <p className="text-[10px] sm:text-xs font-medium text-[#9D5CF0] uppercase tracking-wider truncate">
                   {producto.categoria.nombre}
                 </p>
                 <h3 className="mt-0.5 sm:mt-1 text-sm sm:text-base font-semibold text-[#1A1A1A] dark:text-white line-clamp-2 flex-1">
@@ -152,7 +152,7 @@ export function TiendaClient({
                   <div className="min-w-0 flex-1">
                     {producto.precioOferta ? (
                       <div className="flex flex-col sm:flex-row sm:items-center gap-0 sm:gap-2">
-                        <span className="text-sm sm:text-base lg:text-lg font-bold text-[#6B4F7A] truncate">
+                        <span className="text-sm sm:text-base lg:text-lg font-bold text-[#7C3AED] truncate">
                           {formatPrice(producto.precioOferta)}
                         </span>
                         <span className="text-[11px] sm:text-sm text-gray-400 line-through truncate">
@@ -160,12 +160,12 @@ export function TiendaClient({
                         </span>
                       </div>
                     ) : (
-                      <span className="text-sm sm:text-base lg:text-lg font-bold text-[#6B4F7A] truncate block">
+                      <span className="text-sm sm:text-base lg:text-lg font-bold text-[#7C3AED] truncate block">
                         {formatPrice(producto.precio)}
                       </span>
                     )}
                   </div>
-                  <span className="hidden sm:inline text-xs font-medium text-[#6B4F7A] group-hover:text-[#9B59B6] transition-colors whitespace-nowrap">
+                  <span className="hidden sm:inline text-xs font-medium text-[#7C3AED] group-hover:text-[#9B59B6] transition-colors whitespace-nowrap">
                     Ver &rarr;
                   </span>
                 </div>

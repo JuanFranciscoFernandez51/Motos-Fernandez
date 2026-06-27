@@ -40,7 +40,7 @@ export default function Page() {
           />
         </div>
         <div className="mt-6 text-center">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-[#6B4F7A] hover:text-[#9B59B6]">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-[#7C3AED] hover:text-[#9B59B6]">
             <ArrowLeft className="size-4" />
             Volver al inicio
           </Link>

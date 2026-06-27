@@ -269,7 +269,7 @@ export function ModelosList({
             onClick={() => setFilter("todas")}
             className={`rounded-lg border p-3 text-left transition-colors ${
               filter === "todas"
-                ? "border-[#6B4F7A] bg-[#6B4F7A]/5"
+                ? "border-[#7C3AED] bg-[#7C3AED]/5"
                 : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
             }`}
           >
@@ -406,7 +406,7 @@ export function ModelosList({
                       key={modelo.id}
                       className={isPlaceholder ? "bg-orange-50/40 dark:bg-orange-950/30" : undefined}
                     >
-                      <TableCell className="font-mono text-xs uppercase text-[#6B4F7A] font-semibold">
+                      <TableCell className="font-mono text-xs uppercase text-[#7C3AED] font-semibold">
                         {modelo.codigo || modelo.slug}
                       </TableCell>
                       <TableCell>
@@ -545,7 +545,7 @@ export function ModelosList({
                               )
                             }
                             disabled={isPending}
-                            className="h-7 text-xs rounded border border-transparent bg-transparent hover:border-gray-200 dark:border-neutral-800 cursor-pointer font-semibold text-[#6B4F7A]"
+                            className="h-7 text-xs rounded border border-transparent bg-transparent hover:border-gray-200 dark:border-neutral-800 cursor-pointer font-semibold text-[#7C3AED]"
                           >
                             <option value="ARS">$</option>
                             <option value="USD">USD</option>
@@ -675,7 +675,7 @@ export function ModelosList({
                             }
                             disabled={republicandoId === modelo.id}
                             title="Republicar en Instagram + Facebook"
-                            className="text-[#6B4F7A] hover:text-[#8B6F9A] hover:bg-[#6B4F7A]/10"
+                            className="text-[#7C3AED] hover:text-[#9D5CF0] hover:bg-[#7C3AED]/10"
                           >
                             {republicandoId === modelo.id ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
@@ -785,7 +785,7 @@ export function ModelosList({
                       ) : (
                         filteredVendidas.map((modelo) => (
                           <TableRow key={modelo.id}>
-                            <TableCell className="font-mono text-xs uppercase text-[#6B4F7A] font-semibold">
+                            <TableCell className="font-mono text-xs uppercase text-[#7C3AED] font-semibold">
                               {modelo.codigo || modelo.slug}
                             </TableCell>
                             <TableCell>

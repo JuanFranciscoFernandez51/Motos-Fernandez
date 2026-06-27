@@ -114,7 +114,7 @@ export function OcrDocButton({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 rounded-md border border-[#6B4F7A]/40 bg-[#6B4F7A]/5 hover:bg-[#6B4F7A]/10 text-[#6B4F7A] px-2.5 py-1.5 text-xs font-medium"
+        className="inline-flex items-center gap-1.5 rounded-md border border-[#7C3AED]/40 bg-[#7C3AED]/5 hover:bg-[#7C3AED]/10 text-[#7C3AED] px-2.5 py-1.5 text-xs font-medium"
         title={`Subir foto de ${TIPO_LABEL[tipo]} y autocompletar los campos`}
       >
         <ScanText className="size-3.5" />
@@ -131,7 +131,7 @@ export function OcrDocButton({
           <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-xl w-full max-w-lg">
             <div className="flex items-center justify-between px-5 py-4 border-b">
               <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-                <ScanText className="size-4 text-[#6B4F7A]" />
+                <ScanText className="size-4 text-[#7C3AED]" />
                 Escanear {TIPO_LABEL[tipo]}
               </h2>
               <button
@@ -147,7 +147,7 @@ export function OcrDocButton({
             <div className="px-5 py-4 space-y-4">
               {!preview && (
                 <div
-                  className="border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded-lg p-8 text-center cursor-pointer hover:border-[#6B4F7A] transition-colors"
+                  className="border-2 border-dashed border-gray-300 dark:border-neutral-700 rounded-lg p-8 text-center cursor-pointer hover:border-[#7C3AED] transition-colors"
                   onClick={() => inputRef.current?.click()}
                 >
                   <ScanText className="size-10 mx-auto text-gray-300 mb-2" />
@@ -245,7 +245,7 @@ export function OcrDocButton({
                 <button
                   type="button"
                   onClick={confirmar}
-                  className="px-3 py-2 text-sm rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white inline-flex items-center gap-1.5"
+                  className="px-3 py-2 text-sm rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] text-white inline-flex items-center gap-1.5"
                 >
                   <Check className="size-4" />
                   Usar estos datos

@@ -38,7 +38,7 @@ export function BalanceCard({
     `${m === "USD" ? "USD " : "$ "}${n.toLocaleString("es-AR")}`
 
   return (
-    <div className="rounded-xl border-2 border-[#6B4F7A]/30 bg-gradient-to-r from-[#6B4F7A]/5 to-transparent p-4 sm:p-5">
+    <div className="rounded-xl border-2 border-[#7C3AED]/30 bg-gradient-to-r from-[#7C3AED]/5 to-transparent p-4 sm:p-5">
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div>
           <p className="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-semibold">

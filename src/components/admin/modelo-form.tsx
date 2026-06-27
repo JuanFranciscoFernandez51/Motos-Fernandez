@@ -425,7 +425,7 @@ export function ModeloForm({
           {extraActions}
           <Button
             type="submit"
-            className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+            className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
             disabled={isPending}
           >
             <Save className="h-4 w-4 mr-2" />
@@ -1004,7 +1004,7 @@ export function ModeloForm({
                     size="sm"
                     onClick={autocompletarSpecs}
                     disabled={loadingIA}
-                    className="border-[#6B4F7A]/40 text-[#6B4F7A] hover:bg-[#6B4F7A]/5"
+                    className="border-[#7C3AED]/40 text-[#7C3AED] hover:bg-[#7C3AED]/5"
                   >
                     {loadingIA ? (
                       <Loader2 className="h-4 w-4 mr-1 animate-spin" />

@@ -49,7 +49,7 @@ export default async function TallerPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Wrench className="size-6 text-[#6B4F7A]" />
+            <Wrench className="size-6 text-[#7C3AED]" />
             Taller
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -66,7 +66,7 @@ export default async function TallerPage() {
           </Button>
           <Button
             render={<Link href="/admin/taller/nueva" />}
-            className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+            className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
           >
             <Plus className="h-4 w-4 mr-2" />
             Nueva OT

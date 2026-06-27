@@ -183,7 +183,7 @@ export function CalendarioClient({
             </Button>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <CalendarPlus className="size-6 text-[#6B4F7A]" />
+            <CalendarPlus className="size-6 text-[#7C3AED]" />
             Calendario de publicaciones
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -193,7 +193,7 @@ export function CalendarioClient({
         </div>
         <Button
           onClick={() => setShowCreateModal(true)}
-          className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+          className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
           disabled={!featureEnabled}
           title={
             !featureEnabled
@@ -263,7 +263,7 @@ export function CalendarioClient({
         <div className="space-y-4">
           {grupos.map(([fechaKey, items]) => (
             <div key={fechaKey}>
-              <p className="text-xs font-bold uppercase tracking-wider text-[#6B4F7A] mb-2">
+              <p className="text-xs font-bold uppercase tracking-wider text-[#7C3AED] mb-2">
                 {fmtFechaCorta(items[0].scheduledAt)}
               </p>
               <div className="space-y-2">
@@ -501,7 +501,7 @@ function CreateModal({
                     key={m.id}
                     type="button"
                     onClick={() => setMotoId(m.id)}
-                    className={`w-full text-left p-2 flex items-center gap-2 border-b last:border-b-0 border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800 ${motoId === m.id ? "bg-[#6B4F7A]/10" : ""}`}
+                    className={`w-full text-left p-2 flex items-center gap-2 border-b last:border-b-0 border-gray-100 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800 ${motoId === m.id ? "bg-[#7C3AED]/10" : ""}`}
                   >
                     {m.fotoPrincipal ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -527,7 +527,7 @@ function CreateModal({
                       </p>
                     </div>
                     {motoId === m.id && (
-                      <CheckCircle2 className="size-4 text-[#6B4F7A] shrink-0" />
+                      <CheckCircle2 className="size-4 text-[#7C3AED] shrink-0" />
                     )}
                   </button>
                 ))
@@ -547,7 +547,7 @@ function CreateModal({
               <button
                 type="button"
                 onClick={() => setIg(!ig)}
-                className={`flex-1 rounded-lg border-2 p-3 transition-colors ${ig ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 dark:border-neutral-800"}`}
+                className={`flex-1 rounded-lg border-2 p-3 transition-colors ${ig ? "border-[#7C3AED] bg-[#7C3AED]/5" : "border-gray-200 dark:border-neutral-800"}`}
               >
                 <InstagramIcon className="size-5 mx-auto" />
                 <p className="text-xs font-semibold mt-1">Instagram</p>
@@ -555,7 +555,7 @@ function CreateModal({
               <button
                 type="button"
                 onClick={() => setFb(!fb)}
-                className={`flex-1 rounded-lg border-2 p-3 transition-colors ${fb ? "border-[#6B4F7A] bg-[#6B4F7A]/5" : "border-gray-200 dark:border-neutral-800"}`}
+                className={`flex-1 rounded-lg border-2 p-3 transition-colors ${fb ? "border-[#7C3AED] bg-[#7C3AED]/5" : "border-gray-200 dark:border-neutral-800"}`}
               >
                 <FacebookIcon className="size-5 mx-auto" />
                 <p className="text-xs font-semibold mt-1">Facebook</p>
@@ -570,7 +570,7 @@ function CreateModal({
               <button
                 type="button"
                 onClick={() => setMediaType("PHOTO_CAROUSEL")}
-                className={`rounded-lg border-2 p-2.5 text-xs transition-colors ${mediaType === "PHOTO_CAROUSEL" ? "border-[#6B4F7A] bg-[#6B4F7A]/5 font-semibold" : "border-gray-200 dark:border-neutral-800"}`}
+                className={`rounded-lg border-2 p-2.5 text-xs transition-colors ${mediaType === "PHOTO_CAROUSEL" ? "border-[#7C3AED] bg-[#7C3AED]/5 font-semibold" : "border-gray-200 dark:border-neutral-800"}`}
               >
                 📸 Fotos
                 <p className="text-[10px] text-gray-500 mt-0.5 font-normal">
@@ -580,7 +580,7 @@ function CreateModal({
               <button
                 type="button"
                 onClick={() => setMediaType("VIDEO")}
-                className={`rounded-lg border-2 p-2.5 text-xs transition-colors ${mediaType === "VIDEO" ? "border-[#6B4F7A] bg-[#6B4F7A]/5 font-semibold" : "border-gray-200 dark:border-neutral-800"}`}
+                className={`rounded-lg border-2 p-2.5 text-xs transition-colors ${mediaType === "VIDEO" ? "border-[#7C3AED] bg-[#7C3AED]/5 font-semibold" : "border-gray-200 dark:border-neutral-800"}`}
               >
                 🎬 Video feed
                 <p className="text-[10px] text-gray-500 mt-0.5 font-normal">
@@ -590,7 +590,7 @@ function CreateModal({
               <button
                 type="button"
                 onClick={() => setMediaType("REEL")}
-                className={`rounded-lg border-2 p-2.5 text-xs transition-colors ${mediaType === "REEL" ? "border-[#6B4F7A] bg-[#6B4F7A]/5 font-semibold" : "border-gray-200 dark:border-neutral-800"}`}
+                className={`rounded-lg border-2 p-2.5 text-xs transition-colors ${mediaType === "REEL" ? "border-[#7C3AED] bg-[#7C3AED]/5 font-semibold" : "border-gray-200 dark:border-neutral-800"}`}
               >
                 ⚡ Reel
                 <p className="text-[10px] text-gray-500 mt-0.5 font-normal">
@@ -659,7 +659,7 @@ function CreateModal({
             </Button>
             <Button
               type="submit"
-              className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+              className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
               disabled={submitting}
             >
               {submitting ? (

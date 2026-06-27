@@ -505,7 +505,7 @@ export default async function AdminDashboardPage() {
       label: "Ventas del mes",
       value: formatPrice(ventasMes._sum.total ?? 0),
       icon: DollarSign,
-      color: "text-[#6B4F7A] bg-purple-50 dark:bg-purple-950/30",
+      color: "text-[#7C3AED] bg-purple-50 dark:bg-purple-950/30",
     },
   ]
 
@@ -606,7 +606,7 @@ export default async function AdminDashboardPage() {
               <CardTitle className="text-lg">Pedidos recientes</CardTitle>
               <Link
                 href="/admin/pedidos"
-                className="text-sm text-[#6B4F7A] hover:underline"
+                className="text-sm text-[#7C3AED] hover:underline"
               >
                 Ver todos
               </Link>
@@ -662,7 +662,7 @@ export default async function AdminDashboardPage() {
               <CardTitle className="text-lg">Leads sin contactar</CardTitle>
               <Link
                 href="/admin/crm"
-                className="text-sm text-[#6B4F7A] hover:underline"
+                className="text-sm text-[#7C3AED] hover:underline"
               >
                 Ver todos
               </Link>
@@ -737,7 +737,7 @@ export default async function AdminDashboardPage() {
                         className="h-full rounded-md transition-all duration-500 flex items-center px-2"
                         style={{
                           width: pct > 0 ? `${Math.max(pct, 4)}%` : "0%",
-                          backgroundColor: "#6B4F7A",
+                          backgroundColor: "#7C3AED",
                         }}
                       >
                         {pct >= 25 && (
@@ -822,14 +822,14 @@ export default async function AdminDashboardPage() {
       {/* Visitas */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-          <Eye className="h-5 w-5 text-[#6B4F7A]" />
+          <Eye className="h-5 w-5 text-[#7C3AED]" />
           Visitas al sitio
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50 dark:bg-purple-950/30">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#7C3AED] bg-purple-50 dark:bg-purple-950/30">
                   <Eye className="h-5 w-5" />
                 </div>
                 <div>
@@ -842,7 +842,7 @@ export default async function AdminDashboardPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50 dark:bg-purple-950/30">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#7C3AED] bg-purple-50 dark:bg-purple-950/30">
                   <Eye className="h-5 w-5" />
                 </div>
                 <div>
@@ -855,7 +855,7 @@ export default async function AdminDashboardPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50 dark:bg-purple-950/30">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#7C3AED] bg-purple-50 dark:bg-purple-950/30">
                   <Eye className="h-5 w-5" />
                 </div>
                 <div>
@@ -892,7 +892,7 @@ export default async function AdminDashboardPage() {
                             className="h-full rounded-md flex items-center px-2"
                             style={{
                               width: `${Math.max(pct, 4)}%`,
-                              backgroundColor: "#6B4F7A",
+                              backgroundColor: "#7C3AED",
                             }}
                           >
                             {pct >= 30 && (
@@ -917,7 +917,7 @@ export default async function AdminDashboardPage() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-[#6B4F7A]" />
+                <MapPin className="h-4 w-4 text-[#7C3AED]" />
                 Ciudades de origen
               </CardTitle>
               <p className="text-xs text-gray-500 dark:text-gray-400">Últimos 7 días</p>
@@ -947,7 +947,7 @@ export default async function AdminDashboardPage() {
                     return (
                       <div key={c.ciudad} className="flex items-center justify-between">
                         <span className="text-sm text-gray-700 dark:text-gray-300">{nombreCiudad}</span>
-                        <Badge variant="secondary" className="text-xs bg-purple-50 dark:bg-purple-950/30 text-[#6B4F7A]">
+                        <Badge variant="secondary" className="text-xs bg-purple-50 dark:bg-purple-950/30 text-[#7C3AED]">
                           {c._count.ciudad} visita{c._count.ciudad !== 1 ? "s" : ""}
                         </Badge>
                       </div>
@@ -963,7 +963,7 @@ export default async function AdminDashboardPage() {
       {/* Métricas de conversión y engagement */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-[#6B4F7A]" />
+          <TrendingUp className="h-5 w-5 text-[#7C3AED]" />
           Conversión y engagement
         </h2>
 
@@ -1029,7 +1029,7 @@ export default async function AdminDashboardPage() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#6B4F7A] bg-purple-50 dark:bg-purple-950/30">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-[#7C3AED] bg-purple-50 dark:bg-purple-950/30">
                   <DollarSign className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
@@ -1073,7 +1073,7 @@ export default async function AdminDashboardPage() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
-                <ShoppingBag className="h-4 w-4 text-[#6B4F7A]" />
+                <ShoppingBag className="h-4 w-4 text-[#7C3AED]" />
                 Productos más vistos
               </CardTitle>
               <p className="text-xs text-gray-500 dark:text-gray-400">Top 5 - últimos 30 días</p>
@@ -1093,7 +1093,7 @@ export default async function AdminDashboardPage() {
                         </span>
                         <Link
                           href={p.pagina}
-                          className="w-32 text-xs text-gray-700 dark:text-gray-300 truncate shrink-0 hover:text-[#6B4F7A] hover:underline"
+                          className="w-32 text-xs text-gray-700 dark:text-gray-300 truncate shrink-0 hover:text-[#7C3AED] hover:underline"
                           title={nombreProducto.get(p.slug) || p.slug}
                         >
                           {nombreProducto.get(p.slug) || p.slug}
@@ -1103,7 +1103,7 @@ export default async function AdminDashboardPage() {
                             className="h-full rounded-md"
                             style={{
                               width: `${Math.max(pct, 4)}%`,
-                              backgroundColor: "#6B4F7A",
+                              backgroundColor: "#7C3AED",
                             }}
                           />
                         </div>
@@ -1122,7 +1122,7 @@ export default async function AdminDashboardPage() {
           <Card>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg flex items-center gap-2">
-                <Bike className="h-4 w-4 text-[#6B4F7A]" />
+                <Bike className="h-4 w-4 text-[#7C3AED]" />
                 Modelos más consultados
               </CardTitle>
               <p className="text-xs text-gray-500 dark:text-gray-400">Top 5 - últimos 30 días</p>
@@ -1142,7 +1142,7 @@ export default async function AdminDashboardPage() {
                         </span>
                         <Link
                           href={m.pagina}
-                          className="w-32 text-xs text-gray-700 dark:text-gray-300 truncate shrink-0 hover:text-[#6B4F7A] hover:underline"
+                          className="w-32 text-xs text-gray-700 dark:text-gray-300 truncate shrink-0 hover:text-[#7C3AED] hover:underline"
                           title={nombreModelo.get(m.slug) || m.slug}
                         >
                           {nombreModelo.get(m.slug) || m.slug}
@@ -1152,7 +1152,7 @@ export default async function AdminDashboardPage() {
                             className="h-full rounded-md"
                             style={{
                               width: `${Math.max(pct, 4)}%`,
-                              backgroundColor: "#6B4F7A",
+                              backgroundColor: "#7C3AED",
                             }}
                           />
                         </div>
@@ -1175,7 +1175,7 @@ export default async function AdminDashboardPage() {
       <div className="space-y-4 pt-4 border-t border-gray-100 dark:border-neutral-800">
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Bike className="size-5 text-[#6B4F7A]" />
+            <Bike className="size-5 text-[#7C3AED]" />
             Métricas del negocio
           </h2>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
@@ -1326,7 +1326,7 @@ export default async function AdminDashboardPage() {
                         <div className="flex-1 h-2.5 bg-gray-100 dark:bg-neutral-800 rounded-full overflow-hidden">
                           <div
                             className="h-full rounded-full"
-                            style={{ width: `${Math.max(pct, 4)}%`, backgroundColor: "#6B4F7A" }}
+                            style={{ width: `${Math.max(pct, 4)}%`, backgroundColor: "#7C3AED" }}
                           />
                         </div>
                         <span className="w-36 text-right text-xs text-gray-700 dark:text-gray-300 shrink-0">

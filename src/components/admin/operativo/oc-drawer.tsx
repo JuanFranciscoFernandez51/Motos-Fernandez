@@ -413,7 +413,7 @@ export function OCDrawer({
               {modelo.precio && (
                 <div className="text-right shrink-0">
                   <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Precio listado</p>
-                  <p className="font-bold text-[#6B4F7A]">
+                  <p className="font-bold text-[#7C3AED]">
                     {modelo.moneda === "USD" ? "USD " : "$ "}
                     {modelo.precio.toLocaleString("es-AR")}
                   </p>

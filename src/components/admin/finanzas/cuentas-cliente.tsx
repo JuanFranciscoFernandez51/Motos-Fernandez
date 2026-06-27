@@ -164,7 +164,7 @@ function NuevaCuentaDialog({ onClose, onSaved }: { onClose: () => void; onSaved:
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={guardar} disabled={saving} className="bg-[#5BB5C2] hover:bg-[#3A8B96]">{saving ? "Guardando…" : "Crear"}</Button>
+          <Button onClick={guardar} disabled={saving} className="bg-[#9D5CF0] hover:bg-[#7C3AED]">{saving ? "Guardando…" : "Crear"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -54,7 +54,7 @@ export default function ContactoPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325] py-16 sm:py-20">
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
-        <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#7C3AED]/15 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C8C8D0]/[0.06] blur-3xl pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -115,7 +115,7 @@ export default function ContactoPage() {
                       onChange={(e) =>
                         setForm((p) => ({ ...p, nombre: e.target.value }))
                       }
-                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
                       placeholder="Tu nombre"
                     />
                   </div>
@@ -136,7 +136,7 @@ export default function ContactoPage() {
                         onChange={(e) =>
                           setForm((p) => ({ ...p, email: e.target.value }))
                         }
-                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
                         placeholder="tu@email.com"
                       />
                     </div>
@@ -154,7 +154,7 @@ export default function ContactoPage() {
                         onChange={(e) =>
                           setForm((p) => ({ ...p, telefono: e.target.value }))
                         }
-                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
                         placeholder="291 000-0000"
                       />
                     </div>
@@ -175,7 +175,7 @@ export default function ContactoPage() {
                       onChange={(e) =>
                         setForm((p) => ({ ...p, mensaje: e.target.value }))
                       }
-                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 resize-none"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20 resize-none"
                       placeholder="Contanos tu consulta..."
                     />
                   </div>
@@ -190,7 +190,7 @@ export default function ContactoPage() {
                   <button
                     type="submit"
                     disabled={status === "loading"}
-                    className="inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-7 py-3 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#7C3AED] px-7 py-3 text-sm font-semibold text-white hover:bg-[#9D5CF0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {status === "loading" ? (
                       <>
@@ -216,7 +216,7 @@ export default function ContactoPage() {
                 </h2>
                 <div className="space-y-5">
                   <div className="flex items-start gap-3">
-                    <MapPin className="size-5 text-[#6B4F7A] mt-0.5 shrink-0" />
+                    <MapPin className="size-5 text-[#7C3AED] mt-0.5 shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-[#1A1A1A] dark:text-white">
                         Direccion
@@ -225,33 +225,33 @@ export default function ContactoPage() {
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Phone className="size-5 text-[#6B4F7A] mt-0.5 shrink-0" />
+                    <Phone className="size-5 text-[#7C3AED] mt-0.5 shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-[#1A1A1A] dark:text-white">
                         Telefono
                       </p>
                       <a
                         href={`tel:${BUSINESS.phone}`}
-                        className="text-sm text-gray-500 dark:text-gray-400 hover:text-[#6B4F7A] transition-colors"
+                        className="text-sm text-gray-500 dark:text-gray-400 hover:text-[#7C3AED] transition-colors"
                       >
                         {BUSINESS.whatsappDisplay}
                       </a>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <Mail className="size-5 text-[#6B4F7A] mt-0.5 shrink-0" />
+                    <Mail className="size-5 text-[#7C3AED] mt-0.5 shrink-0" />
                     <div>
                       <p className="text-sm font-medium text-[#1A1A1A] dark:text-white">Email</p>
                       <a
                         href={`mailto:${BUSINESS.email}`}
-                        className="text-sm text-gray-500 dark:text-gray-400 hover:text-[#6B4F7A] transition-colors"
+                        className="text-sm text-gray-500 dark:text-gray-400 hover:text-[#7C3AED] transition-colors"
                       >
                         {BUSINESS.email}
                       </a>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <svg className="size-5 text-[#6B4F7A] mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+                    <svg className="size-5 text-[#7C3AED] mt-0.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                     <div>
                       <p className="text-sm font-medium text-[#1A1A1A] dark:text-white">
                         Instagram
@@ -260,7 +260,7 @@ export default function ContactoPage() {
                         href={BUSINESS.instagramUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-gray-500 dark:text-gray-400 hover:text-[#6B4F7A] transition-colors"
+                        className="text-sm text-gray-500 dark:text-gray-400 hover:text-[#7C3AED] transition-colors"
                       >
                         {BUSINESS.instagram}
                       </a>
@@ -272,7 +272,7 @@ export default function ContactoPage() {
               {/* Hours */}
               <div className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-[#F0F0F0] dark:bg-neutral-950 p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Clock className="size-5 text-[#6B4F7A]" />
+                  <Clock className="size-5 text-[#7C3AED]" />
                   <h3 className="text-sm font-bold text-[#1A1A1A] dark:text-white">Horarios</h3>
                 </div>
                 <div className="space-y-2 text-sm">
@@ -329,7 +329,7 @@ export default function ContactoPage() {
                   <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{BUSINESS.address}</p>
                   <a
                     href="/ubicacion"
-                    className="text-xs font-semibold text-[#6B4F7A] hover:underline shrink-0"
+                    className="text-xs font-semibold text-[#7C3AED] hover:underline shrink-0"
                   >
                     Ver más →
                   </a>

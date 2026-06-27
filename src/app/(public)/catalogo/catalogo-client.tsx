@@ -232,7 +232,7 @@ export function CatalogoClient({
         <button
           type="button"
           onClick={() => setSidebarOpen((v) => !v)}
-          className="lg:hidden mb-4 inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-4 py-2.5 text-sm font-semibold text-white"
+          className="lg:hidden mb-4 inline-flex items-center gap-2 rounded-lg bg-[#7C3AED] px-4 py-2.5 text-sm font-semibold text-white"
         >
           <SlidersHorizontal className="size-4" />
           Filtros{totalFiltrosActivos > 0 ? ` (${totalFiltrosActivos})` : ""}
@@ -252,8 +252,8 @@ export function CatalogoClient({
               onClick={() => setCategoria("TODAS")}
               className={`rounded-full px-4 py-2 text-xs sm:text-sm font-semibold transition-all ${
                 categoria === "TODAS"
-                  ? "bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] text-white shadow-violeta-soft"
-                  : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#6B4F7A]/40"
+                  ? "bg-gradient-to-r from-[#3D2649] to-[#7C3AED] text-white shadow-violeta-soft"
+                  : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#7C3AED]/40"
               }`}
             >
               Todas
@@ -264,8 +264,8 @@ export function CatalogoClient({
                 onClick={() => setCategoria(cat.value)}
                 className={`rounded-full px-4 py-2 text-xs sm:text-sm font-semibold transition-all ${
                   categoria === cat.value
-                    ? "bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] text-white shadow-violeta-soft"
-                    : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#6B4F7A]/40"
+                    ? "bg-gradient-to-r from-[#3D2649] to-[#7C3AED] text-white shadow-violeta-soft"
+                    : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#7C3AED]/40"
                 }`}
               >
                 {cat.label}
@@ -295,8 +295,8 @@ export function CatalogoClient({
                     ? "bg-emerald-600 text-white shadow"
                     : opt.value === "USADA"
                     ? "bg-orange-500 text-white shadow"
-                    : "bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] text-white shadow-violeta-soft"
-                  : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#6B4F7A]/40"
+                    : "bg-gradient-to-r from-[#3D2649] to-[#7C3AED] text-white shadow-violeta-soft"
+                  : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#7C3AED]/40"
               }`}
             >
               {opt.label}
@@ -315,7 +315,7 @@ export function CatalogoClient({
               placeholder="Buscar modelo, marca..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2.5 pl-10 pr-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+              className="w-full rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2.5 pl-10 pr-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
             />
           </div>
         </div>
@@ -331,8 +331,8 @@ export function CatalogoClient({
               onClick={() => setMarca("TODAS")}
               className={`text-left rounded-md px-3 py-1.5 text-sm transition-colors ${
                 marca === "TODAS"
-                  ? "bg-[#6B4F7A] text-white font-semibold"
-                  : "text-[#4E4B48] dark:text-gray-300 hover:bg-[#6B4F7A]/10"
+                  ? "bg-[#7C3AED] text-white font-semibold"
+                  : "text-[#4E4B48] dark:text-gray-300 hover:bg-[#7C3AED]/10"
               }`}
             >
               Todas las marcas
@@ -344,8 +344,8 @@ export function CatalogoClient({
                 onClick={() => setMarca(b)}
                 className={`text-left rounded-md px-3 py-1.5 text-sm transition-colors ${
                   marca === b
-                    ? "bg-[#6B4F7A] text-white font-semibold"
-                    : "text-[#4E4B48] dark:text-gray-300 hover:bg-[#6B4F7A]/10"
+                    ? "bg-[#7C3AED] text-white font-semibold"
+                    : "text-[#4E4B48] dark:text-gray-300 hover:bg-[#7C3AED]/10"
                 }`}
               >
                 {b}
@@ -369,7 +369,7 @@ export function CatalogoClient({
                 const v = e.target.value === "" ? precioMinCatalogo : Number(e.target.value)
                 if (!Number.isNaN(v)) setPrecioMin(v)
               }}
-              className="w-full min-w-0 rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2 px-3 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+              className="w-full min-w-0 rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2 px-3 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
             />
             <span className="text-gray-400 shrink-0">–</span>
             <input
@@ -381,7 +381,7 @@ export function CatalogoClient({
                 const v = e.target.value === "" ? precioMaxCatalogo : Number(e.target.value)
                 if (!Number.isNaN(v)) setPrecioMax(v)
               }}
-              className="w-full min-w-0 rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2 px-3 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+              className="w-full min-w-0 rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2 px-3 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
             />
           </div>
           <p className="mt-1.5 text-[11px] text-gray-400">
@@ -404,7 +404,7 @@ export function CatalogoClient({
                 const v = e.target.value === "" ? 0 : Number(e.target.value)
                 if (!Number.isNaN(v)) setCilindradaMin(v)
               }}
-              className="w-full min-w-0 rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2 px-3 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+              className="w-full min-w-0 rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2 px-3 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
             />
             <span className="text-gray-400 shrink-0">–</span>
             <input
@@ -416,7 +416,7 @@ export function CatalogoClient({
                 const v = e.target.value === "" ? cilindradaMaxCatalogo : Number(e.target.value)
                 if (!Number.isNaN(v)) setCilindradaMax(v)
               }}
-              className="w-full min-w-0 rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2 px-3 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+              className="w-full min-w-0 rounded-lg border border-gray-200 dark:border-neutral-700 bg-transparent py-2 px-3 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
             />
           </div>
           <p className="mt-1.5 text-[11px] text-gray-400">
@@ -433,7 +433,7 @@ export function CatalogoClient({
                 aria-pressed={soloDestacados}
                 className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   soloDestacados
-                    ? "bg-[#6B4F7A] text-white hover:bg-[#8B6F9A]"
+                    ? "bg-[#7C3AED] text-white hover:bg-[#9D5CF0]"
                     : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800"
                 }`}
               >
@@ -446,7 +446,7 @@ export function CatalogoClient({
                 aria-pressed={soloConFinanciacion}
                 className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                   soloConFinanciacion
-                    ? "bg-[#6B4F7A] text-white hover:bg-[#8B6F9A]"
+                    ? "bg-[#7C3AED] text-white hover:bg-[#9D5CF0]"
                     : "bg-white dark:bg-neutral-900 text-[#4E4B48] dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800"
                 }`}
               >
@@ -467,7 +467,7 @@ export function CatalogoClient({
               <button
                 type="button"
                 onClick={limpiarTodo}
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-[#6B4F7A] hover:underline"
+                className="inline-flex items-center gap-1.5 text-xs font-medium text-[#7C3AED] hover:underline"
               >
                 <X className="size-3.5" /> Limpiar todo
               </button>
@@ -549,7 +549,7 @@ export function CatalogoClient({
                         usadas no va badge de tenencia (más limpio). */}
                     {(model.condicion || "0KM") === "0KM" && (
                       <span
-                        className="rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg bg-[#6B4F7A] truncate max-w-full"
+                        className="rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg bg-[#7C3AED] truncate max-w-full"
                         title="Consultanos disponibilidad y entrega de esta unidad 0KM"
                       >
                         CONSULTAR DISPONIBILIDAD
@@ -599,7 +599,7 @@ export function CatalogoClient({
                         </p>
                       )}
                     <div className="flex items-center justify-between gap-2">
-                      <p className="moto-precio text-base sm:text-lg lg:text-xl font-bold text-[#6B4F7A] dark:text-[#C39BD3]">
+                      <p className="moto-precio text-base sm:text-lg lg:text-xl font-bold text-[#7C3AED] dark:text-[#C39BD3]">
                         {model.precio
                           ? (model.moneda || "ARS") === "USD"
                             ? `USD ${model.precio.toLocaleString("es-AR")}`
@@ -608,7 +608,7 @@ export function CatalogoClient({
                       </p>
                       <span
                         aria-hidden
-                        className="hidden sm:inline-flex text-[#C8C8D0] group-hover:text-[#6B4F7A] group-hover:translate-x-0.5 transition-all shrink-0"
+                        className="hidden sm:inline-flex text-[#C8C8D0] group-hover:text-[#7C3AED] group-hover:translate-x-0.5 transition-all shrink-0"
                       >
                         &rarr;
                       </span>
@@ -666,7 +666,7 @@ export function CatalogoClient({
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40">
           <Link
             href="/comparador"
-            className="flex items-center gap-2 rounded-full bg-[#6B4F7A] px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#8B6F9A] transition-all"
+            className="flex items-center gap-2 rounded-full bg-[#7C3AED] px-5 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#9D5CF0] transition-all"
           >
             <Scale className="size-4" />
             Comparar ({compareItems.length} {compareItems.length === 1 ? "modelo" : "modelos"}) &rarr;

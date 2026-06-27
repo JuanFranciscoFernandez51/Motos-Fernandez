@@ -52,7 +52,7 @@ export default async function ProveedoresPage() {
         </div>
         <Button
           render={<Link href="/admin/proveedores/nuevo" />}
-          className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+          className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
         >
           <Plus className="h-4 w-4 mr-2" />
           Nuevo proveedor
@@ -128,7 +128,7 @@ export default async function ProveedoresPage() {
                             href={p.sitio}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-[#6B4F7A] hover:underline"
+                            className="flex items-center gap-1 text-[#7C3AED] hover:underline"
                           >
                             <ExternalLink className="size-3" /> Sitio
                           </a>

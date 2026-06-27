@@ -108,8 +108,8 @@ export function CalculadoraCuotas({
   return (
     <div className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5">
       <div className="flex items-center gap-2 mb-4">
-        <div className="size-9 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center">
-          <Calculator className="size-4 text-[#6B4F7A]" />
+        <div className="size-9 rounded-full bg-[#7C3AED]/10 flex items-center justify-center">
+          <Calculator className="size-4 text-[#7C3AED]" />
         </div>
         <div>
           <h3 className="text-sm font-bold text-[#1A1A1A] dark:text-white">
@@ -130,8 +130,8 @@ export function CalculadoraCuotas({
             onClick={() => cambiarModalidad(mod.id)}
             className={`rounded-lg border px-3 py-2 text-xs font-semibold transition-colors text-left ${
               modalidadId === mod.id
-                ? "border-[#6B4F7A] bg-[#6B4F7A] text-white"
-                : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 hover:border-[#6B4F7A]"
+                ? "border-[#7C3AED] bg-[#7C3AED] text-white"
+                : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-700 dark:text-gray-300 hover:border-[#7C3AED]"
             }`}
           >
             <span className="block leading-tight">{mod.label}</span>
@@ -154,7 +154,7 @@ export function CalculadoraCuotas({
           <label className="text-xs font-medium text-gray-600 dark:text-gray-300">
             Anticipo
           </label>
-          <span className="text-xs font-bold text-[#6B4F7A]">
+          <span className="text-xs font-bold text-[#7C3AED]">
             {anticipoPctValido}% · {formatear(calculo.anticipo)}
           </span>
         </div>
@@ -165,7 +165,7 @@ export function CalculadoraCuotas({
           step={1}
           value={anticipoPctValido}
           onChange={(e) => setAnticipoPct(Number(e.target.value))}
-          className="w-full accent-[#6B4F7A]"
+          className="w-full accent-[#7C3AED]"
         />
         <div className="flex justify-between text-[10px] text-gray-400">
           <span>{modalidad.anticipoMinPct}%</span>
@@ -200,8 +200,8 @@ export function CalculadoraCuotas({
               onClick={() => setPlazo(p)}
               className={`rounded-lg border px-2 py-2 text-xs font-semibold transition-colors ${
                 plazoValido === p
-                  ? "border-[#6B4F7A] bg-[#6B4F7A] text-white"
-                  : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A]"
+                  ? "border-[#7C3AED] bg-[#7C3AED] text-white"
+                  : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:border-[#7C3AED]"
               }`}
             >
               {p}
@@ -211,14 +211,14 @@ export function CalculadoraCuotas({
       </div>
 
       {/* Resultado */}
-      <div className="mt-5 rounded-lg bg-[#6B4F7A]/5 border border-[#6B4F7A]/10 p-4">
+      <div className="mt-5 rounded-lg bg-[#7C3AED]/5 border border-[#7C3AED]/10 p-4">
         <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">
           Cuota mensual ({modalidad.label.toLowerCase()})
         </p>
-        <p className="mt-1 text-2xl font-extrabold text-[#6B4F7A]">
+        <p className="mt-1 text-2xl font-extrabold text-[#7C3AED]">
           {formatear(calculo.cuota)}
         </p>
-        <div className="mt-3 pt-3 border-t border-[#6B4F7A]/10 grid grid-cols-2 gap-2 text-xs">
+        <div className="mt-3 pt-3 border-t border-[#7C3AED]/10 grid grid-cols-2 gap-2 text-xs">
           <div>
             <p className="text-gray-500 dark:text-gray-400">A financiar</p>
             <p className="font-semibold text-[#1A1A1A] dark:text-white">

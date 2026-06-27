@@ -132,7 +132,7 @@ export function PresupuestoForm({
           </Button>
           <h1 className="text-2xl font-bold">{initialData?.id ? "Editar presupuesto" : "Nuevo presupuesto"}</h1>
         </div>
-        <Button type="submit" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]" disabled={isPending}>
+        <Button type="submit" className="bg-[#7C3AED] hover:bg-[#9D5CF0]" disabled={isPending}>
           {isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
           {isPending ? "Guardando..." : "Guardar"}
         </Button>
@@ -355,7 +355,7 @@ export function PresupuestoForm({
             </div>
             <div className="flex justify-between border-t pt-3">
               <span className="text-lg font-bold">TOTAL</span>
-              <span className="text-lg font-bold text-[#6B4F7A] font-mono">
+              <span className="text-lg font-bold text-[#7C3AED] font-mono">
                 ${total.toLocaleString("es-AR")}
               </span>
             </div>

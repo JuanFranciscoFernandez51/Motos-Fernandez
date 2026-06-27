@@ -147,7 +147,7 @@ export function NuevoTurnoModal({
         <div className="flex items-center justify-between px-5 py-4 border-b">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full bg-[#F0EBF4] flex items-center justify-center">
-              <Plus className="h-4 w-4 text-[#6B4F7A]" />
+              <Plus className="h-4 w-4 text-[#7C3AED]" />
             </div>
             <h2 className="text-base font-semibold text-gray-900 dark:text-gray-100">
               Nuevo turno
@@ -174,7 +174,7 @@ export function NuevoTurnoModal({
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               placeholder="Juan Pérez"
-              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] focus:border-[#7C3AED] outline-none"
               autoFocus
             />
           </div>
@@ -189,7 +189,7 @@ export function NuevoTurnoModal({
                 value={dni}
                 onChange={(e) => setDni(e.target.value)}
                 placeholder="20.123.456"
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] focus:border-[#7C3AED] outline-none"
               />
             </div>
             <div>
@@ -201,7 +201,7 @@ export function NuevoTurnoModal({
                 value={telefono}
                 onChange={(e) => setTelefono(e.target.value)}
                 placeholder="291..."
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] focus:border-[#7C3AED] outline-none"
               />
             </div>
           </div>
@@ -215,7 +215,7 @@ export function NuevoTurnoModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="cliente@ejemplo.com"
-              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] focus:border-[#7C3AED] outline-none"
             />
           </div>
 
@@ -228,7 +228,7 @@ export function NuevoTurnoModal({
               value={modeloMoto}
               onChange={(e) => setModeloMoto(e.target.value)}
               placeholder="Vespa Primavera 150"
-              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] focus:border-[#7C3AED] outline-none"
             />
           </div>
 
@@ -239,7 +239,7 @@ export function NuevoTurnoModal({
             <select
               value={tipoServicio}
               onChange={(e) => setTipoServicio(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] focus:border-[#7C3AED] outline-none"
             >
               {SERVICIOS_TALLER.map((s) => (
                 <option key={s} value={s}>
@@ -257,7 +257,7 @@ export function NuevoTurnoModal({
               type="date"
               value={fechaPreferida}
               onChange={(e) => setFechaPreferida(e.target.value)}
-              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] focus:border-[#7C3AED] outline-none"
             />
           </div>
 
@@ -270,7 +270,7 @@ export function NuevoTurnoModal({
               onChange={(e) => setComentarios(e.target.value)}
               rows={2}
               placeholder="Detalles, ruidos, problemas reportados..."
-              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] focus:border-[#7C3AED] outline-none"
             />
           </div>
 
@@ -295,7 +295,7 @@ export function NuevoTurnoModal({
             type="button"
             onClick={handleCrear}
             disabled={loading}
-            className="px-3 py-2 text-sm rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white inline-flex items-center gap-1.5 disabled:opacity-50"
+            className="px-3 py-2 text-sm rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] text-white inline-flex items-center gap-1.5 disabled:opacity-50"
           >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />

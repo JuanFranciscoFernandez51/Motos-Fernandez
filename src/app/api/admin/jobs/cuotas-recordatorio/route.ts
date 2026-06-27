@@ -206,7 +206,7 @@ export async function GET(request: Request) {
             : ""
         const html = `
           <div style="font-family:system-ui,-apple-system,sans-serif;color:#1a1a1a;max-width:640px;margin:auto;padding:20px">
-            <h2 style="color:#6B4F7A;margin:0 0 4px">Cuotas — recordatorio diario</h2>
+            <h2 style="color:#7C3AED;margin:0 0 4px">Cuotas — recordatorio diario</h2>
             <p style="color:#666;margin:0 0 16px;font-size:13px">
               ${BUSINESS.name} — ${new Date().toLocaleDateString("es-AR", { dateStyle: "long" })}
             </p>

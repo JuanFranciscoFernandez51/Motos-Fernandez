@@ -92,7 +92,7 @@ export async function GET(request: Request) {
           </tr></thead>
           <tbody>${filas}</tbody>
         </table>
-        <p style="margin-top:20px"><a href="https://www.motosfernandez.com.ar/admin/contador" style="background:#6B4F7A;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none">Ver en el panel</a></p>
+        <p style="margin-top:20px"><a href="https://www.motosfernandez.com.ar/admin/contador" style="background:#7C3AED;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none">Ver en el panel</a></p>
         <p style="color:#999;font-size:12px;margin-top:16px">Motos Fernández — recordatorio automático. Marcá cada uno como pagado en el panel.</p>
       </div>`
 

@@ -41,7 +41,7 @@ export default async function CuponesPage() {
             {cupones.length} cupon(es)
           </p>
         </div>
-        <Button render={<Link href="/admin/cupones/nuevo" />} className="bg-[#6B4F7A] hover:bg-[#8B6F9A]">
+        <Button render={<Link href="/admin/cupones/nuevo" />} className="bg-[#7C3AED] hover:bg-[#9D5CF0]">
           <Plus className="h-4 w-4 mr-2" />
           Nuevo cupon
         </Button>
@@ -87,7 +87,7 @@ export default async function CuponesPage() {
                       {cupon.descripcion || "-"}
                     </TableCell>
                     <TableCell>
-                      <span className="font-semibold text-[#6B4F7A]">
+                      <span className="font-semibold text-[#7C3AED]">
                         {cupon.porcentaje}%
                       </span>
                     </TableCell>

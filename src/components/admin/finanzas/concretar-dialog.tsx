@@ -43,7 +43,7 @@ export function ConcretarDialog({
         </div>
         <DialogFooter className="flex-col sm:flex-row gap-2">
           <Button variant="outline" onClick={() => onConfirm(false, null)}>Solo marcar (sin movimiento)</Button>
-          <Button onClick={() => onConfirm(true, cuentaId)} disabled={!cuentaId} className="bg-[#5BB5C2] hover:bg-[#3A8B96]">
+          <Button onClick={() => onConfirm(true, cuentaId)} disabled={!cuentaId} className="bg-[#9D5CF0] hover:bg-[#7C3AED]">
             Registrar movimiento y marcar
           </Button>
         </DialogFooter>

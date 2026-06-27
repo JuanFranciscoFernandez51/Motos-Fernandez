@@ -35,7 +35,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
       <TrackVisita pagina={`/tienda/${producto.slug}`} />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
-        <Link href="/tienda" className="inline-flex items-center gap-2 text-sm text-[#6B4F7A] hover:text-[#9B59B6] mb-6">
+        <Link href="/tienda" className="inline-flex items-center gap-2 text-sm text-[#7C3AED] hover:text-[#9B59B6] mb-6">
           <ArrowLeft className="size-4" />
           Volver a la tienda
         </Link>
@@ -78,7 +78,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
           {/* Info */}
           <div>
             <div className="flex items-start justify-between gap-4">
-              <p className="text-sm font-medium text-[#8B6F9A] uppercase tracking-wider">
+              <p className="text-sm font-medium text-[#9D5CF0] uppercase tracking-wider">
                 {producto.categoria.nombre}
               </p>
               <ShareButton
@@ -99,7 +99,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
             <div className="mt-4">
               {producto.precioOferta ? (
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl font-bold text-[#6B4F7A]">
+                  <span className="text-3xl font-bold text-[#7C3AED]">
                     {formatPrice(producto.precioOferta)}
                   </span>
                   <span className="text-xl text-gray-400 line-through">
@@ -110,7 +110,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
                   </span>
                 </div>
               ) : (
-                <span className="text-3xl font-bold text-[#6B4F7A]">
+                <span className="text-3xl font-bold text-[#7C3AED]">
                   {formatPrice(producto.precio)}
                 </span>
               )}
@@ -133,7 +133,7 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
                         key={talle}
                         className={`flex items-center justify-center rounded-lg border-2 px-4 py-2 text-sm font-medium transition-colors ${
                           stock > 0
-                            ? "border-[#6B4F7A] text-[#6B4F7A] bg-[#6B4F7A]/5"
+                            ? "border-[#7C3AED] text-[#7C3AED] bg-[#7C3AED]/5"
                             : "border-gray-200 dark:border-neutral-800 text-gray-300 line-through"
                         }`}
                       >
@@ -238,13 +238,13 @@ export default async function ProductoDetailPage({ params }: { params: Promise<{
                     )}
                   </div>
                   <div className="p-4 flex flex-col flex-1">
-                    <p className="text-xs font-medium text-[#8B6F9A] uppercase tracking-wider">
+                    <p className="text-xs font-medium text-[#9D5CF0] uppercase tracking-wider">
                       {prod.categoria.nombre}
                     </p>
                     <h3 className="mt-1 text-sm font-semibold text-[#1A1A1A] dark:text-white line-clamp-2 flex-1">
                       {prod.nombre}
                     </h3>
-                    <p className="mt-2 text-base font-bold text-[#6B4F7A]">
+                    <p className="mt-2 text-base font-bold text-[#7C3AED]">
                       {prod.precioOferta ? formatPrice(prod.precioOferta) : formatPrice(prod.precio)}
                     </p>
                   </div>

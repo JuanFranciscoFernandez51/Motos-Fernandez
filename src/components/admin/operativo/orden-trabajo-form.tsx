@@ -174,7 +174,7 @@ export function OrdenTrabajoForm({
             {initialData?.id ? "Editar orden de trabajo" : "Nueva orden de trabajo"}
           </h1>
         </div>
-        <Button type="submit" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]" disabled={isPending}>
+        <Button type="submit" className="bg-[#7C3AED] hover:bg-[#9D5CF0]" disabled={isPending}>
           {isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
           {isPending ? "Guardando..." : "Guardar"}
         </Button>
@@ -262,7 +262,7 @@ export function OrdenTrabajoForm({
                   </option>
                 ))}
               </select>
-              <Link href="/admin/taller/tipos-servicio" className="text-xs text-[#6B4F7A] hover:underline mt-1 inline-block">
+              <Link href="/admin/taller/tipos-servicio" className="text-xs text-[#7C3AED] hover:underline mt-1 inline-block">
                 + Gestionar tipos de servicio
               </Link>
             </div>
@@ -417,7 +417,7 @@ export function OrdenTrabajoForm({
                 </div>
                 <div className="flex justify-between font-bold text-base pt-2 border-t">
                   <span>Total:</span>
-                  <span className="text-[#6B4F7A]">{formatMoney(totales.total)}</span>
+                  <span className="text-[#7C3AED]">{formatMoney(totales.total)}</span>
                 </div>
               </div>
               <div className="space-y-2 text-sm">

@@ -29,7 +29,7 @@ export function FinanzasNav() {
             className={cn(
               "inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors",
               active
-                ? "bg-[#7ECAD6]/15 text-[#3A8B96]"
+                ? "bg-[#C4A5F7]/15 text-[#7C3AED]"
                 : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
             )}
           >

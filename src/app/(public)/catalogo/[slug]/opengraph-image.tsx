@@ -38,7 +38,7 @@ export default async function OpengraphImage({ params }: { params: Promise<{ slu
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            background: "linear-gradient(135deg, #1A1A1A 0%, #6B4F7A 100%)",
+            background: "linear-gradient(135deg, #1A1A1A 0%, #7C3AED 100%)",
             color: "white",
             fontSize: 72,
             fontWeight: 800,
@@ -228,7 +228,7 @@ export default async function OpengraphImage({ params }: { params: Promise<{ slu
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                color: "#6B4F7A",
+                color: "#7C3AED",
                 fontSize: 120,
                 fontWeight: 900,
               }}

@@ -143,7 +143,7 @@ export function EditStockModal({
                 type="text"
                 value={marca}
                 onChange={(e) => setMarca(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#6B4F7A] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#7C3AED] outline-none"
               />
             </div>
             <div>
@@ -154,7 +154,7 @@ export function EditStockModal({
                 type="text"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#6B4F7A] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#7C3AED] outline-none"
               />
             </div>
           </div>
@@ -169,7 +169,7 @@ export function EditStockModal({
                 value={anio}
                 onChange={(e) => setAnio(e.target.value)}
                 placeholder="2024"
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#6B4F7A] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#7C3AED] outline-none"
               />
             </div>
             <div>
@@ -181,7 +181,7 @@ export function EditStockModal({
                 value={kilometros}
                 onChange={(e) => setKilometros(e.target.value)}
                 placeholder="0"
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#6B4F7A] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#7C3AED] outline-none"
               />
             </div>
           </div>
@@ -195,7 +195,7 @@ export function EditStockModal({
                 type="text"
                 value={chasis}
                 onChange={(e) => setChasis(e.target.value.toUpperCase())}
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#6B4F7A] outline-none font-mono"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#7C3AED] outline-none font-mono"
               />
             </div>
             <div>
@@ -206,7 +206,7 @@ export function EditStockModal({
                 type="text"
                 value={motor}
                 onChange={(e) => setMotor(e.target.value.toUpperCase())}
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#6B4F7A] outline-none font-mono"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#7C3AED] outline-none font-mono"
               />
             </div>
             <div>
@@ -218,7 +218,7 @@ export function EditStockModal({
                 value={patente}
                 onChange={(e) => setPatente(e.target.value.toUpperCase())}
                 placeholder="AB123CD"
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#6B4F7A] outline-none font-mono"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#7C3AED] outline-none font-mono"
               />
             </div>
           </div>
@@ -233,7 +233,7 @@ export function EditStockModal({
                 value={precio}
                 onChange={(e) => setPrecio(e.target.value)}
                 placeholder="A completar"
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#6B4F7A] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#7C3AED] outline-none"
               />
               {moto.valorToma != null && (
                 <p className="mt-1 text-[11px] text-purple-500 dark:text-purple-300">
@@ -249,7 +249,7 @@ export function EditStockModal({
               <select
                 value={moneda}
                 onChange={(e) => setMoneda(e.target.value as "ARS" | "USD")}
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#6B4F7A] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 focus:ring-2 focus:ring-[#7C3AED] outline-none"
               >
                 <option value="ARS">ARS</option>
                 <option value="USD">USD</option>
@@ -290,7 +290,7 @@ export function EditStockModal({
             type="button"
             onClick={handleGuardar}
             disabled={saving}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white px-3 py-2 text-sm font-medium disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] text-white px-3 py-2 text-sm font-medium disabled:opacity-50"
           >
             {saving ? (
               <Loader2 className="size-4 animate-spin" />

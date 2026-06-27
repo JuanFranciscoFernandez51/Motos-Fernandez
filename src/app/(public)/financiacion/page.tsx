@@ -62,7 +62,7 @@ export default function FinanciacionPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325] py-16 sm:py-20 lg:py-24">
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
-        <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#7C3AED]/15 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C8C8D0]/[0.08] blur-3xl pointer-events-none" />
         <Watermark position="right" size="xl" opacity="subtle" className="hidden md:block" />
 
@@ -86,7 +86,7 @@ export default function FinanciacionPage() {
               href={getWhatsAppUrl(WHATSAPP_MESSAGES.general)}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-7 py-3.5 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-7 py-3.5 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
             >
               <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
               <MessageCircle className="relative size-5" />
@@ -107,7 +107,7 @@ export default function FinanciacionPage() {
       <section className="relative py-20 sm:py-24 bg-white dark:bg-neutral-900 overflow-hidden">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#7C3AED] mb-3">
               Beneficios
             </p>
             <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
@@ -121,9 +121,9 @@ export default function FinanciacionPage() {
             {BENEFICIOS.map((b) => (
               <div
                 key={b}
-                className="group flex items-center gap-4 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 hover:border-[#6B4F7A]/30 hover:shadow-premium-md transition-all duration-300"
+                className="group flex items-center gap-4 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 hover:border-[#7C3AED]/30 hover:shadow-premium-md transition-all duration-300"
               >
-                <div className="flex items-center justify-center size-11 rounded-xl bg-[#6B4F7A]/10 text-[#6B4F7A] shrink-0 group-hover:bg-[#6B4F7A] group-hover:text-white transition-colors">
+                <div className="flex items-center justify-center size-11 rounded-xl bg-[#7C3AED]/10 text-[#7C3AED] shrink-0 group-hover:bg-[#7C3AED] group-hover:text-white transition-colors">
                   <CheckCircle className="size-5" />
                 </div>
                 <span className="text-sm font-bold text-[#1A1A1A] dark:text-white">{b}</span>
@@ -137,7 +137,7 @@ export default function FinanciacionPage() {
       <section className="relative py-20 sm:py-24 bg-[#F8F5FA] dark:bg-neutral-950 overflow-hidden">
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-14">
-            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#7C3AED] mb-3">
               Tres pasos simples
             </p>
             <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
@@ -164,9 +164,9 @@ export default function FinanciacionPage() {
             ].map((item) => (
               <article
                 key={item.step}
-                className="group relative rounded-2xl bg-white dark:bg-neutral-900 p-8 text-center border border-gray-100 dark:border-neutral-800 hover:border-[#6B4F7A]/30 hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden"
+                className="group relative rounded-2xl bg-white dark:bg-neutral-900 p-8 text-center border border-gray-100 dark:border-neutral-800 hover:border-[#7C3AED]/30 hover:shadow-premium-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden"
               >
-                <span className="block font-display text-7xl font-bold text-[#6B4F7A]/10 leading-none mb-2">
+                <span className="block font-display text-7xl font-bold text-[#7C3AED]/10 leading-none mb-2">
                   {item.step}
                 </span>
                 <h3 className="font-heading text-xl font-bold text-[#1A1A1A] dark:text-white">
@@ -185,10 +185,10 @@ export default function FinanciacionPage() {
       <section className="relative py-20 sm:py-24 bg-white dark:bg-neutral-900 overflow-hidden">
         <div className="relative mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center justify-center size-12 rounded-xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-4">
+            <div className="inline-flex items-center justify-center size-12 rounded-xl bg-[#7C3AED]/10 text-[#7C3AED] mb-4">
               <HelpCircle className="size-6" />
             </div>
-            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-3">
+            <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#7C3AED] mb-3">
               Resolvé tus dudas
             </p>
             <h2 className="font-heading text-4xl sm:text-5xl font-bold text-[#1A1A1A] dark:text-white leading-tight">
@@ -199,11 +199,11 @@ export default function FinanciacionPage() {
             {FAQ.map((item, i) => (
               <details
                 key={i}
-                className="group rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden hover:border-[#6B4F7A]/30 transition-colors"
+                className="group rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden hover:border-[#7C3AED]/30 transition-colors"
               >
                 <summary className="flex items-center justify-between cursor-pointer p-5 text-sm font-bold text-[#1A1A1A] dark:text-white hover:bg-[#F8F5FA] dark:hover:bg-neutral-900 transition-colors">
                   <span>{item.q}</span>
-                  <ChevronDown className="size-4 text-[#6B4F7A] group-open:rotate-180 transition-transform shrink-0 ml-3" />
+                  <ChevronDown className="size-4 text-[#7C3AED] group-open:rotate-180 transition-transform shrink-0 ml-3" />
                 </summary>
                 <div className="px-5 pb-5 border-t border-gray-100 dark:border-neutral-800 pt-4">
                   <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
@@ -244,7 +244,7 @@ export default function FinanciacionPage() {
             </a>
             <Link
               href="/catalogo"
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-7 py-3.5 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-7 py-3.5 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
             >
               <span aria-hidden className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent" />
               <span className="relative">Ver catálogo</span>

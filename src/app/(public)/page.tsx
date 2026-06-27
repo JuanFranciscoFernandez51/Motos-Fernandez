@@ -61,7 +61,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
 
         {/* Glows decorativos */}
-        <div className="absolute -top-48 -right-48 size-[700px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -top-48 -right-48 size-[700px] rounded-full bg-[#7C3AED]/15 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-32 -left-20 size-[420px] rounded-full bg-[#9B59B6]/10 blur-3xl pointer-events-none" />
         <div className="absolute top-1/3 left-1/2 size-[300px] rounded-full bg-[#C8C8D0]/[0.06] blur-3xl pointer-events-none" />
 
@@ -137,7 +137,7 @@ export default async function HomePage() {
                 {/* CTA principal — dorado premium */}
                 <Link
                   href="/catalogo"
-                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-7 sm:px-8 py-4 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                  className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-7 sm:px-8 py-4 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
                 >
                   {/* Shine effect on hover */}
                   <span
@@ -258,7 +258,7 @@ export default async function HomePage() {
             <div className="text-center mb-14">
               <SectionEyebrow centered>Catálogo destacado</SectionEyebrow>
               <h2 className="mt-5 font-heading text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white text-balance leading-tight">
-                Modelos que <span className="text-[#6B4F7A]">enamoran</span>
+                Modelos que <span className="text-[#7C3AED]">enamoran</span>
               </h2>
               <p className="mt-4 text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
                 Una selección curada de los modelos más elegidos por nuestros clientes.
@@ -308,14 +308,14 @@ export default async function HomePage() {
                 <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <Link
                     href="/0km"
-                    className="group inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#8B6F9A] transition-all shadow-premium-sm hover:shadow-premium-md"
+                    className="group inline-flex items-center gap-2 rounded-xl bg-[#7C3AED] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#9D5CF0] transition-all shadow-premium-sm hover:shadow-premium-md"
                   >
                     Ver catálogo 0KM
                     <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <Link
                     href="/disponibles"
-                    className="group inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-bold text-[#6B4F7A] hover:bg-[#6B4F7A] hover:text-white hover:border-[#6B4F7A] transition-all shadow-premium-sm hover:shadow-premium-md"
+                    className="group inline-flex items-center gap-2 rounded-xl border border-[#7C3AED]/30 bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-bold text-[#7C3AED] hover:bg-[#7C3AED] hover:text-white hover:border-[#7C3AED] transition-all shadow-premium-sm hover:shadow-premium-md"
                   >
                     Ver usadas / disponibles
                     <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
@@ -331,7 +331,7 @@ export default async function HomePage() {
               </p>
               <Link
                 href="/contacto"
-                className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#6B4F7A] hover:text-[#9B59B6] transition-colors"
+                className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#7C3AED] hover:text-[#9B59B6] transition-colors"
               >
                 Consultános directamente
                 <ArrowRight className="size-4" />
@@ -348,7 +348,7 @@ export default async function HomePage() {
       <section className="relative py-20 bg-white dark:bg-neutral-900 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <AnimatedSection animation="scale">
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#4A3556] via-[#6B4F7A] to-[#8B6F9A] p-8 sm:p-12 lg:p-16 shadow-premium-xl">
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#4A3556] via-[#7C3AED] to-[#9D5CF0] p-8 sm:p-12 lg:p-16 shadow-premium-xl">
               {/* Patterns and glows */}
               <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.08]" />
               <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
@@ -385,7 +385,7 @@ export default async function HomePage() {
                 <div className="shrink-0">
                   <Link
                     href="/recomendador"
-                    className="group inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-8 py-4 text-base font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:scale-105"
+                    className="group inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-8 py-4 text-base font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:scale-105"
                   >
                     Hacer quiz
                     <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
@@ -407,7 +407,7 @@ export default async function HomePage() {
               <div className="text-center mb-14">
                 <SectionEyebrow centered>Testimonios reales</SectionEyebrow>
                 <h2 className="mt-5 font-heading text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white text-balance leading-tight">
-                  Lo que dicen <span className="text-[#6B4F7A]">nuestros clientes</span>
+                  Lo que dicen <span className="text-[#7C3AED]">nuestros clientes</span>
                 </h2>
                 <GoldDivider variant="ornament" className="mt-8" />
               </div>
@@ -462,7 +462,7 @@ export default async function HomePage() {
                             className="size-12 rounded-full object-cover shrink-0 ring-2 ring-[#C8C8D0]/20"
                           />
                         ) : (
-                          <div className="size-12 rounded-full bg-gradient-to-br from-[#6B4F7A] to-[#8B6F9A] flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-[#C8C8D0]/20">
+                          <div className="size-12 rounded-full bg-gradient-to-br from-[#7C3AED] to-[#9D5CF0] flex items-center justify-center text-white font-bold text-sm shrink-0 ring-2 ring-[#C8C8D0]/20">
                             {t.nombre
                               .split(" ")
                               .map((n) => n[0])
@@ -501,7 +501,7 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-10" />
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
         <div className="absolute -top-20 -right-20 size-80 rounded-full bg-[#C8C8D0]/10 blur-3xl" />
-        <div className="absolute -bottom-20 -left-20 size-80 rounded-full bg-[#6B4F7A]/20 blur-3xl" />
+        <div className="absolute -bottom-20 -left-20 size-80 rounded-full bg-[#7C3AED]/20 blur-3xl" />
 
         <Watermark position="right" size="2xl" opacity="subtle" />
 
@@ -528,7 +528,7 @@ export default async function HomePage() {
               <div className="flex flex-col sm:flex-row gap-4 shrink-0">
                 <Link
                   href="/financiacion"
-                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-7 py-4 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-7 py-4 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
                 >
                   <span
                     aria-hidden
@@ -558,7 +558,7 @@ export default async function HomePage() {
             <AnimatedSection animation="slide-right" className="flex-1 text-center lg:text-left">
               <SectionEyebrow>Servicio exclusivo</SectionEyebrow>
               <h2 className="mt-5 font-heading text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white leading-tight text-balance">
-                ¿Querés vender <span className="text-[#6B4F7A]">tu moto</span>?
+                ¿Querés vender <span className="text-[#7C3AED]">tu moto</span>?
               </h2>
               <p className="mt-5 text-gray-600 dark:text-gray-300 leading-relaxed max-w-lg mx-auto lg:mx-0 text-base sm:text-lg">
                 Dejala en nuestro local y nosotros nos encargamos de todo. La exhibimos,
@@ -571,7 +571,7 @@ export default async function HomePage() {
               <div className="flex flex-wrap gap-4 justify-center lg:justify-start">
                 <Link
                   href="/consigna"
-                  className="group inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#8B6F9A] transition-colors shadow-violeta-glow hover:shadow-2xl"
+                  className="group inline-flex items-center gap-2 rounded-xl bg-[#7C3AED] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#9D5CF0] transition-colors shadow-violeta-glow hover:shadow-2xl"
                 >
                   Conocer más
                   <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
@@ -580,7 +580,7 @@ export default async function HomePage() {
                   href={`https://wa.me/5492915788671?text=${encodeURIComponent("Hola! Quiero consultar sobre el servicio de consigna de motos.")}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-bold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 hover:border-[#6B4F7A]/60 transition-colors"
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#7C3AED]/30 bg-white dark:bg-neutral-900 px-7 py-3.5 text-sm font-bold text-[#7C3AED] hover:bg-[#7C3AED]/5 hover:border-[#7C3AED]/60 transition-colors"
                 >
                   Consultar por WhatsApp
                 </a>
@@ -596,9 +596,9 @@ export default async function HomePage() {
               ].map((item, i) => (
                 <div
                   key={i}
-                  className="group relative rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 hover:border-[#6B4F7A]/30 hover:shadow-premium-md transition-all duration-300"
+                  className="group relative rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-5 hover:border-[#7C3AED]/30 hover:shadow-premium-md transition-all duration-300"
                 >
-                  <div className="flex items-center justify-center size-11 rounded-xl bg-[#6B4F7A]/10 text-[#6B4F7A] mb-3 group-hover:bg-[#6B4F7A] group-hover:text-white transition-colors">
+                  <div className="flex items-center justify-center size-11 rounded-xl bg-[#7C3AED]/10 text-[#7C3AED] mb-3 group-hover:bg-[#7C3AED] group-hover:text-white transition-colors">
                     <item.Icon className="size-5" />
                   </div>
                   <h3 className="text-sm font-bold text-[#1A1A1A] dark:text-white">
@@ -621,7 +621,7 @@ export default async function HomePage() {
             <div className="text-center mb-16">
               <SectionEyebrow centered>Desde {BUSINESS.yearFounded}</SectionEyebrow>
               <h2 className="mt-5 font-heading text-4xl sm:text-5xl lg:text-6xl text-[#1A1A1A] dark:text-white text-balance leading-tight">
-                ¿Por qué <span className="text-[#6B4F7A]">elegirnos</span>?
+                ¿Por qué <span className="text-[#7C3AED]">elegirnos</span>?
               </h2>
               <p className="mt-4 text-base text-gray-500 dark:text-gray-400 max-w-xl mx-auto">
                 Más de {BUSINESS.yearsInBusiness} años de experiencia nos respaldan, con
@@ -679,7 +679,7 @@ export default async function HomePage() {
                     className="absolute bottom-0 right-0 w-px h-6 bg-gradient-to-t from-[#C8C8D0] to-transparent opacity-0 group-hover:opacity-100 transition-opacity"
                   />
 
-                  <div className="flex items-center justify-center size-14 rounded-2xl bg-[#6B4F7A]/10 text-[#6B4F7A] dark:text-[#C39BD3] mb-5 group-hover:bg-gradient-to-br group-hover:from-[#6B4F7A] group-hover:to-[#8B6F9A] group-hover:text-white transition-all duration-300 group-hover:scale-110">
+                  <div className="flex items-center justify-center size-14 rounded-2xl bg-[#7C3AED]/10 text-[#7C3AED] dark:text-[#C39BD3] mb-5 group-hover:bg-gradient-to-br group-hover:from-[#7C3AED] group-hover:to-[#9D5CF0] group-hover:text-white transition-all duration-300 group-hover:scale-110">
                     <card.icon className="size-7" />
                   </div>
                   <h3 className="font-heading text-lg font-semibold text-[#1A1A1A] dark:text-white mb-2 leading-tight">
@@ -703,7 +703,7 @@ export default async function HomePage() {
               <div>
                 <SectionEyebrow>Blog</SectionEyebrow>
                 <h2 className="mt-4 font-heading text-4xl sm:text-5xl text-[#1A1A1A] dark:text-white leading-tight">
-                  Noticias <span className="text-[#6B4F7A]">recientes</span>
+                  Noticias <span className="text-[#7C3AED]">recientes</span>
                 </h2>
                 <p className="mt-2 text-gray-500 dark:text-gray-400">
                   Novedades, lanzamientos y consejos del mundo moto
@@ -711,7 +711,7 @@ export default async function HomePage() {
               </div>
               <Link
                 href="/noticias"
-                className="hidden sm:inline-flex items-center gap-1.5 text-sm font-bold text-[#6B4F7A] hover:text-[#C8C8D0] transition-colors"
+                className="hidden sm:inline-flex items-center gap-1.5 text-sm font-bold text-[#7C3AED] hover:text-[#C8C8D0] transition-colors"
               >
                 Ver todas
                 <ArrowRight className="size-4" />
@@ -742,12 +742,12 @@ export default async function HomePage() {
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           />
                         ) : (
-                          <div className="flex items-center justify-center h-full bg-gradient-to-br from-[#6B4F7A]/10 to-[#9B59B6]/10">
-                            <span className="font-heading text-3xl text-[#6B4F7A]/40">MF</span>
+                          <div className="flex items-center justify-center h-full bg-gradient-to-br from-[#7C3AED]/10 to-[#9B59B6]/10">
+                            <span className="font-heading text-3xl text-[#7C3AED]/40">MF</span>
                           </div>
                         )}
                         {noticia.categoria && (
-                          <div className="absolute top-3 left-3 rounded-full bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-3 py-1 text-[10px] font-bold text-white uppercase tracking-wide shadow-lg">
+                          <div className="absolute top-3 left-3 rounded-full bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-3 py-1 text-[10px] font-bold text-white uppercase tracking-wide shadow-lg">
                             {noticia.categoria}
                           </div>
                         )}
@@ -760,7 +760,7 @@ export default async function HomePage() {
                             year: "numeric",
                           })}
                         </p>
-                        <h3 className="font-heading text-lg font-semibold text-[#1A1A1A] dark:text-white leading-snug line-clamp-2 group-hover:text-[#6B4F7A] transition-colors">
+                        <h3 className="font-heading text-lg font-semibold text-[#1A1A1A] dark:text-white leading-snug line-clamp-2 group-hover:text-[#7C3AED] transition-colors">
                           {noticia.titulo}
                         </h3>
                         {noticia.resumen && (
@@ -779,7 +779,7 @@ export default async function HomePage() {
               <div className="mt-10 text-center sm:hidden">
                 <Link
                   href="/noticias"
-                  className="inline-flex items-center gap-1.5 text-sm font-bold text-[#6B4F7A] hover:text-[#C8C8D0] transition-colors"
+                  className="inline-flex items-center gap-1.5 text-sm font-bold text-[#7C3AED] hover:text-[#C8C8D0] transition-colors"
                 >
                   Ver todas las noticias
                   <ArrowRight className="size-4" />
@@ -793,7 +793,7 @@ export default async function HomePage() {
               </p>
               <Link
                 href="/noticias"
-                className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#6B4F7A] hover:text-[#9B59B6] transition-colors"
+                className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#7C3AED] hover:text-[#9B59B6] transition-colors"
               >
                 Ir a noticias <ArrowRight className="size-4" />
               </Link>
@@ -822,7 +822,7 @@ export default async function HomePage() {
             <div className="mt-10 flex flex-wrap justify-center gap-4">
               <Link
                 href="/contacto"
-                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-8 py-4 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-8 py-4 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
               >
                 <span
                   aria-hidden

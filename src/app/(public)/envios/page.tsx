@@ -13,7 +13,7 @@ export default function Page() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325] py-14 sm:py-16">
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
-        <div className="absolute -top-32 -right-32 size-[400px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -top-32 -right-32 size-[400px] rounded-full bg-[#7C3AED]/15 blur-3xl pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#C8C8D0] mb-3">
@@ -51,7 +51,7 @@ export default function Page() {
           />
         </div>
         <div className="mt-6 text-center">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-[#6B4F7A] hover:text-[#9B59B6]">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-[#7C3AED] hover:text-[#9B59B6]">
             <ArrowLeft className="size-4" />
             Volver al inicio
           </Link>

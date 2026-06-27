@@ -11,8 +11,8 @@ export default async function FinanzasPage() {
   const [pos, cyc] = await Promise.all([getPosicionTotal(), getResumenCuentasCheques()])
 
   const kpis = [
-    { label: "Posición total", valor: pos.posicionTotal, icon: TrendingUp, color: "#3A8B96", hint: "Saldos + por cobrar + stock" },
-    { label: "En cuentas (ARS)", valor: pos.totalEnCuentasARS, icon: Wallet, color: "#5BB5C2", hint: "Plata disponible en cuentas" },
+    { label: "Posición total", valor: pos.posicionTotal, icon: TrendingUp, color: "#7C3AED", hint: "Saldos + por cobrar + stock" },
+    { label: "En cuentas (ARS)", valor: pos.totalEnCuentasARS, icon: Wallet, color: "#9D5CF0", hint: "Plata disponible en cuentas" },
     { label: "Por cobrar", valor: pos.porCobrar.total, icon: Clock, color: "#CE9F33", hint: `${pos.porCobrar.cantidad} cuentas pendientes` },
     { label: "Valor de stock", valor: pos.valorStock.valorTotal, icon: Package, color: "#7C8B9A", hint: `${pos.valorStock.unidadesMotos} motos + ${pos.valorStock.unidadesProductos} prod.` },
   ]
@@ -55,7 +55,7 @@ export default async function FinanzasPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">Saldos por cuenta (ARS)</CardTitle>
-            <Link href="/admin/finanzas/cuentas" className="text-xs text-[#3A8B96] hover:underline inline-flex items-center gap-1">
+            <Link href="/admin/finanzas/cuentas" className="text-xs text-[#7C3AED] hover:underline inline-flex items-center gap-1">
               Editar <ArrowRight className="h-3 w-3" />
             </Link>
           </CardHeader>
@@ -70,7 +70,7 @@ export default async function FinanzasPage() {
             ))}
             <div className="flex items-center justify-between pt-2 font-bold">
               <span>Total en cuentas</span>
-              <span className="tabular-nums" style={{ color: "#3A8B96" }}>{formatMoney(pos.totalEnCuentasARS)}</span>
+              <span className="tabular-nums" style={{ color: "#7C3AED" }}>{formatMoney(pos.totalEnCuentasARS)}</span>
             </div>
           </CardContent>
         </Card>
@@ -132,7 +132,7 @@ export default async function FinanzasPage() {
             ))}
             <div className="flex items-center justify-between pt-2 font-bold">
               <span>Total stock</span>
-              <span className="tabular-nums" style={{ color: "#3A8B96" }}>{formatMoney(pos.valorStock.valorTotal)}</span>
+              <span className="tabular-nums" style={{ color: "#7C3AED" }}>{formatMoney(pos.valorStock.valorTotal)}</span>
             </div>
           </CardContent>
         </Card>
@@ -140,7 +140,7 @@ export default async function FinanzasPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">Cuentas y cheques</CardTitle>
-            <Link href="/admin/finanzas/cuentas-y-cheques" className="text-xs text-[#3A8B96] hover:underline inline-flex items-center gap-1">Ver todo <ArrowRight className="h-3 w-3" /></Link>
+            <Link href="/admin/finanzas/cuentas-y-cheques" className="text-xs text-[#7C3AED] hover:underline inline-flex items-center gap-1">Ver todo <ArrowRight className="h-3 w-3" /></Link>
           </CardHeader>
           <CardContent className="space-y-1 text-sm">
             <div className="flex items-center justify-between py-1.5 border-b border-gray-100">

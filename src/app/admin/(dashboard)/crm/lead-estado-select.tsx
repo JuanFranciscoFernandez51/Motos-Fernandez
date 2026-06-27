@@ -61,7 +61,7 @@ export function LeadEstadoSelect({
         disabled={estado === "guardando"}
         onChange={(e) => onChange(e.target.value)}
         title="Cambiar sin entrar al lead"
-        className={`text-xs rounded-full border-0 pl-2.5 pr-6 py-1 font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#6B4F7A] appearance-none bg-no-repeat ${color} ${estado === "guardando" ? "opacity-60" : ""}`}
+        className={`text-xs rounded-full border-0 pl-2.5 pr-6 py-1 font-medium cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#7C3AED] appearance-none bg-no-repeat ${color} ${estado === "guardando" ? "opacity-60" : ""}`}
         style={{
           backgroundImage:
             "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E\")",

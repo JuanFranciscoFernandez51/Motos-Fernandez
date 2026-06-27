@@ -69,7 +69,7 @@ export default async function MetaAdminPage({
             <Button
               variant="outline"
               render={<Link href="/admin/meta/calendario" />}
-              className="border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10"
+              className="border-[#7C3AED] text-[#7C3AED] hover:bg-[#7C3AED]/10"
             >
               <Sparkles className="size-4 mr-1.5" />
               Calendario
@@ -78,7 +78,7 @@ export default async function MetaAdminPage({
               <Button
                 variant="outline"
                 render={<Link href="/admin/meta/ads" />}
-                className="border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10"
+                className="border-[#7C3AED] text-[#7C3AED] hover:bg-[#7C3AED]/10"
               >
                 <Megaphone className="size-4 mr-1.5" />
                 Meta Ads
@@ -181,16 +181,16 @@ export default async function MetaAdminPage({
           tanto, el módulo de Calendario sí funciona con los scopes
           orgánicos que ya tenés. */}
       {status.connected && !status.adsReady && (
-        <Card className="border-[#6B4F7A]/40 bg-gradient-to-r from-[#6B4F7A]/10 via-purple-50/40 to-transparent dark:from-[#6B4F7A]/20 dark:via-purple-950/20">
+        <Card className="border-[#7C3AED]/40 bg-gradient-to-r from-[#7C3AED]/10 via-purple-50/40 to-transparent dark:from-[#7C3AED]/20 dark:via-purple-950/20">
           <CardContent className="p-4 sm:p-5">
             <div className="flex items-start gap-3 flex-wrap">
-              <div className="size-10 rounded-full bg-[#6B4F7A]/15 flex items-center justify-center shrink-0">
-                <Sparkles className="size-5 text-[#6B4F7A]" />
+              <div className="size-10 rounded-full bg-[#7C3AED]/15 flex items-center justify-center shrink-0">
+                <Sparkles className="size-5 text-[#7C3AED]" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-[#1A1A1A] dark:text-white flex items-center gap-2 flex-wrap">
                   Meta Ads — habilitación pendiente
-                  <Badge variant="secondary" className="bg-[#6B4F7A]/15 text-[#6B4F7A] text-[10px] font-bold">
+                  <Badge variant="secondary" className="bg-[#7C3AED]/15 text-[#7C3AED] text-[10px] font-bold">
                     BLOQUEADO POR META
                   </Badge>
                 </p>
@@ -208,7 +208,7 @@ export default async function MetaAdminPage({
                     href="https://developers.facebook.com/apps/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-[#6B4F7A] underline font-medium"
+                    className="text-[#7C3AED] underline font-medium"
                   >
                     developers.facebook.com/apps
                   </a>{" "}
@@ -229,7 +229,7 @@ export default async function MetaAdminPage({
                 size="sm"
                 variant="outline"
                 render={<a href="/api/admin/meta/connect?withAds=1" />}
-                className="border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10 shrink-0"
+                className="border-[#7C3AED] text-[#7C3AED] hover:bg-[#7C3AED]/10 shrink-0"
                 title="Solo tocar después de habilitar Marketing API en Meta App Dashboard"
               >
                 <Megaphone className="size-4 mr-1.5" />

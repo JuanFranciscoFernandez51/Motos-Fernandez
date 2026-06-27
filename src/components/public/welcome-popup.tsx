@@ -106,9 +106,9 @@ export function WelcomePopup() {
 
       {/* Modal */}
       <div className="relative w-full max-w-md animate-scale-in">
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0E0B12] via-[#15121A] to-[#1A1325] shadow-premium-xl border border-[#6B4F7A]/30">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0E0B12] via-[#15121A] to-[#1A1325] shadow-premium-xl border border-[#7C3AED]/30">
           {/* Glows decorativos */}
-          <div className="absolute -top-20 -right-20 size-48 rounded-full bg-[#6B4F7A]/30 blur-3xl pointer-events-none" />
+          <div className="absolute -top-20 -right-20 size-48 rounded-full bg-[#7C3AED]/30 blur-3xl pointer-events-none" />
           <div className="absolute -bottom-20 -left-20 size-48 rounded-full bg-[#9B59B6]/20 blur-3xl pointer-events-none" />
 
           {/* Línea plata arriba */}
@@ -155,7 +155,7 @@ export function WelcomePopup() {
                 </div>
                 <button
                   onClick={cerrar}
-                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-6 py-3 text-sm font-bold text-white hover:shadow-violeta-glow transition-all hover:-translate-y-0.5"
+                  className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-6 py-3 text-sm font-bold text-white hover:shadow-violeta-glow transition-all hover:-translate-y-0.5"
                 >
                   ¡Empezar a comprar!
                 </button>
@@ -165,7 +165,7 @@ export function WelcomePopup() {
               <>
                 {/* Header con icono */}
                 <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-gradient-to-br from-[#3D2649] to-[#6B4F7A] mb-4 shadow-violeta-glow">
+                  <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-gradient-to-br from-[#3D2649] to-[#7C3AED] mb-4 shadow-violeta-glow">
                     <Gift className="size-7 text-white" />
                   </div>
                   <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#C8C8D0] mb-2">
@@ -236,7 +236,7 @@ export function WelcomePopup() {
                   <button
                     type="submit"
                     disabled={estado === "loading"}
-                    className="group relative w-full inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-6 py-3.5 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 mt-4"
+                    className="group relative w-full inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-6 py-3.5 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0 mt-4"
                   >
                     <span
                       aria-hidden

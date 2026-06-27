@@ -11,16 +11,16 @@ import {
 // muchos pagos / permutas. Sin colores estridentes, padding reducido.
 const styles = StyleSheet.create({
   page: { padding: 28, fontSize: 9, fontFamily: "Helvetica", color: "#1A1A1A" },
-  header: { borderBottom: "1.5px solid #6B4F7A", paddingBottom: 8, marginBottom: 10 },
+  header: { borderBottom: "1.5px solid #7C3AED", paddingBottom: 8, marginBottom: 10 },
   headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
   logo: { width: 130, height: 46, objectFit: "contain" },
   brandSub: { fontSize: 7.5, color: "#666", marginTop: 1 },
   docInfo: { textAlign: "right" },
   docTitle: { fontSize: 12, fontWeight: 700 },
-  docNumber: { fontSize: 10, color: "#6B4F7A", marginTop: 1 },
+  docNumber: { fontSize: 10, color: "#7C3AED", marginTop: 1 },
   docDate: { fontSize: 7.5, color: "#666", marginTop: 1 },
   h2: {
-    fontSize: 9.5, fontWeight: 700, color: "#6B4F7A",
+    fontSize: 9.5, fontWeight: 700, color: "#7C3AED",
     textTransform: "uppercase", marginTop: 8, marginBottom: 3,
     borderBottom: "1px solid #E5E5E5", paddingBottom: 2,
   },
@@ -38,11 +38,11 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 6,
     backgroundColor: "#F3EEF7",
-    borderLeft: "3px solid #6B4F7A",
+    borderLeft: "3px solid #7C3AED",
     borderRadius: 2,
   },
-  priceLineLabel: { fontSize: 9, fontWeight: 700, color: "#6B4F7A" },
-  priceLineValue: { fontSize: 11, fontWeight: 700, color: "#6B4F7A" },
+  priceLineLabel: { fontSize: 9, fontWeight: 700, color: "#7C3AED" },
+  priceLineValue: { fontSize: 11, fontWeight: 700, color: "#7C3AED" },
   // Tabla de pagos
   tableHeader: {
     flexDirection: "row",
@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   tableHeaderCell: {
     fontSize: 7.5,
     fontWeight: 700,
-    color: "#6B4F7A",
+    color: "#7C3AED",
     textTransform: "uppercase",
   },
   tableRow: {
@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F8F5FA",
     padding: 4,
   },
-  tableTotalCell: { fontSize: 8.5, fontWeight: 700, color: "#6B4F7A" },
+  tableTotalCell: { fontSize: 8.5, fontWeight: 700, color: "#7C3AED" },
   // Permuta - cuadro detallado por cada permuta
   permutaBox: {
     marginTop: 4,
@@ -117,12 +117,12 @@ const styles = StyleSheet.create({
   resumenValue: { fontSize: 8.5, fontWeight: 700 },
   resumenTotalRow: {
     flexDirection: "row", justifyContent: "space-between",
-    borderTop: "1px solid #6B4F7A", paddingTop: 3, marginTop: 3,
+    borderTop: "1px solid #7C3AED", paddingTop: 3, marginTop: 3,
   },
-  resumenTotalLabel: { fontSize: 9.5, fontWeight: 700, color: "#6B4F7A" },
-  resumenTotalValue: { fontSize: 9.5, fontWeight: 700, color: "#6B4F7A" },
+  resumenTotalLabel: { fontSize: 9.5, fontWeight: 700, color: "#7C3AED" },
+  resumenTotalValue: { fontSize: 9.5, fontWeight: 700, color: "#7C3AED" },
   terms: { marginTop: 8, padding: 6, backgroundColor: "#F8F5FA", fontSize: 7.5, lineHeight: 1.3 },
-  termsTitle: { fontWeight: 700, marginBottom: 2, fontSize: 8.5, color: "#6B4F7A" },
+  termsTitle: { fontWeight: 700, marginBottom: 2, fontSize: 8.5, color: "#7C3AED" },
   termsItem: { marginBottom: 2 },
   // marginTop alto a propósito: deja ~5 renglones de aire arriba de la
   // línea de firma para que el cliente pueda firmar cómodo en papel.

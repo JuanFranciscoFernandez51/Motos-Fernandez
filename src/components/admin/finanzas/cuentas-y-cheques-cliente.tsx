@@ -41,7 +41,7 @@ export function CuentasYChequesCliente({ cobros, pagos, cheques, cuentasFinancie
           <div className="text-2xl font-bold tabular-nums text-red-700">{formatMoney(totalPagar)}</div>
           <div className="text-[11px] text-gray-400 mt-0.5">Cuentas + cheques a pagar (ARS)</div>
         </CardContent></Card>
-        <Card style={{ borderColor: neto >= 0 ? "#7ECAD655" : "#C8102E33" }}>
+        <Card style={{ borderColor: neto >= 0 ? "#C4A5F755" : "#C8102E33" }}>
           <CardContent className="p-5">
             <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">Posición neta</div>
             <div className={cn("text-2xl font-bold tabular-nums", neto >= 0 ? "text-emerald-700" : "text-red-700")}>{formatMoney(neto)}</div>
@@ -58,7 +58,7 @@ export function CuentasYChequesCliente({ cobros, pagos, cheques, cuentasFinancie
             onClick={() => setTab(t.id)}
             className={cn(
               "inline-flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors",
-              tab === t.id ? "bg-[#7ECAD6]/15 text-[#3A8B96]" : "text-gray-600 hover:bg-gray-100"
+              tab === t.id ? "bg-[#C4A5F7]/15 text-[#7C3AED]" : "text-gray-600 hover:bg-gray-100"
             )}
           >
             <t.icon className="h-4 w-4" />

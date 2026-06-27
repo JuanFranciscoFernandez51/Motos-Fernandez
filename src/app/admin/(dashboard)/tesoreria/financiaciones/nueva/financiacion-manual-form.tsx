@@ -200,7 +200,7 @@ export function FinanciacionManualForm({
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-[#6B4F7A]/10 to-[#8B6F9A]/5 border-[#6B4F7A]/30">
+        <Card className="bg-gradient-to-br from-[#7C3AED]/10 to-[#9D5CF0]/5 border-[#7C3AED]/30">
           <CardHeader>
             <CardTitle>Resumen</CardTitle>
           </CardHeader>
@@ -217,7 +217,7 @@ export function FinanciacionManualForm({
             </div>
             <div className="flex justify-between border-t pt-3">
               <span className="text-gray-700 dark:text-gray-300 font-semibold">Total:</span>
-              <span className="text-xl font-bold text-[#6B4F7A]">
+              <span className="text-xl font-bold text-[#7C3AED]">
                 {total > 0 ? formatMoney(total, moneda) : "—"}
               </span>
             </div>
@@ -228,7 +228,7 @@ export function FinanciacionManualForm({
       <div className="flex justify-end">
         <Button
           type="submit"
-          className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+          className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
           disabled={isPending}
         >
           {isPending ? (

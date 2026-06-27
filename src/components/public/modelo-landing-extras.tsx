@@ -139,7 +139,7 @@ export function PorQueComprarla() {
             key={label}
             className="flex items-center gap-3 rounded-xl bg-white dark:bg-neutral-950 border border-gray-100 dark:border-neutral-800 p-3.5"
           >
-            <div className="flex items-center justify-center size-9 rounded-lg bg-[#6B4F7A]/10 text-[#6B4F7A] shrink-0">
+            <div className="flex items-center justify-center size-9 rounded-lg bg-[#7C3AED]/10 text-[#7C3AED] shrink-0">
               <Icon className="size-5" />
             </div>
             <p className="text-sm font-medium text-gray-800 dark:text-gray-200 leading-snug">
@@ -161,11 +161,11 @@ export function BloquePermuta({ modelo }: { modelo: ModeloInfo }) {
   const mensaje = `Hola! Tengo una moto para permutar por la ${titulo}. Mi nombre es: `
   const href = getWhatsAppUrl(mensaje)
   return (
-    <section className="mt-12 rounded-2xl border border-[#6B4F7A]/30 bg-gradient-to-br from-[#6B4F7A]/10 to-transparent p-6 sm:p-8">
+    <section className="mt-12 rounded-2xl border border-[#7C3AED]/30 bg-gradient-to-br from-[#7C3AED]/10 to-transparent p-6 sm:p-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
         <div className="lg:col-span-2">
           <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center size-12 rounded-xl bg-[#6B4F7A] text-white">
+            <div className="flex items-center justify-center size-12 rounded-xl bg-[#7C3AED] text-white">
               <Repeat className="size-6" />
             </div>
             <h2 className="font-heading text-xl sm:text-2xl font-bold text-[#1A1A1A] dark:text-white">
@@ -206,7 +206,7 @@ export function CTAFinal({
     <section className="mt-12 rounded-2xl bg-gradient-to-br from-[#15121A] to-[#0E0B12] text-white p-6 sm:p-10 text-center relative overflow-hidden">
       <div
         aria-hidden
-        className="absolute -top-32 -right-32 size-96 rounded-full bg-[#6B4F7A]/30 blur-3xl pointer-events-none"
+        className="absolute -top-32 -right-32 size-96 rounded-full bg-[#7C3AED]/30 blur-3xl pointer-events-none"
       />
       <div className="relative">
         <ShieldCheck className="size-10 mx-auto mb-3 text-[#C8C8D0]" />
@@ -297,7 +297,7 @@ export function StickyMobileCTA({
     <div className="fixed inset-x-0 bottom-0 z-[60] lg:hidden border-t border-gray-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-950/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 px-3 py-2.5 flex items-center gap-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)]">
       <div className="min-w-0 flex-1">
         {precioEtiqueta && (
-          <p className="text-base font-bold text-[#6B4F7A] truncate leading-tight">
+          <p className="text-base font-bold text-[#7C3AED] truncate leading-tight">
             {precioEtiqueta}
           </p>
         )}

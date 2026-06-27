@@ -41,7 +41,7 @@ export default async function NewsletterPage() {
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Mail className="h-6 w-6 text-[#6B4F7A]" />
+            <Mail className="h-6 w-6 text-[#7C3AED]" />
             Newsletter
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">

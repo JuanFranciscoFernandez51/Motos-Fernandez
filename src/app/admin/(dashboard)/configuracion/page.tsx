@@ -121,7 +121,7 @@ export default function ConfiguracionPage() {
       {/* Datos del sitio */}
       <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-4">
         <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <Globe className="h-4 w-4 text-[#6B4F7A]" />
+          <Globe className="h-4 w-4 text-[#7C3AED]" />
           Datos del sitio
         </h2>
         <div className="space-y-1">
@@ -137,7 +137,7 @@ export default function ConfiguracionPage() {
       {/* Contacto */}
       <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-4">
         <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <Phone className="h-4 w-4 text-[#6B4F7A]" />
+          <Phone className="h-4 w-4 text-[#7C3AED]" />
           Contacto
         </h2>
         <div className="grid grid-cols-2 gap-4">
@@ -159,7 +159,7 @@ export default function ConfiguracionPage() {
       {/* Horarios */}
       <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-4">
         <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <Clock className="h-4 w-4 text-[#6B4F7A]" />
+          <Clock className="h-4 w-4 text-[#7C3AED]" />
           Horarios
         </h2>
         <div className="grid grid-cols-2 gap-4">
@@ -177,7 +177,7 @@ export default function ConfiguracionPage() {
       {/* Opciones de venta */}
       <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-3">
         <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <ShoppingCart className="h-4 w-4 text-[#6B4F7A]" />
+          <ShoppingCart className="h-4 w-4 text-[#7C3AED]" />
           Opciones de venta
         </h2>
         <label className="flex items-center gap-3 cursor-pointer">
@@ -185,7 +185,7 @@ export default function ConfiguracionPage() {
             type="checkbox"
             checked={config.mercadopagoHabilitado}
             onChange={e => set("mercadopagoHabilitado", e.target.checked)}
-            className="w-4 h-4 rounded accent-[#6B4F7A]"
+            className="w-4 h-4 rounded accent-[#7C3AED]"
           />
           <div>
             <p className="text-sm font-medium">MercadoPago habilitado</p>
@@ -197,7 +197,7 @@ export default function ConfiguracionPage() {
       {/* Opciones de entrega */}
       <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-3">
         <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-          <Truck className="h-4 w-4 text-[#6B4F7A]" />
+          <Truck className="h-4 w-4 text-[#7C3AED]" />
           Opciones de entrega
         </h2>
         <label className="flex items-center gap-3 cursor-pointer">
@@ -205,7 +205,7 @@ export default function ConfiguracionPage() {
             type="checkbox"
             checked={config.enviosHabilitados}
             onChange={e => set("enviosHabilitados", e.target.checked)}
-            className="w-4 h-4 rounded accent-[#6B4F7A]"
+            className="w-4 h-4 rounded accent-[#7C3AED]"
           />
           <div>
             <p className="text-sm font-medium">Envíos habilitados</p>
@@ -217,7 +217,7 @@ export default function ConfiguracionPage() {
             type="checkbox"
             checked={config.retiroHabilitado}
             onChange={e => set("retiroHabilitado", e.target.checked)}
-            className="w-4 h-4 rounded accent-[#6B4F7A]"
+            className="w-4 h-4 rounded accent-[#7C3AED]"
           />
           <div>
             <p className="text-sm font-medium">Retiro en local habilitado</p>
@@ -230,7 +230,7 @@ export default function ConfiguracionPage() {
       <div className="bg-white dark:bg-neutral-900 rounded-xl border p-6 space-y-4">
         <div>
           <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <FileText className="h-4 w-4 text-[#6B4F7A]" />
+            <FileText className="h-4 w-4 text-[#7C3AED]" />
             Datos legales (para PDFs)
           </h2>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -303,7 +303,7 @@ export default function ConfiguracionPage() {
         <Button
           onClick={handleSave}
           disabled={saving}
-          className={`shadow-lg gap-2 transition-all ${saved ? "bg-green-600 hover:bg-green-600" : "bg-[#6B4F7A] hover:bg-[#8B6F9A]"}`}
+          className={`shadow-lg gap-2 transition-all ${saved ? "bg-green-600 hover:bg-green-600" : "bg-[#7C3AED] hover:bg-[#9D5CF0]"}`}
         >
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : saved ? <CheckCircle className="h-4 w-4" /> : <Save className="h-4 w-4" />}
           {saved ? "¡Guardado!" : "Guardar cambios"}

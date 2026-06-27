@@ -98,7 +98,7 @@ export function ClienteResumen({
   return (
     <div className="space-y-4">
       {/* Header con info clave */}
-      <div className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-gradient-to-br from-[#6B4F7A]/5 to-transparent dark:from-[#6B4F7A]/10 p-5">
+      <div className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-gradient-to-br from-[#7C3AED]/5 to-transparent dark:from-[#7C3AED]/10 p-5">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 truncate">

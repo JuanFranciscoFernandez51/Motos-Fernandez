@@ -203,7 +203,7 @@ function Navbar() {
                   href={getWhatsAppUrl(WHATSAPP_MESSAGES.general)}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-2 inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-4 py-2 text-xs font-bold text-white hover:shadow-violeta-glow transition-all hover:-translate-y-0.5"
+                  className="ml-2 inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-4 py-2 text-xs font-bold text-white hover:shadow-violeta-glow transition-all hover:-translate-y-0.5"
                 >
                   <Phone className="size-3.5" />
                   WhatsApp
@@ -337,7 +337,7 @@ function Navbar() {
               href={getWhatsAppUrl(WHATSAPP_MESSAGES.general)}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full rounded-lg bg-gradient-to-r from-[#3D2649] to-[#6B4F7A] px-4 py-3 text-sm font-bold text-white shadow-violeta-glow"
+              className="flex items-center justify-center gap-2 w-full rounded-lg bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-4 py-3 text-sm font-bold text-white shadow-violeta-glow"
             >
               <MessageCircle className="size-4" />
               Hablar por WhatsApp
@@ -372,7 +372,7 @@ function Footer() {
       {/* Glows decorativos */}
       <div
         aria-hidden
-        className="absolute -top-32 -right-32 size-96 rounded-full bg-[#6B4F7A]/10 blur-3xl pointer-events-none"
+        className="absolute -top-32 -right-32 size-96 rounded-full bg-[#7C3AED]/10 blur-3xl pointer-events-none"
       />
       <div
         aria-hidden

@@ -252,7 +252,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                     Las 0KM del catálogo no las tenemos físicas → "Consultar
                     disponibilidad" en vez de "En concesionaria". */}
                 {(model.condicion || "0KM") === "0KM" ? (
-                  <span className="inline-block rounded-md px-2.5 py-0.5 text-xs font-bold text-white bg-[#6B4F7A]">
+                  <span className="inline-block rounded-md px-2.5 py-0.5 text-xs font-bold text-white bg-[#7C3AED]">
                     CONSULTAR DISPONIBILIDAD
                   </span>
                 ) : model.tipoTenencia === "EN_DOMICILIO" ? (
@@ -260,7 +260,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                     SOLO WEB
                   </span>
                 ) : (
-                  <span className="inline-block rounded-md px-2.5 py-0.5 text-xs font-bold text-white bg-[#6B4F7A]">
+                  <span className="inline-block rounded-md px-2.5 py-0.5 text-xs font-bold text-white bg-[#7C3AED]">
                     EN CONCESIONARIA
                   </span>
                 )}
@@ -315,7 +315,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                     ? "Precio sugerido público"
                     : "Precio de lista"}
                 </p>
-                <p className="text-3xl font-bold text-[#6B4F7A]">
+                <p className="text-3xl font-bold text-[#7C3AED]">
                   {model.precio
                     ? (model.moneda || "ARS") === "USD"
                       ? `USD ${model.precio.toLocaleString("es-AR")}`
@@ -377,7 +377,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                 </WhatsAppCTA>
                 <Link
                   href="/financiacion"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#6B4F7A] px-6 py-3.5 text-sm font-semibold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 transition-colors"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg border border-[#7C3AED] px-6 py-3.5 text-sm font-semibold text-[#7C3AED] hover:bg-[#7C3AED]/5 transition-colors"
                 >
                   <CreditCard className="size-4" />
                   Financiacion
@@ -430,13 +430,13 @@ export default async function ModeloDetailPage({ params }: Props) {
                 {financiacion.map((plan, i) => (
                   <div
                     key={i}
-                    className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 hover:border-[#6B4F7A]/30 transition-colors"
+                    className="rounded-xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 hover:border-[#7C3AED]/30 transition-colors"
                   >
                     <h3 className="text-sm font-semibold text-[#1A1A1A] dark:text-white">
                       {plan.plan}
                     </h3>
                     {plan.cuota && (
-                      <p className="mt-2 text-2xl font-bold text-[#6B4F7A]">
+                      <p className="mt-2 text-2xl font-bold text-[#7C3AED]">
                         {formatPrice(plan.cuota)}
                         <span className="text-sm font-normal text-gray-400">
                           /mes
@@ -486,7 +486,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                       )}
                     </div>
                     <div className="p-4">
-                      <p className="text-xs text-[#8B6F9A] font-medium">
+                      <p className="text-xs text-[#9D5CF0] font-medium">
                         {m.marca}
                       </p>
                       <h3
@@ -495,7 +495,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                       >
                         {m.nombre}
                       </h3>
-                      <p className="text-sm font-bold text-[#6B4F7A] mt-1">
+                      <p className="text-sm font-bold text-[#7C3AED] mt-1">
                         {m.precio ? formatPrice(m.precio) : "Consultar"}
                       </p>
                     </div>

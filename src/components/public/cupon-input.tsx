@@ -102,7 +102,7 @@ export function CuponInput({
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 dark:border-neutral-700 bg-gray-50/50 dark:bg-neutral-900/50 px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A] hover:text-[#6B4F7A] hover:bg-[#6B4F7A]/5 transition-colors"
+        className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 dark:border-neutral-700 bg-gray-50/50 dark:bg-neutral-900/50 px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-[#7C3AED] hover:text-[#7C3AED] hover:bg-[#7C3AED]/5 transition-colors"
       >
         <Tag className="size-4" />
         ¿Tenés un cupón de descuento?
@@ -119,7 +119,7 @@ export function CuponInput({
           onChange={(e) => setCodigo(e.target.value.toUpperCase())}
           placeholder="Código del cupón"
           disabled={loading}
-          className="flex-1 h-10 rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 text-sm font-mono uppercase text-[#1A1A1A] dark:text-white placeholder:text-gray-400 placeholder:font-sans focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+          className="flex-1 h-10 rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-3 text-sm font-mono uppercase text-[#1A1A1A] dark:text-white placeholder:text-gray-400 placeholder:font-sans focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
               e.preventDefault()
@@ -131,7 +131,7 @@ export function CuponInput({
           type="button"
           onClick={handleAplicar}
           disabled={loading || !codigo.trim()}
-          className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#6B4F7A] px-4 py-2 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors disabled:opacity-50 shrink-0"
+          className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#7C3AED] px-4 py-2 text-sm font-semibold text-white hover:bg-[#9D5CF0] transition-colors disabled:opacity-50 shrink-0"
         >
           {loading ? <Loader2 className="size-4 animate-spin" /> : "Aplicar"}
         </button>

@@ -107,13 +107,13 @@ export function ImageUpload({ value, onChange, folder = "productos", className }
         </div>
       ) : (
         <div
-          className="border-2 border-dashed border-gray-200 dark:border-neutral-800 rounded-lg p-4 hover:border-[#6B4F7A] cursor-pointer transition-colors flex flex-col items-center justify-center gap-1 min-h-[100px]"
+          className="border-2 border-dashed border-gray-200 dark:border-neutral-800 rounded-lg p-4 hover:border-[#7C3AED] cursor-pointer transition-colors flex flex-col items-center justify-center gap-1 min-h-[100px]"
           onClick={() => inputRef.current?.click()}
           onDragOver={(e) => e.preventDefault()}
           onDrop={handleDrop}
         >
           {uploading ? (
-            <Loader2 className="h-6 w-6 text-[#6B4F7A] animate-spin" />
+            <Loader2 className="h-6 w-6 text-[#7C3AED] animate-spin" />
           ) : (
             <>
               <Upload className="h-6 w-6 text-gray-400" />

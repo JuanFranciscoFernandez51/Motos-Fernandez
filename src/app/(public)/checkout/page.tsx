@@ -88,7 +88,7 @@ export default function CheckoutPage() {
           </p>
           <Link
             href="/tienda"
-            className="inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#7C3AED] px-6 py-3 text-sm font-semibold text-white hover:bg-[#9D5CF0] transition-colors"
           >
             Ir a la tienda
           </Link>
@@ -139,7 +139,7 @@ export default function CheckoutPage() {
                       value={form.nombre}
                       onChange={handleChange}
                       required
-                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20 transition"
                       placeholder="Juan"
                     />
                   </div>
@@ -153,7 +153,7 @@ export default function CheckoutPage() {
                       value={form.apellido}
                       onChange={handleChange}
                       required
-                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20 transition"
                       placeholder="García"
                     />
                   </div>
@@ -167,7 +167,7 @@ export default function CheckoutPage() {
                       value={form.email}
                       onChange={handleChange}
                       required
-                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20 transition"
                       placeholder="juan@ejemplo.com"
                     />
                   </div>
@@ -181,7 +181,7 @@ export default function CheckoutPage() {
                       value={form.telefono}
                       onChange={handleChange}
                       required
-                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20 transition"
                       placeholder="291 578-8671"
                     />
                   </div>
@@ -195,7 +195,7 @@ export default function CheckoutPage() {
                       value={form.dni}
                       onChange={handleChange}
                       required
-                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 transition"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-900 px-4 py-2.5 text-sm text-[#1A1A1A] dark:text-white placeholder-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20 transition"
                       placeholder="30.123.456"
                     />
                   </div>
@@ -270,7 +270,7 @@ export default function CheckoutPage() {
                   )}
                   <div className="flex justify-between pt-2 border-t border-gray-100 dark:border-neutral-800">
                     <span className="font-bold text-[#1A1A1A] dark:text-white">Total</span>
-                    <span className="text-xl font-bold text-[#6B4F7A]">
+                    <span className="text-xl font-bold text-[#7C3AED]">
                       {formatPrice(totalFinal)}
                     </span>
                   </div>
@@ -285,7 +285,7 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="mt-5 flex items-center justify-center gap-2 w-full rounded-lg bg-[#6B4F7A] px-6 py-3.5 text-base font-semibold text-white hover:bg-[#8B6F9A] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                  className="mt-5 flex items-center justify-center gap-2 w-full rounded-lg bg-[#7C3AED] px-6 py-3.5 text-base font-semibold text-white hover:bg-[#9D5CF0] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                 >
                   {loading ? (
                     <>

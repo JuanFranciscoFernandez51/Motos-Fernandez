@@ -46,7 +46,7 @@ export function ChequesCliente({ cheques, cuentasFinancieras = [] }: { cheques: 
       </div>
 
       <div className="flex justify-end">
-        <Button onClick={() => setNuevo(true)} className="bg-[#5BB5C2] hover:bg-[#3A8B96]"><Plus className="h-4 w-4 mr-1.5" /> Nuevo cheque</Button>
+        <Button onClick={() => setNuevo(true)} className="bg-[#9D5CF0] hover:bg-[#7C3AED]"><Plus className="h-4 w-4 mr-1.5" /> Nuevo cheque</Button>
       </div>
 
       <SeccionCheques titulo="A cobrar" cheques={aCobrar} router={router} onConcretar={setConcretando} />
@@ -172,7 +172,7 @@ function NuevoChequeDialog({ onClose, onSaved }: { onClose: () => void; onSaved:
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={guardar} disabled={saving} className="bg-[#5BB5C2] hover:bg-[#3A8B96]">{saving ? "Guardando…" : "Cargar"}</Button>
+          <Button onClick={guardar} disabled={saving} className="bg-[#9D5CF0] hover:bg-[#7C3AED]">{saving ? "Guardando…" : "Cargar"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -99,7 +99,7 @@ export function ClienteForm({
         </div>
         <Button
           type="submit"
-          className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+          className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
           disabled={isPending}
         >
           {isPending ? (

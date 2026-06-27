@@ -182,7 +182,7 @@ export function SistemaClient({
               href={sheetUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs text-[#6B4F7A] hover:underline"
+              className="inline-flex items-center gap-1.5 text-xs text-[#7C3AED] hover:underline"
             >
               Ver Google Sheet de backup <ExternalLink className="size-3" />
             </a>
@@ -261,7 +261,7 @@ export function SistemaClient({
                   type="button"
                   onClick={() => ejecutarJob(j.key)}
                   disabled={corriendo}
-                  className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white px-3 py-2 text-sm font-medium disabled:opacity-50"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] text-white px-3 py-2 text-sm font-medium disabled:opacity-50"
                 >
                   {corriendo ? (
                     <Loader2 className="size-4 animate-spin" />

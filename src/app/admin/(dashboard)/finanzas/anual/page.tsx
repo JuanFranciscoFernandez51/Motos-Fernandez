@@ -100,7 +100,7 @@ export default async function DashboardAnualPage({
             <FilaTotal label="Total gastos" meses={d.totalGastosMes} total={d.totalGastosAnual} color="text-red-700" />
 
             <FilaTotal label="RESULTADO" meses={d.resultadoMes} total={d.resultadoAnual} color="text-gray-900" fuerte />
-            <FilaTotal label="Acumulado" meses={d.resultadoAcumulado} total={d.resultadoAcumulado[11]} color="text-[#3A8B96]" />
+            <FilaTotal label="Acumulado" meses={d.resultadoAcumulado} total={d.resultadoAcumulado[11]} color="text-[#7C3AED]" />
             <tr className="border-t border-gray-100">
               <td className="px-3 py-1.5 sticky left-0 bg-white text-gray-500 italic">Margen %</td>
               {d.margenMes.map((m, i) => (

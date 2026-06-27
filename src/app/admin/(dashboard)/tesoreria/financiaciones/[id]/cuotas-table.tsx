@@ -109,7 +109,7 @@ export function CuotasTable({
                         : ""
                   }
                 >
-                  <TableCell className="font-mono text-xs font-bold text-[#6B4F7A]">
+                  <TableCell className="font-mono text-xs font-bold text-[#7C3AED]">
                     #{c.numero}
                   </TableCell>
                   <TableCell>
@@ -231,7 +231,7 @@ export function CuotasTable({
                           </div>
                           <div>
                             <Label>Monto</Label>
-                            <p className="h-10 flex items-center font-bold text-[#6B4F7A]">
+                            <p className="h-10 flex items-center font-bold text-[#7C3AED]">
                               {formatMoney(c.monto, moneda)}
                             </p>
                           </div>

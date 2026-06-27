@@ -894,12 +894,12 @@ export default async function EditarOrdenCompraPage({
         </div>
       )}
 
-      <Card className="border-[#6B4F7A]/30">
+      <Card className="border-[#7C3AED]/30">
         <CardContent className="p-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Orden de compra</p>
-              <p className="font-mono text-lg font-bold text-[#6B4F7A]">
+              <p className="font-mono text-lg font-bold text-[#7C3AED]">
                 {formatNumero("OC", orden.numero)}
               </p>
             </div>

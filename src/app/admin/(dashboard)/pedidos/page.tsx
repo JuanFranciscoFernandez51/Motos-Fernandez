@@ -113,7 +113,7 @@ export default async function PedidosPage({
         <Link
           href={`/admin/pedidos${q || desde || hasta ? `?${new URLSearchParams({ ...(q ? { q } : {}), ...(desde ? { desde } : {}), ...(hasta ? { hasta } : {}) })}` : ""}`}
           className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
-            !estado ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"
+            !estado ? "bg-[#7C3AED] text-white border-[#7C3AED]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"
           }`}
         >
           Todos
@@ -125,7 +125,7 @@ export default async function PedidosPage({
               key={key}
               href={`/admin/pedidos?${params}`}
               className={`px-3 py-1.5 text-xs rounded-full border transition-colors ${
-                estado === key ? "bg-[#6B4F7A] text-white border-[#6B4F7A]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"
+                estado === key ? "bg-[#7C3AED] text-white border-[#7C3AED]" : "hover:bg-gray-50 dark:hover:bg-neutral-900"
               }`}
             >
               {val.label}
@@ -196,7 +196,7 @@ export default async function PedidosPage({
                     <TableCell>
                       <Link
                         href={`/admin/pedidos/${pedido.id}`}
-                        className="text-[#6B4F7A] hover:text-[#8B6F9A]"
+                        className="text-[#7C3AED] hover:text-[#9D5CF0]"
                       >
                         <ExternalLink className="h-4 w-4" />
                       </Link>

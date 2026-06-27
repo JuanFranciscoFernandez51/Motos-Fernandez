@@ -47,14 +47,14 @@ export default async function PresupuestosPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
-            <FileText className="size-6 text-[#6B4F7A]" />
+            <FileText className="size-6 text-[#7C3AED]" />
             Presupuestos
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Cotizaciones para entregar al cliente. Si aceptan, se convierten en OT.
           </p>
         </div>
-        <Button render={<Link href="/admin/presupuestos/nuevo" />} className="bg-[#6B4F7A] hover:bg-[#8B6F9A]">
+        <Button render={<Link href="/admin/presupuestos/nuevo" />} className="bg-[#7C3AED] hover:bg-[#9D5CF0]">
           <Plus className="h-4 w-4 mr-2" /> Nuevo presupuesto
         </Button>
       </div>
@@ -86,7 +86,7 @@ export default async function PresupuestosPage() {
                 const tel = p.cliente?.telefono
                 return (
                   <tr key={p.id} className="border-b border-gray-50 dark:border-neutral-900 last:border-0">
-                    <td className="px-4 py-2 font-mono text-xs font-semibold text-[#6B4F7A]">
+                    <td className="px-4 py-2 font-mono text-xs font-semibold text-[#7C3AED]">
                       {formatNumero("PRE", p.numero)}
                     </td>
                     <td className="px-4 py-2 text-gray-500 dark:text-gray-400 text-xs">{formatDate(p.fecha)}</td>

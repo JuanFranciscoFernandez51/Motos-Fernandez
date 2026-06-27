@@ -370,7 +370,7 @@ export function AsistenteChat() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-[#6B4F7A] flex items-center justify-center shadow-sm">
+          <div className="size-10 rounded-xl bg-[#7C3AED] flex items-center justify-center shadow-sm">
             <Bot className="size-5 text-white" />
           </div>
           <div>
@@ -388,7 +388,7 @@ export function AsistenteChat() {
             onClick={resetConversation}
             disabled={loading}
             title="Nueva conversación"
-            className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-[#6B4F7A] border border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A] rounded-lg px-3 py-1.5 transition-colors disabled:opacity-40"
+            className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 hover:text-[#7C3AED] border border-gray-200 dark:border-neutral-800 hover:border-[#7C3AED] rounded-lg px-3 py-1.5 transition-colors disabled:opacity-40"
           >
             <RotateCcw className="size-3.5" />
             Nueva consulta
@@ -428,7 +428,7 @@ export function AsistenteChat() {
                     setTimeout(() => sendMessage(), 0)
                   }}
                   disabled={loading}
-                  className="text-xs px-3 py-1.5 rounded-full border border-[#6B4F7A]/40 text-[#6B4F7A] hover:bg-[#6B4F7A] hover:text-white hover:border-[#6B4F7A] transition-colors disabled:opacity-40"
+                  className="text-xs px-3 py-1.5 rounded-full border border-[#7C3AED]/40 text-[#7C3AED] hover:bg-[#7C3AED] hover:text-white hover:border-[#7C3AED] transition-colors disabled:opacity-40"
                 >
                   {q}
                 </button>
@@ -439,7 +439,7 @@ export function AsistenteChat() {
 
         {/* Imagen pendiente */}
         {pendingImage && (
-          <div className="mx-4 mb-2 mt-3 flex items-center gap-3 rounded-lg border border-[#6B4F7A]/30 bg-[#6B4F7A]/5 p-2.5">
+          <div className="mx-4 mb-2 mt-3 flex items-center gap-3 rounded-lg border border-[#7C3AED]/30 bg-[#7C3AED]/5 p-2.5">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imageBlockToDataUrl(pendingImage)}
@@ -447,7 +447,7 @@ export function AsistenteChat() {
               className="size-12 rounded object-cover"
             />
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-[#6B4F7A] uppercase tracking-wider">
+              <p className="text-xs font-bold text-[#7C3AED] uppercase tracking-wider">
                 Imagen lista
               </p>
               <p className="text-xs text-gray-600 dark:text-gray-300 truncate">
@@ -488,7 +488,7 @@ export function AsistenteChat() {
             onClick={() => fileRef.current?.click()}
             disabled={loading}
             title="Adjuntar imagen (DNI, factura, etc.)"
-            className="size-10 rounded-xl border border-gray-200 dark:border-neutral-800 text-gray-500 dark:text-gray-400 hover:text-[#6B4F7A] hover:border-[#6B4F7A] flex items-center justify-center disabled:opacity-40 transition-colors flex-shrink-0"
+            className="size-10 rounded-xl border border-gray-200 dark:border-neutral-800 text-gray-500 dark:text-gray-400 hover:text-[#7C3AED] hover:border-[#7C3AED] flex items-center justify-center disabled:opacity-40 transition-colors flex-shrink-0"
           >
             <Paperclip className="size-4" />
           </button>
@@ -504,12 +504,12 @@ export function AsistenteChat() {
                 : "Consultá, creá un cliente, subí un DNI..."
             }
             disabled={loading}
-            className="flex-1 text-sm bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 outline-none focus:border-[#6B4F7A] focus:ring-1 focus:ring-[#6B4F7A] disabled:opacity-50 transition-colors"
+            className="flex-1 text-sm bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-xl px-4 py-2.5 outline-none focus:border-[#7C3AED] focus:ring-1 focus:ring-[#7C3AED] disabled:opacity-50 transition-colors"
           />
           <button
             type="submit"
             disabled={loading || (!input.trim() && !pendingImage)}
-            className="size-10 rounded-xl bg-[#6B4F7A] text-white flex items-center justify-center hover:bg-[#7d5d8e] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-shrink-0"
+            className="size-10 rounded-xl bg-[#7C3AED] text-white flex items-center justify-center hover:bg-[#7d5d8e] disabled:opacity-40 disabled:cursor-not-allowed transition-colors flex-shrink-0"
             aria-label="Enviar"
           >
             {loading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
@@ -569,7 +569,7 @@ function MessageBubble({
   return (
     <div className={`flex gap-3 ${isUser ? "justify-end" : "justify-start"}`}>
       {!isUser && (
-        <div className="size-7 rounded-full bg-[#6B4F7A] flex items-center justify-center flex-shrink-0 mt-0.5">
+        <div className="size-7 rounded-full bg-[#7C3AED] flex items-center justify-center flex-shrink-0 mt-0.5">
           <Bot className="size-3.5 text-white" />
         </div>
       )}
@@ -578,7 +578,7 @@ function MessageBubble({
         <div
           className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap ${
             isUser
-              ? "bg-[#6B4F7A] text-white rounded-br-sm"
+              ? "bg-[#7C3AED] text-white rounded-br-sm"
               : "bg-gray-50 dark:bg-neutral-900 text-gray-800 dark:text-gray-100 rounded-bl-sm border border-gray-100 dark:border-neutral-800"
           }`}
         >
@@ -659,9 +659,9 @@ function PreviewCard({
   }
 
   return (
-    <div className="rounded-xl border-2 border-[#6B4F7A]/40 bg-gradient-to-br from-[#6B4F7A]/5 to-transparent p-4 space-y-3">
+    <div className="rounded-xl border-2 border-[#7C3AED]/40 bg-gradient-to-br from-[#7C3AED]/5 to-transparent p-4 space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-xs font-bold text-[#6B4F7A] uppercase tracking-wider">
+        <p className="text-xs font-bold text-[#7C3AED] uppercase tracking-wider">
           📋 Propuesta — Crear {titulo}
         </p>
       </div>
@@ -679,7 +679,7 @@ function PreviewCard({
           type="button"
           onClick={onConfirm}
           disabled={estado === "creando"}
-          className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white text-sm font-semibold px-4 py-2.5 transition-colors disabled:opacity-50"
+          className="flex-1 inline-flex items-center justify-center gap-2 rounded-lg bg-[#7C3AED] hover:bg-[#9D5CF0] text-white text-sm font-semibold px-4 py-2.5 transition-colors disabled:opacity-50"
         >
           {estado === "creando" ? (
             <>

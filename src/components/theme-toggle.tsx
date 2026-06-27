@@ -71,7 +71,7 @@ export function ThemeToggleSegmented() {
             title={o.label}
             className={`inline-flex items-center justify-center size-7 rounded transition-colors ${
               active
-                ? "bg-[#6B4F7A] text-white"
+                ? "bg-[#7C3AED] text-white"
                 : "text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800"
             }`}
           >

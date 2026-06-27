@@ -17,7 +17,7 @@ const styles = StyleSheet.create({
     color: "#1A1A1A",
   },
   header: {
-    borderBottom: "1.5px solid #6B4F7A",
+    borderBottom: "1.5px solid #7C3AED",
     paddingBottom: 8,
     marginBottom: 10,
   },
@@ -30,12 +30,12 @@ const styles = StyleSheet.create({
   brandSub: { fontSize: 7.5, color: "#666", marginTop: 1 },
   docInfo: { textAlign: "right" },
   docTitle: { fontSize: 12, fontWeight: 700 },
-  docNumber: { fontSize: 10, color: "#6B4F7A", marginTop: 1 },
+  docNumber: { fontSize: 10, color: "#7C3AED", marginTop: 1 },
   docDate: { fontSize: 7.5, color: "#666", marginTop: 1 },
   h2: {
     fontSize: 9.5,
     fontWeight: 700,
-    color: "#6B4F7A",
+    color: "#7C3AED",
     textTransform: "uppercase",
     marginTop: 8,
     marginBottom: 3,
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     fontWeight: 700,
     marginBottom: 2,
     fontSize: 8.5,
-    color: "#6B4F7A",
+    color: "#7C3AED",
   },
   termsItem: { marginBottom: 2 },
   // marginTop alto a propósito: deja ~5 renglones de aire arriba de la

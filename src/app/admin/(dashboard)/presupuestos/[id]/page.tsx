@@ -131,15 +131,15 @@ export default async function PresupuestoDetallePage({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border-2 border-[#6B4F7A]/30 bg-gradient-to-r from-[#6B4F7A]/5 to-transparent p-4 flex flex-wrap items-center justify-between gap-3">
+      <div className="rounded-xl border-2 border-[#7C3AED]/30 bg-gradient-to-r from-[#7C3AED]/5 to-transparent p-4 flex flex-wrap items-center justify-between gap-3">
         <div>
           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Presupuesto</p>
-          <p className="font-mono text-lg font-bold text-[#6B4F7A]">PRE-{String(pre.numero).padStart(4, "0")}</p>
+          <p className="font-mono text-lg font-bold text-[#7C3AED]">PRE-{String(pre.numero).padStart(4, "0")}</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <a
             href={`/api/pdf/presupuesto/${pre.id}`}
-            className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white px-3 py-1.5 text-sm font-medium"
+            className="inline-flex items-center gap-1.5 rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] text-white px-3 py-1.5 text-sm font-medium"
           >
             <Download className="size-4" /> Descargar PDF
           </a>

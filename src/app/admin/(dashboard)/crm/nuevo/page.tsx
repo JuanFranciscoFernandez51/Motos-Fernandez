@@ -118,7 +118,7 @@ export default function NuevoLeadPage() {
         </div>
 
         <div className="flex gap-3 pt-2">
-          <Button type="submit" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]">
+          <Button type="submit" className="bg-[#7C3AED] hover:bg-[#9D5CF0]">
             Crear lead
           </Button>
           <Link href="/admin/crm" className="px-4 py-2 text-sm border rounded-lg hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors">

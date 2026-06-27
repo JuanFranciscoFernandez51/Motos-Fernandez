@@ -77,7 +77,7 @@ export function SimuladorFinanciacion() {
   return (
     <div className="rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="bg-gradient-to-r from-[#6B4F7A] to-[#9B59B6] px-6 py-5 sm:px-8">
+      <div className="bg-gradient-to-r from-[#7C3AED] to-[#9B59B6] px-6 py-5 sm:px-8">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center size-10 rounded-xl bg-white/20 dark:bg-neutral-900/20">
             <Calculator className="size-5 text-white" />
@@ -96,7 +96,7 @@ export function SimuladorFinanciacion() {
       <div className="p-6 sm:p-8">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <div className="size-8 animate-spin rounded-full border-4 border-[#6B4F7A] border-t-transparent" />
+            <div className="size-8 animate-spin rounded-full border-4 border-[#7C3AED] border-t-transparent" />
           </div>
         ) : (
           <div className="space-y-7">
@@ -107,7 +107,7 @@ export function SimuladorFinanciacion() {
                 onClick={() => handleTabChange("PROPIA")}
                 className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${
                   tab === "PROPIA"
-                    ? "bg-white dark:bg-neutral-900 text-[#6B4F7A] shadow-sm"
+                    ? "bg-white dark:bg-neutral-900 text-[#7C3AED] shadow-sm"
                     : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300"
                 }`}
               >
@@ -118,7 +118,7 @@ export function SimuladorFinanciacion() {
                 onClick={() => handleTabChange("TARJETA")}
                 className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-all ${
                   tab === "TARJETA"
-                    ? "bg-white dark:bg-neutral-900 text-[#6B4F7A] shadow-sm"
+                    ? "bg-white dark:bg-neutral-900 text-[#7C3AED] shadow-sm"
                     : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300"
                 }`}
               >
@@ -150,11 +150,11 @@ export function SimuladorFinanciacion() {
                 step={100_000}
                 value={monto}
                 onChange={(e) => setMonto(Number(e.target.value))}
-                className="w-full accent-[#6B4F7A]"
+                className="w-full accent-[#7C3AED]"
               />
               <div className="flex justify-between items-baseline mt-2">
                 <span className="text-xs text-gray-400">$100.000</span>
-                <span className="text-2xl font-bold text-[#6B4F7A] font-heading">
+                <span className="text-2xl font-bold text-[#7C3AED] font-heading">
                   {formatPrice(monto)}
                 </span>
                 <span className="text-xs text-gray-400">$15.000.000</span>
@@ -176,14 +176,14 @@ export function SimuladorFinanciacion() {
                     onClick={() => setAnticipo(pct)}
                     className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
                       anticipo === pct
-                        ? "bg-[#6B4F7A] text-white"
+                        ? "bg-[#7C3AED] text-white"
                         : "bg-gray-100 dark:bg-neutral-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200"
                     }`}
                   >
                     {pct === 0 ? "Sin anticipo" : `${pct}%`}
                   </button>
                 ))}
-                <span className="text-sm font-bold text-[#6B4F7A] ml-1">
+                <span className="text-sm font-bold text-[#7C3AED] ml-1">
                   → financiás {formatPrice(montoFinanciado)}
                 </span>
               </div>
@@ -201,8 +201,8 @@ export function SimuladorFinanciacion() {
                     onClick={() => setPlanSeleccionado(plan.id)}
                     className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border-2 ${
                       planSeleccionado === plan.id
-                        ? "bg-[#6B4F7A] text-white border-[#6B4F7A] shadow-md scale-105"
-                        : "bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/40 hover:text-[#6B4F7A]"
+                        ? "bg-[#7C3AED] text-white border-[#7C3AED] shadow-md scale-105"
+                        : "bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-neutral-800 hover:border-[#7C3AED]/40 hover:text-[#7C3AED]"
                     }`}
                   >
                     {plan.cuotas}
@@ -213,7 +213,7 @@ export function SimuladorFinanciacion() {
 
             {/* Resultado */}
             {planActivo && (
-              <div className="rounded-2xl bg-gradient-to-br from-[#6B4F7A] to-[#9B59B6] p-6 text-white">
+              <div className="rounded-2xl bg-gradient-to-br from-[#7C3AED] to-[#9B59B6] p-6 text-white">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
                     <p className="text-sm text-white/70 mb-1">

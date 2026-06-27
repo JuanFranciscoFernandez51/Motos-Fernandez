@@ -47,7 +47,7 @@ export function UsuariosClient({
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Users className="size-6 text-[#6B4F7A]" />
+            <Users className="size-6 text-[#7C3AED]" />
             Usuarios del admin
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -58,7 +58,7 @@ export function UsuariosClient({
         <button
           type="button"
           onClick={() => setCreando(true)}
-          className="inline-flex items-center gap-2 rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white px-3 py-2 text-sm font-medium"
+          className="inline-flex items-center gap-2 rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] text-white px-3 py-2 text-sm font-medium"
         >
           <Plus className="size-4" />
           Nuevo usuario
@@ -89,7 +89,7 @@ export function UsuariosClient({
                   <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
                     {u.name}
                     {esYo && (
-                      <span className="ml-2 text-[10px] uppercase tracking-wider text-[#6B4F7A] bg-[#6B4F7A]/10 px-1.5 py-0.5 rounded">
+                      <span className="ml-2 text-[10px] uppercase tracking-wider text-[#7C3AED] bg-[#7C3AED]/10 px-1.5 py-0.5 rounded">
                         vos
                       </span>
                     )}
@@ -99,7 +99,7 @@ export function UsuariosClient({
                   </td>
                   <td className="px-4 py-3">
                     {u.role === "admin" ? (
-                      <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-[#6B4F7A]/10 text-[#6B4F7A] font-medium">
+                      <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-[#7C3AED]/10 text-[#7C3AED] font-medium">
                         <ShieldCheck className="size-3" />
                         Admin
                       </span>
@@ -136,7 +136,7 @@ export function UsuariosClient({
                     <button
                       type="button"
                       onClick={() => setEditando(u)}
-                      className="inline-flex items-center gap-1 text-xs text-[#6B4F7A] hover:underline"
+                      className="inline-flex items-center gap-1 text-xs text-[#7C3AED] hover:underline"
                     >
                       <Pencil className="size-3" />
                       Editar
@@ -325,7 +325,7 @@ function UsuarioModal({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Juan Pérez"
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] outline-none"
               />
             </div>
             <div>
@@ -338,7 +338,7 @@ function UsuarioModal({
                 onChange={(e) => setEmail(e.target.value.toLowerCase())}
                 placeholder="juanperez"
                 disabled={editando}
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] outline-none disabled:opacity-60 disabled:cursor-not-allowed font-mono"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] outline-none disabled:opacity-60 disabled:cursor-not-allowed font-mono"
               />
               {editando && (
                 <p className="text-[10px] text-gray-400 mt-1">El usuario no se puede cambiar</p>
@@ -357,7 +357,7 @@ function UsuarioModal({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={editando ? "Dejar vacío para mantener la actual" : "Mínimo 6 caracteres"}
-              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] outline-none"
+              className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] outline-none"
             />
           </div>
 
@@ -370,7 +370,7 @@ function UsuarioModal({
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value as "admin" | "usuario")}
-                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] outline-none"
+                className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] outline-none"
               >
                 <option value="usuario">Usuario (acceso restringido)</option>
                 <option value="admin">Admin (acceso total + gestiona usuarios)</option>
@@ -413,7 +413,7 @@ function UsuarioModal({
                   <button
                     type="button"
                     onClick={() => setPermisos(SECCIONES_ADMIN.map((s) => s.id))}
-                    className="text-[11px] text-[#6B4F7A] hover:underline"
+                    className="text-[11px] text-[#7C3AED] hover:underline"
                   >
                     Todas
                   </button>
@@ -421,7 +421,7 @@ function UsuarioModal({
                   <button
                     type="button"
                     onClick={() => setPermisos([])}
-                    className="text-[11px] text-[#6B4F7A] hover:underline"
+                    className="text-[11px] text-[#7C3AED] hover:underline"
                   >
                     Ninguna
                   </button>
@@ -441,7 +441,7 @@ function UsuarioModal({
                             key={s.id}
                             className={`flex items-start gap-2 px-3 py-2 rounded-md border cursor-pointer transition-colors ${
                               checked
-                                ? "border-[#6B4F7A] bg-[#6B4F7A]/5"
+                                ? "border-[#7C3AED] bg-[#7C3AED]/5"
                                 : "border-gray-200 dark:border-neutral-800 hover:bg-gray-50 dark:hover:bg-neutral-800"
                             }`}
                           >
@@ -504,7 +504,7 @@ function UsuarioModal({
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white px-3 py-2 text-sm font-medium disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] text-white px-3 py-2 text-sm font-medium disabled:opacity-50"
             >
               {saving ? <Loader2 className="size-4 animate-spin" /> : <Check className="size-4" />}
               {editando ? "Guardar cambios" : "Crear usuario"}

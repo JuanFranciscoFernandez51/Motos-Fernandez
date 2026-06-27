@@ -78,7 +78,7 @@ export default async function NuevoCuponPage({
         </Link>
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <Ticket className="h-6 w-6 text-[#6B4F7A]" />
+            <Ticket className="h-6 w-6 text-[#7C3AED]" />
             Nuevo cupón
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
@@ -116,7 +116,7 @@ export default async function NuevoCuponPage({
               required
               placeholder="Ej: VERANO20"
               style={{ textTransform: "uppercase" }}
-              className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+              className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/30 focus:border-[#7C3AED]"
             />
             <p className="mt-1 text-xs text-gray-400">Se guardará en mayúsculas automáticamente.</p>
           </div>
@@ -130,7 +130,7 @@ export default async function NuevoCuponPage({
               name="descripcion"
               rows={2}
               placeholder="Ej: Descuento de verano para clientes nuevos"
-              className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A] resize-none"
+              className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/30 focus:border-[#7C3AED] resize-none"
             />
           </div>
         </div>
@@ -157,7 +157,7 @@ export default async function NuevoCuponPage({
                   min={1}
                   max={100}
                   placeholder="20"
-                  className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+                  className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 pr-8 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/30 focus:border-[#7C3AED]"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400">%</span>
               </div>
@@ -176,7 +176,7 @@ export default async function NuevoCuponPage({
                   min={0}
                   step={0.01}
                   placeholder="Sin límite"
-                  className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 pl-7 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+                  className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 pl-7 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/30 focus:border-[#7C3AED]"
                 />
               </div>
               <p className="mt-1 text-xs text-gray-400">Dejá vacío para sin límite.</p>
@@ -195,7 +195,7 @@ export default async function NuevoCuponPage({
                   min={0}
                   step={0.01}
                   placeholder="Sin mínimo"
-                  className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 pl-7 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+                  className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 pl-7 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/30 focus:border-[#7C3AED]"
                 />
               </div>
               <p className="mt-1 text-xs text-gray-400">Dejá vacío para sin mínimo.</p>
@@ -211,7 +211,7 @@ export default async function NuevoCuponPage({
                 type="number"
                 min={1}
                 placeholder="Sin límite"
-                className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+                className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/30 focus:border-[#7C3AED]"
               />
               <p className="mt-1 text-xs text-gray-400">Dejá vacío para usos ilimitados.</p>
             </div>
@@ -237,7 +237,7 @@ export default async function NuevoCuponPage({
                 type="date"
                 required
                 defaultValue={today}
-                className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+                className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/30 focus:border-[#7C3AED]"
               />
             </div>
 
@@ -249,7 +249,7 @@ export default async function NuevoCuponPage({
                 id="fechaFin"
                 name="fechaFin"
                 type="date"
-                className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/30 focus:border-[#6B4F7A]"
+                className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/30 focus:border-[#7C3AED]"
               />
               <p className="mt-1 text-xs text-gray-400">Dejá vacío para que no expire.</p>
             </div>
@@ -267,12 +267,12 @@ export default async function NuevoCuponPage({
             Las motos NUNCA aceptan cupones. Marcá donde sí aplica.
           </p>
           <div className="space-y-2">
-            <label className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 cursor-pointer hover:border-[#6B4F7A]/40 transition-colors">
+            <label className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 cursor-pointer hover:border-[#7C3AED]/40 transition-colors">
               <input
                 type="checkbox"
                 name="aplicaTienda"
                 defaultChecked
-                className="size-4 accent-[#6B4F7A]"
+                className="size-4 accent-[#7C3AED]"
               />
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -283,11 +283,11 @@ export default async function NuevoCuponPage({
                 </p>
               </div>
             </label>
-            <label className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 cursor-pointer hover:border-[#6B4F7A]/40 transition-colors">
+            <label className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-neutral-800 px-4 py-3 cursor-pointer hover:border-[#7C3AED]/40 transition-colors">
               <input
                 type="checkbox"
                 name="aplicaServicios"
-                className="size-4 accent-[#6B4F7A]"
+                className="size-4 accent-[#7C3AED]"
               />
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -316,7 +316,7 @@ export default async function NuevoCuponPage({
               defaultChecked
               className="sr-only peer"
             />
-            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#6B4F7A]/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-neutral-900 after:border-gray-300 dark:border-neutral-700 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#6B4F7A]" />
+            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-[#7C3AED]/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white dark:bg-neutral-900 after:border-gray-300 dark:border-neutral-700 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#7C3AED]" />
           </label>
         </div>
 
@@ -330,7 +330,7 @@ export default async function NuevoCuponPage({
           </Link>
           <button
             type="submit"
-            className="px-6 py-2 rounded-lg bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white text-sm font-medium transition-colors flex items-center gap-2"
+            className="px-6 py-2 rounded-lg bg-[#7C3AED] hover:bg-[#9D5CF0] text-white text-sm font-medium transition-colors flex items-center gap-2"
           >
             <Ticket className="h-4 w-4" />
             Crear cupón

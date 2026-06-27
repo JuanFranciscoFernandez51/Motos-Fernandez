@@ -187,20 +187,20 @@ export default async function TesoreriaPage() {
         <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-base flex items-center gap-2">
-              <Wallet className="size-4 text-[#6B4F7A]" />
+              <Wallet className="size-4 text-[#7C3AED]" />
               Saldo pendiente de cobro
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="flex items-center justify-between border-b border-gray-100 dark:border-neutral-800 pb-2">
               <span className="text-sm text-gray-600 dark:text-gray-300">Pesos (ARS)</span>
-              <span className="text-xl font-bold text-[#6B4F7A]">
+              <span className="text-xl font-bold text-[#7C3AED]">
                 {formatMoney(saldoARS, "ARS")}
               </span>
             </div>
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600 dark:text-gray-300">Dólares (USD)</span>
-              <span className="text-xl font-bold text-[#6B4F7A]">
+              <span className="text-xl font-bold text-[#7C3AED]">
                 {formatMoney(saldoUSD, "USD")}
               </span>
             </div>
@@ -241,7 +241,7 @@ export default async function TesoreriaPage() {
             </span>
             <Link
               href="/admin/tesoreria/financiaciones"
-              className="text-xs text-[#6B4F7A] hover:underline flex items-center gap-1"
+              className="text-xs text-[#7C3AED] hover:underline flex items-center gap-1"
             >
               Ver todas <ArrowRight className="size-3" />
             </Link>
@@ -321,7 +321,7 @@ export default async function TesoreriaPage() {
             <span>Últimas financiaciones</span>
             <Link
               href="/admin/tesoreria/financiaciones"
-              className="text-xs text-[#6B4F7A] hover:underline flex items-center gap-1"
+              className="text-xs text-[#7C3AED] hover:underline flex items-center gap-1"
             >
               Ver todas <ArrowRight className="size-3" />
             </Link>
@@ -343,7 +343,7 @@ export default async function TesoreriaPage() {
                       className="flex items-center justify-between py-3 px-1 hover:bg-gray-50 dark:hover:bg-neutral-900 -mx-1 rounded"
                     >
                       <div>
-                        <p className="font-mono text-xs text-[#6B4F7A]">
+                        <p className="font-mono text-xs text-[#7C3AED]">
                           {formatNumero("FIN", f.numero)}
                         </p>
                         <p className="font-medium text-sm">

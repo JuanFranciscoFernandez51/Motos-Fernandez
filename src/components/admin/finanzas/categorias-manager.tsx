@@ -68,12 +68,12 @@ function Columna({
           onChange={(e) => setNuevo(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") agregar() }}
           placeholder="Nueva categoría…"
-          className="flex-1 h-9 rounded-md border border-gray-300 px-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#7ECAD6]/40"
+          className="flex-1 h-9 rounded-md border border-gray-300 px-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#C4A5F7]/40"
         />
         <button
           onClick={agregar}
           disabled={agregando || !nuevo.trim()}
-          className="h-9 px-3 rounded-md bg-[#5BB5C2] text-white text-sm font-medium hover:bg-[#3A8B96] disabled:opacity-40 inline-flex items-center gap-1"
+          className="h-9 px-3 rounded-md bg-[#9D5CF0] text-white text-sm font-medium hover:bg-[#7C3AED] disabled:opacity-40 inline-flex items-center gap-1"
         >
           <Plus className="h-4 w-4" /> Agregar
         </button>
@@ -119,7 +119,7 @@ function Fila({ cat }: { cat: Categoria }) {
           autoFocus
           onChange={(e) => setValor(e.target.value)}
           onKeyDown={(e) => { if (e.key === "Enter") guardar(); if (e.key === "Escape") { setEditando(false); setValor(cat.nombre) } }}
-          className="flex-1 h-8 rounded-md border border-[#7ECAD6] px-2 text-sm focus:outline-none"
+          className="flex-1 h-8 rounded-md border border-[#C4A5F7] px-2 text-sm focus:outline-none"
         />
         <button onClick={guardar} disabled={guardando} className="p-1.5 rounded text-emerald-600 hover:bg-emerald-50"><Check className="h-4 w-4" /></button>
         <button onClick={() => { setEditando(false); setValor(cat.nombre) }} className="p-1.5 rounded text-gray-400 hover:bg-gray-100"><X className="h-4 w-4" /></button>

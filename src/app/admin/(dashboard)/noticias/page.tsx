@@ -55,7 +55,7 @@ export default async function NoticiasPage() {
             {noticias.length} noticia(s)
           </p>
         </div>
-        <Button render={<Link href="/admin/noticias/nueva" />} className="bg-[#6B4F7A] hover:bg-[#8B6F9A]">
+        <Button render={<Link href="/admin/noticias/nueva" />} className="bg-[#7C3AED] hover:bg-[#9D5CF0]">
           <Plus className="h-4 w-4 mr-2" />
           Nueva noticia
         </Button>

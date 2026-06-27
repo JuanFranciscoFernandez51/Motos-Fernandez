@@ -67,7 +67,7 @@ export function CopiarCuentaButton({
       type="button"
       onClick={copiar}
       title="Copiar todos los datos para transferencia"
-      className="group inline-flex items-center gap-1.5 rounded-md border border-[#6B4F7A]/30 bg-[#6B4F7A]/5 hover:bg-[#6B4F7A]/15 px-2 py-1 text-[11px] font-semibold text-[#6B4F7A] dark:text-[#C39BD3] transition-colors max-w-full"
+      className="group inline-flex items-center gap-1.5 rounded-md border border-[#7C3AED]/30 bg-[#7C3AED]/5 hover:bg-[#7C3AED]/15 px-2 py-1 text-[11px] font-semibold text-[#7C3AED] dark:text-[#C39BD3] transition-colors max-w-full"
     >
       <Landmark className="size-3 shrink-0" />
       <span className="truncate">

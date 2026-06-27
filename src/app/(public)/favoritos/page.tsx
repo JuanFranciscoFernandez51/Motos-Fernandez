@@ -43,7 +43,7 @@ export default function FavoritosPage() {
               </p>
               <Link
                 href="/catalogo"
-                className="inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#7C3AED] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#9D5CF0] transition-colors"
               >
                 Explorar catálogo
                 <ArrowRight className="size-4" />
@@ -83,7 +83,7 @@ export default function FavoritosPage() {
                         )}
                       </div>
                       <div className="p-3">
-                        <p className="text-[10px] font-semibold text-[#8B6F9A] uppercase tracking-wider truncate">
+                        <p className="text-[10px] font-semibold text-[#9D5CF0] uppercase tracking-wider truncate">
                           {item.marca}
                         </p>
                         <h3 className="mt-0.5 text-sm font-bold text-[#1A1A1A] dark:text-white truncate">
@@ -92,7 +92,7 @@ export default function FavoritosPage() {
                         {item.cilindrada && (
                           <p className="text-[10px] text-gray-400">{item.cilindrada}</p>
                         )}
-                        <p className="mt-2 text-sm font-bold text-[#6B4F7A]">
+                        <p className="mt-2 text-sm font-bold text-[#7C3AED]">
                           {item.precio
                             ? (item.moneda || "ARS") === "USD"
                               ? `USD ${item.precio.toLocaleString("es-AR")}`

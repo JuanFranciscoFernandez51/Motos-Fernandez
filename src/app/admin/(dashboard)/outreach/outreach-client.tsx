@@ -165,7 +165,7 @@ export function OutreachClient({ tareas }: { tareas: OutreachTareaUI[] }) {
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
-            <MessageCircleHeart className="size-6 text-[#6B4F7A]" />
+            <MessageCircleHeart className="size-6 text-[#7C3AED]" />
             Outreach
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -210,7 +210,7 @@ export function OutreachClient({ tareas }: { tareas: OutreachTareaUI[] }) {
             onClick={() => setFiltro(tab.key)}
             className={`rounded-lg border p-3 text-left transition-colors ${
               filtro === tab.key
-                ? "border-[#6B4F7A] bg-[#6B4F7A]/5"
+                ? "border-[#7C3AED] bg-[#7C3AED]/5"
                 : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:bg-gray-50 dark:hover:bg-neutral-900"
             }`}
           >
@@ -239,7 +239,7 @@ export function OutreachClient({ tareas }: { tareas: OutreachTareaUI[] }) {
             onClick={() => setTipoFiltro(t.key)}
             className={`px-3 py-1 text-xs rounded-full border transition-colors ${
               tipoFiltro === t.key
-                ? "bg-[#6B4F7A] text-white border-[#6B4F7A]"
+                ? "bg-[#7C3AED] text-white border-[#7C3AED]"
                 : "hover:bg-gray-50 dark:hover:bg-neutral-900"
             }`}
           >
@@ -284,7 +284,7 @@ export function OutreachClient({ tareas }: { tareas: OutreachTareaUI[] }) {
                       {t.oc && (
                         <Link
                           href={`/admin/ordenes-compra/${t.oc.id}`}
-                          className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-[#6B4F7A]"
+                          className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-[#7C3AED]"
                         >
                           <FileText className="size-3" />
                           OC-{String(t.oc.numero).padStart(4, "0")}
@@ -293,7 +293,7 @@ export function OutreachClient({ tareas }: { tareas: OutreachTareaUI[] }) {
                     </div>
                     <Link
                       href={`/admin/clientes/${t.cliente.id}`}
-                      className="font-semibold text-sm text-gray-900 dark:text-gray-100 hover:text-[#6B4F7A]"
+                      className="font-semibold text-sm text-gray-900 dark:text-gray-100 hover:text-[#7C3AED]"
                     >
                       {t.cliente.apellido}, {t.cliente.nombre}
                     </Link>
@@ -330,7 +330,7 @@ export function OutreachClient({ tareas }: { tareas: OutreachTareaUI[] }) {
                       value={mensajeEdit}
                       onChange={(e) => setMensajeEdit(e.target.value)}
                       rows={6}
-                      className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] outline-none font-mono"
+                      className="w-full px-3 py-2 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] outline-none font-mono"
                     />
                     <div className="flex items-center gap-2">
                       <button
@@ -340,7 +340,7 @@ export function OutreachClient({ tareas }: { tareas: OutreachTareaUI[] }) {
                           setEditandoId(null)
                         }}
                         disabled={loadingId === t.id}
-                        className="px-3 py-1 text-xs rounded-md bg-[#6B4F7A] hover:bg-[#8B6F9A] text-white"
+                        className="px-3 py-1 text-xs rounded-md bg-[#7C3AED] hover:bg-[#9D5CF0] text-white"
                       >
                         Guardar
                       </button>

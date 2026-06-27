@@ -95,8 +95,8 @@ export function AddToCartButton({ producto }: AddToCartButtonProps) {
                     sinStock
                       ? "border-gray-200 dark:border-neutral-800 text-gray-300 line-through cursor-not-allowed"
                       : isSelected
-                      ? "border-[#6B4F7A] bg-[#6B4F7A] text-white"
-                      : "border-[#6B4F7A] text-[#6B4F7A] hover:bg-[#6B4F7A]/10"
+                      ? "border-[#7C3AED] bg-[#7C3AED] text-white"
+                      : "border-[#7C3AED] text-[#7C3AED] hover:bg-[#7C3AED]/10"
                   }`}
                 >
                   {talle}
@@ -120,7 +120,7 @@ export function AddToCartButton({ producto }: AddToCartButtonProps) {
             ? "bg-green-600 text-white"
             : isOutOfStock
             ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-            : "bg-[#6B4F7A] text-white hover:bg-[#8B6F9A]"
+            : "bg-[#7C3AED] text-white hover:bg-[#9D5CF0]"
         }`}
       >
         {added ? (

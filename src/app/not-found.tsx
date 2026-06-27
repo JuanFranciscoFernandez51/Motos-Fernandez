@@ -30,7 +30,7 @@ export default function NotFound() {
           className="absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full blur-3xl opacity-20"
           style={{
             background:
-              "radial-gradient(circle, #6B4F7A 0%, transparent 70%)",
+              "radial-gradient(circle, #7C3AED 0%, transparent 70%)",
           }}
         />
         <div
@@ -63,7 +63,7 @@ export default function NotFound() {
             className="select-none text-center text-[9rem] font-black leading-none tracking-tighter sm:text-[12rem] md:text-[16rem]"
             style={{
               backgroundImage:
-                "linear-gradient(135deg, #9B7BA8 0%, #6B4F7A 50%, #4A3655 100%)",
+                "linear-gradient(135deg, #9B7BA8 0%, #7C3AED 50%, #4A3655 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               backgroundClip: "text",
@@ -77,7 +77,7 @@ export default function NotFound() {
             <div
               className="flex h-16 w-16 items-center justify-center rounded-full border-2 md:h-20 md:w-20"
               style={{
-                borderColor: "#6B4F7A",
+                borderColor: "#7C3AED",
                 backgroundColor: "rgba(107, 79, 122, 0.15)",
               }}
             >
@@ -107,7 +107,7 @@ export default function NotFound() {
             href="/"
             className="group inline-flex items-center justify-center gap-2 rounded-lg px-6 py-3 text-sm font-semibold text-white shadow-lg transition-all hover:scale-[1.02] hover:shadow-xl sm:text-base"
             style={{
-              backgroundColor: "#6B4F7A",
+              backgroundColor: "#7C3AED",
               boxShadow: "0 10px 30px -10px rgba(107, 79, 122, 0.6)",
             }}
           >

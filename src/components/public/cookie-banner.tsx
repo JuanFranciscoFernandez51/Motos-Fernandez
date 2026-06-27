@@ -51,8 +51,8 @@ export function CookieBanner() {
     <div className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-4 sm:max-w-md z-40 animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="rounded-2xl bg-white dark:bg-neutral-900 shadow-2xl border border-gray-200 dark:border-neutral-800 p-5">
         <div className="flex items-start gap-3">
-          <div className="size-10 shrink-0 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center">
-            <Cookie className="size-5 text-[#6B4F7A]" />
+          <div className="size-10 shrink-0 rounded-full bg-[#7C3AED]/10 flex items-center justify-center">
+            <Cookie className="size-5 text-[#7C3AED]" />
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="text-sm font-bold text-[#1A1A1A] dark:text-white">
@@ -60,7 +60,7 @@ export function CookieBanner() {
             </h3>
             <p className="mt-1 text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
               Utilizamos cookies propias y de terceros para mejorar tu experiencia, analizar el uso del sitio y mostrarte publicidad relevante. Podés aceptarlas o leer nuestra{" "}
-              <Link href="/privacidad" className="text-[#6B4F7A] font-semibold underline">
+              <Link href="/privacidad" className="text-[#7C3AED] font-semibold underline">
                 política de privacidad
               </Link>
               .
@@ -68,13 +68,13 @@ export function CookieBanner() {
             <div className="mt-4 flex flex-wrap gap-2">
               <button
                 onClick={handleAccept}
-                className="inline-flex items-center justify-center rounded-lg bg-[#6B4F7A] px-4 py-2 text-xs font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+                className="inline-flex items-center justify-center rounded-lg bg-[#7C3AED] px-4 py-2 text-xs font-semibold text-white hover:bg-[#9D5CF0] transition-colors"
               >
                 Aceptar todas
               </button>
               <button
                 onClick={handleReject}
-                className="inline-flex items-center justify-center rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
+                className="inline-flex items-center justify-center rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-gray-300 hover:border-[#7C3AED] hover:text-[#7C3AED] transition-colors"
               >
                 Solo necesarias
               </button>

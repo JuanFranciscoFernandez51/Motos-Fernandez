@@ -157,7 +157,7 @@ export function CampaignDetailClient({
             )}
             <div>
               <h1 className="text-2xl font-bold flex items-center gap-2">
-                <Megaphone className="size-6 text-[#6B4F7A]" />
+                <Megaphone className="size-6 text-[#7C3AED]" />
                 {campaign.moto.marca} {campaign.moto.nombre}
               </h1>
               <p className="text-xs text-gray-500 mt-0.5">
@@ -224,7 +224,7 @@ export function CampaignDetailClient({
           <Button
             variant="outline"
             onClick={() => setShowCreateAdSet(true)}
-            className="w-full border-dashed border-[#6B4F7A]/40 text-[#6B4F7A] hover:bg-[#6B4F7A]/5"
+            className="w-full border-dashed border-[#7C3AED]/40 text-[#7C3AED] hover:bg-[#7C3AED]/5"
           >
             <Plus className="size-4 mr-1.5" />
             Sumar conjunto (audiencia distinta)
@@ -475,7 +475,7 @@ function AdSetCard({
         className="w-full p-4 flex items-center gap-3 text-left hover:bg-gray-50 dark:hover:bg-neutral-900/50"
       >
         {open ? <ChevronDown className="size-4" /> : <ChevronRight className="size-4" />}
-        <Layers className="size-4 text-[#6B4F7A]" />
+        <Layers className="size-4 text-[#7C3AED]" />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <p className="font-medium text-sm">{adSet.name}</p>
@@ -563,7 +563,7 @@ function AdSetCard({
               variant="outline"
               size="sm"
               onClick={() => setShowCreateAd(true)}
-              className="w-full border-dashed border-[#6B4F7A]/40 text-[#6B4F7A] hover:bg-[#6B4F7A]/5"
+              className="w-full border-dashed border-[#7C3AED]/40 text-[#7C3AED] hover:bg-[#7C3AED]/5"
             >
               <Plus className="size-3.5 mr-1.5" />
               Sumar ad (creative distinto)
@@ -657,7 +657,7 @@ function AdCard({ ad }: { ad: AdLite }) {
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
               <p className="text-xs font-semibold truncate">{ad.name}</p>
-              <span className="text-[9px] uppercase font-bold text-[#6B4F7A] bg-[#6B4F7A]/10 px-1 rounded">
+              <span className="text-[9px] uppercase font-bold text-[#7C3AED] bg-[#7C3AED]/10 px-1 rounded">
                 {ad.mediaType.replace("_", " ")}
               </span>
             </div>
@@ -735,7 +735,7 @@ function AdCard({ ad }: { ad: AdLite }) {
                 size="sm"
                 onClick={handleSave}
                 disabled={saving}
-                className="flex-1 bg-[#6B4F7A]"
+                className="flex-1 bg-[#7C3AED]"
               >
                 {saving ? <Loader2 className="size-3 animate-spin" /> : <Save className="size-3" />}
                 Guardar
@@ -818,10 +818,10 @@ function NewAdSetForm({
   }
 
   return (
-    <Card className="border-[#6B4F7A]/40 bg-[#6B4F7A]/5">
+    <Card className="border-[#7C3AED]/40 bg-[#7C3AED]/5">
       <CardContent className="p-4">
         <form onSubmit={handleSubmit} className="space-y-3">
-          <p className="text-sm font-bold text-[#6B4F7A] flex items-center gap-2">
+          <p className="text-sm font-bold text-[#7C3AED] flex items-center gap-2">
             <Plus className="size-4" /> Nuevo conjunto
           </p>
           <div>
@@ -849,7 +849,7 @@ function NewAdSetForm({
           </div>
           {error && <p className="text-xs text-red-600">{error}</p>}
           <div className="flex gap-2">
-            <Button type="submit" disabled={submitting || !name} className="bg-[#6B4F7A]">
+            <Button type="submit" disabled={submitting || !name} className="bg-[#7C3AED]">
               {submitting ? <Loader2 className="size-3.5 animate-spin mr-1.5" /> : <Plus className="size-3.5 mr-1.5" />}
               Crear conjunto
             </Button>
@@ -937,10 +937,10 @@ function NewAdForm({
   }
 
   return (
-    <Card className="border-[#6B4F7A]/40 bg-[#6B4F7A]/5">
+    <Card className="border-[#7C3AED]/40 bg-[#7C3AED]/5">
       <CardContent className="p-4">
         <form onSubmit={handleSubmit} className="space-y-3">
-          <p className="text-sm font-bold text-[#6B4F7A] flex items-center gap-2">
+          <p className="text-sm font-bold text-[#7C3AED] flex items-center gap-2">
             <Plus className="size-4" /> Nuevo ad (variación de creative)
           </p>
           <div>
@@ -961,7 +961,7 @@ function NewAdForm({
                   key={t}
                   type="button"
                   onClick={() => setMediaType(t)}
-                  className={`rounded border-2 p-1.5 text-[10px] font-semibold transition-colors ${mediaType === t ? "border-[#6B4F7A] bg-[#6B4F7A]/10" : "border-gray-200"}`}
+                  className={`rounded border-2 p-1.5 text-[10px] font-semibold transition-colors ${mediaType === t ? "border-[#7C3AED] bg-[#7C3AED]/10" : "border-gray-200"}`}
                 >
                   {t === "PHOTO" && "📸 Foto"}
                   {t === "PHOTO_CAROUSEL" && "🖼 Carrusel"}
@@ -983,12 +983,12 @@ function NewAdForm({
                     key={i}
                     type="button"
                     onClick={() => toggleFoto(i)}
-                    className={`relative aspect-square rounded overflow-hidden border-2 ${fotosSel.includes(i) ? "border-[#6B4F7A]" : "border-transparent opacity-60"}`}
+                    className={`relative aspect-square rounded overflow-hidden border-2 ${fotosSel.includes(i) ? "border-[#7C3AED]" : "border-transparent opacity-60"}`}
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={url} alt="" className="w-full h-full object-cover" />
                     {fotosSel.includes(i) && (
-                      <span className="absolute top-0.5 right-0.5 bg-[#6B4F7A] text-white text-[9px] rounded-full size-4 flex items-center justify-center font-bold">
+                      <span className="absolute top-0.5 right-0.5 bg-[#7C3AED] text-white text-[9px] rounded-full size-4 flex items-center justify-center font-bold">
                         {fotosSel.indexOf(i) + 1}
                       </span>
                     )}
@@ -1038,7 +1038,7 @@ function NewAdForm({
           {error && <p className="text-xs text-red-600">{error}</p>}
 
           <div className="flex gap-2">
-            <Button type="submit" disabled={submitting || !name || !caption} className="bg-[#6B4F7A]">
+            <Button type="submit" disabled={submitting || !name || !caption} className="bg-[#7C3AED]">
               {submitting ? <Loader2 className="size-3.5 animate-spin mr-1.5" /> : <Plus className="size-3.5 mr-1.5" />}
               Crear ad
             </Button>

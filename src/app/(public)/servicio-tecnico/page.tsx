@@ -94,7 +94,7 @@ export default function ServicioTecnicoPage() {
       <section className="relative overflow-hidden bg-gradient-to-b from-[#0E0B12] via-[#15121A] to-[#1A1325] py-16 sm:py-20">
         <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.05]" />
         <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
-        <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#6B4F7A]/15 blur-3xl pointer-events-none" />
+        <div className="absolute -top-32 -right-32 size-[500px] rounded-full bg-[#7C3AED]/15 blur-3xl pointer-events-none" />
         <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C8C8D0]/[0.06] blur-3xl pointer-events-none" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -144,9 +144,9 @@ export default function ServicioTecnicoPage() {
             ].map((f) => (
               <article
                 key={f.title}
-                className="group h-full text-center p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/30 hover:shadow-premium-md transition-all duration-300 hover:-translate-y-0.5"
+                className="group h-full text-center p-5 rounded-2xl border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#7C3AED]/30 hover:shadow-premium-md transition-all duration-300 hover:-translate-y-0.5"
               >
-                <div className="flex items-center justify-center size-12 rounded-xl bg-[#6B4F7A]/10 text-[#6B4F7A] mx-auto mb-3 group-hover:bg-[#6B4F7A] group-hover:text-white transition-colors">
+                <div className="flex items-center justify-center size-12 rounded-xl bg-[#7C3AED]/10 text-[#7C3AED] mx-auto mb-3 group-hover:bg-[#7C3AED] group-hover:text-white transition-colors">
                   <f.icon className="size-5" />
                 </div>
                 <h3 className="font-heading text-sm font-bold text-[#1A1A1A] dark:text-white">
@@ -160,7 +160,7 @@ export default function ServicioTecnicoPage() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
             {/* Form */}
             <div className="lg:col-span-3">
-              <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#6B4F7A] mb-2">
+              <p className="font-bold text-[10px] sm:text-xs uppercase tracking-[0.22em] text-[#7C3AED] mb-2">
                 Reservá tu lugar
               </p>
               <h2 className="font-heading text-3xl font-bold text-[#1A1A1A] dark:text-white mb-2">
@@ -203,7 +203,7 @@ export default function ServicioTecnicoPage() {
                         required
                         value={form.nombre}
                         onChange={(e) => update("nombre", e.target.value)}
-                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
                         placeholder="Tu nombre"
                       />
                     </div>
@@ -220,7 +220,7 @@ export default function ServicioTecnicoPage() {
                         required
                         value={form.telefono}
                         onChange={(e) => update("telefono", e.target.value)}
-                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
                         placeholder="291 000-0000"
                       />
                     </div>
@@ -240,7 +240,7 @@ export default function ServicioTecnicoPage() {
                         required
                         value={form.dni}
                         onChange={(e) => update("dni", e.target.value)}
-                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
                         placeholder="30.123.456"
                       />
                     </div>
@@ -257,7 +257,7 @@ export default function ServicioTecnicoPage() {
                         required
                         value={form.email}
                         onChange={(e) => update("email", e.target.value)}
-                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                        className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
                         placeholder="tu@email.com"
                       />
                     </div>
@@ -276,7 +276,7 @@ export default function ServicioTecnicoPage() {
                       required
                       value={form.modeloMoto}
                       onChange={(e) => update("modeloMoto", e.target.value)}
-                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
                       placeholder="Ej: Honda CB 250 Twister 2024"
                     />
                   </div>
@@ -293,7 +293,7 @@ export default function ServicioTecnicoPage() {
                       required
                       value={form.tipoServicio}
                       onChange={(e) => update("tipoServicio", e.target.value)}
-                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
                     >
                       <option value="">Selecciona un servicio</option>
                       {SERVICIOS_TALLER.map((s) => (
@@ -317,7 +317,7 @@ export default function ServicioTecnicoPage() {
                       value={form.fechaPreferida}
                       onChange={(e) => update("fechaPreferida", e.target.value)}
                       min={new Date().toISOString().split("T")[0]}
-                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20"
                     />
                   </div>
 
@@ -333,7 +333,7 @@ export default function ServicioTecnicoPage() {
                       rows={4}
                       value={form.comentarios}
                       onChange={(e) => update("comentarios", e.target.value)}
-                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#6B4F7A] focus:outline-none focus:ring-2 focus:ring-[#6B4F7A]/20 resize-none"
+                      className="w-full rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 py-2.5 px-4 text-sm text-[#1A1A1A] dark:text-white placeholder:text-gray-400 focus:border-[#7C3AED] focus:outline-none focus:ring-2 focus:ring-[#7C3AED]/20 resize-none"
                       placeholder="Detalles adicionales sobre el trabajo que necesitas..."
                     />
                   </div>
@@ -347,7 +347,7 @@ export default function ServicioTecnicoPage() {
                   <button
                     type="submit"
                     disabled={status === "loading"}
-                    className="inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-7 py-3 text-sm font-semibold text-white hover:bg-[#8B6F9A] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#7C3AED] px-7 py-3 text-sm font-semibold text-white hover:bg-[#9D5CF0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {status === "loading" ? (
                       <>
@@ -374,9 +374,9 @@ export default function ServicioTecnicoPage() {
                 {SERVICIOS_TALLER.map((s) => (
                   <div
                     key={s}
-                    className="flex items-center gap-3 rounded-lg border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 hover:border-[#6B4F7A]/20 transition-colors"
+                    className="flex items-center gap-3 rounded-lg border border-gray-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 hover:border-[#7C3AED]/20 transition-colors"
                   >
-                    <Wrench className="size-4 text-[#6B4F7A] shrink-0" />
+                    <Wrench className="size-4 text-[#7C3AED] shrink-0" />
                     <span className="text-sm text-[#1A1A1A] dark:text-white">{s}</span>
                   </div>
                 ))}

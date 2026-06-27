@@ -320,7 +320,7 @@ export function ProveedorForm({
         </div>
         <Button
           type="submit"
-          className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+          className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
           disabled={isPending}
         >
           {isPending ? (
@@ -417,7 +417,7 @@ export function ProveedorForm({
                 type="checkbox"
                 checked={data.activo}
                 onChange={(e) => set("activo", e.target.checked)}
-                className="rounded accent-[#6B4F7A]"
+                className="rounded accent-[#7C3AED]"
               />
               Proveedor activo
             </label>
@@ -426,7 +426,7 @@ export function ProveedorForm({
             <div className="pt-5 mt-5 border-t border-gray-100 dark:border-neutral-800">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Landmark className="size-5 text-[#6B4F7A]" />
+                  <Landmark className="size-5 text-[#7C3AED]" />
                   <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                     Cuentas bancarias
                     {data.cuentasBancarias.length > 0 && (
@@ -439,7 +439,7 @@ export function ProveedorForm({
                 <button
                   type="button"
                   onClick={addCuenta}
-                  className="inline-flex items-center gap-1 rounded-md bg-[#6B4F7A] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+                  className="inline-flex items-center gap-1 rounded-md bg-[#7C3AED] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#9D5CF0] transition-colors"
                 >
                   <Plus className="size-3.5" />
                   Agregar
@@ -455,7 +455,7 @@ export function ProveedorForm({
                   <button
                     type="button"
                     onClick={addCuenta}
-                    className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A]"
+                    className="inline-flex items-center gap-1.5 rounded-md bg-[#7C3AED] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#9D5CF0]"
                   >
                     <Plus className="size-3.5" />
                     Agregar primera cuenta
@@ -468,29 +468,29 @@ export function ProveedorForm({
                       key={c.id}
                       className={`rounded-lg border p-4 space-y-3 transition-colors ${
                         c.principal
-                          ? "border-[#6B4F7A]/60 bg-[#6B4F7A]/5"
+                          ? "border-[#7C3AED]/60 bg-[#7C3AED]/5"
                           : "border-gray-200 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-900/50"
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2 flex-wrap">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B4F7A]">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#7C3AED]">
                             Cuenta #{idx + 1}
                           </span>
                           {c.principal && (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-[#6B4F7A] text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-[#7C3AED] text-white text-[9px] font-bold uppercase tracking-wider px-2 py-0.5">
                               <Star className="size-2.5 fill-current" />
                               Principal {c.moneda}
                             </span>
                           )}
                         </div>
                         <div className="flex items-center gap-3">
-                          <label className="flex items-center gap-1.5 text-[10px] cursor-pointer text-gray-600 dark:text-gray-300 hover:text-[#6B4F7A]">
+                          <label className="flex items-center gap-1.5 text-[10px] cursor-pointer text-gray-600 dark:text-gray-300 hover:text-[#7C3AED]">
                             <input
                               type="checkbox"
                               checked={c.principal}
                               onChange={() => setPrincipal(c.id)}
-                              className="rounded accent-[#6B4F7A]"
+                              className="rounded accent-[#7C3AED]"
                             />
                             Principal
                           </label>
@@ -566,7 +566,7 @@ export function ProveedorForm({
                               <button
                                 type="button"
                                 onClick={() => copiar(c.cbu, `cbu-${c.id}`)}
-                                className="shrink-0 inline-flex items-center justify-center size-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#6B4F7A] hover:bg-[#6B4F7A]/5"
+                                className="shrink-0 inline-flex items-center justify-center size-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#7C3AED] hover:bg-[#7C3AED]/5"
                                 title="Copiar CBU"
                               >
                                 {copiado === `cbu-${c.id}` ? (
@@ -591,7 +591,7 @@ export function ProveedorForm({
                               <button
                                 type="button"
                                 onClick={() => copiar(c.alias, `alias-${c.id}`)}
-                                className="shrink-0 inline-flex items-center justify-center size-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#6B4F7A] hover:bg-[#6B4F7A]/5"
+                                className="shrink-0 inline-flex items-center justify-center size-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-[#7C3AED] hover:bg-[#7C3AED]/5"
                                 title="Copiar alias"
                               >
                                 {copiado === `alias-${c.id}` ? (
@@ -619,7 +619,7 @@ export function ProveedorForm({
                   <button
                     type="button"
                     onClick={addCuenta}
-                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-dashed border-[#6B4F7A]/40 bg-[#6B4F7A]/5 hover:bg-[#6B4F7A]/10 px-3 py-2 text-xs font-semibold text-[#6B4F7A] transition-colors"
+                    className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-dashed border-[#7C3AED]/40 bg-[#7C3AED]/5 hover:bg-[#7C3AED]/10 px-3 py-2 text-xs font-semibold text-[#7C3AED] transition-colors"
                   >
                     <Plus className="size-3.5" />
                     Agregar otra cuenta
@@ -634,13 +634,13 @@ export function ProveedorForm({
         <Card className="lg:col-span-1">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <UserPlus className="size-5 text-[#6B4F7A]" />
+              <UserPlus className="size-5 text-[#7C3AED]" />
               Contactos
             </CardTitle>
             <button
               type="button"
               onClick={addContacto}
-              className="inline-flex items-center gap-1 rounded-md bg-[#6B4F7A] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+              className="inline-flex items-center gap-1 rounded-md bg-[#7C3AED] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#9D5CF0] transition-colors"
             >
               <Plus className="size-3.5" />
               Agregar
@@ -656,7 +656,7 @@ export function ProveedorForm({
                 <button
                   type="button"
                   onClick={addContacto}
-                  className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A]"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-[#7C3AED] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#9D5CF0]"
                 >
                   <Plus className="size-3.5" />
                   Agregar primer contacto
@@ -670,7 +670,7 @@ export function ProveedorForm({
                 className="rounded-lg border border-gray-200 dark:border-neutral-800 bg-gray-50/50 dark:bg-neutral-900/50 p-3 space-y-2"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#6B4F7A]">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#7C3AED]">
                     Contacto #{idx + 1}
                   </span>
                   <button
@@ -746,7 +746,7 @@ export function ProveedorForm({
               <button
                 type="button"
                 onClick={addContacto}
-                className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-dashed border-[#6B4F7A]/40 bg-[#6B4F7A]/5 hover:bg-[#6B4F7A]/10 px-3 py-2 text-xs font-semibold text-[#6B4F7A] transition-colors"
+                className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-dashed border-[#7C3AED]/40 bg-[#7C3AED]/5 hover:bg-[#7C3AED]/10 px-3 py-2 text-xs font-semibold text-[#7C3AED] transition-colors"
               >
                 <Plus className="size-3.5" />
                 Agregar otro contacto
@@ -759,13 +759,13 @@ export function ProveedorForm({
         <Card className="lg:col-span-3">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <ListOrdered className="size-5 text-[#6B4F7A]" />
+              <ListOrdered className="size-5 text-[#7C3AED]" />
               Lista de precios ({data.listaPrecios.length})
             </CardTitle>
             <button
               type="button"
               onClick={addItem}
-              className="inline-flex items-center gap-1 rounded-md bg-[#6B4F7A] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A] transition-colors"
+              className="inline-flex items-center gap-1 rounded-md bg-[#7C3AED] px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-[#9D5CF0] transition-colors"
             >
               <Plus className="size-3.5" />
               Agregar fila
@@ -781,7 +781,7 @@ export function ProveedorForm({
                 <button
                   type="button"
                   onClick={addItem}
-                  className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#8B6F9A]"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-[#7C3AED] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#9D5CF0]"
                 >
                   <Plus className="size-3.5" />
                   Agregar primer producto
@@ -857,7 +857,7 @@ export function ProveedorForm({
               <button
                 type="button"
                 onClick={addItem}
-                className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-dashed border-[#6B4F7A]/40 bg-[#6B4F7A]/5 hover:bg-[#6B4F7A]/10 px-3 py-2.5 text-sm font-semibold text-[#6B4F7A] transition-colors"
+                className="w-full inline-flex items-center justify-center gap-1.5 rounded-md border border-dashed border-[#7C3AED]/40 bg-[#7C3AED]/5 hover:bg-[#7C3AED]/10 px-3 py-2.5 text-sm font-semibold text-[#7C3AED] transition-colors"
               >
                 <Plus className="size-4" />
                 Agregar fila

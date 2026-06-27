@@ -187,7 +187,7 @@ export function ImageCropperModal({
                 disabled={isNatural && naturalRatio === null}
                 className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors ${
                   isActive
-                    ? "bg-[#6B4F7A] text-white"
+                    ? "bg-[#7C3AED] text-white"
                     : "bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 border border-gray-200 dark:border-neutral-800 hover:bg-gray-100 dark:hover:bg-neutral-800"
                 } disabled:opacity-50`}
               >
@@ -235,7 +235,7 @@ export function ImageCropperModal({
               max={5}
               step={0.05}
               onChange={(e) => setZoom(Number(e.target.value))}
-              className="flex-1 accent-[#6B4F7A]"
+              className="flex-1 accent-[#7C3AED]"
             />
             <span className="text-xs font-mono text-gray-500 dark:text-gray-400 shrink-0 w-10 text-right">
               {zoom.toFixed(1)}x
@@ -255,7 +255,7 @@ export function ImageCropperModal({
           <Button
             onClick={handleSave}
             disabled={saving || !croppedAreaPixels}
-            className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+            className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
           >
             {saving ? (
               <>

@@ -179,7 +179,7 @@ export default async function PedidoDetailPage({
                     disabled={pedido.estado === key}
                     className={`px-3 py-1.5 text-xs rounded-full border transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${
                       pedido.estado === key
-                        ? "bg-[#6B4F7A] text-white border-[#6B4F7A]"
+                        ? "bg-[#7C3AED] text-white border-[#7C3AED]"
                         : "hover:bg-gray-50 dark:hover:bg-neutral-900"
                     }`}
                   >
@@ -217,7 +217,7 @@ export default async function PedidoDetailPage({
                     placeholder="Codigo de tracking"
                   />
                 </div>
-                <Button type="submit" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]">
+                <Button type="submit" className="bg-[#7C3AED] hover:bg-[#9D5CF0]">
                   Guardar
                 </Button>
               </form>
@@ -307,7 +307,7 @@ export default async function PedidoDetailPage({
                   placeholder="Agregar notas sobre este pedido..."
                   rows={4}
                 />
-                <Button type="submit" size="sm" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]">
+                <Button type="submit" size="sm" className="bg-[#7C3AED] hover:bg-[#9D5CF0]">
                   Guardar notas
                 </Button>
               </form>

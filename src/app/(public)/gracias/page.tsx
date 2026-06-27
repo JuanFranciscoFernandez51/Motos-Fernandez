@@ -91,7 +91,7 @@ function GraciasContent() {
 
         <Link
           href="/catalogo"
-          className="mt-6 inline-flex items-center gap-1.5 text-sm text-[#6B4F7A] dark:text-[#C8C8D0] hover:underline font-semibold"
+          className="mt-6 inline-flex items-center gap-1.5 text-sm text-[#7C3AED] dark:text-[#C8C8D0] hover:underline font-semibold"
         >
           <Bike className="size-4" />
           Ver el resto del catálogo

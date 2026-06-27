@@ -289,12 +289,12 @@ export default async function EditarMandatoPage({
   return (
     <div className="space-y-6">
       {/* Banner con numero + acciones */}
-      <Card className="border-[#6B4F7A]/30">
+      <Card className="border-[#7C3AED]/30">
         <CardContent className="p-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400 uppercase">Mandato</p>
-              <p className="font-mono text-lg font-bold text-[#6B4F7A]">
+              <p className="font-mono text-lg font-bold text-[#7C3AED]">
                 {formatNumero("MV", mandato.numero)}
               </p>
             </div>
@@ -345,7 +345,7 @@ export default async function EditarMandatoPage({
               </>
             ) : (
               <form action={publicarEnCatalogo.bind(null, mandato.id)}>
-                <Button type="submit" className="bg-[#6B4F7A] hover:bg-[#8B6F9A]">
+                <Button type="submit" className="bg-[#7C3AED] hover:bg-[#9D5CF0]">
                   <Rocket className="size-4 mr-1" />
                   Publicar en catálogo
                 </Button>

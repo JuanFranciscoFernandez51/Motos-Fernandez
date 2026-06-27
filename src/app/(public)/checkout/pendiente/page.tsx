@@ -54,8 +54,8 @@ export default async function CheckoutPendientePage({
           )}
 
           {/* Contact info */}
-          <div className="rounded-lg bg-[#6B4F7A]/5 border border-[#6B4F7A]/20 px-4 py-4 mb-6 text-left text-sm">
-            <p className="font-semibold text-[#6B4F7A] mb-2">¿Necesitás ayuda?</p>
+          <div className="rounded-lg bg-[#7C3AED]/5 border border-[#7C3AED]/20 px-4 py-4 mb-6 text-left text-sm">
+            <p className="font-semibold text-[#7C3AED] mb-2">¿Necesitás ayuda?</p>
             <p className="text-gray-600 dark:text-gray-300">
               <span className="font-medium">WhatsApp:</span> {BUSINESS.whatsappDisplay}
             </p>
@@ -82,7 +82,7 @@ export default async function CheckoutPendientePage({
 
             <Link
               href="/tienda"
-              className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-[#6B4F7A] hover:text-[#6B4F7A] transition-colors"
+              className="flex items-center justify-center gap-2 w-full rounded-lg border border-gray-200 dark:border-neutral-800 px-6 py-3 text-sm font-medium text-gray-600 dark:text-gray-300 hover:border-[#7C3AED] hover:text-[#7C3AED] transition-colors"
             >
               <ShoppingBag className="size-4" />
               Volver a la tienda

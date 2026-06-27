@@ -152,7 +152,7 @@ export function MandatoForm({
         </div>
         <Button
           type="submit"
-          className="bg-[#6B4F7A] hover:bg-[#8B6F9A]"
+          className="bg-[#7C3AED] hover:bg-[#9D5CF0]"
           disabled={isPending}
         >
           {isPending ? (
@@ -197,8 +197,8 @@ export function MandatoForm({
                 onClick={() => set("tipoTenencia", "EN_LOCAL")}
                 className={`text-left rounded-lg border-2 p-4 transition-colors ${
                   data.tipoTenencia === "EN_LOCAL"
-                    ? "border-[#6B4F7A] bg-[#6B4F7A]/5"
-                    : "border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/50"
+                    ? "border-[#7C3AED] bg-[#7C3AED]/5"
+                    : "border-gray-200 dark:border-neutral-800 hover:border-[#7C3AED]/50"
                 }`}
               >
                 <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
@@ -214,8 +214,8 @@ export function MandatoForm({
                 onClick={() => set("tipoTenencia", "EN_DOMICILIO")}
                 className={`text-left rounded-lg border-2 p-4 transition-colors ${
                   data.tipoTenencia === "EN_DOMICILIO"
-                    ? "border-[#6B4F7A] bg-[#6B4F7A]/5"
-                    : "border-gray-200 dark:border-neutral-800 hover:border-[#6B4F7A]/50"
+                    ? "border-[#7C3AED] bg-[#7C3AED]/5"
+                    : "border-gray-200 dark:border-neutral-800 hover:border-[#7C3AED]/50"
                 }`}
               >
                 <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
@@ -406,7 +406,7 @@ export function MandatoForm({
               />
             </div>
             {data.tieneTitulo && (
-              <div className="flex items-center justify-between pl-3 -mt-1 border-l-2 border-[#6B4F7A]/20">
+              <div className="flex items-center justify-between pl-3 -mt-1 border-l-2 border-[#7C3AED]/20">
                 <Label className="text-xs text-gray-500 dark:text-gray-400">
                   ¿A nombre del cliente?
                 </Label>
@@ -431,7 +431,7 @@ export function MandatoForm({
               />
             </div>
             {data.tienePrenda && (
-              <div className="pl-3 -mt-1 border-l-2 border-[#6B4F7A]/20">
+              <div className="pl-3 -mt-1 border-l-2 border-[#7C3AED]/20">
                 <Label htmlFor="detallePrenda" className="text-xs text-gray-500 dark:text-gray-400">
                   Detalle de la prenda
                 </Label>

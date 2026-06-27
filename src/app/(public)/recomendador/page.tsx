@@ -297,7 +297,7 @@ export default function RecomendadorPage() {
       <main className="min-h-screen bg-[#F8F5FA] dark:bg-neutral-900 py-14">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-gradient-to-br from-[#6B4F7A] to-[#9B59B6] mb-5 shadow-lg">
+            <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-gradient-to-br from-[#7C3AED] to-[#9B59B6] mb-5 shadow-lg">
               <Sparkles className="size-8 text-white" />
             </div>
             <h1 className="text-3xl sm:text-4xl font-bold text-[#1A1A1A] dark:text-white font-heading">
@@ -310,13 +310,13 @@ export default function RecomendadorPage() {
 
           {/* Razonamiento */}
           {resultado.razonamiento && (
-            <div className="mb-10 mx-auto max-w-3xl rounded-2xl bg-white dark:bg-neutral-900 border border-[#6B4F7A]/20 p-5 shadow-sm">
+            <div className="mb-10 mx-auto max-w-3xl rounded-2xl bg-white dark:bg-neutral-900 border border-[#7C3AED]/20 p-5 shadow-sm">
               <div className="flex items-start gap-3">
-                <div className="shrink-0 size-9 rounded-xl bg-[#6B4F7A]/10 flex items-center justify-center text-[#6B4F7A]">
+                <div className="shrink-0 size-9 rounded-xl bg-[#7C3AED]/10 flex items-center justify-center text-[#7C3AED]">
                   <Sparkles className="size-5" />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-[#6B4F7A] uppercase tracking-wider mb-1">
+                  <p className="text-xs font-semibold text-[#7C3AED] uppercase tracking-wider mb-1">
                     Por qué elegimos estas motos
                   </p>
                   <p className="text-sm text-gray-700 dark:text-gray-300 font-body leading-relaxed">
@@ -333,14 +333,14 @@ export default function RecomendadorPage() {
               <Link
                 key={modelo.id}
                 href={`/catalogo/${modelo.slug}`}
-                className="group relative flex flex-col rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden border border-gray-100 dark:border-neutral-800 hover:border-[#6B4F7A]/40 hover:shadow-xl hover:shadow-[#6B4F7A]/10 transition-all duration-300"
+                className="group relative flex flex-col rounded-2xl bg-white dark:bg-neutral-900 overflow-hidden border border-gray-100 dark:border-neutral-800 hover:border-[#7C3AED]/40 hover:shadow-xl hover:shadow-[#7C3AED]/10 transition-all duration-300"
               >
                 {/* Badge numero de recomendación */}
                 <div
                   className={`absolute top-3 left-3 z-10 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-bold shadow-md ${
                     idx === 0
-                      ? "bg-gradient-to-r from-[#6B4F7A] to-[#9B59B6] text-white"
-                      : "bg-white dark:bg-neutral-900 text-[#6B4F7A] border border-[#6B4F7A]/30"
+                      ? "bg-gradient-to-r from-[#7C3AED] to-[#9B59B6] text-white"
+                      : "bg-white dark:bg-neutral-900 text-[#7C3AED] border border-[#7C3AED]/30"
                   }`}
                 >
                   {idx === 0 ? (
@@ -384,7 +384,7 @@ export default function RecomendadorPage() {
 
                 {/* Info */}
                 <div className="flex-1 flex flex-col p-5">
-                  <p className="text-[11px] font-semibold text-[#8B6F9A] uppercase tracking-wider">
+                  <p className="text-[11px] font-semibold text-[#9D5CF0] uppercase tracking-wider">
                     {modelo.marca}
                   </p>
                   <h3 className="mt-1 text-lg font-bold text-[#1A1A1A] dark:text-white font-heading leading-tight">
@@ -396,14 +396,14 @@ export default function RecomendadorPage() {
                     {modelo.anio && <span>{modelo.anio}</span>}
                   </p>
                   <div className="mt-auto pt-4">
-                    <p className="text-lg font-bold text-[#6B4F7A]">
+                    <p className="text-lg font-bold text-[#7C3AED]">
                       {formatPrice(modelo.precio, modelo.moneda)}
                     </p>
                     <div className="mt-3 flex items-center justify-between gap-2 pt-3 border-t border-gray-100 dark:border-neutral-800">
-                      <span className="text-xs font-semibold text-[#6B4F7A] group-hover:text-[#9B59B6] transition-colors">
+                      <span className="text-xs font-semibold text-[#7C3AED] group-hover:text-[#9B59B6] transition-colors">
                         Ver detalle
                       </span>
-                      <ArrowRight className="size-4 text-[#6B4F7A] group-hover:translate-x-1 transition-transform" />
+                      <ArrowRight className="size-4 text-[#7C3AED] group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </div>
@@ -415,14 +415,14 @@ export default function RecomendadorPage() {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/catalogo"
-              className="inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#5a4267] transition-colors shadow-md"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#7C3AED] px-6 py-3 text-sm font-semibold text-white hover:bg-[#5a4267] transition-colors shadow-md"
             >
               Ver todo el catálogo
               <ArrowRight className="size-4" />
             </Link>
             <button
               onClick={reiniciar}
-              className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white dark:bg-neutral-900 px-6 py-3 text-sm font-semibold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl border border-[#7C3AED]/30 bg-white dark:bg-neutral-900 px-6 py-3 text-sm font-semibold text-[#7C3AED] hover:bg-[#7C3AED]/5 transition-colors"
             >
               <RefreshCw className="size-4" />
               Hacer quiz de nuevo
@@ -441,7 +441,7 @@ export default function RecomendadorPage() {
     return (
       <main className="min-h-screen bg-[#F8F5FA] dark:bg-neutral-900 flex items-center justify-center py-14">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-gradient-to-br from-[#6B4F7A] to-[#9B59B6] mb-5 shadow-lg animate-pulse">
+          <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-gradient-to-br from-[#7C3AED] to-[#9B59B6] mb-5 shadow-lg animate-pulse">
             <Sparkles className="size-8 text-white" />
           </div>
           <h2 className="text-2xl font-bold text-[#1A1A1A] dark:text-white font-heading">
@@ -450,7 +450,7 @@ export default function RecomendadorPage() {
           <p className="mt-2 text-gray-500 dark:text-gray-400 font-body">
             Estamos eligiendo las 3 motos ideales para vos
           </p>
-          <Loader2 className="size-8 text-[#6B4F7A] animate-spin mx-auto mt-6" />
+          <Loader2 className="size-8 text-[#7C3AED] animate-spin mx-auto mt-6" />
         </div>
       </main>
     )
@@ -471,14 +471,14 @@ export default function RecomendadorPage() {
           <div className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
             <button
               onClick={reintentar}
-              className="inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#5a4267] transition-colors shadow-md"
+              className="inline-flex items-center gap-2 rounded-xl bg-[#7C3AED] px-6 py-3 text-sm font-semibold text-white hover:bg-[#5a4267] transition-colors shadow-md"
             >
               <RefreshCw className="size-4" />
               Reintentar
             </button>
             <button
               onClick={reiniciar}
-              className="inline-flex items-center gap-2 rounded-xl border border-[#6B4F7A]/30 bg-white dark:bg-neutral-900 px-6 py-3 text-sm font-semibold text-[#6B4F7A] hover:bg-[#6B4F7A]/5 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl border border-[#7C3AED]/30 bg-white dark:bg-neutral-900 px-6 py-3 text-sm font-semibold text-[#7C3AED] hover:bg-[#7C3AED]/5 transition-colors"
             >
               Empezar de nuevo
             </button>
@@ -494,7 +494,7 @@ export default function RecomendadorPage() {
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-gradient-to-br from-[#6B4F7A] to-[#9B59B6] mb-4 shadow-lg">
+          <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-gradient-to-br from-[#7C3AED] to-[#9B59B6] mb-4 shadow-lg">
             <Sparkles className="size-7 text-white" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-[#1A1A1A] dark:text-white font-heading">
@@ -508,7 +508,7 @@ export default function RecomendadorPage() {
         {/* Barra de progreso */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-[#6B4F7A] uppercase tracking-wider">
+            <span className="text-xs font-semibold text-[#7C3AED] uppercase tracking-wider">
               Paso {paso + 1} de {totalPasos}
             </span>
             <span className="text-xs text-gray-400">
@@ -517,7 +517,7 @@ export default function RecomendadorPage() {
           </div>
           <div className="h-2 rounded-full bg-gray-200 overflow-hidden">
             <div
-              className="h-full bg-gradient-to-r from-[#6B4F7A] to-[#9B59B6] transition-all duration-500 ease-out"
+              className="h-full bg-gradient-to-r from-[#7C3AED] to-[#9B59B6] transition-all duration-500 ease-out"
               style={{ width: `${progreso}%` }}
             />
           </div>
@@ -553,12 +553,12 @@ export default function RecomendadorPage() {
                   onClick={() => handleSeleccionar(opcion.value)}
                   className={`relative text-left rounded-xl border-2 p-4 transition-all duration-200 hover:shadow-md ${
                     seleccionada
-                      ? "border-[#6B4F7A] bg-[#6B4F7A]/5 shadow-md"
-                      : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#6B4F7A]/40"
+                      ? "border-[#7C3AED] bg-[#7C3AED]/5 shadow-md"
+                      : "border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-[#7C3AED]/40"
                   }`}
                 >
                   {opcion.recomendado && (
-                    <span className="absolute -top-2 -right-2 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#6B4F7A] to-[#9B59B6] px-2.5 py-0.5 text-[10px] font-bold text-white shadow-md">
+                    <span className="absolute -top-2 -right-2 inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-[#7C3AED] to-[#9B59B6] px-2.5 py-0.5 text-[10px] font-bold text-white shadow-md">
                       <Star className="size-2.5 fill-current" />
                       RECOMENDADO
                     </span>
@@ -567,8 +567,8 @@ export default function RecomendadorPage() {
                     <div
                       className={`mb-3 inline-flex items-center justify-center size-12 rounded-xl ${
                         seleccionada
-                          ? "bg-[#6B4F7A] text-white"
-                          : "bg-[#6B4F7A]/10 text-[#6B4F7A]"
+                          ? "bg-[#7C3AED] text-white"
+                          : "bg-[#7C3AED]/10 text-[#7C3AED]"
                       } transition-colors`}
                     >
                       {opcion.icon}
@@ -576,7 +576,7 @@ export default function RecomendadorPage() {
                   )}
                   <p
                     className={`font-semibold font-heading ${
-                      seleccionada ? "text-[#6B4F7A]" : "text-[#1A1A1A] dark:text-white"
+                      seleccionada ? "text-[#7C3AED]" : "text-[#1A1A1A] dark:text-white"
                     }`}
                   >
                     {opcion.label}
@@ -597,7 +597,7 @@ export default function RecomendadorPage() {
           <button
             onClick={volverPaso}
             disabled={paso === 0}
-            className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-[#6B4F7A] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-[#7C3AED] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             <ArrowLeft className="size-4" />
             Anterior
@@ -610,7 +610,7 @@ export default function RecomendadorPage() {
               else enviarQuiz(respuestas)
             }}
             disabled={!respuestas[preguntaActual.key]}
-            className="inline-flex items-center gap-2 rounded-xl bg-[#6B4F7A] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#5a4267] disabled:opacity-30 disabled:cursor-not-allowed transition-colors shadow-md"
+            className="inline-flex items-center gap-2 rounded-xl bg-[#7C3AED] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#5a4267] disabled:opacity-30 disabled:cursor-not-allowed transition-colors shadow-md"
           >
             {paso === totalPasos - 1 ? "Ver resultado" : "Siguiente"}
             <ArrowRight className="size-4" />
@@ -714,8 +714,8 @@ function ContactoLeadCard({
   }
 
   return (
-    <div className="mt-12 mx-auto max-w-2xl rounded-2xl bg-white dark:bg-neutral-900 border border-[#6B4F7A]/20 shadow-lg overflow-hidden">
-      <div className="bg-gradient-to-r from-[#6B4F7A] to-[#9B59B6] px-6 sm:px-8 py-5 text-white">
+    <div className="mt-12 mx-auto max-w-2xl rounded-2xl bg-white dark:bg-neutral-900 border border-[#7C3AED]/20 shadow-lg overflow-hidden">
+      <div className="bg-gradient-to-r from-[#7C3AED] to-[#9B59B6] px-6 sm:px-8 py-5 text-white">
         <div className="flex items-start gap-3">
           <div className="shrink-0 size-10 rounded-full bg-white/20 flex items-center justify-center">
             <Phone className="size-5" />
@@ -744,7 +744,7 @@ function ContactoLeadCard({
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               placeholder="Juan Pérez"
-              className="w-full pl-10 pr-3 py-2.5 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+              className="w-full pl-10 pr-3 py-2.5 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] focus:border-[#7C3AED] outline-none"
               autoComplete="name"
             />
           </div>
@@ -762,7 +762,7 @@ function ContactoLeadCard({
                 value={telefono}
                 onChange={(e) => setTelefono(e.target.value)}
                 placeholder="291 555 0000"
-                className="w-full pl-10 pr-3 py-2.5 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+                className="w-full pl-10 pr-3 py-2.5 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] focus:border-[#7C3AED] outline-none"
                 autoComplete="tel"
               />
             </div>
@@ -778,7 +778,7 @@ function ContactoLeadCard({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="tu@email.com"
-                className="w-full pl-10 pr-3 py-2.5 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#6B4F7A] focus:border-[#6B4F7A] outline-none"
+                className="w-full pl-10 pr-3 py-2.5 text-sm rounded-md border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-[#7C3AED] focus:border-[#7C3AED] outline-none"
                 autoComplete="email"
               />
             </div>
@@ -795,7 +795,7 @@ function ContactoLeadCard({
         <button
           type="submit"
           disabled={sending}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#6B4F7A] hover:bg-[#5a4267] px-6 py-3 text-sm font-bold text-white shadow-md transition-colors disabled:opacity-60"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#7C3AED] hover:bg-[#5a4267] px-6 py-3 text-sm font-bold text-white shadow-md transition-colors disabled:opacity-60"
         >
           {sending ? (
             <Loader2 className="size-4 animate-spin" />

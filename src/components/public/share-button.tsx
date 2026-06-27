@@ -63,7 +63,7 @@ export function ShareButton({ title, text, path, variant = "full", className = "
           type="button"
           onClick={handleClick}
           aria-label="Compartir"
-          className="inline-flex items-center justify-center size-9 rounded-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-600 dark:text-gray-300 hover:text-[#6B4F7A] hover:border-[#6B4F7A] transition-colors"
+          className="inline-flex items-center justify-center size-9 rounded-full bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 text-gray-600 dark:text-gray-300 hover:text-[#7C3AED] hover:border-[#7C3AED] transition-colors"
         >
           <Share2 className="size-4" />
         </button>
@@ -71,7 +71,7 @@ export function ShareButton({ title, text, path, variant = "full", className = "
         <button
           type="button"
           onClick={handleClick}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#6B4F7A] hover:border-[#6B4F7A] transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-[#7C3AED] hover:border-[#7C3AED] transition-colors"
         >
           <Share2 className="size-4" />
           Compartir

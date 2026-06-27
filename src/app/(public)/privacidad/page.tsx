@@ -20,7 +20,7 @@ const sections = [
         </p>
         <p className="mt-2">
           Para consultas sobre el tratamiento de tus datos, contactanos a{" "}
-          <a href={`mailto:${BUSINESS.email}`} className="text-[#6B4F7A] font-semibold underline">
+          <a href={`mailto:${BUSINESS.email}`} className="text-[#7C3AED] font-semibold underline">
             {BUSINESS.email}
           </a>
           .
@@ -179,7 +179,7 @@ const sections = [
         </ul>
         <p className="mt-2">
           Para ejercer estos derechos, escribinos a{" "}
-          <a href={`mailto:${BUSINESS.email}`} className="text-[#6B4F7A] font-semibold underline">
+          <a href={`mailto:${BUSINESS.email}`} className="text-[#7C3AED] font-semibold underline">
             {BUSINESS.email}
           </a>{" "}
           con una copia de tu DNI. Te responderemos dentro de los 10 días corridos, sin costo.
@@ -200,7 +200,7 @@ const sections = [
         </p>
         <p className="mt-2">
           Para cualquier consulta sobre esta política o sobre el tratamiento de tus datos, escribinos a{" "}
-          <a href={`mailto:${BUSINESS.email}`} className="text-[#6B4F7A] font-semibold underline">
+          <a href={`mailto:${BUSINESS.email}`} className="text-[#7C3AED] font-semibold underline">
             {BUSINESS.email}
           </a>{" "}
           o por WhatsApp al {BUSINESS.whatsappDisplay}.
@@ -248,8 +248,8 @@ export default function Page() {
               return (
                 <div key={i} className="pb-8 border-b border-gray-100 dark:border-neutral-800 last:border-b-0 last:pb-0">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="size-9 rounded-full bg-[#6B4F7A]/10 flex items-center justify-center">
-                      <Icon className="size-4 text-[#6B4F7A]" />
+                    <div className="size-9 rounded-full bg-[#7C3AED]/10 flex items-center justify-center">
+                      <Icon className="size-4 text-[#7C3AED]" />
                     </div>
                     <h2 className="text-base font-bold text-[#1A1A1A] dark:text-white">
                       {section.title}
@@ -267,7 +267,7 @@ export default function Page() {
         <div className="mt-6 text-center">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-[#6B4F7A] hover:text-[#9B59B6]"
+            className="inline-flex items-center gap-2 text-sm text-[#7C3AED] hover:text-[#9B59B6]"
           >
             <ArrowLeft className="size-4" />
             Volver al inicio

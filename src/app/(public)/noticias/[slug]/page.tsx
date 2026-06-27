@@ -61,7 +61,7 @@ export default async function NoticiaDetailPage({ params }: Props) {
           {/* Category + date */}
           <div className="flex items-center gap-3 mb-4">
             {noticia.categoria && (
-              <span className="bg-[#6B4F7A]/10 text-[#6B4F7A] text-xs font-semibold px-2.5 py-1 rounded-full">
+              <span className="bg-[#7C3AED]/10 text-[#7C3AED] text-xs font-semibold px-2.5 py-1 rounded-full">
                 {noticia.categoria}
               </span>
             )}
@@ -99,7 +99,7 @@ export default async function NoticiaDetailPage({ params }: Props) {
 
           {/* Resumen destacado */}
           {noticia.resumen && (
-            <div className="border-l-4 border-[#6B4F7A] pl-4 mb-8 text-gray-600 dark:text-gray-300 italic text-lg leading-relaxed">
+            <div className="border-l-4 border-[#7C3AED] pl-4 mb-8 text-gray-600 dark:text-gray-300 italic text-lg leading-relaxed">
               {noticia.resumen}
             </div>
           )}
@@ -108,7 +108,7 @@ export default async function NoticiaDetailPage({ params }: Props) {
           <div
             className="prose prose-gray max-w-none text-gray-700 dark:text-gray-300 leading-relaxed
               prose-headings:text-[#1A1A1A] dark:text-white prose-headings:font-bold
-              prose-a:text-[#6B4F7A] prose-a:no-underline hover:prose-a:underline
+              prose-a:text-[#7C3AED] prose-a:no-underline hover:prose-a:underline
               prose-img:rounded-xl prose-img:shadow-sm
               prose-strong:text-[#1A1A1A] dark:text-white"
             dangerouslySetInnerHTML={{ __html: noticia.contenido }}
@@ -118,7 +118,7 @@ export default async function NoticiaDetailPage({ params }: Props) {
           <div className="mt-12 pt-6 border-t border-gray-100 dark:border-neutral-800">
             <Link
               href="/noticias"
-              className="inline-flex items-center gap-2 text-sm font-semibold text-[#6B4F7A] hover:text-[#8B6F9A] transition-colors"
+              className="inline-flex items-center gap-2 text-sm font-semibold text-[#7C3AED] hover:text-[#9D5CF0] transition-colors"
             >
               &larr; Ver todas las noticias
             </Link>
@@ -163,7 +163,7 @@ export default async function NoticiaDetailPage({ params }: Props) {
                         year: "numeric",
                       })}
                     </p>
-                    <h3 className="font-bold text-[#1A1A1A] dark:text-white text-sm leading-snug group-hover:text-[#6B4F7A] transition-colors line-clamp-2">
+                    <h3 className="font-bold text-[#1A1A1A] dark:text-white text-sm leading-snug group-hover:text-[#7C3AED] transition-colors line-clamp-2">
                       {n.titulo}
                     </h3>
                   </div>

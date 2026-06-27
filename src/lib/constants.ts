@@ -157,8 +157,8 @@ Motos Fernandez`,
 // ==================== COLORES DE MARCA ====================
 
 export const BRAND_COLORS = {
-  primary: "#6B4F7A",        // Violeta Fernandez
-  primaryLight: "#8B6F9A",   // Violeta Claro
+  primary: "#7C3AED",        // Violeta Fernandez
+  primaryLight: "#9D5CF0",   // Violeta Claro
   primaryElectric: "#9B59B6", // Violeta Electrico (highlights)
   secondary: "#1A1A1A",      // Negro Motor
   grisCarbon: "#4E4B48",     // Gris Carbon

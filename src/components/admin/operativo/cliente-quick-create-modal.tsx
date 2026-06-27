@@ -122,7 +122,7 @@ export function ClienteQuickCreateModal({
       >
         <div className="flex items-center justify-between border-b border-gray-100 dark:border-neutral-800 px-5 py-4">
           <div className="flex items-center gap-2">
-            <UserPlus className="size-5 text-[#6B4F7A]" />
+            <UserPlus className="size-5 text-[#7C3AED]" />
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               Nuevo cliente
             </h2>
@@ -233,7 +233,7 @@ export function ClienteQuickCreateModal({
                 void handleCrear()
               }}
               disabled={loading}
-              className="inline-flex items-center gap-1.5 rounded-md bg-[#6B4F7A] px-4 py-1.5 text-sm font-medium text-white hover:bg-[#8B6F9A] disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 rounded-md bg-[#7C3AED] px-4 py-1.5 text-sm font-medium text-white hover:bg-[#9D5CF0] disabled:opacity-50"
             >
               {loading && <Loader2 className="size-3 animate-spin" />}
               Crear y usar

@@ -739,7 +739,7 @@ export default async function EditModeloPage({
                       {u.ordenCompraVentaId ? (
                         <a
                           href={`/admin/ordenes-compra/${u.ordenCompraVentaId}`}
-                          className="text-[#6B4F7A] hover:underline font-mono text-xs"
+                          className="text-[#7C3AED] hover:underline font-mono text-xs"
                         >
                           OC-{String(u.ordenCompraVenta?.numero ?? "").padStart(4, "0")}
                         </a>

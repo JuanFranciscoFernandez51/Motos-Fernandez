@@ -115,7 +115,7 @@ export default async function ProductosPage({
         </div>
         <Link
           href="/admin/productos/nuevo"
-          className="inline-flex items-center gap-2 rounded-lg bg-[#6B4F7A] px-4 py-2 text-sm font-medium text-white hover:bg-[#8B6F9A] transition-colors"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#7C3AED] px-4 py-2 text-sm font-medium text-white hover:bg-[#9D5CF0] transition-colors"
         >
           <Plus className="h-4 w-4" />
           Nuevo producto
@@ -145,7 +145,7 @@ export default async function ProductosPage({
           href={`/admin/productos${q ? `?q=${q}` : ""}`}
           className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
             !cat
-              ? "bg-[#6B4F7A] text-white"
+              ? "bg-[#7C3AED] text-white"
               : "bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800"
           }`}
         >
@@ -157,7 +157,7 @@ export default async function ProductosPage({
             href={`/admin/productos?cat=${c.id}${q ? `&q=${q}` : ""}`}
             className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
               cat === c.id
-                ? "bg-[#6B4F7A] text-white"
+                ? "bg-[#7C3AED] text-white"
                 : "bg-white dark:bg-neutral-900 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 border border-gray-200 dark:border-neutral-800"
             }`}
           >
@@ -225,7 +225,7 @@ export default async function ProductosPage({
                         className="w-28 h-8 text-sm"
                         min={0}
                       />
-                      <button type="submit" className="text-xs text-[#6B4F7A] hover:underline whitespace-nowrap">
+                      <button type="submit" className="text-xs text-[#7C3AED] hover:underline whitespace-nowrap">
                         OK
                       </button>
                     </form>
@@ -240,7 +240,7 @@ export default async function ProductosPage({
                         className="w-20 h-8 text-sm"
                         min={0}
                       />
-                      <button type="submit" className="text-xs text-[#6B4F7A] hover:underline whitespace-nowrap">
+                      <button type="submit" className="text-xs text-[#7C3AED] hover:underline whitespace-nowrap">
                         OK
                       </button>
                     </form>
@@ -274,7 +274,7 @@ export default async function ProductosPage({
                   <TableCell>
                     <Link
                       href={`/admin/productos/${producto.id}`}
-                      className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300 hover:text-[#6B4F7A] transition-colors"
+                      className="inline-flex items-center gap-1 text-sm text-gray-600 dark:text-gray-300 hover:text-[#7C3AED] transition-colors"
                     >
                       <Pencil className="h-4 w-4" />
                       Editar

@@ -44,7 +44,7 @@ export function GraficoAnual({ ingresos, gastos, resultado }: Props) {
           <Legend wrapperStyle={{ fontSize: 12 }} />
           <Bar dataKey="Ingresos" fill="#34a87a" radius={[4, 4, 0, 0]} maxBarSize={26} />
           <Bar dataKey="Gastos" fill="#e26d6d" radius={[4, 4, 0, 0]} maxBarSize={26} />
-          <Line type="monotone" dataKey="Resultado" stroke="#3A8B96" strokeWidth={2.5} dot={{ r: 3 }} />
+          <Line type="monotone" dataKey="Resultado" stroke="#7C3AED" strokeWidth={2.5} dot={{ r: 3 }} />
         </ComposedChart>
       </ResponsiveContainer>
     </div>
