@@ -934,6 +934,10 @@ model OrdenCompra {
   // pagos + permutas + monto financiado y debería igualar a precioVenta.
   pagos OCPago[]
 
+  // Señas / entregas a cuenta registradas ANTES de concretar la venta
+  // (etapa "RESERVADA"). Cada seña puede registrarse en la caja de Finanzas.
+  senias OCSenia[]
+
   // Unidades EXTRA vendidas (2da, 3ra...). La unidad principal sigue en
   // los campos modeloId + motoDescripcion/snapshots + (precioVenta es el
   // TOTAL). El precio de la principal se deriva: precioVenta - suma(ventas).
@@ -952,6 +956,31 @@ model OrdenCompra {
   @@index([estado])
   @@index([fecha])
   @@map("VentaMoto")
+}
+
+// ==================== SEÑAS / ENTREGAS A CUENTA ====================
+// Pagos parciales que el cliente entrega para reservar la moto antes de
+// concretar (estado RESERVADA). Cada seña puede registrarse en la caja de
+// Finanzas (crea un MovimientoFinanciero de INGRESO vinculado).
+model OCSenia {
+  id            String      @id @default(cuid())
+  ordenCompraId String
+  ordenCompra   OrdenCompra @relation(fields: [ordenCompraId], references: [id], onDelete: Cascade)
+
+  monto   Int
+  moneda  String   @default("ARS") // "ARS" o "USD"
+  metodo  String // EFECTIVO | TRANSFERENCIA | TARJETA | MERCADO_PAGO | CHEQUE | OTRO
+  fecha   DateTime @default(now())
+  detalle String? // texto libre opcional
+
+  // Si se registró en la caja de Finanzas, este es el movimiento generado.
+  // SetNull para no romper si el movimiento se borra desde Finanzas.
+  movimientoFinancieroId String?             @unique
+  movimientoFinanciero   MovimientoFinanciero? @relation("SeniaMovimiento", fields: [movimientoFinancieroId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([ordenCompraId])
 }
 
 enum EstadoVenta {
@@ -1746,6 +1775,9 @@ model MovimientoFinanciero {
 
   // Vincula las dos patas de una transferencia entre cuentas
   transferenciaId String?
+
+  // Si este movimiento se generó al registrar una seña de OC.
+  senia OCSenia? @relation("SeniaMovimiento")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

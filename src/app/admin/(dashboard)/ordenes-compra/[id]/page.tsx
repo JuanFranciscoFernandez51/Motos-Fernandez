@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { OCForm } from "@/components/admin/operativo/oc-form"
+import { SeniasPanel } from "@/components/admin/operativo/senias-panel"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -718,12 +719,13 @@ export default async function EditarOrdenCompraPage({
   const { recien } = await searchParams
   const esReciente = recien === "1"
 
-  const [orden, clientes, modelos] = await Promise.all([
+  const [orden, clientes, modelos, cuentas] = await Promise.all([
     prisma.ordenCompra.findUnique({
       where: { id },
       include: {
         permutas: { orderBy: { createdAt: "asc" } },
         pagos: { orderBy: { createdAt: "asc" } },
+        senias: { orderBy: { fecha: "asc" } },
         ventas: { orderBy: { createdAt: "asc" } },
         financiacion: {
           // Necesitamos la fecha de la primera cuota para que el form
@@ -766,6 +768,11 @@ export default async function EditarOrdenCompraPage({
         fotos: true,
         vendida: true,
       },
+    }),
+    prisma.cuentaFinanciera.findMany({
+      where: { activa: true, excluirDeResultado: false },
+      orderBy: { orden: "asc" },
+      select: { id: true, nombre: true, moneda: true },
     }),
   ])
 
@@ -949,6 +956,24 @@ export default async function EditarOrdenCompraPage({
           </div>
         </CardContent>
       </Card>
+
+      {orden.estado !== "CANCELADA" && (
+        <SeniasPanel
+          ordenId={orden.id}
+          senias={orden.senias.map((s) => ({
+            id: s.id,
+            monto: s.monto,
+            moneda: s.moneda,
+            metodo: s.metodo,
+            fecha: s.fecha.toISOString(),
+            detalle: s.detalle,
+            enCaja: !!s.movimientoFinancieroId,
+          }))}
+          precioVenta={orden.precioVenta}
+          moneda={orden.moneda}
+          cuentas={cuentas}
+        />
+      )}
 
       <OCForm
         initialData={initialData}

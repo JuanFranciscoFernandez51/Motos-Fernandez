@@ -18,6 +18,7 @@ export async function GET(
       cliente: true,
       pagos: { orderBy: { createdAt: "asc" } },
       permutas: { orderBy: { createdAt: "asc" } },
+      senias: { orderBy: { fecha: "asc" } },
       ventas: { orderBy: { createdAt: "asc" } },
       financiacion: true,
     },
@@ -90,6 +91,13 @@ export async function GET(
           moneda: p.moneda,
           detalle: p.detalle,
           fecha: p.fecha,
+        })),
+        senias: orden.senias.map((s) => ({
+          monto: s.monto,
+          moneda: s.moneda,
+          metodo: s.metodo,
+          detalle: s.detalle,
+          fecha: s.fecha,
         })),
         permutas: orden.permutas.map((p) => ({
           marca: p.marca,

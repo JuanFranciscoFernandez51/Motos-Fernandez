@@ -157,6 +157,14 @@ type PagoData = {
   fecha?: Date | null
 }
 
+type SeniaData = {
+  monto: number
+  moneda?: string
+  metodo?: string
+  detalle?: string | null
+  fecha?: Date | null
+}
+
 type PermutaData = {
   marca?: string | null
   modelo?: string | null
@@ -233,6 +241,7 @@ type OCPDFData = {
     entrega?: number | null
   }
   pagos?: PagoData[]
+  senias?: SeniaData[]
   permutas?: PermutaData[]
   garante?: GaranteData | null
   observaciones?: string | null
@@ -282,6 +291,19 @@ export function OCPDF({ data }: { data: OCPDFData }) {
   const totalPagosOC =
     moneda === "USD" ? pagosPorMoneda.USD : pagosPorMoneda.ARS
 
+  // Sumas separadas por moneda — señas / entregas a cuenta
+  const seniasPorMoneda = (data.senias || []).reduce(
+    (acc, s) => {
+      const m = s.moneda || moneda
+      if (m === "USD") acc.USD += s.monto || 0
+      else acc.ARS += s.monto || 0
+      return acc
+    },
+    { ARS: 0, USD: 0 }
+  )
+  const totalSeniasOC =
+    moneda === "USD" ? seniasPorMoneda.USD : seniasPorMoneda.ARS
+
   // Sumas separadas por moneda — permutas
   const permutasPorMoneda = (data.permutas || []).reduce(
     (acc, p) => {
@@ -312,10 +334,10 @@ export function OCPDF({ data }: { data: OCPDFData }) {
   // El interés es margen interno y nunca entra acá.
   const finCuadre =
     tieneFinanciacion && !finEnPagos
-      ? Math.max(0, data.economico.precioVenta - totalPagosOC - totalPermutasOC)
+      ? Math.max(0, data.economico.precioVenta - totalPagosOC - totalPermutasOC - totalSeniasOC)
       : 0
   // El cubierto en la moneda de la OC. Lo que está en otra moneda no se mezcla.
-  const totalCubierto = totalPagosOC + totalPermutasOC + finCuadre
+  const totalCubierto = totalPagosOC + totalSeniasOC + totalPermutasOC + finCuadre
   const restante = data.economico.precioVenta - totalCubierto
   const tieneGarante =
     !!data.garante &&
@@ -701,9 +723,18 @@ export function OCPDF({ data }: { data: OCPDFData }) {
 
         {/* Resumen totales (solo si tiene varias formas de pago combinadas) */}
         {((data.pagos && data.pagos.length > 0) ||
+          (data.senias && data.senias.length > 0) ||
           (data.permutas && data.permutas.length > 0) ||
           tieneFinanciacion) && (
           <View style={styles.resumenBox}>
+            {(seniasPorMoneda.ARS > 0 || seniasPorMoneda.USD > 0) && (
+              <View style={styles.resumenRow}>
+                <Text style={styles.resumenLabel}>Señas / a cuenta</Text>
+                <Text style={styles.resumenValue}>
+                  {moneyMix(seniasPorMoneda.ARS, seniasPorMoneda.USD, moneda)}
+                </Text>
+              </View>
+            )}
             {(pagosPorMoneda.ARS > 0 || pagosPorMoneda.USD > 0) && (
               <View style={styles.resumenRow}>
                 <Text style={styles.resumenLabel}>Pagos directos</Text>
