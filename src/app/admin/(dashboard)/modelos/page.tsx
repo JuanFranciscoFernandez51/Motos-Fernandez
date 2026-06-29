@@ -141,6 +141,50 @@ async function markVendida(id: string, vendida: boolean) {
   invalidateModelos()
 }
 
+// Archiva una moto desde el catálogo y la saca de TODOS lados (catálogo admin,
+// stock, web pública e IG): archivada + activo=false. Cancela mandato si tiene.
+async function archivarModelo(id: string) {
+  "use server"
+  await prisma.$transaction(async (tx) => {
+    const m = await tx.modelo.findUnique({
+      where: { id },
+      select: { mandato: { select: { id: true } } },
+    })
+    await tx.modelo.update({
+      where: { id },
+      data: { archivada: true, fechaArchivada: new Date(), activo: false, etiqueta: null },
+    })
+    if (m?.mandato) {
+      await tx.mandatoVenta.update({ where: { id: m.mandato.id }, data: { estado: "CANCELADO" } })
+    }
+  })
+  // Best-effort: sacarla de MercadoLibre (la web pública ya la oculta por activo=false).
+  try {
+    const { despublicarAlVender } = await import("@/lib/ml/publication")
+    await despublicarAlVender(id)
+  } catch {}
+  revalidatePath("/admin/modelos")
+  revalidatePath("/admin/stock-motos")
+  revalidatePath("/admin/meta")
+  revalidatePath("/catalogo")
+  revalidatePath("/")
+  invalidateModelos()
+}
+
+// Restaura una moto archivada: vuelve al catálogo (activa).
+async function desarchivarModelo(id: string) {
+  "use server"
+  await prisma.modelo.update({
+    where: { id },
+    data: { archivada: false, fechaArchivada: null, motivoArchivada: null, activo: true },
+  })
+  revalidatePath("/admin/modelos")
+  revalidatePath("/admin/stock-motos")
+  revalidatePath("/catalogo")
+  revalidatePath("/")
+  invalidateModelos()
+}
+
 // Server action: crear OC desde el catálogo (con cliente, parte de pago, etc.)
 type PermutaInput = {
   marca: string | null
@@ -533,6 +577,7 @@ export default async function ModelosPage({
         cilindrada: true,
         vendida: true,
         fechaVenta: true,
+        archivada: true,
         etiqueta: true,
         proveedorId: true,
         origen: true,
@@ -611,6 +656,8 @@ export default async function ModelosPage({
         markVendida={markVendida}
         crearOCDesdeModelo={crearOCDesdeModelo}
         deleteModelo={deleteModelo}
+        archivarModelo={archivarModelo}
+        desarchivarModelo={desarchivarModelo}
       />
     </div>
   )

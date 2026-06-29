@@ -29,6 +29,8 @@ import {
   RotateCcw,
   Send,
   Loader2,
+  Archive,
+  ArchiveRestore,
 } from "lucide-react"
 import { FotosModal } from "./fotos-modal"
 import { DeleteModal } from "./delete-modal"
@@ -58,6 +60,7 @@ type Modelo = {
   cilindrada: string | null
   vendida: boolean
   fechaVenta: Date | null
+  archivada: boolean
   etiqueta: string | null
   proveedorId: string | null
   origen: string | null
@@ -97,6 +100,8 @@ export function ModelosList({
   markVendida,
   crearOCDesdeModelo,
   deleteModelo,
+  archivarModelo,
+  desarchivarModelo,
 }: {
   modelos: Modelo[]
   proveedores: ProveedorOpt[]
@@ -119,6 +124,8 @@ export function ModelosList({
     motoRecibidaId?: string | null
   }>
   deleteModelo: (id: string, confirmText: string) => Promise<void>
+  archivarModelo: (id: string) => Promise<void>
+  desarchivarModelo: (id: string) => Promise<void>
 }) {
   const [query, setQuery] = useState("")
   const [filter, setFilter] = useState<Filter>("todas")
@@ -128,6 +135,7 @@ export function ModelosList({
   const [deleteModeloId, setDeleteModeloId] = useState<string | null>(null)
   const [vendidasOpen, setVendidasOpen] = useState(false)
   const [queryVendidas, setQueryVendidas] = useState("")
+  const [archivadasOpen, setArchivadasOpen] = useState(false)
   const [ocDrawerModeloId, setOCDrawerModeloId] = useState<string | null>(null)
   const [republicandoId, setRepublicandoId] = useState<string | null>(null)
 
@@ -157,11 +165,15 @@ export function ModelosList({
 
   // Separamos activas (no vendidas) y vendidas
   const modelosActivas = useMemo(
-    () => modelos.filter((m) => !m.vendida),
+    () => modelos.filter((m) => !m.vendida && !m.archivada),
     [modelos]
   )
   const modelosVendidas = useMemo(
     () => modelos.filter((m) => m.vendida),
+    [modelos]
+  )
+  const modelosArchivadas = useMemo(
+    () => modelos.filter((m) => m.archivada),
     [modelos]
   )
 
@@ -241,6 +253,19 @@ export function ModelosList({
   // Abrir drawer "Generar OC" para vender desde el catálogo
   const handleAbrirOCDrawer = (id: string) => {
     setOCDrawerModeloId(id)
+  }
+
+  // Archivar: saca la moto de TODOS lados (catálogo, stock, web, IG).
+  const handleArchivar = (id: string, nombre: string) => {
+    if (!window.confirm(`¿Archivar "${nombre}"?\n\nSe saca del catálogo, del stock, de la web y de Instagram. La podés restaurar después desde "Archivadas".`)) return
+    startTransition(async () => {
+      await archivarModelo(id)
+    })
+  }
+  const handleDesarchivar = (id: string) => {
+    startTransition(async () => {
+      await desarchivarModelo(id)
+    })
   }
 
   // Solo se usa para "Devolver al catálogo" desde la sección Motos vendidas
@@ -695,6 +720,16 @@ export function ModelosList({
                           <Button
                             variant="ghost"
                             size="sm"
+                            onClick={() => handleArchivar(modelo.id, modelo.nombre)}
+                            disabled={isPending}
+                            title="Archivar (sacar de catálogo, stock, web e Instagram)"
+                            className="text-amber-600 hover:text-amber-700 dark:text-amber-300 hover:bg-amber-50 dark:bg-amber-950/30"
+                          >
+                            <Archive className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => setDeleteModeloId(modelo.id)}
                             title="Eliminar definitivamente"
                             className="text-red-600 hover:text-red-700 dark:text-red-300 hover:bg-red-50 dark:bg-red-950/30"
@@ -870,6 +905,70 @@ export function ModelosList({
                   </Table>
                 </div>
               </>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* ===== SECCIÓN: MOTOS ARCHIVADAS (colapsable) ===== */}
+      <div className="rounded-lg border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 overflow-hidden">
+        <button
+          onClick={() => setArchivadasOpen(!archivadasOpen)}
+          className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 dark:hover:bg-neutral-900 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            {archivadasOpen ? (
+              <ChevronDown className="size-5 text-gray-400" />
+            ) : (
+              <ChevronRight className="size-5 text-gray-400" />
+            )}
+            <Archive className="size-5 text-amber-600" />
+            <div className="text-left">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">Motos archivadas</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Sacadas del catálogo, stock, web e IG. Podés restaurarlas.
+              </p>
+            </div>
+          </div>
+          <Badge variant="secondary" className="bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300">
+            {modelosArchivadas.length}
+          </Badge>
+        </button>
+
+        {archivadasOpen && (
+          <div className="border-t border-gray-100 dark:border-neutral-800 p-5">
+            {modelosArchivadas.length === 0 ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                No hay motos archivadas.
+              </p>
+            ) : (
+              <div className="divide-y divide-gray-50 dark:divide-neutral-900">
+                {modelosArchivadas.map((modelo) => (
+                  <div key={modelo.id} className="flex items-center justify-between gap-2 py-2">
+                    <div className="flex items-center gap-3 min-w-0">
+                      {modelo.fotos[0] ? (
+                        <Image src={modelo.fotos[0]} alt={modelo.nombre} width={40} height={40} className="rounded object-cover h-10 w-10" />
+                      ) : (
+                        <div className="h-10 w-10 rounded bg-gray-100 dark:bg-neutral-800 shrink-0" />
+                      )}
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{modelo.marca} {modelo.nombre}</p>
+                        <p className="text-xs font-mono text-gray-400">{modelo.codigo || modelo.slug}</p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDesarchivar(modelo.id)}
+                      disabled={isPending}
+                      className="text-emerald-600 dark:text-emerald-300 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 shrink-0"
+                      title="Restaurar al catálogo"
+                    >
+                      <ArchiveRestore className="size-4 mr-1" /> Restaurar
+                    </Button>
+                  </div>
+                ))}
+              </div>
             )}
           </div>
         )}
