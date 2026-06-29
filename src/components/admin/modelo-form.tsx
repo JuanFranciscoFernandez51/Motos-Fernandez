@@ -21,6 +21,7 @@ import Link from "next/link"
 import { CATEGORIAS_VEHICULO, ETIQUETAS_MODELO } from "@/lib/constants"
 import { ImageUpload } from "@/components/admin/image-upload"
 import { MultiImageUpload } from "@/components/admin/multi-image-upload"
+import { mejorarFoto, fondoBlancoFoto, fotoOriginal } from "@/lib/cloudinary-mejora"
 
 type ModeloColor = {
   id?: string
@@ -1242,6 +1243,38 @@ export function ModeloForm({
                 onChange={setFotos}
                 folder="modelos"
               />
+              {fotos.length > 0 && (
+                <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-gray-100 dark:border-neutral-800 pt-3">
+                  <span className="text-xs font-medium text-gray-500">✨ Mejorar con IA:</span>
+                  <button
+                    type="button"
+                    onClick={() => setFotos((fs) => fs.map(mejorarFoto))}
+                    className="rounded-md bg-[#7C3AED]/10 text-[#7C3AED] px-2.5 py-1 text-xs font-medium hover:bg-[#7C3AED]/20"
+                    title="Auto-mejora de luz, color y nitidez en todas las fotos"
+                  >
+                    Mejorar luz y color
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFotos((fs) => fs.map(fondoBlancoFoto))}
+                    className="rounded-md bg-[#7C3AED]/10 text-[#7C3AED] px-2.5 py-1 text-xs font-medium hover:bg-[#7C3AED]/20"
+                    title="Quita el fondo y lo deja blanco (look de catálogo)"
+                  >
+                    Quitar fondo (blanco)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setFotos((fs) => fs.map(fotoOriginal))}
+                    className="rounded-md border border-gray-300 dark:border-neutral-700 px-2.5 py-1 text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-900"
+                    title="Volver a las fotos originales"
+                  >
+                    Volver al original
+                  </button>
+                  <span className="w-full text-[11px] text-gray-400">
+                    Se aplica a todas las fotos de la moto. Es reversible. Acordate de tocar <strong>Guardar</strong>.
+                  </span>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
