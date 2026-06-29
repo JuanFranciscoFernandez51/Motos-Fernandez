@@ -1244,35 +1244,51 @@ export function ModeloForm({
                 folder="modelos"
               />
               {fotos.length > 0 && (
-                <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-gray-100 dark:border-neutral-800 pt-3">
-                  <span className="text-xs font-medium text-gray-500">✨ Mejorar con IA:</span>
-                  <button
-                    type="button"
-                    onClick={() => setFotos((fs) => fs.map(mejorarFoto))}
-                    className="rounded-md bg-[#7C3AED]/10 text-[#7C3AED] px-2.5 py-1 text-xs font-medium hover:bg-[#7C3AED]/20"
-                    title="Auto-mejora de luz, color y nitidez en todas las fotos"
-                  >
-                    Mejorar luz y color
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFotos((fs) => fs.map(fondoBlancoFoto))}
-                    className="rounded-md bg-[#7C3AED]/10 text-[#7C3AED] px-2.5 py-1 text-xs font-medium hover:bg-[#7C3AED]/20"
-                    title="Quita el fondo y lo deja blanco (look de catálogo)"
-                  >
-                    Quitar fondo (blanco)
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFotos((fs) => fs.map(fotoOriginal))}
-                    className="rounded-md border border-gray-300 dark:border-neutral-700 px-2.5 py-1 text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-900"
-                    title="Volver a las fotos originales"
-                  >
-                    Volver al original
-                  </button>
-                  <span className="w-full text-[11px] text-gray-400">
-                    Se aplica a todas las fotos de la moto. Es reversible. Acordate de tocar <strong>Guardar</strong>.
-                  </span>
+                <div className="mt-3 border-t border-gray-100 dark:border-neutral-800 pt-3 space-y-2">
+                  <p className="text-xs font-medium text-gray-500">
+                    ✨ Mejorar con IA — opcional, foto por foto (solo las que quieras):
+                  </p>
+                  <div className="space-y-2">
+                    {fotos.map((f, i) => (
+                      <div key={i} className="flex items-center gap-2">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={f}
+                          alt={`Foto ${i + 1}`}
+                          className="size-12 rounded object-cover bg-gray-100 dark:bg-neutral-800 shrink-0 border border-gray-200 dark:border-neutral-700"
+                        />
+                        <div className="flex flex-wrap gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setFotos((fs) => fs.map((x, idx) => (idx === i ? mejorarFoto(x) : x)))}
+                            className="rounded-md bg-[#7C3AED]/10 text-[#7C3AED] px-2 py-1 text-xs font-medium hover:bg-[#7C3AED]/20"
+                            title="Auto-mejora de luz, color y nitidez en ESTA foto"
+                          >
+                            Mejorar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setFotos((fs) => fs.map((x, idx) => (idx === i ? fondoBlancoFoto(x) : x)))}
+                            className="rounded-md bg-[#7C3AED]/10 text-[#7C3AED] px-2 py-1 text-xs font-medium hover:bg-[#7C3AED]/20"
+                            title="Quita el fondo de ESTA foto y lo deja blanco"
+                          >
+                            Fondo blanco
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setFotos((fs) => fs.map((x, idx) => (idx === i ? fotoOriginal(x) : x)))}
+                            className="rounded-md border border-gray-300 dark:border-neutral-700 px-2 py-1 text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-900"
+                            title="Volver a la foto original"
+                          >
+                            Original
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[11px] text-gray-400">
+                    No se aplica nada solo: elegís foto por foto. Es reversible. Acordate de tocar <strong>Guardar</strong>.
+                  </p>
                 </div>
               )}
             </CardContent>
