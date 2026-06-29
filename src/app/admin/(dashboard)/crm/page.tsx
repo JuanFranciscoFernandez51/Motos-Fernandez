@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table"
 import { Search, Users, ExternalLink, Phone, Mail, Plus, Download } from "lucide-react"
 import { LeadEstadoSelect } from "./lead-estado-select"
+import { LeadWhatsappBoton } from "./lead-whatsapp-boton"
 
 export const dynamic = "force-dynamic"
 
@@ -189,7 +190,7 @@ export default async function CRMPage({
               <TableHead>Temperatura</TableHead>
               <TableHead>Etapa</TableHead>
               <TableHead>Fecha</TableHead>
-              <TableHead className="w-16"></TableHead>
+              <TableHead className="w-28 text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -251,9 +252,12 @@ export default async function CRMPage({
                       {lead.createdAt.toLocaleDateString("es-AR")}
                     </TableCell>
                     <TableCell>
-                      <Link href={`/admin/crm/${lead.id}`} className="text-[#7C3AED] hover:text-[#9D5CF0]">
-                        <ExternalLink className="h-4 w-4" />
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <LeadWhatsappBoton leadId={lead.id} telefono={lead.telefono} />
+                        <Link href={`/admin/crm/${lead.id}`} className="text-[#7C3AED] hover:text-[#9D5CF0]" title="Ver lead">
+                          <ExternalLink className="h-4 w-4" />
+                        </Link>
+                      </div>
                     </TableCell>
                   </TableRow>
                 )
