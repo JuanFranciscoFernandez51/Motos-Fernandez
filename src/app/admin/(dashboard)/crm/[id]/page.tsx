@@ -18,8 +18,20 @@ import {
   Plus,
 } from "lucide-react"
 import { revalidatePath } from "next/cache"
+import { LeadWhatsappIA } from "./lead-whatsapp-ia"
 
 export const dynamic = "force-dynamic"
+
+async function registrarWhatsAppEnviado(leadId: string, contenido: string) {
+  "use server"
+  await prisma.leadInteraction.create({ data: { leadId, tipo: "WHATSAPP", contenido } })
+  // Si el lead estaba sin contactar, pasa a CONTACTADO automáticamente.
+  await prisma.lead.updateMany({
+    where: { id: leadId, etapa: "NUEVO" },
+    data: { etapa: "CONTACTADO" },
+  })
+  revalidatePath(`/admin/crm/${leadId}`)
+}
 
 async function updateTemperatura(formData: FormData) {
   "use server"
@@ -128,6 +140,24 @@ export default async function LeadDetailPage({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Timeline + Add interaction */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Mensaje con IA + WhatsApp */}
+          <Card className="border-[#7C3AED]/30">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-[#7C3AED]" />
+                {lead.interacciones.length === 0 ? "Responder con IA" : "Re-contactar con IA"}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <LeadWhatsappIA
+                leadId={lead.id}
+                telefono={lead.telefono}
+                modo={lead.interacciones.length === 0 ? "nuevo" : "recontacto"}
+                registrarEnviado={registrarWhatsAppEnviado}
+              />
+            </CardContent>
+          </Card>
+
           {/* Add interaction */}
           <Card>
             <CardHeader className="pb-3">

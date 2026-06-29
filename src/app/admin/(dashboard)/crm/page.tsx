@@ -19,9 +19,10 @@ export const dynamic = "force-dynamic"
 export default async function CRMPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; temp?: string; etapa?: string; origen?: string }>
+  searchParams: Promise<{ q?: string; temp?: string; etapa?: string; origen?: string; recontacto?: string }>
 }) {
-  const { q, temp, etapa, origen } = await searchParams
+  const { q, temp, etapa, origen, recontacto } = await searchParams
+  const soloRecontacto = recontacto === "1"
 
   const where: Record<string, unknown> = {}
   if (q) {
@@ -35,12 +36,24 @@ export default async function CRMPage({
   if (temp) where.temperatura = temp
   if (etapa) where.etapa = etapa
   if (origen) where.origen = origen
+  // "Para recontactar": leads que no están cerrados (ni vendidos ni perdidos).
+  if (soloRecontacto) where.etapa = { notIn: ["VENDIDO", "PERDIDO"] }
 
-  const leads = await prisma.lead.findMany({
+  const leadsRaw = await prisma.lead.findMany({
     where,
     orderBy: { createdAt: "desc" },
     include: { modelo: true, interacciones: { take: 1, orderBy: { createdAt: "desc" } } },
   })
+
+  // Dormido = el último contacto (interacción o, si no hubo, la creación) fue
+  // hace 7 días o más. Es la cola de leads a recuperar.
+  const HACE_7_DIAS = Date.now() - 7 * 86400000
+  const estaDormido = (l: (typeof leadsRaw)[number]) => {
+    const ultimo = l.interacciones[0]?.createdAt ?? l.createdAt
+    return new Date(ultimo).getTime() <= HACE_7_DIAS
+  }
+  const dormidosCount = leadsRaw.filter(estaDormido).length
+  const leads = soloRecontacto ? leadsRaw.filter(estaDormido) : leadsRaw
 
   const temperaturas = Object.entries(TEMPERATURA_LABELS)
   const etapas = Object.entries(ETAPA_LABELS)
@@ -52,7 +65,7 @@ export default async function CRMPage({
 
   function buildUrl(params: Record<string, string | undefined>) {
     const base = "/admin/crm"
-    const merged = { q, temp, etapa, origen, ...params }
+    const merged = { q, temp, etapa, origen, recontacto, ...params }
     const search = new URLSearchParams()
     for (const [k, v] of Object.entries(merged)) {
       if (v) search.set(k, v)
@@ -110,6 +123,28 @@ export default async function CRMPage({
           Buscar
         </button>
       </form>
+
+      {/* Acceso rápido: leads para recontactar (dormidos) */}
+      <div className="flex items-center gap-2 flex-wrap">
+        <Link
+          href={buildUrl({ recontacto: soloRecontacto ? undefined : "1" })}
+          className={`inline-flex items-center gap-2 px-3 py-1.5 text-sm rounded-full border transition-colors ${
+            soloRecontacto
+              ? "bg-[#CE9F33] text-white border-[#CE9F33]"
+              : "border-[#CE9F33]/40 text-[#9a7726] hover:bg-[#CE9F33]/10 dark:text-[#e3c46b]"
+          }`}
+        >
+          🔥 Para recontactar
+          <span className={`rounded-full px-1.5 text-xs font-bold ${soloRecontacto ? "bg-white/25" : "bg-[#CE9F33]/20"}`}>
+            {dormidosCount}
+          </span>
+        </Link>
+        {soloRecontacto && (
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            Leads sin contacto hace 7 días o más (no cerrados). Entrá y mandales el re-contacto con IA.
+          </span>
+        )}
+      </div>
 
       {/* Filters */}
       <div className="space-y-2">
