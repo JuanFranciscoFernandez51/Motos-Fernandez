@@ -12,9 +12,11 @@ import { InstagramIcon } from "@/components/icons/social"
 export function MetaPublishButton({
   modeloId,
   yaPublicada,
+  sinFoto = false,
 }: {
   modeloId: string
   yaPublicada: boolean
+  sinFoto?: boolean
 }) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -57,16 +59,22 @@ export function MetaPublishButton({
         <button
           type="button"
           onClick={() => handleClick(false)}
-          disabled={loading || isPending || yaPublicada}
+          disabled={loading || isPending || yaPublicada || (sinFoto && !yaPublicada)}
           className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 font-medium disabled:opacity-50"
-          title={yaPublicada ? "Ya está publicada — usá el botón de re-publicar si querés crear un post nuevo" : "Publicar en Instagram + Facebook"}
+          title={
+            sinFoto && !yaPublicada
+              ? "Esta moto no tiene foto: cargá una antes de publicar"
+              : yaPublicada
+                ? "Ya está publicada — usá el botón de re-publicar si querés crear un post nuevo"
+                : "Publicar en Instagram + Facebook"
+          }
         >
           {loading || isPending ? (
             <Loader2 className="size-3 animate-spin" />
           ) : (
             <InstagramIcon className="size-3" />
           )}
-          {yaPublicada ? "Publicada" : "Publicar"}
+          {sinFoto && !yaPublicada ? "Sin foto" : yaPublicada ? "Publicada" : "Publicar"}
         </button>
         {yaPublicada && (
           <button

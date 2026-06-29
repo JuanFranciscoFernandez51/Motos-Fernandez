@@ -302,6 +302,7 @@ export default async function MetaAdminPage({
                     marca: m.marca,
                     nombre: m.nombre,
                     anio: m.anio,
+                    sinFoto: (m.fotos?.length ?? 0) === 0,
                   }))}
                 />
               )}
@@ -321,6 +322,7 @@ export default async function MetaAdminPage({
                 igPermalink: m.igPermalink,
                 fbPermalink: m.fbPermalink,
                 igUltimaSync: m.igUltimaSync ? m.igUltimaSync.toISOString() : null,
+                sinFoto: (m.fotos?.length ?? 0) === 0,
               }))}
             />
           </CardContent>

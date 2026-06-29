@@ -10,6 +10,7 @@ type Item = {
   marca: string
   nombre: string
   anio?: number | null
+  sinFoto?: boolean
 }
 
 type ResultadoItem = {
@@ -33,18 +34,27 @@ export function MetaBulkPublishButton({ pendientes }: { pendientes: Item[] }) {
   const [running, setRunning] = useState(false)
   const [resultados, setResultados] = useState<ResultadoItem[]>([])
 
+  // Las motos sin foto NO se publican (saldrían sin imagen). Se omiten del lote.
+  const publicables = pendientes.filter((m) => !m.sinFoto)
+  const sinFotoCount = pendientes.length - publicables.length
+
   const handleClick = async () => {
     if (running) return
-    if (pendientes.length === 0) return
-    if (pendientes.length > 30) {
+    if (publicables.length === 0) {
+      alert("No hay motos con foto para publicar. Cargales una foto primero.")
+      return
+    }
+    if (publicables.length > 30) {
       alert(
-        `Demasiadas motos para un solo lote (${pendientes.length}). IG tiene rate limit. Hacelo en tandas de 30.`
+        `Demasiadas motos para un solo lote (${publicables.length}). IG tiene rate limit. Hacelo en tandas de 30.`
       )
       return
     }
     if (
       !confirm(
-        `Vas a publicar ${pendientes.length} motos en Instagram + Facebook. Va a tardar ~${Math.ceil(pendientes.length * 30 / 60)} min (3s entre cada una + ~30s de procesamiento por moto).\n\n¿Confirmás?`
+        `Vas a publicar ${publicables.length} motos en Instagram + Facebook.` +
+          (sinFotoCount > 0 ? ` Se omiten ${sinFotoCount} sin foto.` : "") +
+          ` Va a tardar ~${Math.ceil((publicables.length * 30) / 60)} min (3s entre cada una + ~30s de procesamiento por moto).\n\n¿Confirmás?`
       )
     ) {
       return
@@ -55,7 +65,7 @@ export function MetaBulkPublishButton({ pendientes }: { pendientes: Item[] }) {
       const res = await fetch("/api/admin/meta/bulk-publish", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: pendientes.map((m) => m.id) }),
+        body: JSON.stringify({ ids: publicables.map((m) => m.id) }),
       })
       const data = await res.json().catch(() => ({}))
       if (!res.ok) {
@@ -93,7 +103,7 @@ export function MetaBulkPublishButton({ pendientes }: { pendientes: Item[] }) {
       <button
         type="button"
         onClick={handleClick}
-        disabled={running || isPending || pendientes.length === 0}
+        disabled={running || isPending || publicables.length === 0}
         className="inline-flex items-center gap-2 text-sm px-3 py-1.5 rounded-md bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 font-semibold disabled:opacity-50"
       >
         {running || isPending ? (
@@ -102,9 +112,14 @@ export function MetaBulkPublishButton({ pendientes }: { pendientes: Item[] }) {
           <InstagramIcon className="size-4" />
         )}
         {running
-          ? `Publicando ${pendientes.length} motos...`
-          : `Publicar todas las pendientes (${pendientes.length})`}
+          ? `Publicando ${publicables.length} motos...`
+          : `Publicar todas las pendientes (${publicables.length})`}
       </button>
+      {sinFotoCount > 0 && (
+        <p className="text-[11px] text-amber-700 dark:text-amber-300">
+          ⚠ {sinFotoCount} moto{sinFotoCount === 1 ? "" : "s"} sin foto se omiten (no se publican).
+        </p>
+      )}
 
       {resultados.length > 0 && (
         <div className="rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-3 space-y-1.5 text-xs max-h-64 overflow-y-auto">
