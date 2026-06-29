@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useTransition } from "react"
+import { useEffect, useRef, useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 import { Sparkles, Loader2, Send, RefreshCw } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
@@ -21,6 +21,15 @@ export function LeadWhatsappIA({
   const [mensaje, setMensaje] = useState("")
   const [generando, setGenerando] = useState(false)
   const [, startTransition] = useTransition()
+  const yaGenero = useRef(false)
+
+  // Genera la respuesta automáticamente al abrir el lead (una sola vez).
+  useEffect(() => {
+    if (yaGenero.current) return
+    yaGenero.current = true
+    generar()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const generar = async () => {
     setGenerando(true)
@@ -52,15 +61,21 @@ export function LeadWhatsappIA({
   return (
     <div className="space-y-2">
       {!mensaje ? (
-        <button
-          type="button"
-          onClick={generar}
-          disabled={generando}
-          className="inline-flex items-center gap-2 rounded-md bg-[#7C3AED] px-3 py-2 text-sm font-medium text-white hover:bg-[#9D5CF0] disabled:opacity-50"
-        >
-          {generando ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
-          {modo === "recontacto" ? "Redactar re-contacto con IA" : "Redactar respuesta con IA"}
-        </button>
+        generando ? (
+          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 py-2">
+            <Loader2 className="size-4 animate-spin text-[#7C3AED]" />
+            {modo === "recontacto" ? "Generando re-contacto…" : "Generando respuesta…"}
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={generar}
+            className="inline-flex items-center gap-2 rounded-md bg-[#7C3AED] px-3 py-2 text-sm font-medium text-white hover:bg-[#9D5CF0]"
+          >
+            <Sparkles className="size-4" />
+            {modo === "recontacto" ? "Redactar re-contacto con IA" : "Redactar respuesta con IA"}
+          </button>
+        )
       ) : (
         <>
           <Textarea value={mensaje} onChange={(e) => setMensaje(e.target.value)} rows={5} className="text-sm" />
