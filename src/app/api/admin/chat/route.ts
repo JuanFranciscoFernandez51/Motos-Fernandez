@@ -115,6 +115,29 @@ const tools: Anthropic.Tool[] = [
       required: [],
     },
   },
+  {
+    name: "get_cuotas_pendientes",
+    description:
+      "Cuotas de créditos/financiaciones de clientes vencidas o por vencer, con cliente, saldo y fecha. Sirve para cobranzas.",
+    input_schema: {
+      type: "object",
+      properties: {
+        soloVencidas: { type: "boolean", description: "true = solo atrasadas. Default false (atrasadas + próximas)." },
+        limite: { type: "number", description: "Por defecto 15." },
+      },
+      required: [],
+    },
+  },
+  {
+    name: "get_leads_para_recontactar",
+    description:
+      "Leads del CRM sin contacto hace 7 días o más y no cerrados (ni vendidos ni perdidos). La cola de leads a recuperar.",
+    input_schema: {
+      type: "object",
+      properties: { limite: { type: "number", description: "Por defecto 15." } },
+      required: [],
+    },
+  },
   // ============ PROPUESTAS DE CREACIÓN ============
   {
     name: "proponer_crear_cliente",
@@ -473,6 +496,62 @@ async function executeTool(name: string, input: Record<string, unknown>) {
         total_recaudado: `$${totalRecaudado.toLocaleString("es-AR")}`,
         pedidos_pagados: cantidad,
         ticket_promedio: `$${promedio.toLocaleString("es-AR")}`,
+      }
+    }
+
+    case "get_cuotas_pendientes": {
+      const soloVencidas = !!input.soloVencidas
+      const limite = (input.limite as number) || 15
+      const cuotas = await prisma.cuotaFinanciacion.findMany({
+        where: {
+          estado: { in: soloVencidas ? ["ATRASADA"] : ["PENDIENTE", "PARCIAL", "ATRASADA"] },
+        },
+        orderBy: { fechaVencimiento: "asc" },
+        take: limite,
+        select: {
+          numero: true, monto: true, montoPagado: true, fechaVencimiento: true, estado: true,
+          financiacion: {
+            select: { moneda: true, cliente: { select: { nombre: true, apellido: true } } },
+          },
+        },
+      })
+      return {
+        cuotas: cuotas.map((c) => {
+          const m = c.financiacion.moneda === "USD" ? "USD " : "$"
+          return {
+            cliente: `${c.financiacion.cliente.apellido}, ${c.financiacion.cliente.nombre}`,
+            cuota: c.numero,
+            estado: c.estado,
+            vence: c.fechaVencimiento.toLocaleDateString("es-AR"),
+            saldo: `${m}${(c.monto - c.montoPagado).toLocaleString("es-AR")}`,
+          }
+        }),
+      }
+    }
+
+    case "get_leads_para_recontactar": {
+      const limite = (input.limite as number) || 15
+      const hace7 = new Date(Date.now() - 7 * 86400000)
+      const leads = await prisma.lead.findMany({
+        where: { etapa: { notIn: ["VENDIDO", "PERDIDO"] } },
+        orderBy: { createdAt: "asc" },
+        take: 100,
+        select: {
+          nombre: true, apellido: true, telefono: true, modeloInteres: true, createdAt: true,
+          interacciones: { take: 1, orderBy: { createdAt: "desc" }, select: { createdAt: true } },
+          modelo: { select: { nombre: true } },
+        },
+      })
+      const dormidos = leads
+        .filter((l) => new Date(l.interacciones[0]?.createdAt ?? l.createdAt) <= hace7)
+        .slice(0, limite)
+      return {
+        cantidad: dormidos.length,
+        leads: dormidos.map((l) => ({
+          nombre: `${l.nombre} ${l.apellido || ""}`.trim(),
+          telefono: l.telefono || "—",
+          moto: l.modelo?.nombre || l.modeloInteres || "—",
+        })),
       }
     }
 
