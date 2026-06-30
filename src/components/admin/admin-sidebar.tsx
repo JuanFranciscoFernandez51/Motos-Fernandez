@@ -109,13 +109,13 @@ const navEntries: NavEntry[] = [
     label: "Tesorería",
     icon: Wallet,
     items: [
-      { href: "/admin/tesoreria/financiaciones", label: "Créditos personales", icon: CreditCard, soloAdmin: true },
-      { href: "/admin/facturacion", label: "Facturación (ARCA)", icon: FileText, soloAdmin: true },
-      { href: "/admin/contador", label: "Contador (vencimientos)", icon: Receipt, soloAdmin: true },
+      { href: "/admin/tesoreria/financiaciones", label: "Créditos personales", icon: CreditCard, seccion: "TESORERIA" },
+      { href: "/admin/facturacion", label: "Facturación (ARCA)", icon: FileText, seccion: "FACTURACION" },
+      { href: "/admin/contador", label: "Contador (vencimientos)", icon: Receipt, seccion: "CONTADOR" },
     ],
   },
   // Finanzas — libro de caja completo (réplica del módulo de Vespa). Entrada propia.
-  { href: "/admin/finanzas", label: "Finanzas", icon: Coins, soloAdmin: true },
+  { href: "/admin/finanzas", label: "Finanzas", icon: Coins, seccion: "FINANZAS" },
   // Publicaciones: canales donde publicamos las motos
   {
     id: "publicaciones",

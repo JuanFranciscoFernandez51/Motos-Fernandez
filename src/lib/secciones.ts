@@ -23,6 +23,9 @@ export type SeccionId =
   | "PRESUPUESTOS"
   | "TURNOS"
   | "TESORERIA"
+  | "FINANZAS"
+  | "FACTURACION"
+  | "CONTADOR"
   | "FINANCIACION_PLANES"
   | "ML"
   | "META"
@@ -69,7 +72,10 @@ export const SECCIONES_ADMIN: SeccionInfo[] = [
   { id: "TURNOS",        label: "Turnos",          descripcion: "Turnos de servicio técnico",                     grupo: "TALLER" },
 
   // TESORERIA
-  { id: "TESORERIA",            label: "Tesorería · Financiaciones",  descripcion: "Cobranzas, financiaciones de OCs, cuotas vencidas",          grupo: "TESORERIA" },
+  { id: "TESORERIA",            label: "Tesorería · Créditos personales",  descripcion: "Créditos personales / financiaciones de OCs, cobranzas y cuotas",          grupo: "TESORERIA" },
+  { id: "FINANZAS",             label: "Finanzas",        descripcion: "Libro de caja, cuentas, cheques, costos fijos y resultados. Datos sensibles del negocio.", grupo: "TESORERIA" },
+  { id: "FACTURACION",          label: "Facturación (ARCA)", descripcion: "Emisión de facturas electrónicas ante ARCA/AFIP", grupo: "TESORERIA" },
+  { id: "CONTADOR",             label: "Contador (vencimientos)", descripcion: "Vencimientos impositivos y datos para el contador", grupo: "TESORERIA" },
   // OJO: esto NO son las financiaciones de las OCs. Son los planes
   // que se muestran en el sitio publico para que los visitantes calculen
   // cuotas. Por eso queda en MARKETING (no en tesoreria).
