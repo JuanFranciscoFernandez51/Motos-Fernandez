@@ -267,7 +267,10 @@ async function updateOrden(formData: FormData) {
           let motoRecibidaId: string | null = null
           const checklistTxt = checklistPermutaTexto(p)
           const monedaPermuta = p.moneda || orden.moneda || "ARS"
-          if (p.marca && p.modelo) {
+          // Subir al stock si hay ALGÚN identificador (marca, modelo o
+          // descripción). Antes exigía marca Y modelo: si faltaba la marca, la
+          // permuta no entraba al stock.
+          if (p.marca || p.modelo || p.descripcion) {
             const slug = `mf-${String(proximoMF).padStart(4, "0")}`
             proximoMF++
             const codigo = await generarCodigoModelo(tx, { condicion: "USADA" })
@@ -293,10 +296,10 @@ async function updateOrden(formData: FormData) {
             } else {
               const motoRecibida = await tx.modelo.create({
                 data: {
-                  nombre: p.modelo,
+                  nombre: p.modelo || p.descripcion || "Moto en parte de pago",
                   slug,
                   codigo,
-                  marca: p.marca,
+                  marca: p.marca || "Sin marca",
                   condicion: "USADA",
                   anio: p.anio,
                   kilometros: p.kilometros,

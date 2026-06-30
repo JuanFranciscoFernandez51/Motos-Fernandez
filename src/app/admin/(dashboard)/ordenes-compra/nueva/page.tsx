@@ -168,9 +168,11 @@ async function createOrdenCompra(formData: FormData) {
         for (const p of permutasInput) {
           let motoRecibidaId: string | null = null
           const checklistTxt = checklistPermutaTexto(p)
-          // Siempre cargar al catalogo si hay marca + modelo (la moto queda inactiva)
+          // Siempre subir la permuta al stock si hay ALGÚN dato que la
+          // identifique (marca, modelo o descripción). Antes exigía marca Y
+          // modelo, y si faltaba la marca la moto NO entraba al stock.
           const monedaPermuta = p.moneda || orden.moneda || "ARS"
-          if (p.marca && p.modelo) {
+          if (p.marca || p.modelo || p.descripcion) {
             const slug = `mf-${String(proximoMF).padStart(4, "0")}`
             proximoMF++
             const codigo = await generarCodigoModelo(tx, { condicion: "USADA" })
@@ -196,10 +198,10 @@ async function createOrdenCompra(formData: FormData) {
             } else {
               const motoRecibida = await tx.modelo.create({
                 data: {
-                  nombre: p.modelo,
+                  nombre: p.modelo || p.descripcion || "Moto en parte de pago",
                   slug,
                   codigo,
-                  marca: p.marca,
+                  marca: p.marca || "Sin marca",
                   condicion: "USADA",
                   anio: p.anio,
                   kilometros: p.kilometros,
