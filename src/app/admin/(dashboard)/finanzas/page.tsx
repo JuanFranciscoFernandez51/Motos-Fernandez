@@ -207,9 +207,18 @@ export default async function FinanzasPage() {
               </div>
             ))}
             <div className="flex items-center justify-between pt-2 font-bold">
-              <span>Total stock</span>
+              <span>Total stock <span className="text-[11px] font-normal text-gray-400">(nuestro)</span></span>
               <span className="tabular-nums" style={{ color: "#7C3AED" }}>{formatMoney(pos.valorStock.valorTotal)}</span>
             </div>
+            {/* Consignación: motos de terceros en el local. NO es activo nuestro. */}
+            {pos.valorStock.unidadesConsignacion > 0 && (
+              <div className="mt-2 flex items-center justify-between rounded-md bg-amber-50 dark:bg-amber-950/20 px-2 py-1.5 text-sm">
+                <span className="text-amber-800 dark:text-amber-300">
+                  En consignación <span className="text-[11px] text-amber-600 dark:text-amber-400">· {pos.valorStock.unidadesConsignacion} u. · no es tuyo</span>
+                </span>
+                <span className="tabular-nums font-medium text-amber-800 dark:text-amber-300">{formatMoney(pos.valorStock.valorConsignacion)}</span>
+              </div>
+            )}
           </CardContent>
         </Card>
 

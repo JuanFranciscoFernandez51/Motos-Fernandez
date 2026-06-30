@@ -80,6 +80,16 @@ export async function getValorStock() {
   const unidadesProductos = unidadesRepuestos + unidadesIndum
   const valorTotal = valorMotos + valorProductos
 
+  // Consignación (mandato ACTIVO): motos de terceros que tenemos en el local.
+  // NO son un activo nuestro → se muestran aparte, valuadas a precio de
+  // publicación (lo que están exhibidas), solo como referencia.
+  const consig = await prisma.modelo.findMany({
+    where: { condicion: "USADA", vendida: false, activo: true, mandato: { is: { estado: "ACTIVO" } } },
+    select: { precio: true, valorToma: true },
+  })
+  const valorConsignacion = consig.reduce((a, m) => a + (m.precio ?? m.valorToma ?? 0), 0)
+  const unidadesConsignacion = consig.length
+
   // Desglose por categoría con % del total (como la hoja "Saldos" del Excel)
   const desglose = [
     { label: "Motos", unidades: unidadesMotos, valor: valorMotos },
@@ -98,6 +108,8 @@ export async function getValorStock() {
     unidadesProductos,
     valorTotal,
     desglose,
+    valorConsignacion,
+    unidadesConsignacion,
   }
 }
 
