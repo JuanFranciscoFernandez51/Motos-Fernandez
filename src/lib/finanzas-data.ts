@@ -48,6 +48,10 @@ export async function getValorStock() {
       vendida: false,
       activo: true,
       origen: { not: "MANDATO" },
+      // CLAVE: una moto en consignación NO es un activo nuestro aunque esté
+      // tagueada STOCK_PROPIO/PARTE_DE_PAGO. La señal confiable es el mandato:
+      // si tiene un mandato ACTIVO, es de un tercero → no cuenta en el stock.
+      mandato: { isNot: { estado: "ACTIVO" } },
     },
     select: { precio: true, valorToma: true },
   })
