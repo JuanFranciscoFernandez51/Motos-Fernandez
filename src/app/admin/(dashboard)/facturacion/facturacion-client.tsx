@@ -12,6 +12,7 @@ import {
   XCircle,
   Wifi,
   Receipt,
+  Eye,
 } from "lucide-react"
 
 // ---- Constantes (espejo de lib/afip/tipos) ----
@@ -77,6 +78,7 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
 
   // Estado de emisión
   const [emitiendo, setEmitiendo] = useState(false)
+  const [borradorLoading, setBorradorLoading] = useState(false)
   const [resultado, setResultado] = useState<
     | { ok: true; numero: number; cae: string; facturaId: string }
     | { ok: false; error: string }
@@ -151,6 +153,51 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
     docNro.trim() &&
     items.some((it) => it.descripcion.trim() && it.precioUnit > 0) &&
     !emitiendo
+
+  // Arma el payload común (receptor + ítems) para emitir o previsualizar.
+  const armarPayload = () => ({
+    docTipo,
+    docNro: docNro.replace(/\D/g, ""),
+    receptorNombre: nombre.trim(),
+    receptorDomicilio: domicilio.trim() || null,
+    condIvaReceptorId: condIva,
+    items: items
+      .filter((it) => it.descripcion.trim() && it.precioUnit > 0)
+      .map((it) => ({
+        descripcion: it.descripcion.trim(),
+        cantidad: Number(it.cantidad) || 1,
+        precioUnit: Number(it.precioUnit) || 0,
+        alicuotaIva: it.alicuotaIva,
+      })),
+  })
+
+  // Borrador: abre el PDF de vista previa (sin CAE, marca de agua) sin emitir.
+  const verBorrador = async () => {
+    const p = armarPayload()
+    if (!p.receptorNombre || !p.docNro || p.items.length === 0) {
+      alert("Completá el receptor y al menos un ítem para ver el borrador.")
+      return
+    }
+    setBorradorLoading(true)
+    try {
+      const res = await fetch("/api/admin/facturacion/borrador", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(p),
+      })
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        alert(d.error || "No se pudo generar el borrador")
+        return
+      }
+      const blob = await res.blob()
+      window.open(URL.createObjectURL(blob), "_blank", "noopener,noreferrer")
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Error de red")
+    } finally {
+      setBorradorLoading(false)
+    }
+  }
 
   const emitir = async () => {
     if (!puedeEmitir) return
@@ -350,15 +397,26 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
           <div className="text-lg font-bold">Total: $ {fmt(totales.total)}</div>
         </div>
 
-        {/* Emitir */}
-        <button
-          onClick={emitir}
-          disabled={!puedeEmitir}
-          className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 text-white py-3 font-semibold hover:bg-violet-700 disabled:opacity-40"
-        >
-          {emitiendo ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileText className="w-5 h-5" />}
-          {emitiendo ? "Emitiendo en ARCA…" : `Emitir Factura ${letraDe(condIva)}`}
-        </button>
+        {/* Borrador (vista previa) + Emitir */}
+        <div className="flex flex-col sm:flex-row gap-2">
+          <button
+            onClick={verBorrador}
+            disabled={borradorLoading || emitiendo}
+            className="sm:w-56 inline-flex items-center justify-center gap-2 rounded-xl border border-violet-300 dark:border-violet-800 text-violet-700 dark:text-violet-300 py-3 font-semibold hover:bg-violet-50 dark:hover:bg-violet-950/30 disabled:opacity-40"
+            title="Ver cómo queda la factura SIN emitirla (borrador, sin CAE)"
+          >
+            {borradorLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Eye className="w-5 h-5" />}
+            {borradorLoading ? "Generando…" : "Ver borrador"}
+          </button>
+          <button
+            onClick={emitir}
+            disabled={!puedeEmitir}
+            className="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 text-white py-3 font-semibold hover:bg-violet-700 disabled:opacity-40"
+          >
+            {emitiendo ? <Loader2 className="w-5 h-5 animate-spin" /> : <FileText className="w-5 h-5" />}
+            {emitiendo ? "Emitiendo en ARCA…" : `Emitir Factura ${letraDe(condIva)}`}
+          </button>
+        </div>
 
         {/* Resultado */}
         {resultado?.ok && (

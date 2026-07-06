@@ -45,7 +45,7 @@ export function decidirTipoFactura(condIvaReceptorId: number): number {
 const r2 = (v: number) => Math.round(v * 100) / 100
 
 /** Descompone los ítems en neto + IVA y agrupa por alícuota. */
-function calcularImportes(items: ItemFacturaInput[]) {
+export function calcularImportes(items: ItemFacturaInput[]) {
   const porAlic = new Map<number, { baseImp: number; importe: number }>()
 
   for (const it of items) {

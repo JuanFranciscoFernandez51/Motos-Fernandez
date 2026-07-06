@@ -113,9 +113,11 @@ export interface FacturaPDFData {
   // Desglose de IVA por alícuota (para discriminar en Factura A)
   ivaDetalle?: { label: string; importe: number }[]
   condicionVenta?: string
-  cae: string
-  caeVto: Date | null
-  qrDataUrl: string
+  cae?: string
+  caeVto?: Date | null
+  qrDataUrl?: string
+  // Vista previa antes de emitir: sin CAE/QR + marca de agua "BORRADOR".
+  borrador?: boolean
 }
 
 const money = (n: number) =>
@@ -128,6 +130,23 @@ function Copia({ data, copia }: { data: FacturaPDFData; copia: string }) {
   const esA = d.letra === "A"
   return (
     <Page size="A4" style={styles.page}>
+      {d.borrador && (
+        <Text
+          fixed
+          style={{
+            position: "absolute",
+            top: 360,
+            left: 40,
+            fontSize: 90,
+            fontWeight: 700,
+            color: "#B91C1C",
+            opacity: 0.12,
+            transform: "rotate(-35deg)",
+          }}
+        >
+          BORRADOR
+        </Text>
+      )}
       <Text style={styles.copia}>{copia}</Text>
 
       {/* Encabezado */}
@@ -247,18 +266,31 @@ function Copia({ data, copia }: { data: FacturaPDFData; copia: string }) {
         </View>
       </View>
 
-      {/* CAE + QR */}
-      <View style={styles.caeBox}>
-        {/* eslint-disable-next-line jsx-a11y/alt-text */}
-        <Image style={styles.qr} src={d.qrDataUrl} />
-        <View style={{ alignItems: "flex-end" }}>
-          <Text style={{ fontWeight: 700 }}>CAE N°: {d.cae}</Text>
-          <Text>Vto. CAE: {d.caeVto ? fechaCorta(d.caeVto) : "—"}</Text>
-          <Text style={{ fontSize: 7.5, color: "#666", marginTop: 4 }}>
-            Comprobante Autorizado · ARCA
+      {/* CAE + QR — solo en facturas emitidas. En borrador se avisa que no es válido. */}
+      {d.borrador ? (
+        <View style={{ marginTop: 10, padding: 8, border: "1.5pt solid #B91C1C", borderRadius: 4, backgroundColor: "#FEF2F2" }}>
+          <Text style={{ fontSize: 11, fontWeight: 700, color: "#B91C1C", textAlign: "center" }}>
+            BORRADOR — SIN VALIDEZ FISCAL
+          </Text>
+          <Text style={{ fontSize: 8, color: "#B91C1C", textAlign: "center", marginTop: 2 }}>
+            Vista previa antes de emitir. No tiene CAE ni QR. No es una factura válida ante ARCA.
           </Text>
         </View>
-      </View>
+      ) : (
+        <View style={styles.caeBox}>
+          {d.qrDataUrl && (
+            // eslint-disable-next-line jsx-a11y/alt-text
+            <Image style={styles.qr} src={d.qrDataUrl} />
+          )}
+          <View style={{ alignItems: "flex-end" }}>
+            <Text style={{ fontWeight: 700 }}>CAE N°: {d.cae}</Text>
+            <Text>Vto. CAE: {d.caeVto ? fechaCorta(d.caeVto) : "—"}</Text>
+            <Text style={{ fontSize: 7.5, color: "#666", marginTop: 4 }}>
+              Comprobante Autorizado · ARCA
+            </Text>
+          </View>
+        </View>
+      )}
 
       {/* Pie con datos de contacto */}
       <View style={styles.footer} fixed>
