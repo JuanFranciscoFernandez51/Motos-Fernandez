@@ -1,8 +1,23 @@
 import { ImageResponse } from "next/og"
+import sharp from "sharp"
 import { prisma } from "@/lib/prisma"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
+
+// next/og entrega PNG. Instagram por la API rechaza PNG a veces
+// (error 2207052). Convertimos a JPEG con sharp para que la portada (slide 1
+// del carrusel) sea siempre aceptada.
+async function jpegFrom(img: ImageResponse): Promise<Response> {
+  const png = Buffer.from(await img.arrayBuffer())
+  const jpeg = await sharp(png).jpeg({ quality: 88, mozjpeg: true }).toBuffer()
+  return new Response(new Uint8Array(jpeg), {
+    headers: {
+      "Content-Type": "image/jpeg",
+      "Cache-Control": "public, max-age=3600, s-maxage=86400",
+    },
+  })
+}
 
 /**
  * GET /api/portada/[id]
@@ -38,7 +53,7 @@ export async function GET(
   })
 
   if (!m) {
-    return new ImageResponse(
+    return jpegFrom(new ImageResponse(
       (
         <div
           style={{
@@ -57,7 +72,7 @@ export async function GET(
         </div>
       ),
       SIZE
-    )
+    ))
   }
 
   const esUsada = (m.condicion || "0KM").toUpperCase() === "USADA"
@@ -92,7 +107,7 @@ export async function GET(
   }
   if (m.cilindrada) specs.push({ lbl: "Cilindrada", val: m.cilindrada })
 
-  return new ImageResponse(
+  return jpegFrom(new ImageResponse(
     (
       <div style={{ width: "100%", height: "100%", display: "flex", position: "relative", background: "#0A0810" }}>
         {/* Foto a sangre */}
@@ -213,5 +228,5 @@ export async function GET(
       </div>
     ),
     SIZE
-  )
+  ))
 }
