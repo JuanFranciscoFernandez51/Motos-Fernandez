@@ -154,36 +154,49 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Create MercadoPago preference
+    // Create MercadoPago preference.
+    // MP a veces devuelve una respuesta vacía ("Unexpected end of JSON input"),
+    // sobre todo desde regiones lejanas: reintentamos un par de veces.
     const preferenceApi = getPreferenceApi()
-    const preference = await preferenceApi.create({
-      body: {
-        items: items.map((item) => ({
-          id: item.id,
-          title: item.nombre + (item.talle ? ` (${item.talle})` : ""),
-          quantity: item.cantidad,
-          unit_price: item.precioOferta ?? item.precio,
-          currency_id: "ARS",
-        })),
-        payer: {
-          name: nombre,
-          surname: apellido,
-          email,
-          identification: {
-            type: "DNI",
-            number: dni,
-          },
+    const prefBody = {
+      items: items.map((item) => ({
+        id: item.id,
+        title: item.nombre + (item.talle ? ` (${item.talle})` : ""),
+        quantity: item.cantidad,
+        unit_price: item.precioOferta ?? item.precio,
+        currency_id: "ARS",
+      })),
+      payer: {
+        name: nombre,
+        surname: apellido,
+        email,
+        identification: {
+          type: "DNI",
+          number: dni,
         },
-        back_urls: {
-          success: `${BASE_URL}/checkout/exito`,
-          failure: `${BASE_URL}/checkout/fallo`,
-          pending: `${BASE_URL}/checkout/pendiente`,
-        },
-        notification_url: `${BASE_URL}/api/webhooks/mercadopago`,
-        external_reference: pedido.id,
-        statement_descriptor: "Motos Fernandez",
       },
-    })
+      back_urls: {
+        success: `${BASE_URL}/checkout/exito`,
+        failure: `${BASE_URL}/checkout/fallo`,
+        pending: `${BASE_URL}/checkout/pendiente`,
+      },
+      notification_url: `${BASE_URL}/api/webhooks/mercadopago`,
+      external_reference: pedido.id,
+      statement_descriptor: "Motos Fernandez",
+    }
+
+    let preference: Awaited<ReturnType<typeof preferenceApi.create>> | null = null
+    let lastMpError: unknown
+    for (let intento = 0; intento < 3; intento++) {
+      try {
+        preference = await preferenceApi.create({ body: prefBody })
+        break
+      } catch (e) {
+        lastMpError = e
+        await new Promise((r) => setTimeout(r, 500 * (intento + 1)))
+      }
+    }
+    if (!preference) throw lastMpError
 
     // Save preference ID in order
     await prisma.pedido.update({
@@ -198,19 +211,8 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Checkout error:", error)
-    // TEMP DEBUG: exponer el detalle para diagnosticar en prod. REVERTIR.
-    const _dbg =
-      error instanceof Error
-        ? `${error.name}: ${error.message}`
-        : (() => {
-            try {
-              return JSON.stringify(error)
-            } catch {
-              return String(error)
-            }
-          })()
     return NextResponse.json(
-      { error: "Error al procesar el pago. Intentá de nuevo.", _debug: _dbg },
+      { error: "Error al procesar el pago. Intentá de nuevo." },
       { status: 500 }
     )
   }
