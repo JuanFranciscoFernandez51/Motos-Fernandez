@@ -205,7 +205,8 @@ export async function escanearDocumento(
   ]
 
   const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-5",
+    thinking: { type: "disabled" },
     max_tokens: 2048,
     system: SYSTEM_PROMPT,
     tools: [TOOL],
@@ -357,7 +358,8 @@ export async function escanearFacturaProductos(
     : { type: "image" as const, source: { type: "base64" as const, media_type: archivo.mimeType, data: archivo.base64 } }
 
   const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-5",
+    thinking: { type: "disabled" },
     max_tokens: 4096,
     system: SYSTEM_PRODUCTOS,
     tools: [TOOL_PRODUCTOS],
@@ -494,7 +496,8 @@ export async function extraerMovimientosBancarios(
   }
 
   const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-5",
+    thinking: { type: "disabled" },
     max_tokens: 8192,
     system: systemExtracto(),
     tools: [TOOL_EXTRACTO],

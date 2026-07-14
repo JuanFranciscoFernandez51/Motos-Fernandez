@@ -153,7 +153,8 @@ Elegí 3 modelos que mejor se adapten al perfil, respetando las reglas de priori
   try {
     const client = new Anthropic({ apiKey })
     const response = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-5",
+      thinking: { type: "disabled" },
       max_tokens: 500,
       system: SYSTEM_PROMPT,
       messages: [{ role: "user", content: userMessage }],

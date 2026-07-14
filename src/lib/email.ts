@@ -22,13 +22,14 @@ interface SendEmailArgs {
   to: string | string[]
   subject: string
   html: string
+  attachments?: { filename: string; content: Buffer }[]
 }
 
 /**
  * Envia un email con Resend. Lazy-init: si RESEND_API_KEY no esta
  * configurada, loguea un warning y retorna { skipped: true } sin romper.
  */
-export async function sendEmail({ to, subject, html }: SendEmailArgs) {
+export async function sendEmail({ to, subject, html, attachments }: SendEmailArgs) {
   const r = getResend()
   if (!r) {
     console.warn(
@@ -43,6 +44,9 @@ export async function sendEmail({ to, subject, html }: SendEmailArgs) {
       to,
       subject,
       html,
+      ...(attachments?.length
+        ? { attachments: attachments.map((a) => ({ filename: a.filename, content: a.content })) }
+        : {}),
     })
     return { skipped: false as const, result }
   } catch (error) {

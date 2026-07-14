@@ -13,6 +13,8 @@ import {
   Wifi,
   Receipt,
   Eye,
+  Mail,
+  Send,
 } from "lucide-react"
 
 // ---- Constantes (espejo de lib/afip/tipos) ----
@@ -69,6 +71,7 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
   const [nombre, setNombre] = useState("")
   const [domicilio, setDomicilio] = useState("")
   const [condIva, setCondIva] = useState(5)
+  const [email, setEmail] = useState("")
   const [buscando, setBuscando] = useState(false)
 
   // Ítems
@@ -80,10 +83,13 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
   const [emitiendo, setEmitiendo] = useState(false)
   const [borradorLoading, setBorradorLoading] = useState(false)
   const [resultado, setResultado] = useState<
-    | { ok: true; numero: number; cae: string; facturaId: string }
+    | { ok: true; numero: number; cae: string; facturaId: string; emailEnviado?: boolean; emailError?: string | null }
     | { ok: false; error: string }
     | null
   >(null)
+
+  // Reenvío de PDF por email desde la lista
+  const [reenviando, setReenviando] = useState<string | null>(null)
 
   // Conexión
   const [conexion, setConexion] = useState<string | null>(null)
@@ -222,6 +228,7 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
           receptorNombre: nombre.trim(),
           receptorDomicilio: domicilio.trim() || null,
           condIvaReceptorId: condIva,
+          email: email.trim() || null,
           items: items
             .filter((it) => it.descripcion.trim() && it.precioUnit > 0)
             .map((it) => ({
@@ -234,12 +241,20 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
       })
       const d = await res.json()
       if (d.ok) {
-        setResultado({ ok: true, numero: d.numero, cae: d.cae, facturaId: d.facturaId })
+        setResultado({
+          ok: true,
+          numero: d.numero,
+          cae: d.cae,
+          facturaId: d.facturaId,
+          emailEnviado: d.emailEnviado,
+          emailError: d.emailError,
+        })
         // Reset del form
         setItems([{ descripcion: "", cantidad: 1, precioUnit: 0, alicuotaIva: 5 }])
         setNombre("")
         setDocNro("")
         setDomicilio("")
+        setEmail("")
         router.refresh()
       } else {
         setResultado({ ok: false, error: d.error || "ARCA rechazó el comprobante" })
@@ -248,6 +263,26 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
       setResultado({ ok: false, error: e instanceof Error ? e.message : "Error de red" })
     } finally {
       setEmitiendo(false)
+    }
+  }
+
+  // Reenviar el PDF de una factura ya emitida a un email.
+  const reenviarEmail = async (id: string) => {
+    const to = window.prompt("Enviar el PDF de la factura a qué email?")
+    if (!to || !to.trim()) return
+    setReenviando(id)
+    try {
+      const res = await fetch(`/api/admin/facturacion/${id}/enviar-email`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: to.trim() }),
+      })
+      const d = await res.json().catch(() => ({}))
+      alert(d.ok ? `✅ Factura enviada a ${to.trim()}` : `⚠️ ${d.error || "No se pudo enviar"}`)
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Error de red")
+    } finally {
+      setReenviando(null)
     }
   }
 
@@ -320,6 +355,16 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
             placeholder="Domicilio (opcional)"
             className={inputCls}
           />
+          <div className="relative">
+            <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email del cliente (opcional) — se le envía el PDF al emitir"
+              className={`${inputCls} pl-9`}
+            />
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 items-center">
             <select value={condIva} onChange={(e) => setCondIva(Number(e.target.value))} className={inputCls}>
               {COND_IVA_OPCIONES.map((o) => (
@@ -425,6 +470,16 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
               <CheckCircle2 className="w-5 h-5" /> ¡Factura emitida! N° {resultado.numero}
             </div>
             <div className="text-sm mt-1">CAE: <span className="font-mono">{resultado.cae}</span></div>
+            {resultado.emailEnviado && (
+              <div className="text-sm mt-1 flex items-center gap-1 text-green-700 dark:text-green-300">
+                <Mail className="w-4 h-4" /> PDF enviado por email al cliente.
+              </div>
+            )}
+            {resultado.emailError && (
+              <div className="text-sm mt-1 text-amber-600 dark:text-amber-400">
+                ⚠️ La factura se emitió, pero el email no salió: {resultado.emailError}
+              </div>
+            )}
             <a
               href={`/api/admin/facturacion/${resultado.facturaId}/pdf`}
               target="_blank"
@@ -487,13 +542,28 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
                     </td>
                     <td className="py-2 text-right">
                       {f.estado === "EMITIDA" && f.cae && (
-                        <a
-                          href={`/api/admin/facturacion/${f.id}/pdf`}
-                          target="_blank"
-                          className="inline-flex items-center gap-1 text-violet-600 dark:text-violet-400 hover:underline"
-                        >
-                          <FileText className="w-4 h-4" /> PDF
-                        </a>
+                        <div className="inline-flex items-center gap-3">
+                          <a
+                            href={`/api/admin/facturacion/${f.id}/pdf`}
+                            target="_blank"
+                            className="inline-flex items-center gap-1 text-violet-600 dark:text-violet-400 hover:underline"
+                          >
+                            <FileText className="w-4 h-4" /> PDF
+                          </a>
+                          <button
+                            onClick={() => reenviarEmail(f.id)}
+                            disabled={reenviando === f.id}
+                            title="Enviar el PDF por email"
+                            className="inline-flex items-center gap-1 text-gray-500 hover:text-violet-600 dark:hover:text-violet-400 disabled:opacity-40"
+                          >
+                            {reenviando === f.id ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              <Send className="w-4 h-4" />
+                            )}
+                            Email
+                          </button>
+                        </div>
                       )}
                     </td>
                   </tr>

@@ -3,6 +3,8 @@ import { z } from "zod"
 import { revalidatePath } from "next/cache"
 import { requireAdmin } from "@/lib/admin-auth"
 import { emitirFactura } from "@/lib/afip/emitir"
+import { prisma } from "@/lib/prisma"
+import { sendFacturaPorEmail } from "@/lib/pdf/factura-render"
 
 const itemSchema = z.object({
   descripcion: z.string().min(1, "Descripción vacía"),
@@ -23,6 +25,7 @@ const bodySchema = z.object({
   items: z.array(itemSchema).min(1, "Agregá al menos un ítem"),
   fecha: z.string().optional(), // ISO
   notas: z.string().optional().nullable(),
+  email: z.string().email("Email inválido").optional().nullable().or(z.literal("")),
 })
 
 /** POST /api/admin/facturacion/emitir */
@@ -69,12 +72,32 @@ export async function POST(request: Request) {
       })
     }
 
+    // Envío opcional del PDF por email al receptor.
+    let emailEnviado = false
+    let emailError: string | null = null
+    const emailDestino = (b.email || "").trim()
+    if (emailDestino) {
+      try {
+        const factura = await prisma.factura.findUnique({ where: { id: result.facturaId } })
+        if (factura) {
+          const r = await sendFacturaPorEmail(factura, emailDestino)
+          if (r.skipped) emailError = "El envío de emails no está configurado (RESEND_API_KEY)."
+          else if ("error" in r && r.error) emailError = "No se pudo enviar el email."
+          else emailEnviado = true
+        }
+      } catch (e) {
+        emailError = e instanceof Error ? e.message : "No se pudo enviar el email."
+      }
+    }
+
     return NextResponse.json({
       ok: true,
       facturaId: result.facturaId,
       numero: result.numero,
       cae: result.cae,
       observaciones: result.observaciones,
+      emailEnviado,
+      emailError,
     })
   } catch (e) {
     return NextResponse.json(

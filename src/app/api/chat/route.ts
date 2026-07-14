@@ -399,7 +399,8 @@ export async function POST(request: Request) {
       maxIterations--
 
       const response = await client.messages.create({
-        model: "claude-sonnet-4-5",
+        model: "claude-sonnet-5",
+        thinking: { type: "disabled" },
         max_tokens: 1024,
         system: SYSTEM_PROMPT,
         tools,

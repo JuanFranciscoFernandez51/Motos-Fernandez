@@ -631,7 +631,8 @@ export async function POST(request: Request) {
         // Agentic loop para manejar tool use
         while (true) {
           const response = await client.messages.create({
-            model: "claude-sonnet-4-5",
+            model: "claude-sonnet-5",
+            thinking: { type: "disabled" },
             max_tokens: 2048,
             system: SYSTEM_PROMPT,
             tools,
