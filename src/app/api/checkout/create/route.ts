@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { getPreferenceApi } from "@/lib/mercadopago"
 
 interface CartItem {
   id: string
@@ -155,9 +154,6 @@ export async function POST(request: NextRequest) {
     })
 
     // Create MercadoPago preference.
-    // MP a veces devuelve una respuesta vacía ("Unexpected end of JSON input"),
-    // sobre todo desde regiones lejanas: reintentamos un par de veces.
-    const preferenceApi = getPreferenceApi()
     const prefBody = {
       items: items.map((item) => ({
         id: item.id,
@@ -185,11 +181,25 @@ export async function POST(request: NextRequest) {
       statement_descriptor: "Motos Fernandez",
     }
 
-    let preference: Awaited<ReturnType<typeof preferenceApi.create>> | null = null
+    // Llamada REST directa a MP (el SDK devolvía respuesta vacía en el
+    // runtime de Vercel). Reintentamos ante cuerpos vacíos/errores 5xx.
+    let preference: { id: string; init_point: string; sandbox_init_point?: string } | null = null
     let lastMpError: unknown
     for (let intento = 0; intento < 3; intento++) {
       try {
-        preference = await preferenceApi.create({ body: prefBody })
+        const mpRes = await fetch("https://api.mercadopago.com/checkout/preferences", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+          },
+          body: JSON.stringify(prefBody),
+        })
+        const raw = await mpRes.text()
+        if (!mpRes.ok || !raw) {
+          throw new Error(`MP HTTP ${mpRes.status} — body: ${raw.slice(0, 300) || "(vacío)"}`)
+        }
+        preference = JSON.parse(raw)
         break
       } catch (e) {
         lastMpError = e
@@ -211,8 +221,9 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Checkout error:", error)
+    const _dbg = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
     return NextResponse.json(
-      { error: "Error al procesar el pago. Intentá de nuevo." },
+      { error: "Error al procesar el pago. Intentá de nuevo.", _debug: _dbg },
       { status: 500 }
     )
   }
