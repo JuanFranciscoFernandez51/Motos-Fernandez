@@ -198,8 +198,19 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Checkout error:", error)
+    // TEMP DEBUG: exponer el detalle para diagnosticar en prod. REVERTIR.
+    const _dbg =
+      error instanceof Error
+        ? `${error.name}: ${error.message}`
+        : (() => {
+            try {
+              return JSON.stringify(error)
+            } catch {
+              return String(error)
+            }
+          })()
     return NextResponse.json(
-      { error: "Error al procesar el pago. Intentá de nuevo." },
+      { error: "Error al procesar el pago. Intentá de nuevo.", _debug: _dbg },
       { status: 500 }
     )
   }
