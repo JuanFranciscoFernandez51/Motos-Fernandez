@@ -212,7 +212,17 @@ export async function POST(request: NextRequest) {
         await new Promise((r) => setTimeout(r, 500 * (intento + 1)))
       }
     }
-    if (!preference) throw lastMpError
+    if (!preference) {
+      console.error("MercadoPago no respondió (posible bloqueo de IP):", lastMpError)
+      return NextResponse.json(
+        {
+          error:
+            "No pudimos generar el pago online en este momento. Escribinos por WhatsApp así coordinamos tu compra y te la reservamos.",
+          fallbackWhatsapp: true,
+        },
+        { status: 503 }
+      )
+    }
 
     // Save preference ID in order
     await prisma.pedido.update({
@@ -227,9 +237,8 @@ export async function POST(request: NextRequest) {
     })
   } catch (error) {
     console.error("Checkout error:", error)
-    const _dbg = error instanceof Error ? `${error.name}: ${error.message}` : String(error)
     return NextResponse.json(
-      { error: "Error al procesar el pago. Intentá de nuevo.", _debug: _dbg },
+      { error: "Error al procesar el pago. Intentá de nuevo." },
       { status: 500 }
     )
   }
