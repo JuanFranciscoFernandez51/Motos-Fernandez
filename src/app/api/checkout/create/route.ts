@@ -192,6 +192,12 @@ export async function POST(request: NextRequest) {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${process.env.MERCADOPAGO_ACCESS_TOKEN}`,
+            // El WAF de MP bloquea (403 vacío) requests sin UA de navegador
+            // que salen de datacenters (Vercel). Con UA de navegador pasa.
+            "User-Agent":
+              "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+            Accept: "application/json",
+            "X-Idempotency-Key": crypto.randomUUID(),
           },
           body: JSON.stringify(prefBody),
         })
