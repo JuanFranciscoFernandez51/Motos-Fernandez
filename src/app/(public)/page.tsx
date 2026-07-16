@@ -10,6 +10,7 @@ import {
   isPromoEnvioActiva,
 } from "@/lib/cached-queries"
 import { ModelosHomeGrid } from "@/components/public/modelos-home-grid"
+import { GlobalSearch } from "@/components/public/global-search"
 import { MundialHero } from "@/components/public/mundial-hero"
 import { SelloEnvio } from "@/components/public/sello-envio"
 import { BloqueEnvioMundial } from "@/components/public/bloque-envio-mundial"
@@ -131,6 +132,11 @@ export default async function HomePage() {
                 financiación propia y taller oficial.
               </p>
             </AnimatedSection>
+
+            {/* Buscador global — busca en toda la web (motos, tienda, noticias) */}
+            <div className="relative z-40 mt-7 max-w-2xl">
+              <GlobalSearch scope="todo" />
+            </div>
 
             <AnimatedSection animation="fade-up" delay={550}>
               <div className="mt-7 flex flex-wrap gap-3">

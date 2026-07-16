@@ -2,6 +2,7 @@ import { TiendaClient } from "./tienda-client"
 import { TrackVisita } from "@/components/public/track-visita"
 import { getProductosTienda, getCategoriasTienda } from "@/lib/cached-queries"
 import { PageHero } from "@/components/public/ui/page-hero"
+import { GlobalSearch } from "@/components/public/global-search"
 
 export const metadata = {
   title: "Tienda | Motos Fernandez",
@@ -24,6 +25,12 @@ export default async function TiendaPage() {
         highlight="repuestos"
         description="Cascos, indumentaria, repuestos y accesorios para tu moto. Envío propio a todo el país."
       />
+
+      <section className="relative z-40 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-8">
+        <div className="max-w-xl mx-auto">
+          <GlobalSearch scope="tienda" />
+        </div>
+      </section>
 
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
         <TiendaClient

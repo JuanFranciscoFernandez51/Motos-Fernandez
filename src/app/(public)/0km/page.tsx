@@ -5,6 +5,7 @@ import { getModelosCatalogo, getMarcasCatalogo } from "@/lib/cached-queries"
 import { Watermark } from "@/components/public/ui/watermark"
 import { GoldDivider } from "@/components/public/ui/gold-divider"
 import { SectionEyebrow } from "@/components/public/ui/section-eyebrow"
+import { GlobalSearch } from "@/components/public/global-search"
 
 /**
  * Catálogo de MOTOS 0KM — sección paralela al de Usadas. Linkeada desde
@@ -49,6 +50,9 @@ export default async function Motos0kmPage() {
             Modelos nuevos con garantía oficial, financiación propia y plan
             canje. Elegí color y consultá entrega inmediata.
           </p>
+          <div className="relative z-40 mt-8 max-w-xl mx-auto text-left">
+            <GlobalSearch scope="0km" />
+          </div>
         </div>
       </section>
 

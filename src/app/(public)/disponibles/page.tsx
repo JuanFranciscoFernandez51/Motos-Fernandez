@@ -5,6 +5,7 @@ import { getModelosCatalogo, getMarcasCatalogo } from "@/lib/cached-queries"
 import { Watermark } from "@/components/public/ui/watermark"
 import { GoldDivider } from "@/components/public/ui/gold-divider"
 import { SectionEyebrow } from "@/components/public/ui/section-eyebrow"
+import { GlobalSearch } from "@/components/public/global-search"
 
 /**
  * UNIDADES DISPONIBLES — stock físico real del local.
@@ -63,6 +64,9 @@ export default async function DisponiblesPage() {
             revisadas por nuestro taller y 0KM en stock, con garantía,
             financiación propia y plan canje.
           </p>
+          <div className="relative z-40 mt-8 max-w-xl mx-auto text-left">
+            <GlobalSearch scope="disponibles" />
+          </div>
         </div>
       </section>
 
