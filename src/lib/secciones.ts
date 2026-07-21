@@ -31,7 +31,6 @@ export type SeccionId =
   | "META"
   | "META_ADS"
   | "CRM"
-  | "CONSULTAS"
   | "NEWSLETTER"
   | "NOTICIAS"
   | "TESTIMONIOS"
@@ -55,7 +54,6 @@ export const SECCIONES_ADMIN: SeccionInfo[] = [
   { id: "DASHBOARD",     label: "Dashboard",           descripcion: "Vista general con estadísticas y métricas", grupo: "GENERAL" },
   { id: "PEDIDOS",       label: "Pedidos online",      descripcion: "Pedidos de la tienda (cascos, ropa, etc)",  grupo: "GENERAL" },
   { id: "CRM",           label: "CRM / Leads",         descripcion: "Lista de leads y oportunidades",            grupo: "GENERAL" },
-  { id: "CONSULTAS",     label: "Consultas web",       descripcion: "Mensajes del formulario de contacto de la web", grupo: "GENERAL" },
 
   // OPERACIONES
   { id: "MANDATOS",       label: "Mandatos",            descripcion: "Mandatos de venta de motos en consignación",     grupo: "OPERACIONES" },

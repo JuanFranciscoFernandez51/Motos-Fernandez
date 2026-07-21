@@ -985,28 +985,19 @@ export default async function AdminDashboardPage() {
           </Card>
 
           {/* Consultas por formulario */}
-          <Link href="/admin/consultas" className="block rounded-xl transition hover:shadow-md">
-            <Card>
-              <CardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/30">
-                    <Mail className="h-5 w-5" />
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold">
-                      {totalContactos30d}
-                      {contactosNoLeidos > 0 && (
-                        <span className="ml-2 text-xs font-semibold text-amber-600">
-                          {contactosNoLeidos} sin leer
-                        </span>
-                      )}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Consultas formulario (30d)</p>
-                  </div>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg text-amber-600 bg-amber-50 dark:bg-amber-950/30">
+                  <Mail className="h-5 w-5" />
                 </div>
-              </CardContent>
-            </Card>
-          </Link>
+                <div>
+                  <p className="text-2xl font-bold">{totalContactos30d}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Consultas formulario (30d)</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Tasa de conversión */}
           <Card>
