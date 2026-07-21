@@ -7,6 +7,7 @@ import { signOut } from "next-auth/react"
 import { useState, useEffect } from "react"
 import {
   LayoutDashboard,
+  Inbox,
   Bike,
   ShoppingBag,
   Package,
@@ -63,6 +64,7 @@ const isGroup = (e: NavEntry): e is NavGroup => "items" in e
 const navEntries: NavEntry[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, seccion: "DASHBOARD" },
   { href: "/admin/crm", label: "CRM / Leads", icon: Users, seccion: "CRM" },
+  { href: "/admin/consultas", label: "Consultas web", icon: Inbox, seccion: "CONSULTAS" },
 
   // Pedidos online — acceso directo de primer nivel
   { href: "/admin/pedidos", label: "Pedidos", icon: Package, seccion: "PEDIDOS" },
