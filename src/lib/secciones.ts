@@ -33,6 +33,7 @@ export type SeccionId =
   | "CRM"
   | "NEWSLETTER"
   | "NOTICIAS"
+  | "QR"
   | "TESTIMONIOS"
   | "CUPONES"
   | "PROMOCIONES"
@@ -83,6 +84,7 @@ export const SECCIONES_ADMIN: SeccionInfo[] = [
 
   // MARKETING
   { id: "NEWSLETTER",   label: "Newsletter",   descripcion: "Suscriptores y campañas",  grupo: "MARKETING" },
+  { id: "QR",           label: "QR Shortlinks", descripcion: "URLs cortas para imprimir en acrílicos/folletos, con contador de escaneos", grupo: "MARKETING" },
   { id: "NOTICIAS",     label: "Noticias",     descripcion: "Blog / noticias del sitio", grupo: "MARKETING" },
   { id: "TESTIMONIOS",  label: "Testimonios",  descripcion: "Testimonios de clientes",   grupo: "MARKETING" },
   { id: "CUPONES",      label: "Cupones",      descripcion: "Cupones de descuento",      grupo: "MARKETING" },

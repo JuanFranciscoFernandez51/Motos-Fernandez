@@ -7,6 +7,7 @@ import { signOut } from "next-auth/react"
 import { useState, useEffect } from "react"
 import {
   LayoutDashboard,
+  QrCode,
   Bike,
   ShoppingBag,
   Package,
@@ -135,6 +136,7 @@ const navEntries: NavEntry[] = [
     icon: Megaphone,
     items: [
       { href: "/admin/newsletter", label: "Newsletter", icon: Mail, seccion: "NEWSLETTER" },
+      { href: "/admin/qr", label: "QR Shortlinks", icon: QrCode, seccion: "QR" },
       { href: "/admin/noticias", label: "Noticias", icon: Newspaper, seccion: "NOTICIAS" },
       { href: "/admin/testimonios", label: "Testimonios", icon: MessageCircleHeart, seccion: "TESTIMONIOS" },
       { href: "/admin/cupones", label: "Cupones", icon: Ticket, seccion: "CUPONES" },

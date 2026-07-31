@@ -97,6 +97,7 @@ model Modelo {
   specs             Json? // { "Motor": "150cc", "Potencia": "14 HP", ... }
   financiacion      Json? // [{ "plan": "12 cuotas", "cuota": 150000, "entrega": 500000 }, ...]
   colores           ModeloColor[]
+  qrShortlinks      QrShortlink[]
   fotos             String[] // URLs de fotos generales
   activo            Boolean           @default(true)
   destacado         Boolean           @default(false)
@@ -1876,4 +1877,26 @@ model CuentaPorCobrar {
 
   @@index([estado])
   @@index([fechaVencimiento])
+}
+
+model QrShortlink {
+  id          String    @id @default(cuid())
+  /// Código corto que va en la URL. Inmutable conceptualmente — no cambiar después de imprimir.
+  codigo      String    @unique
+  /// A qué modelo del catálogo redirige (opcional: si null, va al catálogo).
+  modeloId    String?
+  modelo      Modelo?   @relation(fields: [modeloId], references: [id])
+  /// URL custom si NO querés vincular a un modelo (ej: a una promo, una landing, etc.).
+  urlCustom   String?
+  /// Nombre humano para identificarlo en el admin.
+  descripcion String?
+  /// Contador de escaneos.
+  scans       Int       @default(0)
+  ultimoScan  DateTime?
+  activo      Boolean   @default(true)
+  /// Candado: si true, no se puede borrar, cambiar el código ni desactivar.
+  protegido   Boolean   @default(false)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
