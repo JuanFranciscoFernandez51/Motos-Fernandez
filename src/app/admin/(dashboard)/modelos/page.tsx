@@ -582,6 +582,8 @@ export default async function ModelosPage({
         proveedorId: true,
         origen: true,
         clienteEntregaId: true,
+        igPostId: true,
+        fbPostId: true,
       },
     }),
     prisma.proveedor.findMany({

@@ -3,6 +3,8 @@
 import { useMemo, useState, useTransition } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { InstagramIcon } from "@/components/icons/social"
 import { formatPrice, CATEGORIA_VEHICULO_LABELS, ETIQUETAS_MODELO } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -27,7 +29,6 @@ import {
   ChevronDown,
   ChevronRight,
   RotateCcw,
-  Send,
   Loader2,
   Archive,
   ArchiveRestore,
@@ -65,6 +66,8 @@ type Modelo = {
   proveedorId: string | null
   origen: string | null
   clienteEntregaId: string | null
+  igPostId: string | null
+  fbPostId: string | null
 }
 
 // Detecta si una moto recibida en parte de pago está incompleta (sin foto real, sin precio, etc.)
@@ -138,23 +141,51 @@ export function ModelosList({
   const [archivadasOpen, setArchivadasOpen] = useState(false)
   const [ocDrawerModeloId, setOCDrawerModeloId] = useState<string | null>(null)
   const [republicandoId, setRepublicandoId] = useState<string | null>(null)
+  const router = useRouter()
 
-  // Republica una moto en Instagram + Facebook (fuerza aunque ya esté publicada).
-  const handleRepublicar = async (id: string, nombre: string) => {
+  // Botón IG/FB del catálogo: rojo = sin publicar, verde = publicada.
+  // Fuente de verdad = igPostId/fbPostId de la moto (los mismos campos que
+  // escribe el módulo Meta/Publicaciones), así publicar desde acá o desde
+  // Publicaciones queda siempre sincronizado. Sin publicar → publica normal;
+  // ya publicada → republica (post nuevo, con confirmación). force=1 solo al
+  // republicar. Refrescamos para que el botón cambie de color al instante.
+  const handlePublicarRedes = async (
+    id: string,
+    nombre: string,
+    yaPublicada: boolean
+  ) => {
     if (republicandoId) return
+    if (yaPublicada) {
+      if (
+        !window.confirm(
+          `"${nombre}" ya está publicada en redes.\n\n¿Crear un POST NUEVO? (el anterior no se borra)`
+        )
+      )
+        return
+    } else if (
+      !window.confirm(`¿Publicar "${nombre}" en Instagram + Facebook ahora?`)
+    ) {
+      return
+    }
     setRepublicandoId(id)
     try {
-      const res = await fetch(`/api/admin/meta/publish/${id}?force=1`, {
-        method: "POST",
-      })
+      const res = await fetch(
+        `/api/admin/meta/publish/${id}${yaPublicada ? "?force=1" : ""}`,
+        { method: "POST" }
+      )
       const data = await res.json().catch(() => ({}))
       if (res.ok && data.ok) {
         const redes = [data.igPostId && "Instagram", data.fbPostId && "Facebook"]
           .filter(Boolean)
           .join(" + ")
-        window.alert(`✅ "${nombre}" republicada en ${redes || "Meta"}.`)
+        window.alert(
+          `✅ "${nombre}" ${yaPublicada ? "republicada" : "publicada"} en ${redes || "Meta"}.`
+        )
+        router.refresh()
       } else {
-        window.alert(`❌ No se pudo republicar: ${data.error || `Error ${res.status}`}`)
+        window.alert(
+          `❌ No se pudo publicar: ${data.error || `Error ${res.status}`}`
+        )
       }
     } catch (e) {
       window.alert(`❌ Error de red: ${e instanceof Error ? e.message : String(e)}`)
@@ -692,22 +723,47 @@ export function ModelosList({
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              handleRepublicar(modelo.id, modelo.nombre)
-                            }
-                            disabled={republicandoId === modelo.id}
-                            title="Republicar en Instagram + Facebook"
-                            className="text-[#7C3AED] hover:text-[#9D5CF0] hover:bg-[#7C3AED]/10"
-                          >
-                            {republicandoId === modelo.id ? (
-                              <Loader2 className="h-4 w-4 animate-spin" />
-                            ) : (
-                              <Send className="h-4 w-4" />
-                            )}
-                          </Button>
+                          {(() => {
+                            const yaPublicada = !!(
+                              modelo.igPostId || modelo.fbPostId
+                            )
+                            const sinFotoReal = sinFoto || isPlaceholder
+                            const bloqueada = !yaPublicada && sinFotoReal
+                            return (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() =>
+                                  handlePublicarRedes(
+                                    modelo.id,
+                                    modelo.nombre,
+                                    yaPublicada
+                                  )
+                                }
+                                disabled={
+                                  republicandoId === modelo.id || bloqueada
+                                }
+                                title={
+                                  bloqueada
+                                    ? "Cargá una foto real antes de publicar en IG + FB"
+                                    : yaPublicada
+                                      ? "Publicada en IG + FB — click para crear un post nuevo"
+                                      : "Publicar en Instagram + Facebook"
+                                }
+                                className={
+                                  yaPublicada
+                                    ? "text-green-600 hover:text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/30"
+                                    : "text-red-600 hover:text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
+                                }
+                              >
+                                {republicandoId === modelo.id ? (
+                                  <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                  <InstagramIcon className="h-4 w-4" />
+                                )}
+                              </Button>
+                            )
+                          })()}
                           <Button
                             variant="ghost"
                             size="sm"
