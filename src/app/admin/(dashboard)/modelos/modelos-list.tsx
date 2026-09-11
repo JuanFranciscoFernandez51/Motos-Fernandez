@@ -3,7 +3,6 @@
 import { useMemo, useState, useTransition } from "react"
 import Link from "next/link"
 import Image from "next/image"
-import { useRouter } from "next/navigation"
 import { InstagramIcon } from "@/components/icons/social"
 import { formatPrice, CATEGORIA_VEHICULO_LABELS, ETIQUETAS_MODELO } from "@/lib/constants"
 import { Button } from "@/components/ui/button"
@@ -68,6 +67,7 @@ type Modelo = {
   clienteEntregaId: string | null
   igPostId: string | null
   fbPostId: string | null
+  redesPublicadaManual: boolean
 }
 
 // Detecta si una moto recibida en parte de pago está incompleta (sin foto real, sin precio, etc.)
@@ -96,6 +96,7 @@ export function ModelosList({
   proveedores,
   clientes,
   toggleActivo,
+  toggleRedesManual,
   updateFotos,
   updateEtiqueta,
   updateCampoModelo,
@@ -110,6 +111,7 @@ export function ModelosList({
   proveedores: ProveedorOpt[]
   clientes: ClienteOption[]
   toggleActivo: (id: string, activoActual: boolean) => Promise<void>
+  toggleRedesManual: (id: string, value: boolean) => Promise<void>
   updateFotos: (id: string, fotos: string[]) => Promise<void>
   updateEtiqueta: (id: string, etiqueta: string | null) => Promise<void>
   updateCampoModelo: (
@@ -140,58 +142,35 @@ export function ModelosList({
   const [queryVendidas, setQueryVendidas] = useState("")
   const [archivadasOpen, setArchivadasOpen] = useState(false)
   const [ocDrawerModeloId, setOCDrawerModeloId] = useState<string | null>(null)
-  const [republicandoId, setRepublicandoId] = useState<string | null>(null)
-  const router = useRouter()
+  const [marcandoId, setMarcandoId] = useState<string | null>(null)
 
-  // Botón IG/FB del catálogo: rojo = sin publicar, verde = publicada.
-  // Fuente de verdad = igPostId/fbPostId de la moto (los mismos campos que
-  // escribe el módulo Meta/Publicaciones), así publicar desde acá o desde
-  // Publicaciones queda siempre sincronizado. Sin publicar → publica normal;
-  // ya publicada → republica (post nuevo, con confirmación). force=1 solo al
-  // republicar. Refrescamos para que el botón cambie de color al instante.
-  const handlePublicarRedes = async (
+  // Botón IG del catálogo: SOLO refleja estado, no publica (publicar vive en
+  // la página de Posts para que no se pisen). Verde = publicada; rojo = no.
+  // "Publicada" = tiene igPostId/fbPostId (posteada desde la app) O está
+  // marcada a mano (redesPublicadaManual, para motos subidas fuera de la app).
+  // Las posteadas desde la app no se pueden desmarcar acá (son registro real);
+  // las marcadas a mano se alternan verde↔rojo con un click.
+  const handleToggleRedes = (
     id: string,
     nombre: string,
-    yaPublicada: boolean
+    esReal: boolean,
+    manualActual: boolean
   ) => {
-    if (republicandoId) return
-    if (yaPublicada) {
-      if (
-        !window.confirm(
-          `"${nombre}" ya está publicada en redes.\n\n¿Crear un POST NUEVO? (el anterior no se borra)`
-        )
+    if (marcandoId) return
+    if (esReal) {
+      window.alert(
+        `"${nombre}" se publicó desde la app (Posts/Calendario). Se marca sola — no se desmarca desde el catálogo.`
       )
-        return
-    } else if (
-      !window.confirm(`¿Publicar "${nombre}" en Instagram + Facebook ahora?`)
-    ) {
       return
     }
-    setRepublicandoId(id)
-    try {
-      const res = await fetch(
-        `/api/admin/meta/publish/${id}${yaPublicada ? "?force=1" : ""}`,
-        { method: "POST" }
-      )
-      const data = await res.json().catch(() => ({}))
-      if (res.ok && data.ok) {
-        const redes = [data.igPostId && "Instagram", data.fbPostId && "Facebook"]
-          .filter(Boolean)
-          .join(" + ")
-        window.alert(
-          `✅ "${nombre}" ${yaPublicada ? "republicada" : "publicada"} en ${redes || "Meta"}.`
-        )
-        router.refresh()
-      } else {
-        window.alert(
-          `❌ No se pudo publicar: ${data.error || `Error ${res.status}`}`
-        )
+    setMarcandoId(id)
+    startTransition(async () => {
+      try {
+        await toggleRedesManual(id, !manualActual)
+      } finally {
+        setMarcandoId(null)
       }
-    } catch (e) {
-      window.alert(`❌ Error de red: ${e instanceof Error ? e.message : String(e)}`)
-    } finally {
-      setRepublicandoId(null)
-    }
+    })
   }
 
   // Separamos activas (no vendidas) y vendidas
@@ -724,39 +703,38 @@ export function ModelosList({
                             <Eye className="h-4 w-4" />
                           </Button>
                           {(() => {
-                            const yaPublicada = !!(
+                            const esReal = !!(
                               modelo.igPostId || modelo.fbPostId
                             )
-                            const sinFotoReal = sinFoto || isPlaceholder
-                            const bloqueada = !yaPublicada && sinFotoReal
+                            const manual = modelo.redesPublicadaManual
+                            const verde = esReal || manual
                             return (
                               <Button
                                 variant="ghost"
                                 size="sm"
                                 onClick={() =>
-                                  handlePublicarRedes(
+                                  handleToggleRedes(
                                     modelo.id,
                                     modelo.nombre,
-                                    yaPublicada
+                                    esReal,
+                                    manual
                                   )
                                 }
-                                disabled={
-                                  republicandoId === modelo.id || bloqueada
-                                }
+                                disabled={marcandoId === modelo.id}
                                 title={
-                                  bloqueada
-                                    ? "Cargá una foto real antes de publicar en IG + FB"
-                                    : yaPublicada
-                                      ? "Publicada en IG + FB — click para crear un post nuevo"
-                                      : "Publicar en Instagram + Facebook"
+                                  esReal
+                                    ? "Publicada desde la app (Posts/Calendario)"
+                                    : manual
+                                      ? "Marcada como publicada a mano — click para desmarcar"
+                                      : "No publicada — click si ya la subiste a IG (marcar en verde)"
                                 }
                                 className={
-                                  yaPublicada
+                                  verde
                                     ? "text-green-600 hover:text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/30"
                                     : "text-red-600 hover:text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30"
                                 }
                               >
-                                {republicandoId === modelo.id ? (
+                                {marcandoId === modelo.id ? (
                                   <Loader2 className="h-4 w-4 animate-spin" />
                                 ) : (
                                   <InstagramIcon className="h-4 w-4" />

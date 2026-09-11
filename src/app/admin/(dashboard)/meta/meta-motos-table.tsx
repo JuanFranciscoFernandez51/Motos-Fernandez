@@ -20,6 +20,7 @@ export type MetaMotoRow = {
   fbPermalink: string | null
   igUltimaSync: string | null // ISO
   sinFoto: boolean
+  redesPublicadaManual: boolean
 }
 
 const fmtMoney = (n: number | null, moneda: string | null) =>
@@ -107,6 +108,14 @@ export function MetaMotosTable({ motos }: { motos: MetaMotoRow[] }) {
                       >
                         Publicada
                       </Badge>
+                    ) : m.redesPublicadaManual ? (
+                      <Badge
+                        variant="secondary"
+                        className="bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300"
+                        title="Marcada como ya publicada a mano (subida fuera de la app)"
+                      >
+                        Publicada (a mano)
+                      </Badge>
                     ) : (
                       <span className="text-xs text-gray-400">No publicada</span>
                     )}
@@ -138,7 +147,11 @@ export function MetaMotosTable({ motos }: { motos: MetaMotoRow[] }) {
                           <FacebookIcon className="size-3.5" />
                         </a>
                       )}
-                      <MetaPublishButton modeloId={m.id} yaPublicada={!!m.igPostId} sinFoto={m.sinFoto} />
+                      <MetaPublishButton
+                        modeloId={m.id}
+                        yaPublicada={!!m.igPostId || m.redesPublicadaManual}
+                        sinFoto={m.sinFoto}
+                      />
                     </div>
                   </td>
                 </tr>

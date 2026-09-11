@@ -45,11 +45,14 @@ export default async function MetaAdminPage({
       igUltimaSync: true,
       igError: true,
       fotos: true,
+      redesPublicadaManual: true,
     },
   })
 
-  const publicadas = motos.filter((m) => m.igPostId)
-  const sinPublicar = motos.filter((m) => !m.igPostId)
+  const publicadas = motos.filter((m) => m.igPostId || m.redesPublicadaManual)
+  const sinPublicar = motos.filter(
+    (m) => !m.igPostId && !m.redesPublicadaManual
+  )
   const conError = motos.filter((m) => m.igError)
 
   return (
@@ -323,6 +326,7 @@ export default async function MetaAdminPage({
                 fbPermalink: m.fbPermalink,
                 igUltimaSync: m.igUltimaSync ? m.igUltimaSync.toISOString() : null,
                 sinFoto: (m.fotos?.length ?? 0) === 0,
+                redesPublicadaManual: m.redesPublicadaManual,
               }))}
             />
           </CardContent>

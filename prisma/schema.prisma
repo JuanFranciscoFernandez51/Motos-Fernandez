@@ -181,6 +181,12 @@ model Modelo {
   fbPermalink  String? // url publica del post de FB
   igUltimaSync DateTime? // ultima vez que se publicó/actualizó
   igError      String?   @db.Text // ultimo error si hubo
+  // Marca MANUAL de "ya publicada en redes" para motos que se subieron a
+  // IG fuera de la app (ej: antes de que existiera este sistema). No crea
+  // ningún post: solo pinta el estado en verde en el catálogo y en la
+  // página de Posts, para que no se intente republicar. Las publicadas
+  // desde la app usan igPostId/fbPostId y no dependen de este flag.
+  redesPublicadaManual Boolean @default(false)
 
   // Marketing flags (brief calendario/ads):
   // - activeForMarketing: bandera para excluir esta moto de posts

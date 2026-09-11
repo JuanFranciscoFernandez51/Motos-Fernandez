@@ -27,6 +27,19 @@ async function toggleActivo(id: string, activoActual: boolean) {
   invalidateModelos()
 }
 
+// Marca/desmarca "ya publicada en redes" a mano (NO publica nada en IG/FB;
+// solo el estado visual, para motos subidas fuera de la app). Ver comentario
+// del campo redesPublicadaManual en el schema.
+async function toggleRedesManual(id: string, value: boolean) {
+  "use server"
+  await prisma.modelo.update({
+    where: { id },
+    data: { redesPublicadaManual: value },
+  })
+  revalidatePath("/admin/modelos")
+  revalidatePath("/admin/meta")
+}
+
 async function updateEtiqueta(id: string, etiqueta: string | null) {
   "use server"
   await prisma.modelo.update({
@@ -584,6 +597,7 @@ export default async function ModelosPage({
         clienteEntregaId: true,
         igPostId: true,
         fbPostId: true,
+        redesPublicadaManual: true,
       },
     }),
     prisma.proveedor.findMany({
@@ -651,6 +665,7 @@ export default async function ModelosPage({
         proveedores={proveedores}
         clientes={clientes}
         toggleActivo={toggleActivo}
+        toggleRedesManual={toggleRedesManual}
         updateFotos={updateFotos}
         updateEtiqueta={updateEtiqueta}
         updateCampoModelo={updateCampoModelo}
