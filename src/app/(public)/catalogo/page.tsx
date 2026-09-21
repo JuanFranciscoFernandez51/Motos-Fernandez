@@ -12,7 +12,17 @@ export const metadata: Metadata = {
     "Explorá nuestro catálogo completo de motocicletas, cuatriciclos, UTV y motos de agua. Las mejores marcas con financiación en Bahía Blanca.",
 }
 
-export default async function ModelosPage() {
+export default async function ModelosPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    categoria?: string
+    condicion?: string
+    marca?: string
+    q?: string
+  }>
+}) {
+  const sp = await searchParams
   const [models, brands] = await Promise.all([getModelosCatalogo(), getMarcasCatalogo()])
 
   return (
@@ -48,6 +58,10 @@ export default async function ModelosPage() {
           <CatalogoClient
             models={JSON.parse(JSON.stringify(models))}
             brands={brands}
+            initialCategoria={sp.categoria}
+            initialCondicion={sp.condicion}
+            initialMarca={sp.marca}
+            initialSearch={sp.q}
           />
         </div>
       </section>

@@ -63,16 +63,25 @@ export function CatalogoClient({
   models,
   brands,
   mostrarCondicion = true,
+  initialCategoria,
+  initialCondicion,
+  initialMarca,
+  initialSearch,
 }: {
   models: Modelo[]
   brands: string[]
   /** Mostrar el filtro 0KM/Usadas. En la página /0km se oculta (todas son 0KM). */
   mostrarCondicion?: boolean
+  /** Filtros iniciales desde la URL (para links directos, ej: ?categoria=MOTO_DE_AGUA&marca=Yamaha). */
+  initialCategoria?: string
+  initialCondicion?: string
+  initialMarca?: string
+  initialSearch?: string
 }) {
-  const [categoria, setCategoria] = useState<string>("TODAS")
-  const [condicion, setCondicion] = useState<string>("TODAS")
-  const [marca, setMarca] = useState<string>("TODAS")
-  const [search, setSearch] = useState("")
+  const [categoria, setCategoria] = useState<string>(initialCategoria || "TODAS")
+  const [condicion, setCondicion] = useState<string>(initialCondicion || "TODAS")
+  const [marca, setMarca] = useState<string>(initialMarca || "TODAS")
+  const [search, setSearch] = useState(initialSearch || "")
   // Sidebar de filtros abierto en mobile (en desktop siempre visible).
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const { compareItems } = useCompare()

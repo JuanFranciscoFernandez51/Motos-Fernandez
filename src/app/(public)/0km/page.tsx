@@ -16,7 +16,12 @@ export const metadata: Metadata = {
   description: "Catálogo de motos 0KM nuevas con entrega inmediata y financiación.",
 }
 
-export default async function Motos0kmPage() {
+export default async function Motos0kmPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ categoria?: string; marca?: string; q?: string }>
+}) {
+  const sp = await searchParams
   const [models, brands] = await Promise.all([
     getModelosCatalogo(),
     getMarcasCatalogo(),
@@ -68,6 +73,9 @@ export default async function Motos0kmPage() {
               models={JSON.parse(JSON.stringify(ceroKm))}
               brands={brands}
               mostrarCondicion={false}
+              initialCategoria={sp.categoria}
+              initialMarca={sp.marca}
+              initialSearch={sp.q}
             />
           )}
         </div>
