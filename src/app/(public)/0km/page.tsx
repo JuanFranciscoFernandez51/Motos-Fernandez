@@ -43,19 +43,23 @@ export default async function Motos0kmPage({
         <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C8C8D0]/[0.06] blur-3xl pointer-events-none" />
         <Watermark position="right" size="xl" opacity="subtle" className="hidden md:block" />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
-          <SectionEyebrow centered variant="gold">
-            Nuevas · Entrega inmediata
-          </SectionEyebrow>
-          <h1 className="mt-5 font-heading text-5xl sm:text-6xl lg:text-7xl text-white text-balance leading-tight">
-            Motos <span className="text-[#C8C8D0]">0KM</span>
-          </h1>
-          <GoldDivider variant="ornament" className="mt-7" />
-          <p className="mt-7 text-base sm:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Modelos nuevos con garantía oficial, financiación propia y plan
-            canje. Elegí color y consultá entrega inmediata.
-          </p>
-          <div className="relative z-40 mt-8 max-w-xl mx-auto text-left">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-5 sm:py-20 text-center">
+          {/* En mobile ocultamos el texto del hero (ocupa mucho) y dejamos
+              solo el buscador. En sm+ se muestra completo. */}
+          <div className="hidden sm:block">
+            <SectionEyebrow centered variant="gold">
+              Nuevas · Entrega inmediata
+            </SectionEyebrow>
+            <h1 className="mt-5 font-heading text-5xl sm:text-6xl lg:text-7xl text-white text-balance leading-tight">
+              Motos <span className="text-[#C8C8D0]">0KM</span>
+            </h1>
+            <GoldDivider variant="ornament" className="mt-7" />
+            <p className="mt-7 text-base sm:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
+              Modelos nuevos con garantía oficial, financiación propia y plan
+              canje. Elegí color y consultá entrega inmediata.
+            </p>
+          </div>
+          <div className="relative z-40 mt-0 sm:mt-8 max-w-xl mx-auto text-left">
             <GlobalSearch scope="0km" />
           </div>
         </div>

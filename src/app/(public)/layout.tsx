@@ -211,6 +211,7 @@ function Navbar() {
               </div>
               {/* Mobile actions */}
               <div className="lg:hidden flex items-center gap-1">
+                <ThemeToggleSubtle className="text-gray-300 hover:text-white hover:bg-white/5" />
                 <CompareIcon />
                 <CartIcon />
                 <button
