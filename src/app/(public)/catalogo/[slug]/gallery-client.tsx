@@ -38,6 +38,37 @@ export function ModelGallery({
   const [colorSel, setColorSel] = useState<string | null>(null)
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
+  // Precarga de fotos para que pasar de imagen sea instantáneo. La foto
+  // vecina (siguiente/anterior) se precarga apenas cambia el índice; el
+  // resto de la galería se precarga en segundo plano (idle) tras el primer
+  // render. Así el swipe/flechas no esperan a la red.
+  const galeriaKey = galeria.join("|")
+  useEffect(() => {
+    if (galeria.length <= 1) return
+    const precargar = (src?: string) => {
+      if (!src) return
+      const img = new window.Image()
+      img.src = src
+    }
+    // vecinas inmediatas
+    precargar(galeria[(current + 1) % galeria.length])
+    precargar(galeria[(current - 1 + galeria.length) % galeria.length])
+    // resto en idle
+    const runIdle =
+      typeof window.requestIdleCallback === "function"
+        ? window.requestIdleCallback
+        : (cb: () => void) => window.setTimeout(cb, 400)
+    const handle = runIdle(() => galeria.forEach(precargar))
+    return () => {
+      if (typeof window.cancelIdleCallback === "function" && typeof handle === "number") {
+        try {
+          window.cancelIdleCallback(handle)
+        } catch {}
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [galeriaKey, current])
+
   // Mapea cada color (con foto) al índice de su foto en la galería.
   const indiceDeColor = (c: ColorOption): number =>
     c.foto ? galeria.indexOf(c.foto) : -1
