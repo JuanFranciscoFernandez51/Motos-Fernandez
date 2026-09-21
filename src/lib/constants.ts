@@ -41,6 +41,7 @@ export const ETIQUETAS_MODELO = [
   { value: "RECIEN_INGRESADA", label: "Recién ingresada", color: "bg-blue-500" },
   { value: "CONSULTAR_STOCK", label: "Consultá stock", color: "bg-gray-500" },
   { value: "RESERVADA", label: "Reservada", color: "bg-yellow-500" },
+  { value: "A_PEDIDO", label: "A pedido", color: "bg-violet-500" },
 ] as const
 
 export const ETIQUETAS_MAP: Record<string, { label: string; color: string }> = ETIQUETAS_MODELO.reduce(
