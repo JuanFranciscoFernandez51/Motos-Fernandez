@@ -25,6 +25,7 @@ export type ModeloHomeItem = {
   moneda: string
   fotos: string[]
   destacado: boolean
+  etiqueta?: string | null
   /** "EN_LOCAL" | "EN_DOMICILIO" — usado para mostrar badge SOLO WEB. */
   tipoTenencia?: string | null
   /** Cilindrada ("150cc", "650cc"...) — para el sello de envío gratis. */
@@ -255,13 +256,22 @@ function ModeloCard({
             </span>
           )}
           {/* Solo 0KM: "Consultar disponibilidad" (las usadas no llevan
-              badge de tenencia, queda más limpio). */}
-          {(model.condicion || "0KM") === "0KM" && (
+              badge de tenencia, queda más limpio). Las "A pedido" tampoco. */}
+          {(model.condicion || "0KM") === "0KM" &&
+            model.etiqueta !== "A_PEDIDO" && (
             <span
               className="rounded-md px-2 py-0.5 text-[10px] font-bold bg-[#7C3AED] text-white text-right"
               title="Consultanos disponibilidad y entrega de esta unidad 0KM"
             >
               CONSULTAR DISPONIBILIDAD
+            </span>
+          )}
+          {model.etiqueta === "A_PEDIDO" && (
+            <span
+              className="rounded-md px-2 py-0.5 text-[10px] font-bold bg-violet-500 text-white text-right"
+              title="Unidad a pedido / por encargo"
+            >
+              A PEDIDO
             </span>
           )}
         </div>

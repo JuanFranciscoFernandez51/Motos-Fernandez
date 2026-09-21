@@ -251,7 +251,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                 {/* Tenencia: dónde se puede ver/comprar la moto.
                     Las 0KM del catálogo no las tenemos físicas → "Consultar
                     disponibilidad" en vez de "En concesionaria". */}
-                {(model.condicion || "0KM") === "0KM" ? (
+                {model.etiqueta === "A_PEDIDO" ? null : (model.condicion || "0KM") === "0KM" ? (
                   <span className="inline-block rounded-md px-2.5 py-0.5 text-xs font-bold text-white bg-[#7C3AED]">
                     CONSULTAR DISPONIBILIDAD
                   </span>

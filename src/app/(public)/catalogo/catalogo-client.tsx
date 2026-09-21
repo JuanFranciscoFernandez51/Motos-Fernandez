@@ -546,8 +546,10 @@ export function CatalogoClient({
                       </span>
                     )}
                     {/* Solo en 0KM mostramos "Consultar disponibilidad". En
-                        usadas no va badge de tenencia (más limpio). */}
-                    {(model.condicion || "0KM") === "0KM" && (
+                        usadas no va badge de tenencia (más limpio). Las "A
+                        pedido" tampoco lo llevan (ya lo dice su etiqueta). */}
+                    {(model.condicion || "0KM") === "0KM" &&
+                      model.etiqueta !== "A_PEDIDO" && (
                       <span
                         className="rounded-md px-1.5 sm:px-2.5 py-0.5 sm:py-1 text-[8px] sm:text-[10px] font-bold text-white shadow-lg bg-[#7C3AED] truncate max-w-full"
                         title="Consultanos disponibilidad y entrega de esta unidad 0KM"
