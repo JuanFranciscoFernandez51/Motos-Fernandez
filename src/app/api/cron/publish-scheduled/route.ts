@@ -52,13 +52,18 @@ export async function GET(request: Request) {
   const ahora = new Date()
   const lockCutoff = new Date(ahora.getTime() - LOCK_TIMEOUT_MIN * 60 * 1000)
 
-  // 3) Levantar candidatos. Filtramos PENDING + scheduledAt vencido +
-  //    sin lock vigente.
+  // 3) Levantar candidatos. Filtramos scheduledAt vencido + sin lock vigente.
+  //    Incluimos PENDING (nuevos o que quedaron para reintento) y también
+  //    PROCESSING zombis: posts que un worker lockeó y dejó colgados (timeout
+  //    a mitad de publicación). Si su lock ya venció, otro cron los recupera.
   const candidatos = await prisma.scheduledPost.findMany({
     where: {
-      status: "PENDING",
       scheduledAt: { lte: ahora },
-      OR: [{ lockedAt: null }, { lockedAt: { lt: lockCutoff } }],
+      OR: [
+        { status: "PENDING", lockedAt: null },
+        { status: "PENDING", lockedAt: { lt: lockCutoff } },
+        { status: "PROCESSING", lockedAt: { lt: lockCutoff } },
+      ],
     },
     orderBy: { scheduledAt: "asc" },
     take: BATCH_SIZE,
