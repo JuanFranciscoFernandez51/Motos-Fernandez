@@ -18,13 +18,19 @@ import { BUSINESS } from "@/lib/constants"
 // IG quiere fotos en aspect ratios entre 4:5 y 1.91:1. Lo más seguro es 1:1.
 function urlIG(url: string): string {
   if (!url || !url.includes("res.cloudinary.com")) return url
-  // Encuadre a 4:5 (1080×1350) con PADDING sobre fondo oscuro de marca: la moto
-  // entra entera (no se recorta) y todas las slides comparten el formato de la
-  // portada, así Instagram no las vuelve a recortar.
-  return url.replace(
-    /\/upload\//,
-    "/upload/f_jpg,q_auto:good,w_1080,h_1350,c_pad,b_rgb:0a0810/"
-  )
+  // Encuadre a 1:1 (1080×1080) con PADDING sobre fondo BLANCO: las motos son
+  // anchas (perfil), así entran a ancho completo y grandes (no chiquitas como
+  // pasaba con el 4:5 vertical). Fondo blanco: se funde con las fotos beauty
+  // (que ya vienen sobre blanco) y todas las slides comparten formato con la
+  // portada (también 1:1), así IG no las vuelve a recortar.
+  const tx = "f_jpg,q_auto:good,w_1080,h_1080,c_pad,b_white"
+  // IMPORTANTE: muchas fotos ya traen una transformación horneada en la URL
+  // (ej. c_lpad,ar_4:3,w_1520). Cloudinary aplica las transforms en cadena de
+  // izquierda a derecha, así que el 1:1 tiene que ir como ÚLTIMA transform
+  // (después de la horneada) o la anterior lo pisa. Lo insertamos justo antes
+  // de la versión /vNNN/. Si no hay versión, lo agregamos tras /upload/.
+  if (/\/v\d+\//.test(url)) return url.replace(/\/(v\d+)\//, `/${tx}/$1/`)
+  return url.replace(/\/upload\//, `/upload/${tx}/`)
 }
 
 type MotoCaption = {
@@ -181,6 +187,10 @@ export async function publicarEnMeta(
     /** Anteponer la portada generada (slide 1) en carruseles de fotos.
      *  Default true para PHOTO_CAROUSEL. */
     portada?: boolean
+    /** Si viene del cron de posts programados: el id del ScheduledPost. Se
+     *  usa para marcarlo PUBLISHED apenas IG confirma (antes del cross-post),
+     *  evitando que un timeout provoque una republicación duplicada. */
+    scheduledPostId?: string
   } = {}
 ): Promise<{
   ok: boolean
@@ -353,6 +363,35 @@ export async function publicarEnMeta(
       permalink = info.permalink
     } catch {
       // si falla, no rompemos
+    }
+
+    // 3b) IDEMPOTENCIA: marcar el ScheduledPost como PUBLICADO apenas IG
+    //     confirmó el post, ANTES del cross-post a FB y del update de la moto.
+    //     Si la función se pasa del maxDuration (carruseles largos), el post
+    //     ya quedó PUBLISHED y el próximo cron NO lo vuelve a publicar → evita
+    //     los duplicados en Instagram.
+    if (options.scheduledPostId) {
+      try {
+        await prisma.scheduledPost.update({
+          where: { id: options.scheduledPostId },
+          data: {
+            status: "PUBLISHED",
+            publishedAt: new Date(),
+            publishedRefs: {
+              ig: {
+                postId: published.id,
+                permalink: permalink ?? null,
+                publishedAt: new Date().toISOString(),
+              },
+            },
+            lockedAt: null,
+            lockedBy: null,
+            errorMessage: null,
+          },
+        })
+      } catch {
+        // best-effort; el cron igual actualizará el estado al terminar
+      }
     }
 
     // 4) Cross-post a Facebook Page (foto principal con caption) — solo

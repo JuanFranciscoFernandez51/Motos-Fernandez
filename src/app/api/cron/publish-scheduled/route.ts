@@ -6,9 +6,12 @@ import { publicarEnMeta } from "@/lib/meta/publication"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
-// Vercel Pro: hasta 60s. Cada publicación a Meta tarda 5-20s, así que
-// procesamos batches chicos para no timeoutear.
-export const maxDuration = 60
+// Un carrusel de 10 fotos a IG (subir cada item + esperar que procese +
+// publicar) puede tardar varios minutos. Damos margen para que TODO el
+// publish termine en una sola ejecución y marque PUBLISHED, así no queda un
+// post "colgado" que el próximo cron republicaría (duplicado). Vercel Pro
+// admite hasta 300s.
+export const maxDuration = 300
 
 /**
  * Cron de publicación de ScheduledPost. Se llama desde vercel.json cada
@@ -155,6 +158,7 @@ export async function GET(request: Request) {
     try {
       publishResult = await publicarEnMeta(cand.motoId, {
         platforms,
+        scheduledPostId: cand.id,
         customCaption: cand.customCaption || undefined,
         // forceRepublish=true porque un mismo modelo puede tener varios
         // scheduled posts y no queremos que el segundo falle con "ya

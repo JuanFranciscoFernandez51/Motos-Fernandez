@@ -22,7 +22,7 @@ async function jpegFrom(img: ImageResponse): Promise<Response> {
 /**
  * GET /api/portada/[id]
  *
- * Portada 1080×1350 (4:5 retrato IG) con next/og (Satori). Foto a sangre
+ * Portada 1080×1080 (1:1 cuadrado IG) con next/og (Satori). Foto a sangre
  * (full-bleed) + degradado que oscurece hacia abajo para que el texto se lea
  * encima. Slide 1 de los carruseles de Instagram (ver publicarEnMeta).
  */
@@ -30,7 +30,7 @@ async function jpegFrom(img: ImageResponse): Promise<Response> {
 const LILA = "#C39BD3"
 const WHATSAPP = "#25D366"
 const CUOTAS = "Financiá hasta el 100%"
-const SIZE = { width: 1080, height: 1350 }
+const SIZE = { width: 1080, height: 1080 }
 
 export async function GET(
   _req: Request,
@@ -136,7 +136,7 @@ export async function GET(
             bottom: 0,
             left: 0,
             right: 0,
-            height: 820,
+            height: 680,
             display: "flex",
             background:
               "linear-gradient(0deg, rgba(10,8,16,0.97) 0%, rgba(10,8,16,0.9) 16%, rgba(10,8,16,0.55) 40%, rgba(10,8,16,0) 100%)",
