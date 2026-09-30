@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic"
 
 export default async function FacturacionPage() {
   const facturas = await prisma.factura.findMany({
-    orderBy: { createdAt: "desc" },
+    orderBy: { fechaCbte: "desc" },
     take: 100,
     include: { cliente: { select: { nombre: true, apellido: true } } },
   })

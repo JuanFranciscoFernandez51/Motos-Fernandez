@@ -575,6 +575,11 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
                           ARCA
                         </span>
                       )}
+                      {f.origen === "VESPA" && (
+                        <span className="ml-2 inline-block rounded bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 px-1.5 py-0.5 text-[10px] font-bold align-middle">
+                          VESPA BAHÍA
+                        </span>
+                      )}
                     </td>
                     <td className="py-2 pr-3 text-gray-500">{fmtFecha(f.fechaCbte)}</td>
                     <td className="py-2 pr-3">{f.receptorNombre}</td>
@@ -591,8 +596,10 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
                       )}
                     </td>
                     <td className="py-2 text-right">
-                      {f.origen === "ARCA" ? (
-                        <span className="text-xs text-gray-400 italic">emitida en ARCA</span>
+                      {f.origen === "ARCA" || f.origen === "VESPA" ? (
+                        <span className="text-xs text-gray-400 italic">
+                          {f.origen === "VESPA" ? "emitida en Vespa Bahía" : "emitida en ARCA"}
+                        </span>
                       ) : f.estado === "EMITIDA" && f.cae && (
                         <div className="inline-flex items-center gap-3">
                           <a
