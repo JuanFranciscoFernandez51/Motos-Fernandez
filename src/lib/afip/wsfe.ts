@@ -78,6 +78,115 @@ export async function ultimoAutorizado(
   return nro ? parseInt(nro, 10) : 0
 }
 
+/** Punto de venta habilitado en ARCA (incluye los del portal web y los de WS). */
+export interface PtoVentaInfo {
+  nro: number
+  emisionTipo: string // "CAE" (web service) | "CAEA" | "RECE"... — el portal usa su propio pto
+  bloqueado: boolean
+}
+
+/** Lista los puntos de venta habilitados del CUIT (FEParamGetPtosVenta).
+ *  Sirve para descubrir el pto de venta del portal (comprobantes en línea),
+ *  distinto al de web services, y así traer TODO lo emitido. */
+export async function puntosDeVenta(): Promise<PtoVentaInfo[]> {
+  const resp = await wsfeCall("FEParamGetPtosVenta", "")
+  const errs = leerErrores(resp)
+  if (errs.length) {
+    throw new Error(
+      `FEParamGetPtosVenta: ${errs.map((e) => `${e.code} ${e.msg}`).join(" | ")}`
+    )
+  }
+  const out: PtoVentaInfo[] = []
+  for (const m of resp.matchAll(/<PtoVenta>([\s\S]*?)<\/PtoVenta>/g)) {
+    const nro = parseInt(pickTag(m[1], "Nro") || "0", 10)
+    if (!nro) continue
+    out.push({
+      nro,
+      emisionTipo: pickTag(m[1], "EmisionTipo") || "",
+      bloqueado: (pickTag(m[1], "Bloqueado") || "N").toUpperCase() === "S",
+    })
+  }
+  return out
+}
+
+/** Datos de un comprobante ya autorizado por ARCA (FECompConsultar). */
+export interface ComprobanteArca {
+  ptoVta: number
+  cbteTipo: number
+  nro: number
+  fechaCbte: string // YYYYMMDD
+  concepto: number
+  docTipo: number
+  docNro: string
+  impTotal: number
+  impNeto: number
+  impIva: number
+  impTotConc: number
+  impOpEx: number
+  impTrib: number
+  monId: string
+  monCotiz: number
+  cae: string
+  caeVto: string // YYYYMMDD
+  resultado: string // A/R/P
+  alicuotas: { id: number; baseImp: number; importe: number }[]
+}
+
+/** Consulta un comprobante puntual por (tipo, ptoVta, nro). Devuelve null si
+ *  ARCA dice que no existe (error 602) — así el sync puede saltearlo. */
+export async function consultarComprobante(
+  ptoVta: number,
+  cbteTipo: number,
+  nro: number
+): Promise<ComprobanteArca | null> {
+  const inner = `<ar:FeCompConsReq><ar:CbteTipo>${cbteTipo}</ar:CbteTipo><ar:CbteNro>${nro}</ar:CbteNro><ar:PtoVta>${ptoVta}</ar:PtoVta></ar:FeCompConsReq>`
+  const resp = await wsfeCall("FECompConsultar", inner)
+  const errs = leerErrores(resp)
+  if (errs.length) {
+    // 602 = "No existe/No se encuentran datos para los parámetros ingresados"
+    if (errs.some((e) => e.code === "602")) return null
+    throw new Error(
+      `FECompConsultar: ${errs.map((e) => `${e.code} ${e.msg}`).join(" | ")}`
+    )
+  }
+  const g = resp.match(/<ResultGet>([\s\S]*?)<\/ResultGet>/)
+  if (!g) return null
+  const x = g[1]
+  const num = (t: string) => parseFloat(pickTag(x, t) || "0") || 0
+  const alicuotas: { id: number; baseImp: number; importe: number }[] = []
+  const ivaBlock = x.match(/<Iva>([\s\S]*?)<\/Iva>/)
+  if (ivaBlock) {
+    for (const a of ivaBlock[1].matchAll(/<AlicIva>([\s\S]*?)<\/AlicIva>/g)) {
+      alicuotas.push({
+        id: parseInt(pickTag(a[1], "Id") || "0", 10),
+        baseImp: parseFloat(pickTag(a[1], "BaseImp") || "0") || 0,
+        importe: parseFloat(pickTag(a[1], "Importe") || "0") || 0,
+      })
+    }
+  }
+  return {
+    ptoVta,
+    cbteTipo,
+    nro,
+    fechaCbte: pickTag(x, "CbteFch") || "",
+    concepto: parseInt(pickTag(x, "Concepto") || "1", 10),
+    docTipo: parseInt(pickTag(x, "DocTipo") || "99", 10),
+    docNro: pickTag(x, "DocNro") || "0",
+    impTotal: num("ImpTotal"),
+    impNeto: num("ImpNeto"),
+    impIva: num("ImpIVA"),
+    impTotConc: num("ImpTotConc"),
+    impOpEx: num("ImpOpEx"),
+    impTrib: num("ImpTrib"),
+    monId: pickTag(x, "MonId") || "PES",
+    monCotiz: num("MonCotiz") || 1,
+    cae: pickTag(x, "CodAutorizacion") || "",
+    caeVto: pickTag(x, "FchVto") || "",
+    resultado: pickTag(x, "Resultado") || "",
+    alicuotas,
+  }
+}
+
 // ---- Solicitud de CAE ----
 
 export interface AlicuotaIva {

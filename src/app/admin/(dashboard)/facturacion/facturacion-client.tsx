@@ -15,6 +15,7 @@ import {
   Eye,
   Mail,
   Send,
+  RefreshCw,
 } from "lucide-react"
 
 // ---- Constantes (espejo de lib/afip/tipos) ----
@@ -56,6 +57,7 @@ type FacturaUI = {
   estado: string
   cae: string | null
   caeVto: string | null
+  origen: string
 }
 
 type Item = { descripcion: string; cantidad: number; precioUnit: number; alicuotaIva: number }
@@ -94,6 +96,35 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
   // Conexión
   const [conexion, setConexion] = useState<string | null>(null)
   const [probandoConexion, setProbandoConexion] = useState(false)
+
+  // Sincronización con ARCA (importar comprobantes emitidos por fuera)
+  const [sincronizando, setSincronizando] = useState(false)
+  const [syncMsg, setSyncMsg] = useState<string | null>(null)
+
+  const sincronizarArca = async () => {
+    setSincronizando(true)
+    setSyncMsg("Consultando ARCA… (puede tardar un minuto)")
+    try {
+      const res = await fetch("/api/admin/facturacion/sincronizar-arca", { method: "POST" })
+      const d = await res.json()
+      if (d.ok) {
+        const det = Object.entries(d.detalle || {})
+          .map(([k, v]) => `${v} ${k}`)
+          .join(", ")
+        setSyncMsg(
+          d.importadas > 0
+            ? `✅ Importados ${d.importadas} comprobante(s) de ARCA${det ? ` (${det})` : ""}.${d.hayMas ? " Quedan más: volvé a sincronizar." : ""} Actualizá la página para verlos.`
+            : `✅ Todo al día — no había comprobantes nuevos en ARCA.${d.hayMas ? " (Revisá de nuevo, hay más para chequear.)" : ""}`
+        )
+      } else {
+        setSyncMsg(`⚠️ ${d.error || "No se pudo sincronizar con ARCA"}`)
+      }
+    } catch {
+      setSyncMsg("⚠️ Error de red al sincronizar")
+    } finally {
+      setSincronizando(false)
+    }
+  }
 
   // ---- Totales en vivo ----
   const totales = useMemo(() => {
@@ -301,17 +332,31 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
             Emití Factura A/B con CAE de ARCA. Punto de venta 0003 (Web Services).
           </p>
         </div>
-        <button
-          onClick={probarConexion}
-          disabled={probandoConexion}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-neutral-800"
-        >
-          {probandoConexion ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wifi className="w-4 h-4" />}
-          Probar conexión
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={sincronizarArca}
+            disabled={sincronizando}
+            title="Trae de ARCA los comprobantes emitidos desde el portal (comprobantes en línea) u otro sistema y los suma a la lista."
+            className="inline-flex items-center gap-2 rounded-lg bg-violet-600 text-white px-3 py-2 text-sm font-medium hover:bg-violet-700 disabled:opacity-50"
+          >
+            {sincronizando ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
+            Sincronizar con ARCA
+          </button>
+          <button
+            onClick={probarConexion}
+            disabled={probandoConexion}
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 dark:border-neutral-700 px-3 py-2 text-sm hover:bg-gray-50 dark:hover:bg-neutral-800"
+          >
+            {probandoConexion ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wifi className="w-4 h-4" />}
+            Probar conexión
+          </button>
+        </div>
       </div>
       {conexion && (
         <div className="text-sm rounded-lg bg-gray-50 dark:bg-neutral-800/60 px-3 py-2">{conexion}</div>
+      )}
+      {syncMsg && (
+        <div className="text-sm rounded-lg bg-violet-50 dark:bg-violet-950/40 text-violet-800 dark:text-violet-200 px-3 py-2">{syncMsg}</div>
       )}
 
       {/* ---- Form de emisión ---- */}
@@ -525,6 +570,11 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
                           {String(f.puntoVenta).padStart(4, "0")}-{String(f.numero).padStart(8, "0")}
                         </span>
                       )}
+                      {f.origen === "ARCA" && (
+                        <span className="ml-2 inline-block rounded bg-violet-100 dark:bg-violet-900/40 text-violet-700 dark:text-violet-300 px-1.5 py-0.5 text-[10px] font-bold align-middle">
+                          ARCA
+                        </span>
+                      )}
                     </td>
                     <td className="py-2 pr-3 text-gray-500">{fmtFecha(f.fechaCbte)}</td>
                     <td className="py-2 pr-3">{f.receptorNombre}</td>
@@ -541,7 +591,9 @@ export function FacturacionClient({ facturas }: { facturas: FacturaUI[] }) {
                       )}
                     </td>
                     <td className="py-2 text-right">
-                      {f.estado === "EMITIDA" && f.cae && (
+                      {f.origen === "ARCA" ? (
+                        <span className="text-xs text-gray-400 italic">emitida en ARCA</span>
+                      ) : f.estado === "EMITIDA" && f.cae && (
                         <div className="inline-flex items-center gap-3">
                           <a
                             href={`/api/admin/facturacion/${f.id}/pdf`}

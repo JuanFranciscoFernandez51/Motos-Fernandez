@@ -1726,6 +1726,10 @@ model Factura {
   mandatoId         String?
   pdfUrl            String?
   notas             String?
+  // De dónde salió el comprobante: WEB = emitido desde nuestro facturador;
+  // ARCA = importado (emitido a mano en el portal de ARCA / comprobantes en
+  // línea u otro sistema, traído con FECompConsultar). Ver /sincronizar-arca.
+  origen            String    @default("WEB")
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 

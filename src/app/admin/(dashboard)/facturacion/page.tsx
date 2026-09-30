@@ -24,6 +24,7 @@ export default async function FacturacionPage() {
         estado: f.estado,
         cae: f.cae,
         caeVto: f.caeVto ? f.caeVto.toISOString() : null,
+        origen: f.origen,
       }))}
     />
   )
