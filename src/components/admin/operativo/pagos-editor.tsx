@@ -218,8 +218,9 @@ export function PagosEditor({
       <div className="space-y-2">
         {pagos.map((p, i) => {
           const esFinanciacion = p.metodo === "FINANCIACION"
-          // Método "Dólares" → siempre USD (como Vespa). Si no, vale el selector.
-          const esUsd = esPagoUsd(p.metodo)
+          // Método "Dólares" → siempre USD (como Vespa). Los pagos viejos que
+          // habían quedado con moneda USD (del selector anterior) también.
+          const esUsd = esPagoUsd(p.metodo) || p.moneda === "USD"
           // Pago en moneda distinta a la de la OC → lleva el casillero "Cubre en $".
           const esCruce = !esFinanciacion && monedaDePago(p, monedaOC) !== monedaOC
           return (
@@ -231,7 +232,7 @@ export function PagosEditor({
                   : "border-gray-200 dark:border-neutral-800"
               }`}
             >
-              <div className="grid grid-cols-1 md:grid-cols-[180px_120px_90px_1fr_130px_auto] gap-2 items-end">
+              <div className="grid grid-cols-1 md:grid-cols-[180px_150px_1fr_130px_auto] gap-2 items-end">
                 <div className="space-y-1">
                   <Label htmlFor={`pago-metodo-${i}`} className="text-xs">
                     Método
@@ -272,8 +273,8 @@ export function PagosEditor({
                   <Label htmlFor={`pago-monto-${i}`} className="text-xs">
                     {esFinanciacion
                       ? "Capital a financiar"
-                      : esCruce
-                        ? `Monto (${monedaDePago(p, monedaOC)})`
+                      : esUsd
+                        ? "Monto (USD)"
                         : "Monto"}
                   </Label>
                   <Input
@@ -298,27 +299,6 @@ export function PagosEditor({
                       title={`Cuántos ${monedaOC === "USD" ? "dólares" : "pesos"} cubre este pago, para que cierre la operación`}
                       className="h-8 text-xs mt-1 border-emerald-300 dark:border-emerald-800 focus-visible:ring-emerald-400"
                     />
-                  )}
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor={`pago-moneda-${i}`} className="text-xs">
-                    Moneda
-                  </Label>
-                  {esUsd ? (
-                    // Método "Dólares" → moneda fija USD (como Vespa).
-                    <div className="w-full h-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-800 px-2 text-sm flex items-center font-medium">
-                      USD
-                    </div>
-                  ) : (
-                    <select
-                      id={`pago-moneda-${i}`}
-                      value={p.moneda || "ARS"}
-                      onChange={(e) => update(i, { moneda: e.target.value })}
-                      className="w-full h-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-2 text-sm"
-                    >
-                      <option value="ARS">ARS</option>
-                      <option value="USD">USD</option>
-                    </select>
                   )}
                 </div>
                 <div className="space-y-1">
