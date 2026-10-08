@@ -14,6 +14,8 @@ import { MotoSelector, type ModeloOption } from "./moto-selector"
 import {
   PagosEditor,
   pagoVacio,
+  montoEnOC,
+  monedaDePago,
   type PagoForm,
   type FinanciacionForm,
   type GaranteForm,
@@ -212,6 +214,7 @@ export function OCForm({
           metodo: "FINANCIACION",
           monto: capitalInicial > 0 ? String(capitalInicial) : "",
           moneda: monedaOCInit,
+          montoEquivalente: "",
           detalle: "Plan de cuotas",
           fecha: "",
         },
@@ -227,6 +230,7 @@ export function OCForm({
           metodo: "FINANCIACION",
           monto: capitalInicial > 0 ? String(capitalInicial) : "",
           moneda: monedaOCInit,
+          montoEquivalente: "",
           detalle: "Plan de cuotas",
           fecha: "",
         },
@@ -383,14 +387,34 @@ export function OCForm({
         const n = parseInt(p.monto || "0")
         return Number.isFinite(n) && n > 0
       })
-      .map((p) => ({
-        id: p.id ?? null,
-        metodo: p.metodo,
-        monto: parseInt(p.monto),
-        moneda: p.moneda || data.moneda || "ARS",
-        detalle: p.detalle.trim() || null,
-        fecha: p.fecha || null,
-      }))
+      .map((p) => {
+        const monedaOC = data.moneda || "ARS"
+        // Moneda efectiva: el método "Dólares" implica USD aunque el selector
+        // no lo diga (como Vespa).
+        const monedaPago = monedaDePago(p, monedaOC)
+        // Si el pago está en otra moneda, guardamos cuánto cubre (equivalente,
+        // cargado a mano) y de ahí derivamos la cotización implícita (pesos por
+        // dólar) solo para dejar constancia.
+        const esCruce = monedaPago !== monedaOC
+        const montoNum = parseInt(p.monto) || 0
+        const equiv = esCruce ? parseInt(p.montoEquivalente || "0") || null : null
+        const cotiz =
+          esCruce && equiv && montoNum
+            ? monedaOC === "ARS"
+              ? Math.round((equiv / montoNum) * 100) / 100
+              : Math.round((montoNum / equiv) * 100) / 100
+            : null
+        return {
+          id: p.id ?? null,
+          metodo: p.metodo,
+          monto: montoNum,
+          moneda: monedaPago,
+          cotizacion: cotiz,
+          montoEquivalente: equiv,
+          detalle: p.detalle.trim() || null,
+          fecha: p.fecha || null,
+        }
+      })
     formData.append("pagos", JSON.stringify(pagosFiltrados))
 
     // Unidades EXTRA vendidas — solo las que tienen algún dato cargado.
@@ -470,10 +494,12 @@ export function OCForm({
           monedaOC={data.moneda || "ARS"}
           pagosPorMoneda={pagos.reduce(
             (acc, p) => {
-              const v = parseInt(p.monto || "0") || 0
-              if (!Number.isFinite(v) || v <= 0) return acc
-              const m = (p.moneda || data.moneda || "ARS") as "ARS" | "USD"
-              acc[m] = (acc[m] || 0) + v
+              // Cada pago aporta en la moneda de la OC: los de otra moneda ya
+              // convertidos con su "Cubre en $". Los que aún no tienen ese dato
+              // (montoEnOC = null) no suman todavía.
+              const monedaOC = (data.moneda || "ARS") as "ARS" | "USD"
+              const eq = montoEnOC(p, monedaOC)
+              if (eq && eq > 0) acc[monedaOC] = (acc[monedaOC] || 0) + eq
               return acc
             },
             { ARS: 0, USD: 0 }

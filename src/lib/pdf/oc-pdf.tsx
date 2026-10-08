@@ -153,6 +153,10 @@ type PagoData = {
   metodo: string
   monto: number
   moneda?: string
+  // Cotización (pesos por dólar) y equivalente en la moneda de la OC, para
+  // pagos en moneda distinta a la de la operación.
+  cotizacion?: number | null
+  montoEquivalente?: number | null
   detalle?: string | null
   fecha?: Date | null
 }
@@ -278,18 +282,31 @@ export function OCPDF({ data }: { data: OCPDFData }) {
   const numeroFormateado = `OC-${String(data.numero).padStart(4, "0")}`
   const moneda = data.economico.moneda
 
-  // Sumas separadas por moneda — pagos directos
+  // Moneda EFECTIVA de un pago: el método "Dólares" implica USD aunque la
+  // moneda guardada diga otra cosa (igual que Vespa / que el form).
+  const monedaPagoDe = (p: PagoData) =>
+    p.metodo === "DOLARES" ? "USD" : p.moneda || moneda
+  // Sumas separadas por moneda — pagos directos (solo para mostrar el
+  // subtotal "crudo" en la tabla de pagos).
   const pagosPorMoneda = (data.pagos || []).reduce(
     (acc, p) => {
-      const m = p.moneda || moneda
+      const m = monedaPagoDe(p)
       if (m === "USD") acc.USD += p.monto || 0
       else acc.ARS += p.monto || 0
       return acc
     },
     { ARS: 0, USD: 0 }
   )
-  const totalPagosOC =
-    moneda === "USD" ? pagosPorMoneda.USD : pagosPorMoneda.ARS
+  // Cuánto cubre cada pago EN LA MONEDA DE LA OC: los pagos en otra moneda
+  // usan su equivalente (montoEquivalente, "Cubre en $" cargado a mano). Así
+  // el cuadre es exacto aunque se mezclen USD y $.
+  const cubrePago = (p: PagoData) =>
+    monedaPagoDe(p) === moneda ? p.monto || 0 : p.montoEquivalente ?? 0
+  const totalPagosOC = (data.pagos || []).reduce((s, p) => s + cubrePago(p), 0)
+  // ¿Quedó algún pago en otra moneda sin equivalente (no se pudo convertir)?
+  const hayPagosSinConvertir = (data.pagos || []).some(
+    (p) => monedaPagoDe(p) !== moneda && p.montoEquivalente == null
+  )
 
   // Sumas separadas por moneda — señas / entregas a cuenta
   const seniasPorMoneda = (data.senias || []).reduce(
@@ -500,20 +517,27 @@ export function OCPDF({ data }: { data: OCPDFData }) {
                 Monto
               </Text>
             </View>
-            {data.pagos.map((p, i) => (
-              <View key={i} style={styles.tableRow}>
-                <Text style={[styles.tableCell, { flex: 2 }]}>
-                  {METODO_LABELS[p.metodo] || p.metodo}
-                </Text>
-                <Text style={[styles.tableCell, { flex: 1.2 }]}>{dateStr(p.fecha)}</Text>
-                <Text style={[styles.tableCell, { flex: 3 }]}>
-                  {p.detalle || "—"}
-                </Text>
-                <Text style={[styles.tableCell, { flex: 1.5, textAlign: "right" }]}>
-                  {money(p.monto, p.moneda || moneda)}
-                </Text>
-              </View>
-            ))}
+            {data.pagos.map((p, i) => {
+              const mp = monedaPagoDe(p)
+              const esCruce = mp !== moneda
+              const tieneEquiv = esCruce && p.montoEquivalente != null
+              return (
+                <View key={i} style={styles.tableRow}>
+                  <Text style={[styles.tableCell, { flex: 2 }]}>
+                    {METODO_LABELS[p.metodo] || p.metodo}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 1.2 }]}>{dateStr(p.fecha)}</Text>
+                  <Text style={[styles.tableCell, { flex: 3 }]}>
+                    {p.detalle || "—"}
+                  </Text>
+                  <Text style={[styles.tableCell, { flex: 1.5, textAlign: "right" }]}>
+                    {tieneEquiv
+                      ? `${money(p.monto, mp)} (cubre ${money(p.montoEquivalente, moneda)})`
+                      : money(p.monto, mp)}
+                  </Text>
+                </View>
+              )
+            })}
             <View style={styles.tableTotalRow}>
               <Text style={[styles.tableTotalCell, { flex: 6.2 }]}>
                 Subtotal pagos directos
@@ -776,18 +800,27 @@ export function OCPDF({ data }: { data: OCPDFData }) {
                 </Text>
               </View>
             )}
-            {/* Aviso si hay sumas en la moneda secundaria que no contribuyen
-                al cuadre en moneda principal */}
-            {((moneda === "USD" && (pagosPorMoneda.ARS > 0 || permutasPorMoneda.ARS > 0)) ||
-              (moneda !== "USD" && (pagosPorMoneda.USD > 0 || permutasPorMoneda.USD > 0))) && (
-              <View style={[styles.resumenRow, { marginTop: 4 }]}>
-                <Text style={[styles.resumenLabel, { color: "#92400E", fontStyle: "italic" }]}>
-                  Nota: hay pagos/permutas en moneda distinta a la principal,
-                  evaluar con tipo de cambio.
-                </Text>
-                <Text> </Text>
-              </View>
-            )}
+            {/* Aviso solo si quedó algo sin convertir: un pago en otra moneda
+                sin cotización, o una permuta valuada en la moneda secundaria
+                (las permutas no se convierten). Los pagos con cotización ya
+                entran al cuadre. */}
+            {(() => {
+              const permutasSecundaria =
+                moneda === "USD"
+                  ? permutasPorMoneda.ARS > 0
+                  : permutasPorMoneda.USD > 0
+              if (!hayPagosSinConvertir && !permutasSecundaria) return null
+              return (
+                <View style={[styles.resumenRow, { marginTop: 4 }]}>
+                  <Text style={[styles.resumenLabel, { color: "#92400E", fontStyle: "italic" }]}>
+                    {hayPagosSinConvertir
+                      ? "Nota: hay un pago en otra moneda sin cotización cargada; no entra al cuadre."
+                      : "Nota: hay una permuta en moneda distinta a la de la operación; evaluar con tipo de cambio."}
+                  </Text>
+                  <Text> </Text>
+                </View>
+              )
+            })()}
           </View>
         )}
 

@@ -26,6 +26,10 @@ export type PagoForm = {
   metodo: string
   monto: string
   moneda: string  // "ARS" | "USD"
+  // Si el pago está en una moneda distinta a la de la OC (ej: pago en USD
+  // sobre una operación en pesos), acá se carga DIRECTO cuánto cubre en la
+  // moneda de la OC. Vacío si coinciden. Igual que el "Cubre en $" de Vespa.
+  montoEquivalente: string
   detalle: string
   fecha: string // ISO YYYY-MM-DD o ""
 }
@@ -35,9 +39,46 @@ export const pagoVacio = (moneda: string = "ARS"): PagoForm => ({
   metodo: "EFECTIVO",
   monto: "",
   moneda,
+  montoEquivalente: "",
   detalle: "",
   fecha: "",
 })
+
+/**
+ * Métodos cuyo monto SIEMPRE está en dólares (igual que Vespa: el método
+ * "Dólares" ya implica USD, sin depender del selector de moneda). Llevan el
+ * casillero "Cubre en $" cuando la OC es en pesos.
+ */
+export const esPagoUsd = (metodo: string) => metodo === "DOLARES"
+
+/**
+ * Moneda EFECTIVA de un pago: si el método es en dólares → "USD"; si no, la
+ * que diga el selector de moneda (o la de la OC por defecto).
+ */
+export function monedaDePago(
+  p: Pick<PagoForm, "metodo" | "moneda">,
+  monedaOC: string
+): string {
+  if (esPagoUsd(p.metodo)) return "USD"
+  return p.moneda || monedaOC
+}
+
+/**
+ * Cuánto cubre un pago EN LA MONEDA DE LA OC.
+ * - Si la moneda efectiva del pago coincide con la de la OC → su propio monto.
+ * - Si difiere → el equivalente cargado a mano (lo que cubre en la moneda de
+ *   la OC). Si todavía no se cargó → null (no se puede cuadrar).
+ */
+export function montoEnOC(
+  p: Pick<PagoForm, "metodo" | "monto" | "moneda" | "montoEquivalente">,
+  monedaOC: string
+): number | null {
+  const monto = parseInt(p.monto || "0") || 0
+  if (!monto) return 0
+  if (monedaDePago(p, monedaOC) === monedaOC) return monto
+  const eq = parseInt(p.montoEquivalente || "0") || 0
+  return eq > 0 ? eq : null
+}
 
 /**
  * Datos del plan de financiación. Solo se usan si hay al menos un pago
@@ -71,21 +112,6 @@ function simboloMoneda(m: string): string {
 
 // Tipo de cada subtotal por moneda
 type Subtotal = { ARS: number; USD: number }
-
-function emptySubtotal(): Subtotal {
-  return { ARS: 0, USD: 0 }
-}
-
-function sumPagos(pagos: PagoForm[]): Subtotal {
-  const acc = emptySubtotal()
-  for (const p of pagos) {
-    const n = parseInt(p.monto || "0")
-    if (!Number.isFinite(n) || n === 0) continue
-    const m = (p.moneda || "ARS") as "ARS" | "USD"
-    acc[m] = (acc[m] ?? 0) + n
-  }
-  return acc
-}
 
 /**
  * Editor de pagos combinables. Cada pago lleva su propia moneda — el
@@ -126,12 +152,22 @@ export function PagosEditor({
   garante?: GaranteForm
   setGarante?: React.Dispatch<React.SetStateAction<GaranteForm>>
 }) {
-  const totalPagos = sumPagos(pagos)
   // Solo permitimos UN pago FINANCIACION (es 1 plan por OC). Si ya hay,
   // el nuevo renglón empieza con método EFECTIVO.
   const yaHayFinanciacion = pagos.some((p) => p.metodo === "FINANCIACION")
 
-  // Subtotales por moneda: pagos + permutas + financiación
+  // Cuánto cubren los pagos EN LA MONEDA DE LA OC. Los que están en otra
+  // moneda usan el equivalente cargado a mano ("Cubre en $"). Si a alguno le
+  // falta ese dato, no se puede cuadrar todavía → avisamos.
+  let pagosCubren = 0
+  let hayPagosSinConvertir = false
+  for (const p of pagos) {
+    const eq = montoEnOC(p, monedaOC)
+    if (eq == null) hayPagosSinConvertir = true
+    else pagosCubren += eq
+  }
+
+  // Subtotales por moneda: permutas + financiación
   const subPermutas = permutasPorMoneda ?? {
     ARS: monedaOC === "ARS" ? totalPermutas : 0,
     USD: monedaOC === "USD" ? totalPermutas : 0,
@@ -141,19 +177,17 @@ export function PagosEditor({
     USD: monedaOC === "USD" ? montoFinanciado : 0,
   }
 
-  const cubierto: Subtotal = {
-    ARS: totalPagos.ARS + subPermutas.ARS + subFin.ARS,
-    USD: totalPagos.USD + subPermutas.USD + subFin.USD,
-  }
-
-  // Compara contra el precio en la moneda principal de la OC
-  const precioMonedaOC = monedaOC === "USD" ? cubierto.USD : cubierto.ARS
+  // Cubierto total en la moneda de la OC = pagos convertidos + permutas
+  // (misma moneda) + financiación.
+  const subPermutaOC = monedaOC === "USD" ? subPermutas.USD : subPermutas.ARS
+  const subFinOC = monedaOC === "USD" ? subFin.USD : subFin.ARS
+  const precioMonedaOC = pagosCubren + subPermutaOC + subFinOC
   const restante = precioVenta - precioMonedaOC
 
-  // Hay mezcla cuando algún monto en la moneda "secundaria" (la otra) es > 0
+  // Las permutas en la moneda secundaria no se convierten acá → aviso.
   const monedaSecundaria = monedaOC === "USD" ? "ARS" : "USD"
-  const haySecundaria =
-    (cubierto as Record<string, number>)[monedaSecundaria] > 0
+  const permutaSecundaria =
+    (subPermutas as Record<string, number>)[monedaSecundaria] > 0
 
   const update = (i: number, patch: Partial<PagoForm>) =>
     setPagos((prev) => prev.map((p, idx) => (idx === i ? { ...p, ...patch } : p)))
@@ -184,6 +218,10 @@ export function PagosEditor({
       <div className="space-y-2">
         {pagos.map((p, i) => {
           const esFinanciacion = p.metodo === "FINANCIACION"
+          // Método "Dólares" → siempre USD (como Vespa). Si no, vale el selector.
+          const esUsd = esPagoUsd(p.metodo)
+          // Pago en moneda distinta a la de la OC → lleva el casillero "Cubre en $".
+          const esCruce = !esFinanciacion && monedaDePago(p, monedaOC) !== monedaOC
           return (
             <div
               key={p.id || `new-${i}`}
@@ -201,7 +239,15 @@ export function PagosEditor({
                   <select
                     id={`pago-metodo-${i}`}
                     value={p.metodo}
-                    onChange={(e) => update(i, { metodo: e.target.value })}
+                    onChange={(e) => {
+                      const metodo = e.target.value
+                      // Método "Dólares" fuerza moneda USD (como Vespa). Al
+                      // salir de "Dólares", la moneda vuelve a la de la OC.
+                      if (esPagoUsd(metodo)) update(i, { metodo, moneda: "USD" })
+                      else if (esPagoUsd(p.metodo))
+                        update(i, { metodo, moneda: monedaOC })
+                      else update(i, { metodo })
+                    }}
                     className="w-full h-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-2 text-sm"
                   >
                     {METODOS_PAGO.map((m) => {
@@ -224,7 +270,11 @@ export function PagosEditor({
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor={`pago-monto-${i}`} className="text-xs">
-                    {esFinanciacion ? "Capital a financiar" : "Monto"}
+                    {esFinanciacion
+                      ? "Capital a financiar"
+                      : esCruce
+                        ? `Monto (${monedaDePago(p, monedaOC)})`
+                        : "Monto"}
                   </Label>
                   <Input
                     id={`pago-monto-${i}`}
@@ -234,20 +284,42 @@ export function PagosEditor({
                     placeholder="0"
                     className="h-9"
                   />
+                  {/* Pago en otra moneda → casillero directo de cuánto cubre en
+                      la moneda de la OC, justo debajo (estilo Vespa). */}
+                  {esCruce && (
+                    <Input
+                      id={`pago-equiv-${i}`}
+                      type="number"
+                      value={p.montoEquivalente}
+                      onChange={(e) =>
+                        update(i, { montoEquivalente: e.target.value })
+                      }
+                      placeholder={`Cubre en ${simboloMoneda(monedaOC)}`}
+                      title={`Cuántos ${monedaOC === "USD" ? "dólares" : "pesos"} cubre este pago, para que cierre la operación`}
+                      className="h-8 text-xs mt-1 border-emerald-300 dark:border-emerald-800 focus-visible:ring-emerald-400"
+                    />
+                  )}
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor={`pago-moneda-${i}`} className="text-xs">
                     Moneda
                   </Label>
-                  <select
-                    id={`pago-moneda-${i}`}
-                    value={p.moneda || "ARS"}
-                    onChange={(e) => update(i, { moneda: e.target.value })}
-                    className="w-full h-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-2 text-sm"
-                  >
-                    <option value="ARS">ARS</option>
-                    <option value="USD">USD</option>
-                  </select>
+                  {esUsd ? (
+                    // Método "Dólares" → moneda fija USD (como Vespa).
+                    <div className="w-full h-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-800 px-2 text-sm flex items-center font-medium">
+                      USD
+                    </div>
+                  ) : (
+                    <select
+                      id={`pago-moneda-${i}`}
+                      value={p.moneda || "ARS"}
+                      onChange={(e) => update(i, { moneda: e.target.value })}
+                      className="w-full h-9 rounded-md border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 px-2 text-sm"
+                    >
+                      <option value="ARS">ARS</option>
+                      <option value="USD">USD</option>
+                    </select>
+                  )}
                 </div>
                 <div className="space-y-1">
                   <Label htmlFor={`pago-detalle-${i}`} className="text-xs">
@@ -307,16 +379,9 @@ export function PagosEditor({
 
       {/* Resumen */}
       <div className="rounded-md bg-gray-50 dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 p-3 space-y-1 text-sm">
-        {/* Pagos directos por moneda */}
-        {totalPagos.ARS > 0 && (
-          <Linea label="Pagos en ARS" valor={totalPagos.ARS} moneda="ARS" />
-        )}
-        {totalPagos.USD > 0 && (
-          <Linea label="Pagos en USD" valor={totalPagos.USD} moneda="USD" />
-        )}
-        {totalPagos.ARS === 0 && totalPagos.USD === 0 && (
-          <Linea label="Pagos directos" valor={0} moneda={monedaOC} />
-        )}
+        {/* Pagos directos — por cuánto cubren en la moneda de la OC (los que
+            están en otra moneda ya vienen convertidos con su cotización) */}
+        <Linea label="Pagos (cubren)" valor={pagosCubren} moneda={monedaOC} />
 
         {/* Permutas por moneda */}
         {subPermutas.ARS > 0 && (
@@ -372,12 +437,19 @@ export function PagosEditor({
           />
         )}
 
-        {/* Aviso si hay pagos/permutas en moneda secundaria */}
-        {haySecundaria && (
+        {/* Aviso: pago en otra moneda sin "Cubre en $" cargado */}
+        {hayPagosSinConvertir && (
           <p className="pt-2 text-[11px] text-amber-700 dark:text-amber-300 leading-snug">
-            ⚠ Hay {monedaSecundaria === "USD" ? "dólares" : "pesos"} sueltos
-            (combinaste monedas). Convertilos manualmente o usá tipo de cambio
-            para evaluar el cuadre total.
+            ⚠ Hay un pago en otra moneda sin completar cuánto cubre. Cargá el
+            monto en {monedaOC} (casillero verde) de ese pago para que cuadre.
+          </p>
+        )}
+        {/* Aviso: permuta valuada en la moneda secundaria (no se convierte) */}
+        {permutaSecundaria && (
+          <p className="pt-2 text-[11px] text-amber-700 dark:text-amber-300 leading-snug">
+            ⚠ Hay una permuta en {monedaSecundaria === "USD" ? "dólares" : "pesos"}{" "}
+            (moneda distinta a la de la OC). Ese valor no entra al cuadre en{" "}
+            {monedaOC}.
           </p>
         )}
       </div>

@@ -53,6 +53,10 @@ type PagoFormPayload = {
   metodo: string
   monto: number
   moneda?: string
+  // Cotización (pesos por dólar) y equivalente en la moneda de la OC, para
+  // pagos en moneda distinta a la de la operación. null si coinciden.
+  cotizacion?: number | null
+  montoEquivalente?: number | null
   detalle: string | null
   fecha: string | null
 }
@@ -404,6 +408,8 @@ async function updateOrden(formData: FormData) {
               metodo: p.metodo,
               monto: p.monto,
               moneda: monedaPago,
+              cotizacion: p.cotizacion ?? null,
+              montoEquivalente: p.montoEquivalente ?? null,
               detalle: p.detalle,
               fecha,
             },
@@ -415,6 +421,8 @@ async function updateOrden(formData: FormData) {
               metodo: p.metodo,
               monto: p.monto,
               moneda: monedaPago,
+              cotizacion: p.cotizacion ?? null,
+              montoEquivalente: p.montoEquivalente ?? null,
               detalle: p.detalle,
               fecha,
             },
@@ -856,6 +864,7 @@ export default async function EditarOrdenCompraPage({
     metodo: p.metodo,
     monto: String(p.monto),
     moneda: p.moneda || orden.moneda || "ARS",
+    montoEquivalente: p.montoEquivalente != null ? String(p.montoEquivalente) : "",
     detalle: p.detalle || "",
     fecha: p.fecha ? p.fecha.toISOString().split("T")[0] : "",
   }))

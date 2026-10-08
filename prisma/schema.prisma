@@ -1015,6 +1015,14 @@ model OCPago {
   metodo  String
   monto   Int
   moneda  String    @default("ARS") // "ARS" o "USD". Cada pago lleva su propia moneda — una OC puede tener mezcla.
+  // Cuando la moneda del pago != moneda de la OC, guardamos el tipo de
+  // cambio pactado (cotizacion, SIEMPRE pesos por dólar) y cuánto cubre ese
+  // pago en la moneda de la OC (montoEquivalente). Así el cuadre del boleto
+  // es exacto aunque se mezclen dólares y pesos (ej: operación en pesos y el
+  // cliente entrega USD → "USD 5.000 (cubre $6.500.000)"). Si la moneda
+  // coincide con la de la OC, ambos quedan null y se usa `monto`.
+  cotizacion       Float? // pesos por dólar usado para convertir este pago
+  montoEquivalente Int? // lo que cubre este pago en la moneda de la OC
   detalle String? // texto libre opcional ("Visa 12 sin interés", "Cheque 30 días", etc)
   fecha   DateTime? // opcional: cuándo se acreditó (default = fecha de OC)
 

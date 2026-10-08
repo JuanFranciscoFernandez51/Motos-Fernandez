@@ -89,6 +89,8 @@ export async function GET(
           metodo: p.metodo,
           monto: p.monto,
           moneda: p.moneda,
+          cotizacion: p.cotizacion,
+          montoEquivalente: p.montoEquivalente,
           detalle: p.detalle,
           fecha: p.fecha,
         })),
