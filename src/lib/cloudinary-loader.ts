@@ -35,7 +35,9 @@ export default function cloudinaryLoader({
     "f_auto", // AVIF/WebP según el navegador
     "c_limit", // nunca agranda la original
     `w_${width}`,
-    `q_${quality || "auto"}`,
+    // q_auto:eco = menos bytes que q_auto, calidad casi idéntica en catálogo.
+    // Clave para no volver a reventar el ancho de banda de Cloudinary.
+    `q_${quality ? quality : "auto:eco"}`,
   ].join(",")
 
   return src.replace("/upload/", `/upload/${params}/`)
