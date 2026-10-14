@@ -316,9 +316,9 @@ export default async function HomePage() {
                 <div className="mt-12 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <Link
                     href="/0km"
-                    className="group inline-flex items-center gap-2 rounded-xl bg-[#7C3AED] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#9D5CF0] transition-all shadow-premium-sm hover:shadow-premium-md"
+                    className="mf-shine group inline-flex items-center gap-2 rounded-xl bg-[#7C3AED] px-7 py-3.5 text-sm font-bold text-white hover:bg-[#9D5CF0] transition-all shadow-premium-sm hover:shadow-premium-md"
                   >
-                    Ver catálogo 0KM
+                    <span className="relative z-[2]">Ver catálogo 0KM</span>
                     <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <Link

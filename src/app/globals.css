@@ -191,32 +191,34 @@
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(28px);
+    filter: blur(6px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
+    filter: blur(0);
   }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from { opacity: 0; filter: blur(5px); }
+  to { opacity: 1; filter: blur(0); }
 }
 
 @keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-32px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateX(-36px); filter: blur(6px); }
+  to { opacity: 1; transform: translateX(0); filter: blur(0); }
 }
 
 @keyframes slideInRight {
-  from { opacity: 0; transform: translateX(32px); }
-  to { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateX(36px); filter: blur(6px); }
+  to { opacity: 1; transform: translateX(0); filter: blur(0); }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+  from { opacity: 0; transform: scale(0.94); filter: blur(6px); }
+  to { opacity: 1; transform: scale(1); filter: blur(0); }
 }
 
 @keyframes shimmer {
@@ -276,24 +278,149 @@
   transform: translateY(0);
 }
 
+/* Easing premium (easeOutExpo suave) + duración un toque más larga para que
+   el reveal se sienta "caro". El blur lo aporta cada keyframe. */
 @utility animate-fade-in-up {
-  animation: fadeInUp 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: fadeInUp 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @utility animate-fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
+  animation: fadeIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @utility animate-slide-in-left {
-  animation: slideInLeft 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: slideInLeft 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @utility animate-slide-in-right {
-  animation: slideInRight 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: slideInRight 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 @utility animate-scale-in {
-  animation: scaleIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation: scaleIn 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* ============================================================
+   PACK PRO (animaciones estilo Cauce) — reveals con stagger,
+   reveal de texto por palabras, brillo de CTA y hover de cards.
+   Todo GPU-friendly (transform/opacity/filter) y con guarda de
+   prefers-reduced-motion al final del archivo.
+   ============================================================ */
+
+/* Stagger: el contenedor revela sus hijos directos en cascada.
+   Se activa agregando la clase `is-in` (vía IntersectionObserver). */
+@keyframes mfReveal {
+  from { opacity: 0; transform: translateY(26px); filter: blur(6px); }
+  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+}
+.mf-stagger > * {
+  opacity: 0;
+}
+.mf-stagger.is-in > * {
+  animation: mfReveal 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.mf-stagger.is-in > *:nth-child(1)  { animation-delay: 0.00s; }
+.mf-stagger.is-in > *:nth-child(2)  { animation-delay: 0.07s; }
+.mf-stagger.is-in > *:nth-child(3)  { animation-delay: 0.14s; }
+.mf-stagger.is-in > *:nth-child(4)  { animation-delay: 0.21s; }
+.mf-stagger.is-in > *:nth-child(5)  { animation-delay: 0.28s; }
+.mf-stagger.is-in > *:nth-child(6)  { animation-delay: 0.35s; }
+.mf-stagger.is-in > *:nth-child(7)  { animation-delay: 0.42s; }
+.mf-stagger.is-in > *:nth-child(8)  { animation-delay: 0.49s; }
+.mf-stagger.is-in > *:nth-child(9)  { animation-delay: 0.56s; }
+.mf-stagger.is-in > *:nth-child(10) { animation-delay: 0.63s; }
+.mf-stagger.is-in > *:nth-child(11) { animation-delay: 0.70s; }
+.mf-stagger.is-in > *:nth-child(12) { animation-delay: 0.77s; }
+
+/* Reveal de texto por palabras (héroes). Cada palabra sube con blur,
+   escalonada por su índice `--i` (lo setea el componente). */
+@keyframes mfWord {
+  from { opacity: 0; transform: translateY(0.5em); filter: blur(8px); }
+  to   { opacity: 1; transform: translateY(0);     filter: blur(0); }
+}
+.mf-words-word {
+  display: inline-block;
+  opacity: 0;
+  will-change: transform, opacity, filter;
+  animation: mfWord 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: calc(var(--i, 0) * 0.055s + var(--base, 0s));
+}
+
+/* Brillo especular que barre un CTA al hover (reemplazo liviano del
+   SpecularButton WebGL de Cauce). */
+.mf-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.mf-shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    110deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.28) 48%,
+    rgba(255, 255, 255, 0.05) 56%,
+    transparent 70%
+  );
+  transform: translateX(-120%) skewX(-18deg);
+  transition: transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.mf-shine:hover::after {
+  transform: translateX(120%) skewX(-18deg);
+}
+
+/* Hover de card premium: eleva, sombra violeta y resplandor sutil. La
+   imagen interna (con .mf-card-img) hace zoom suave. */
+.mf-card-hover {
+  transition:
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.5s ease;
+  will-change: transform;
+}
+.mf-card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 18px 50px -18px rgba(124, 58, 237, 0.45),
+    0 8px 20px -12px rgba(0, 0, 0, 0.5);
+}
+.mf-card-img {
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+.mf-card-hover:hover .mf-card-img {
+  transform: scale(1.06);
+}
+
+/* SpotlightCard: resplandor que sigue el cursor (ver spotlight-card.tsx) */
+.mf-spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.mf-spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    var(--glow-radius, 380px) circle at var(--mx, 50%) var(--my, 0%),
+    rgba(var(--glow, 124, 58, 237), 0.18),
+    transparent 60%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.mf-spotlight:hover::before {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mf-spotlight::before { display: none !important; }
 }
 
 @utility animate-float {
@@ -437,6 +564,16 @@ html {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  /* Pack pro: todo estático y VISIBLE (nada de quedar invisible) */
+  .mf-stagger > *,
+  .mf-words-word {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  .mf-card-hover:hover { transform: none !important; }
+  .mf-shine::after { display: none !important; }
 }
 
 /* Pattern de fondo premium — para watermarks */

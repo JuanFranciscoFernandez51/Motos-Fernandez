@@ -31,6 +31,7 @@ import { PromoBar } from "@/components/public/promo-bar"
 import { MobileBottomBar } from "@/components/public/mobile-bottom-bar"
 import { WelcomePopup } from "@/components/public/welcome-popup"
 import { ModoMundial } from "@/components/public/modo-mundial"
+import { SmoothScroll } from "@/components/public/ui/smooth-scroll"
 
 const NAV_LINKS = [
   { href: "/0km", label: "Motos 0KM", highlight: true },
@@ -591,6 +592,7 @@ export default function PublicLayout({
     <CartProvider>
       <ComparadorProvider>
         <WishlistProvider>
+          <SmoothScroll />
           <div className="sticky top-0 z-40">
             <ModoMundial />
             <PromoBar />
