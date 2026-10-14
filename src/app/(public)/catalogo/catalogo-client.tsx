@@ -249,10 +249,25 @@ export function CatalogoClient({
 
         {/* ===== SIDEBAR DE FILTROS (estilo MercadoLibre) ===== */}
         <aside
-          className={`${sidebarOpen ? "block" : "hidden"} lg:block lg:sticky lg:top-24 mb-6 lg:mb-0 divide-y divide-gray-200 dark:divide-neutral-800`}
+          className={`${sidebarOpen ? "block" : "hidden"} lg:block lg:sticky lg:top-24 mb-6 lg:mb-0`}
         >
+        <div className="rounded-2xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 shadow-premium-md px-5 divide-y divide-gray-100 dark:divide-neutral-800">
+        {/* Header de la card de filtros */}
+        <div className="flex items-center gap-2 pt-5 pb-4">
+          <span className="inline-flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#3D2649] to-[#7C3AED] text-white shadow-violeta-soft">
+            <SlidersHorizontal className="size-4" />
+          </span>
+          <span className="text-sm font-bold text-[#1A1A1A] dark:text-white">
+            Filtrar unidades
+          </span>
+          {totalFiltrosActivos > 0 && (
+            <span className="ml-auto inline-flex min-w-5 h-5 items-center justify-center rounded-full bg-[#7C3AED] px-1.5 text-[11px] font-bold text-white">
+              {totalFiltrosActivos}
+            </span>
+          )}
+        </div>
         {/* Tipo de moto */}
-        <div className="pb-5">
+        <div className="py-5">
           <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
             Tipo de moto
           </p>
@@ -463,6 +478,7 @@ export function CatalogoClient({
                 Con financiación
               </button>
             </div>
+        </div>
         </div>
         </aside>
 

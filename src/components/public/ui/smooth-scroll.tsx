@@ -25,14 +25,14 @@ export function SmoothScroll() {
     ).matches
     if (prefersReduced) return
 
+    // Config basada en LERP (frame-rate independiente): es la que da el
+    // smooth parejo sin pelearse con nada. NADA de duration+easing a la vez
+    // (se contradicen). El CSS `scroll-behavior:auto` cuando Lenis está activo
+    // lo maneja globals.css (regla .lenis.lenis-smooth) para que no choquen.
     const lenis = new Lenis({
-      duration: 1.05,
-      // ease-out exponencial: arranca rápido y frena suave
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      lerp: 0.085,
       smoothWheel: true,
       wheelMultiplier: 1,
-      touchMultiplier: 1.6,
-      lerp: 0.1,
     })
 
     // Exponer para que otros (ej. anclas internas) puedan usarlo si hace falta.

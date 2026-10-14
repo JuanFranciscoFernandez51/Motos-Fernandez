@@ -3,7 +3,6 @@ import { TrackVisita } from "@/components/public/track-visita"
 import { CatalogoClient } from "../catalogo/catalogo-client"
 import { getModelosCatalogo, getMarcasCatalogo } from "@/lib/cached-queries"
 import { Watermark } from "@/components/public/ui/watermark"
-import { GoldDivider } from "@/components/public/ui/gold-divider"
 import { SectionEyebrow } from "@/components/public/ui/section-eyebrow"
 import { GlobalSearch } from "@/components/public/global-search"
 
@@ -51,20 +50,19 @@ export default async function DisponiblesPage() {
         <div className="absolute -bottom-20 -left-20 size-[360px] rounded-full bg-[#C8C8D0]/[0.06] blur-3xl pointer-events-none" />
         <Watermark position="right" size="xl" opacity="subtle" className="hidden md:block" />
 
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 text-center">
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 sm:py-11 text-center">
           <SectionEyebrow centered variant="gold">
             Stock físico · Entrega inmediata
           </SectionEyebrow>
-          <h1 className="mt-5 font-heading text-5xl sm:text-6xl lg:text-7xl text-white text-balance leading-tight">
+          <h1 className="mt-3 font-heading text-3xl sm:text-4xl lg:text-5xl text-white text-balance leading-tight">
             Unidades <span className="text-[#C8C8D0]">disponibles</span>
           </h1>
-          <GoldDivider variant="ornament" className="mt-7" />
-          <p className="mt-7 text-base sm:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Lo que tenemos físicamente en el local, listo para entregar. Usadas
-            revisadas por nuestro taller y 0KM en stock, con garantía,
+          <p className="mt-3 text-sm sm:text-base text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            Lo que tenemos físicamente en el local, listo para entregar —
+            usadas revisadas por el taller y 0KM en stock, con garantía,
             financiación propia y plan canje.
           </p>
-          <div className="relative z-40 mt-8 max-w-xl mx-auto text-left">
+          <div className="relative z-40 mt-5 max-w-xl mx-auto text-left">
             <GlobalSearch scope="disponibles" />
           </div>
         </div>

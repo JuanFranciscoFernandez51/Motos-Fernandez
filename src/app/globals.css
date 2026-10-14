@@ -188,37 +188,31 @@
 
 /* ==================== PREMIUM ANIMATIONS ==================== */
 
+/* Reveals: solo opacity + transform (compositados por GPU, sin repaint).
+   Nada de filter:blur acá — era lo que trababa el scroll. */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(28px);
-    filter: blur(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-    filter: blur(0);
-  }
+  from { opacity: 0; transform: translate3d(0, 28px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; filter: blur(5px); }
-  to { opacity: 1; filter: blur(0); }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes slideInLeft {
-  from { opacity: 0; transform: translateX(-36px); filter: blur(6px); }
-  to { opacity: 1; transform: translateX(0); filter: blur(0); }
+  from { opacity: 0; transform: translate3d(-36px, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
 @keyframes slideInRight {
-  from { opacity: 0; transform: translateX(36px); filter: blur(6px); }
-  to { opacity: 1; transform: translateX(0); filter: blur(0); }
+  from { opacity: 0; transform: translate3d(36px, 0, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.94); filter: blur(6px); }
-  to { opacity: 1; transform: scale(1); filter: blur(0); }
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes shimmer {
@@ -310,8 +304,8 @@
 /* Stagger: el contenedor revela sus hijos directos en cascada.
    Se activa agregando la clase `is-in` (vía IntersectionObserver). */
 @keyframes mfReveal {
-  from { opacity: 0; transform: translateY(26px); filter: blur(6px); }
-  to   { opacity: 1; transform: translateY(0);    filter: blur(0); }
+  from { opacity: 0; transform: translate3d(0, 26px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 .mf-stagger > * {
   opacity: 0;
@@ -335,14 +329,13 @@
 /* Reveal de texto por palabras (héroes). Cada palabra sube con blur,
    escalonada por su índice `--i` (lo setea el componente). */
 @keyframes mfWord {
-  from { opacity: 0; transform: translateY(0.5em); filter: blur(8px); }
-  to   { opacity: 1; transform: translateY(0);     filter: blur(0); }
+  from { opacity: 0; transform: translate3d(0, 0.5em, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 .mf-words-word {
   display: inline-block;
   opacity: 0;
-  will-change: transform, opacity, filter;
-  animation: mfWord 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation: mfWord 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
   animation-delay: calc(var(--i, 0) * 0.055s + var(--base, 0s));
 }
 
@@ -380,7 +373,6 @@
     transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.5s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.5s ease;
-  will-change: transform;
 }
 .mf-card-hover:hover {
   transform: translateY(-6px);
@@ -390,10 +382,66 @@
 }
 .mf-card-img {
   transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: transform;
 }
 .mf-card-hover:hover .mf-card-img {
   transform: scale(1.06);
+}
+
+/* Terminación premium de las cards de moto (aplica a home + catálogo porque
+   las dos usan .moto-card). Hairline sutil siempre + borde con gradiente
+   violeta "enmascarado" que se enciende en hover. No pelea con las sombras
+   ni el lift que ya tienen inline. */
+.moto-card {
+  border: 1px solid rgba(20, 15, 30, 0.07);
+}
+.dark .moto-card {
+  border-color: rgba(255, 255, 255, 0.08);
+}
+.moto-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  padding: 1.25px;
+  background: linear-gradient(
+    135deg,
+    rgba(124, 58, 237, 0.75),
+    rgba(200, 200, 208, 0.45) 45%,
+    transparent 70%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+.moto-card:hover::before {
+  opacity: 1;
+}
+/* Scrim de profundidad en la base de la foto (look editorial) al hover */
+.moto-card [class*="aspect-"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 42%;
+  background: linear-gradient(to top, rgba(14, 11, 18, 0.30), transparent);
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.moto-card:hover [class*="aspect-"]::after {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .moto-card::before,
+  .moto-card [class*="aspect-"]::after { transition: none !important; }
 }
 
 /* SpotlightCard: resplandor que sigue el cursor (ver spotlight-card.tsx) */
@@ -512,9 +560,24 @@
   pointer-events: none;
 }
 
-/* Scroll suave */
+/* Scroll suave: lo maneja Lenis (JS). El scroll-behavior CSS solo como
+   fallback si Lenis NO está activo — cuando SÍ lo está, Lenis agrega la clase
+   .lenis a <html> y acá lo forzamos a 'auto' para que no peleen (eso trababa). */
 html {
   scroll-behavior: smooth;
+}
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
 }
 
 /* Scrollbar premium (solo desktop) */
