@@ -22,14 +22,13 @@ const DEFAULT_BRANDS: BrandWithHeight[] = [
   { nombre: "Suzuki", logo: "/images/marcas/suzuki.svg", width: 100 },
   { nombre: "Kawasaki", logo: "/images/marcas/kawasaki.svg", width: 140 },
   { nombre: "BMW", logo: "/images/marcas/bmw.svg", width: 50, heightMul: 1.2 },
-  { nombre: "KTM", logo: "/images/marcas/ktm.svg", width: 80 },
+  { nombre: "KTM", logo: "/images/marcas/ktm.svg", width: 115, heightMul: 1.35 },
   { nombre: "Ducati", logo: "/images/marcas/ducati.svg", width: 110 },
-  { nombre: "Vespa", logo: "/images/marcas/vespa.svg", width: 130, heightMul: 1.4 },
+  { nombre: "Vespa", logo: "/images/marcas/vespa.svg", width: 165, heightMul: 1.75 },
   { nombre: "Moto Guzzi", logo: "/images/marcas/moto-guzzi.svg", width: 120, heightMul: 1.35 },
-  { nombre: "Aprilia", logo: "/images/marcas/aprilia.svg", width: 120 },
+  { nombre: "Aprilia", logo: "/images/marcas/aprilia.svg", width: 150, heightMul: 1.3 },
   { nombre: "Triumph", logo: "/images/marcas/triumph.svg", width: 120 },
   { nombre: "Royal Enfield", logo: "/images/marcas/royal-enfield.svg", width: 80 },
-  { nombre: "Bajaj", logo: "/images/marcas/bajaj.svg", width: 100 },
 ]
 
 export function MarqueeBrands({
