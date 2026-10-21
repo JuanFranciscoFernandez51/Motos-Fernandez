@@ -67,7 +67,7 @@ export default async function HomePage() {
         <div className="absolute top-1/3 left-1/2 size-[300px] rounded-full bg-[#C8C8D0]/[0.06] blur-3xl pointer-events-none" />
 
         {/* Logo clásico flotante con animación premium */}
-        <FloatingLogo position="right" size="2xl" opacity="soft" className="hidden md:block" />
+        <FloatingLogo position="right" size="2xl" opacity="subtle" className="hidden md:block" />
 
         {/* Sello promo Envío gratis al Sur (esquina del hero) */}
         {promoEnvio && (
@@ -356,49 +356,56 @@ export default async function HomePage() {
       <section className="relative py-20 bg-white dark:bg-neutral-900 overflow-hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <AnimatedSection animation="scale">
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#4A3556] via-[#7C3AED] to-[#9D5CF0] p-8 sm:p-12 lg:p-16 shadow-premium-xl">
-              {/* Patterns and glows */}
-              <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.08]" />
+            <div className="relative overflow-hidden rounded-3xl bg-[#241733] p-10 sm:p-14 lg:p-16 shadow-premium-xl ring-1 ring-white/10">
+              {/* Fondo con profundidad: gradiente + glows radiales + grid + viñeta */}
+              <div className="absolute inset-0 bg-gradient-to-br from-[#3A2850] via-[#6D34D6] to-[#4A2E8F]" />
+              <div className="absolute -top-28 left-[20%] size-[460px] rounded-full bg-[#C8C8D0]/20 blur-3xl" />
+              <div className="absolute -bottom-32 right-[15%] size-[520px] rounded-full bg-[#A855F7]/35 blur-3xl" />
+              <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] opacity-[0.07]" />
               <div className="absolute inset-0 bg-pattern-noise mix-blend-overlay" />
-              <div className="absolute -top-16 -right-16 size-64 rounded-full bg-[#C8C8D0]/15 blur-3xl" />
-              <div className="absolute -bottom-20 -left-20 size-72 rounded-full bg-white/5 blur-3xl" />
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_35%,rgba(16,11,24,0.45))]" />
+              <Watermark position="right" size="2xl" opacity="subtle" className="opacity-50" />
 
-              {/* Marca de agua */}
-              <Watermark position="bottom-right" size="xl" opacity="subtle" />
+              {/* Contenido centrado */}
+              <div className="relative flex flex-col items-center text-center max-w-2xl mx-auto">
+                <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-white/10 backdrop-blur-sm mb-5 ring-1 ring-white/20 shadow-lg">
+                  <Sparkles className="size-7 text-white" />
+                </div>
+                <SectionEyebrow centered variant="gold" className="mb-4">
+                  Quiz interactivo con IA
+                </SectionEyebrow>
+                <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.05] text-balance">
+                  ¿No sabés qué{" "}
+                  <span className="bg-gradient-to-r from-[#E8E8EE] via-[#C8C8D0] to-[#E8E8EE] bg-clip-text text-transparent">
+                    moto
+                  </span>{" "}
+                  te conviene?
+                </h2>
+                <p className="mt-5 text-base sm:text-lg text-white/80 leading-relaxed max-w-xl">
+                  Respondé unas preguntas rápidas y la IA te recomienda{" "}
+                  <span className="font-semibold text-white">3 motos ideales</span>{" "}
+                  según tu uso, experiencia y presupuesto.
+                </p>
 
-              {/* Línea dorada */}
-              <div
-                aria-hidden
-                className="absolute top-0 inset-x-12 h-px bg-gradient-to-r from-transparent via-[#C8C8D0]/60 to-transparent"
-              />
-
-              <div className="relative flex flex-col lg:flex-row items-center justify-between gap-8">
-                <div className="flex-1 text-center lg:text-left max-w-2xl">
-                  <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-[#C8C8D0]/15 backdrop-blur-sm mb-6 ring-1 ring-[#C8C8D0]/30">
-                    <Sparkles className="size-8 text-[#C8C8D0]" />
-                  </div>
-                  <SectionEyebrow variant="gold" className="mb-4">
-                    Quiz interactivo con IA
-                  </SectionEyebrow>
-                  <h2 className="font-heading text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
-                    ¿No sabés qué <span className="text-[#C8C8D0]">moto</span> te conviene?
-                  </h2>
-                  <p className="mt-5 text-base sm:text-lg text-white/85 leading-relaxed max-w-xl">
-                    Hacé el quiz interactivo y te recomendamos{" "}
-                    <span className="font-semibold text-[#C8C8D0]">3 motos ideales</span>{" "}
-                    según tu uso, experiencia y presupuesto.
-                  </p>
+                {/* Chips de confianza */}
+                <div className="mt-6 flex flex-wrap items-center justify-center gap-2.5">
+                  {["⚡ 2 minutos", "🎯 3 recomendaciones", "✓ 100% gratis"].map((chip) => (
+                    <span
+                      key={chip}
+                      className="rounded-full border border-white/15 bg-white/[0.07] px-3.5 py-1.5 text-xs font-semibold text-white/90 backdrop-blur-sm"
+                    >
+                      {chip}
+                    </span>
+                  ))}
                 </div>
 
-                <div className="shrink-0">
-                  <Link
-                    href="/recomendador"
-                    className="group inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-8 py-4 text-base font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:scale-105"
-                  >
-                    Hacer quiz
-                    <ArrowRight className="size-5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </div>
+                <Link
+                  href="/recomendador"
+                  className="mf-shine group mt-8 inline-flex items-center gap-2.5 rounded-xl bg-white px-8 py-4 text-base font-bold text-[#2A1740] shadow-xl transition-all hover:-translate-y-0.5"
+                >
+                  <span className="relative z-[2]">Hacer el quiz</span>
+                  <ArrowRight className="relative z-[2] size-5 group-hover:translate-x-1 transition-transform" />
+                </Link>
               </div>
             </div>
           </AnimatedSection>
