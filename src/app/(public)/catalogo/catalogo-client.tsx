@@ -173,6 +173,11 @@ export function CatalogoClient({
     setCilindradaMax(cilindradaMaxCatalogo)
   }, [cilindradaMaxCatalogo])
 
+  // Si no está elegida Motocicleta, el filtro "tipo de moto" no aplica.
+  useEffect(() => {
+    if (categoria !== "MOTOCICLETA") setSegmento("TODAS")
+  }, [categoria])
+
   // Deteccion de filtros avanzados activos (para badge y boton limpiar)
   const precioFiltroActivo =
     precioMin > precioMinCatalogo || precioMax < precioMaxCatalogo
@@ -283,7 +288,10 @@ export function CatalogoClient({
         <aside
           className={`${sidebarOpen ? "block" : "hidden"} lg:block lg:sticky lg:top-24 mb-6 lg:mb-0`}
         >
-        <div className="rounded-2xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 shadow-premium-md px-5 divide-y divide-gray-100 dark:divide-neutral-800 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
+        <div
+          data-lenis-prevent
+          className="rounded-2xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 shadow-premium-md px-5 divide-y divide-gray-100 dark:divide-neutral-800 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto"
+        >
         {/* Header de la card de filtros */}
         <div className="flex items-center gap-2 pt-5 pb-4 sticky top-0 bg-white dark:bg-neutral-900 z-10 -mx-5 px-5">
           <span className="inline-flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#3D2649] to-[#7C3AED] text-white shadow-violeta-soft">
@@ -298,39 +306,6 @@ export function CatalogoClient({
             </span>
           )}
         </div>
-        {/* Tipo de moto (segmento) — chips, lo más destacado del filtro */}
-        {segmentosDisponibles.length > 0 && (
-          <div className="py-5">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
-              Tipo de moto
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setSegmento("TODAS")}
-                className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                  segmento === "TODAS"
-                    ? "bg-gradient-to-r from-[#3D2649] to-[#7C3AED] text-white shadow-violeta-soft"
-                    : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#7C3AED]/40"
-                }`}
-              >
-                Todas
-              </button>
-              {segmentosDisponibles.map((seg) => (
-                <button
-                  key={seg}
-                  onClick={() => setSegmento(seg)}
-                  className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                    segmento === seg
-                      ? "bg-gradient-to-r from-[#3D2649] to-[#7C3AED] text-white shadow-violeta-soft"
-                      : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#7C3AED]/40"
-                  }`}
-                >
-                  {seg}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
         {/* Tipo de vehículo */}
         <div className="py-5">
           <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
@@ -362,6 +337,40 @@ export function CatalogoClient({
             ))}
           </div>
         </div>
+
+        {/* Tipo de moto (segmento) — se abre solo si se eligió Motocicleta */}
+        {categoria === "MOTOCICLETA" && segmentosDisponibles.length > 0 && (
+          <div className="py-5">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
+              Tipo de moto
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setSegmento("TODAS")}
+                className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                  segmento === "TODAS"
+                    ? "bg-gradient-to-r from-[#3D2649] to-[#7C3AED] text-white shadow-violeta-soft"
+                    : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#7C3AED]/40"
+                }`}
+              >
+                Todas
+              </button>
+              {segmentosDisponibles.map((seg) => (
+                <button
+                  key={seg}
+                  onClick={() => setSegmento(seg)}
+                  className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                    segmento === seg
+                      ? "bg-gradient-to-r from-[#3D2649] to-[#7C3AED] text-white shadow-violeta-soft"
+                      : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#7C3AED]/40"
+                  }`}
+                >
+                  {seg}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Condición — oculto en /0km (todas son 0KM) */}
         {mostrarCondicion && (
