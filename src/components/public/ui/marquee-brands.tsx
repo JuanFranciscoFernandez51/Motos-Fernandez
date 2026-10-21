@@ -25,7 +25,7 @@ const DEFAULT_BRANDS: BrandWithHeight[] = [
   { nombre: "KTM", logo: "/images/marcas/ktm.svg", width: 80 },
   { nombre: "Ducati", logo: "/images/marcas/ducati.svg", width: 110 },
   { nombre: "Vespa", logo: "/images/marcas/vespa.svg", width: 130, heightMul: 1.4 },
-  { nombre: "Piaggio", logo: "/images/marcas/piaggio.svg", width: 90, heightMul: 1.3 },
+  { nombre: "Moto Guzzi", logo: "/images/marcas/moto-guzzi.svg", width: 120, heightMul: 1.35 },
   { nombre: "Aprilia", logo: "/images/marcas/aprilia.svg", width: 120 },
   { nombre: "Triumph", logo: "/images/marcas/triumph.svg", width: 120 },
   { nombre: "Royal Enfield", logo: "/images/marcas/royal-enfield.svg", width: 80 },

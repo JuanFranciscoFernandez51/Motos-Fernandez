@@ -1,5 +1,4 @@
 import { Watermark } from "./watermark"
-import { GoldDivider } from "./gold-divider"
 import { SectionEyebrow } from "./section-eyebrow"
 
 /**
@@ -22,17 +21,17 @@ export function PageHero({
 }) {
   const py =
     size === "sm"
-      ? "py-12 sm:py-14"
+      ? "py-8 sm:py-10"
       : size === "lg"
-        ? "py-16 sm:py-24"
-        : "py-14 sm:py-18 lg:py-20"
+        ? "py-12 sm:py-16"
+        : "py-9 sm:py-12"
 
   const titleSize =
     size === "sm"
-      ? "text-3xl sm:text-4xl lg:text-5xl"
+      ? "text-2xl sm:text-3xl lg:text-4xl"
       : size === "lg"
-        ? "text-5xl sm:text-6xl lg:text-7xl"
-        : "text-4xl sm:text-5xl lg:text-6xl"
+        ? "text-4xl sm:text-5xl lg:text-6xl"
+        : "text-3xl sm:text-4xl lg:text-5xl"
 
   return (
     <section
@@ -53,7 +52,7 @@ export function PageHero({
           </SectionEyebrow>
         )}
         <h1
-          className={`${eyebrow ? "mt-5" : ""} font-heading text-white text-balance leading-tight ${titleSize}`}
+          className={`${eyebrow ? "mt-3" : ""} font-heading text-white text-balance leading-tight ${titleSize}`}
         >
           {title}
           {highlight && (
@@ -63,9 +62,8 @@ export function PageHero({
             </>
           )}
         </h1>
-        <GoldDivider variant="ornament" className="mt-6" />
         {description && (
-          <p className="mt-6 text-base sm:text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-3 text-sm sm:text-base text-gray-300 max-w-2xl mx-auto leading-relaxed">
             {description}
           </p>
         )}
