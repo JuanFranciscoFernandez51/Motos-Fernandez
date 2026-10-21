@@ -522,42 +522,66 @@ export default async function HomePage() {
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <AnimatedSection animation="fade-up">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-              <div className="text-center lg:text-left max-w-xl">
-                <div className="inline-flex items-center justify-center size-16 rounded-2xl bg-[#C8C8D0]/10 backdrop-blur-sm mb-6 ring-1 ring-[#C8C8D0]/30">
-                  <CreditCard className="size-8 text-[#C8C8D0]" />
+            <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+              {/* Contenido + botones (juntos, sin hueco) */}
+              <div className="text-center lg:text-left">
+                <div className="inline-flex items-center justify-center size-14 rounded-2xl bg-[#C8C8D0]/10 backdrop-blur-sm mb-5 ring-1 ring-[#C8C8D0]/30">
+                  <CreditCard className="size-7 text-[#C8C8D0]" />
                 </div>
                 <SectionEyebrow variant="gold">Financiación a tu medida</SectionEyebrow>
-                <h2 className="mt-4 font-heading text-4xl sm:text-5xl lg:text-6xl text-white leading-tight text-balance">
-                  Financiamos <span className="text-[#C8C8D0]">tu moto</span>
+                <h2 className="mt-4 font-heading text-4xl sm:text-5xl lg:text-6xl text-white leading-[1.05] text-balance">
+                  Financiamos{" "}
+                  <span className="bg-gradient-to-r from-[#E8E8EE] via-[#C8C8D0] to-[#E8E8EE] bg-clip-text text-transparent">
+                    tu moto
+                  </span>
                 </h2>
-                <p className="mt-5 text-base sm:text-lg text-white/80 leading-relaxed">
-                  Planes a medida. Financiación propia, con banco o tarjeta. Entregá lo
-                  mínimo y lleváte tu vehículo hoy.
+                <p className="mt-5 text-base sm:text-lg text-white/80 leading-relaxed max-w-lg mx-auto lg:mx-0">
+                  Financiación propia, con banco o tarjeta. Entregá lo mínimo y
+                  lleváte tu vehículo hoy, con planes adaptados a tu presupuesto.
                 </p>
-                <GoldDivider variant="thin" className="my-6 max-w-xs mx-auto lg:mx-0" />
-                <p className="text-sm text-white/60">
-                  Hasta 24 cuotas con planes adaptados a tu presupuesto.
-                </p>
+                <div className="mt-7 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+                  <Link
+                    href="/financiacion"
+                    className="mf-shine group inline-flex items-center justify-center gap-2 rounded-xl bg-white px-7 py-3.5 text-sm font-bold text-[#2A1740] shadow-xl transition-all hover:-translate-y-0.5"
+                  >
+                    <span className="relative z-[2]">Ver planes</span>
+                    <ArrowRight className="relative z-[2] size-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                  <Link
+                    href="/contacto"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/[0.05] backdrop-blur-sm px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/[0.10] hover:border-white/40 transition-colors"
+                  >
+                    Hablar con asesor
+                  </Link>
+                </div>
               </div>
-              <div className="flex flex-col sm:flex-row gap-4 shrink-0">
-                <Link
-                  href="/financiacion"
-                  className="group relative inline-flex items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#3D2649] to-[#7C3AED] px-7 py-4 text-sm font-bold text-white shadow-violeta-glow hover:shadow-2xl transition-all hover:-translate-y-0.5"
-                >
-                  <span
-                    aria-hidden
-                    className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/40 to-transparent"
-                  />
-                  <span className="relative">Ver planes</span>
-                  <ArrowRight className="relative size-4" />
-                </Link>
-                <Link
-                  href="/contacto"
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/[0.05] backdrop-blur-sm px-7 py-4 text-sm font-semibold text-white hover:bg-white/[0.10] hover:border-white/40 transition-colors"
-                >
-                  Hablar con asesor
-                </Link>
+
+              {/* Card glass con beneficios (llena la derecha con algo útil) */}
+              <div className="relative mx-auto w-full max-w-md">
+                <div className="absolute -inset-3 rounded-[28px] bg-gradient-to-br from-[#7C3AED]/30 to-transparent blur-2xl" />
+                <div className="relative rounded-3xl border border-white/15 bg-white/[0.06] backdrop-blur-md p-7 shadow-2xl">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C8C8D0] mb-5">
+                    Por qué financiar con nosotros
+                  </p>
+                  <ul className="space-y-4">
+                    {[
+                      { t: "Financiación propia", d: "Sin pasar por el banco, trámite simple." },
+                      { t: "Hasta 24 cuotas", d: "Planes a medida de tu presupuesto." },
+                      { t: "Entrega mínima", d: "Entregás lo mínimo y te la llevás hoy." },
+                      { t: "Aprobación rápida", d: "Te respondemos en el día." },
+                    ].map((f) => (
+                      <li key={f.t} className="flex items-start gap-3">
+                        <span className="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-[#7C3AED] text-white text-[13px] font-bold shadow-violeta-soft">
+                          ✓
+                        </span>
+                        <span>
+                          <span className="block text-sm font-bold text-white">{f.t}</span>
+                          <span className="block text-xs text-white/65 leading-relaxed">{f.d}</span>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           </AnimatedSection>
