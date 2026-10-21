@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache"
 import { ModeloForm } from "@/components/admin/modelo-form"
 import { invalidateModelos } from "@/lib/cached-queries"
 import { generarCodigoModelo } from "@/lib/codigo-modelo-helpers"
+import { clasificarSegmento } from "@/lib/segmento"
 
 export const dynamic = "force-dynamic"
 
@@ -90,6 +91,8 @@ async function createModelo(formData: FormData) {
         codigo,
         marca,
         categoriaVehiculo: categoriaVehiculo as "MOTOCICLETA" | "CUATRICICLO" | "UTV" | "MOTO_DE_AGUA",
+        // Tipo de moto (segmento) autoasignado para el filtro público.
+        segmento: clasificarSegmento(marca, nombre, categoriaVehiculo),
         condicion,
         anio: anioStr ? parseInt(anioStr) : null,
         kilometros: kilometrosStr ? parseInt(kilometrosStr) : null,

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireAdmin } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
 import { invalidateModelos } from "@/lib/cached-queries"
+import { clasificarSegmento } from "@/lib/segmento"
 
 export async function GET(
   request: NextRequest,
@@ -57,6 +58,12 @@ export async function PUT(
         marca: body.marca,
         categoriaVehiculo: body.categoriaVehiculo,
         cilindrada: body.cilindrada,
+        // Tipo de moto (segmento) autoasignado para el filtro público.
+        segmento: clasificarSegmento(
+          body.marca,
+          body.nombre,
+          body.categoriaVehiculo
+        ),
         precio: body.precio,
         descripcion: body.descripcion,
         specs: body.specs,

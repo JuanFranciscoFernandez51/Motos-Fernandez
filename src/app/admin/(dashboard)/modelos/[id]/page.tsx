@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache"
 import { ModeloForm } from "@/components/admin/modelo-form"
 import { ModeloEditActions } from "@/components/admin/modelo-edit-actions"
 import { invalidateModelos } from "@/lib/cached-queries"
+import { clasificarSegmento } from "@/lib/segmento"
 import { crearFinanciacionDesdeOC } from "@/lib/financiacion-helpers"
 import { buscarMotoExistentePorIdentificadores } from "@/lib/moto-dedup-helpers"
 import { checklistPermutaTexto } from "@/lib/admin-helpers"
@@ -103,6 +104,8 @@ async function updateModelo(formData: FormData) {
         kilometros: kilometrosStr ? parseInt(kilometrosStr) : null,
         observaciones: observaciones || null,
         cilindrada: cilindrada || null,
+        // Tipo de moto (segmento) autoasignado para el filtro público.
+        segmento: clasificarSegmento(marca, nombre, categoriaVehiculo),
         transmision: transmision || null,
         combustible: combustible || null,
         color: color || null,

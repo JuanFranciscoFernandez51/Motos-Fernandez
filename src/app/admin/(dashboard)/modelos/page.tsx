@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { prisma } from "@/lib/prisma"
+import { clasificarSegmento } from "@/lib/segmento"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { revalidatePath } from "next/cache"
@@ -378,6 +379,8 @@ async function crearOCDesdeModelo(input: CrearOCDesdeModeloInput) {
                 slug,
                 codigo,
                 marca: p.marca,
+                // Tipo de moto (segmento) autoasignado para el filtro público.
+                segmento: clasificarSegmento(p.marca, p.modelo, "MOTOCICLETA"),
                 condicion: "USADA",
                 anio: p.anio,
                 kilometros: p.kilometros,

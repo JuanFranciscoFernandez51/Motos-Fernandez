@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { requireAdmin } from "@/lib/admin-auth"
 import { invalidateModelos } from "@/lib/cached-queries"
+import { clasificarSegmento } from "@/lib/segmento"
 
 function slugify(text: string): string {
   return text
@@ -44,6 +45,8 @@ export async function POST(request: Request) {
         anio: body.anio ? parseInt(String(body.anio), 10) : null,
         kilometros: body.kilometros != null ? parseInt(String(body.kilometros), 10) : null,
         cilindrada: body.cilindrada ? String(body.cilindrada).trim() : null,
+        // Tipo de moto (segmento) autoasignado para el filtro público.
+        segmento: clasificarSegmento(marca, nombre, body.categoriaVehiculo || "MOTOCICLETA"),
         observaciones: body.observaciones ? String(body.observaciones).trim() : null,
         precio: body.precio ? parseInt(String(body.precio), 10) : null,
         moneda: body.moneda || "ARS",
