@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { formatPrice, CATEGORIAS_VEHICULO, ETIQUETAS_MAP } from "@/lib/constants"
-import { Bike, Search, Scale, SlidersHorizontal, X, Star, CreditCard } from "lucide-react"
+import { Bike, Search, Scale, SlidersHorizontal, X, Star, CreditCard, ChevronDown } from "lucide-react"
 import { useCompare } from "@/components/public/comparador-provider"
 import { CompareButton } from "@/components/public/compare-button"
 import { WishlistButton } from "@/components/public/wishlist-button"
@@ -34,6 +34,7 @@ interface Modelo {
   anio: number | null
   kilometros: number | null
   cilindrada: string | null
+  segmento?: string | null
   precio: number | null
   moneda: string
   etiqueta?: string | null
@@ -50,6 +51,19 @@ interface Modelo {
 }
 
 // Parseo de cilindrada: "150cc" -> 150, "300 cc" -> 300, null si no se puede
+// Orden de presentación del "tipo de moto" (segmento) en los filtros.
+const SEGMENTO_ORDEN = [
+  "Naked",
+  "Trail",
+  "Scooter",
+  "Deportiva",
+  "Touring",
+  "Custom",
+  "Enduro/Cross",
+  "Urbana",
+  "Eléctrica",
+]
+
 function parseCilindrada(cc: string | null | undefined): number | null {
   if (!cc) return null
   const match = cc.match(/(\d+)/)
@@ -81,6 +95,7 @@ export function CatalogoClient({
   const [categoria, setCategoria] = useState<string>(initialCategoria || "TODAS")
   const [condicion, setCondicion] = useState<string>(initialCondicion || "TODAS")
   const [marca, setMarca] = useState<string>(initialMarca || "TODAS")
+  const [segmento, setSegmento] = useState<string>("TODAS")
   const [search, setSearch] = useState(initialSearch || "")
   // Sidebar de filtros abierto en mobile (en desktop siempre visible).
   const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -128,6 +143,19 @@ export function CatalogoClient({
     }
   }, [models])
 
+  // Segmentos (tipo de moto) presentes + conteo por marca para los filtros.
+  const { segmentosDisponibles, marcaConteo } = useMemo(() => {
+    const segs = new Set<string>()
+    const mc = new Map<string, number>()
+    for (const m of models) {
+      if (m.segmento) segs.add(m.segmento)
+      mc.set(m.marca, (mc.get(m.marca) || 0) + 1)
+    }
+    const ordered = SEGMENTO_ORDEN.filter((s) => segs.has(s))
+    for (const s of segs) if (!ordered.includes(s)) ordered.push(s)
+    return { segmentosDisponibles: ordered, marcaConteo: mc }
+  }, [models])
+
   const [precioMin, setPrecioMin] = useState<number>(precioMinCatalogo)
   const [precioMax, setPrecioMax] = useState<number>(precioMaxCatalogo)
   const [cilindradaMin, setCilindradaMin] = useState<number>(0)
@@ -168,6 +196,7 @@ export function CatalogoClient({
   // Limpia TODO (incluye marca, tipo, condición, búsqueda).
   const limpiarTodo = () => {
     setCategoria("TODAS")
+    setSegmento("TODAS")
     setCondicion("TODAS")
     setMarca("TODAS")
     setSearch("")
@@ -177,6 +206,7 @@ export function CatalogoClient({
   // Total de filtros activos (para el botón "Filtros" en mobile).
   const totalFiltrosActivos =
     (categoria !== "TODAS" ? 1 : 0) +
+    (segmento !== "TODAS" ? 1 : 0) +
     (mostrarCondicion && condicion !== "TODAS" ? 1 : 0) +
     (marca !== "TODAS" ? 1 : 0) +
     (search.trim() ? 1 : 0) +
@@ -185,6 +215,7 @@ export function CatalogoClient({
   const filtered = useMemo(() => {
     return models.filter((m) => {
       if (categoria !== "TODAS" && m.categoriaVehiculo !== categoria) return false
+      if (segmento !== "TODAS" && m.segmento !== segmento) return false
       if (condicion !== "TODAS" && (m.condicion || "0KM") !== condicion) return false
       if (marca !== "TODAS" && m.marca !== marca) return false
       if (search) {
@@ -221,6 +252,7 @@ export function CatalogoClient({
   }, [
     models,
     categoria,
+    segmento,
     condicion,
     marca,
     search,
@@ -251,9 +283,9 @@ export function CatalogoClient({
         <aside
           className={`${sidebarOpen ? "block" : "hidden"} lg:block lg:sticky lg:top-24 mb-6 lg:mb-0`}
         >
-        <div className="rounded-2xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 shadow-premium-md px-5 divide-y divide-gray-100 dark:divide-neutral-800">
+        <div className="rounded-2xl bg-white dark:bg-neutral-900 border border-gray-100 dark:border-neutral-800 shadow-premium-md px-5 divide-y divide-gray-100 dark:divide-neutral-800 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto">
         {/* Header de la card de filtros */}
-        <div className="flex items-center gap-2 pt-5 pb-4">
+        <div className="flex items-center gap-2 pt-5 pb-4 sticky top-0 bg-white dark:bg-neutral-900 z-10 -mx-5 px-5">
           <span className="inline-flex size-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#3D2649] to-[#7C3AED] text-white shadow-violeta-soft">
             <SlidersHorizontal className="size-4" />
           </span>
@@ -266,10 +298,43 @@ export function CatalogoClient({
             </span>
           )}
         </div>
-        {/* Tipo de moto */}
+        {/* Tipo de moto (segmento) — chips, lo más destacado del filtro */}
+        {segmentosDisponibles.length > 0 && (
+          <div className="py-5">
+            <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
+              Tipo de moto
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setSegmento("TODAS")}
+                className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                  segmento === "TODAS"
+                    ? "bg-gradient-to-r from-[#3D2649] to-[#7C3AED] text-white shadow-violeta-soft"
+                    : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#7C3AED]/40"
+                }`}
+              >
+                Todas
+              </button>
+              {segmentosDisponibles.map((seg) => (
+                <button
+                  key={seg}
+                  onClick={() => setSegmento(seg)}
+                  className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                    segmento === seg
+                      ? "bg-gradient-to-r from-[#3D2649] to-[#7C3AED] text-white shadow-violeta-soft"
+                      : "bg-transparent text-[#4E4B48] dark:text-gray-200 border border-gray-200 dark:border-neutral-700 hover:border-[#7C3AED]/40"
+                  }`}
+                >
+                  {seg}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+        {/* Tipo de vehículo */}
         <div className="py-5">
           <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
-            Tipo de moto
+            Tipo de vehículo
           </p>
           <div className="flex flex-wrap gap-2">
             <button
@@ -353,36 +418,83 @@ export function CatalogoClient({
             <button
               type="button"
               onClick={() => setMarca("TODAS")}
-              className={`text-left rounded-md px-3 py-1.5 text-sm transition-colors ${
+              className={`flex items-center justify-between text-left rounded-md px-3 py-1.5 text-sm transition-colors ${
                 marca === "TODAS"
                   ? "bg-[#7C3AED] text-white font-semibold"
                   : "text-[#4E4B48] dark:text-gray-300 hover:bg-[#7C3AED]/10"
               }`}
             >
-              Todas las marcas
+              <span>Todas las marcas</span>
+              <span className={marca === "TODAS" ? "text-white/70" : "text-gray-400"}>
+                {models.length}
+              </span>
             </button>
-            {brands.map((b) => (
-              <button
-                key={b}
-                type="button"
-                onClick={() => setMarca(b)}
-                className={`text-left rounded-md px-3 py-1.5 text-sm transition-colors ${
-                  marca === b
-                    ? "bg-[#7C3AED] text-white font-semibold"
-                    : "text-[#4E4B48] dark:text-gray-300 hover:bg-[#7C3AED]/10"
-                }`}
-              >
-                {b}
-              </button>
-            ))}
+            {Array.from(marcaConteo.keys())
+              .sort((a, b) => a.localeCompare(b))
+              .map((b) => (
+                <button
+                  key={b}
+                  type="button"
+                  onClick={() => setMarca(b)}
+                  className={`flex items-center justify-between text-left rounded-md px-3 py-1.5 text-sm transition-colors ${
+                    marca === b
+                      ? "bg-[#7C3AED] text-white font-semibold"
+                      : "text-[#4E4B48] dark:text-gray-300 hover:bg-[#7C3AED]/10"
+                  }`}
+                >
+                  <span>{b}</span>
+                  <span className={marca === b ? "text-white/70" : "text-gray-400"}>
+                    {marcaConteo.get(b)}
+                  </span>
+                </button>
+              ))}
           </div>
         </div>
 
-        {/* Precio — desde / hasta escribible */}
-        <div className="py-5">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
-            Precio (ARS)
-          </p>
+        {/* Precio — slider doble + inputs (colapsable) */}
+        <details className="py-5 group" open>
+          <summary className="flex items-center justify-between mb-3 cursor-pointer list-none">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+              Precio (ARS)
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="text-[11px] font-semibold text-[#7C3AED]">
+                {formatPrice(precioMin, "ARS")} – {formatPrice(precioMax, "ARS")}
+              </span>
+              <ChevronDown className="size-4 text-gray-400 group-open:rotate-180 transition-transform" />
+            </span>
+          </summary>
+          {/* Slider doble */}
+          <div className="relative h-5 mb-3">
+            <div className="absolute top-1/2 -translate-y-1/2 h-1 w-full rounded-full bg-gray-200 dark:bg-neutral-700" />
+            <div
+              className="absolute top-1/2 -translate-y-1/2 h-1 rounded-full bg-[#7C3AED]"
+              style={{
+                left: `${((precioMin - precioMinCatalogo) / Math.max(1, precioMaxCatalogo - precioMinCatalogo)) * 100}%`,
+                right: `${100 - ((precioMax - precioMinCatalogo) / Math.max(1, precioMaxCatalogo - precioMinCatalogo)) * 100}%`,
+              }}
+            />
+            <input
+              type="range"
+              className="mf-range"
+              min={precioMinCatalogo}
+              max={precioMaxCatalogo}
+              step={Math.max(1000, Math.round((precioMaxCatalogo - precioMinCatalogo) / 200))}
+              value={precioMin}
+              onChange={(e) => setPrecioMin(Math.min(Number(e.target.value), precioMax))}
+              aria-label="Precio mínimo"
+            />
+            <input
+              type="range"
+              className="mf-range"
+              min={precioMinCatalogo}
+              max={precioMaxCatalogo}
+              step={Math.max(1000, Math.round((precioMaxCatalogo - precioMinCatalogo) / 200))}
+              value={precioMax}
+              onChange={(e) => setPrecioMax(Math.max(Number(e.target.value), precioMin))}
+              aria-label="Precio máximo"
+            />
+          </div>
           <div className="flex items-center gap-2">
             <input
               type="number"
@@ -411,13 +523,16 @@ export function CatalogoClient({
           <p className="mt-1.5 text-[11px] text-gray-400">
             Los modelos sin precio cargado siempre aparecen.
           </p>
-        </div>
+        </details>
 
-        {/* Cilindrada — desde / hasta escribible */}
-        <div className="py-5">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-gray-400 mb-3">
-            Cilindrada (cc)
-          </p>
+        {/* Cilindrada — desde / hasta (colapsable) */}
+        <details className="py-5 group">
+          <summary className="flex items-center justify-between mb-3 cursor-pointer list-none">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+              Cilindrada (cc)
+            </span>
+            <ChevronDown className="size-4 text-gray-400 group-open:rotate-180 transition-transform" />
+          </summary>
           <div className="flex items-center gap-2">
             <input
               type="number"
@@ -446,7 +561,7 @@ export function CatalogoClient({
           <p className="mt-1.5 text-[11px] text-gray-400">
             Los modelos sin cilindrada siempre aparecen.
           </p>
-        </div>
+        </details>
 
         {/* Toggles */}
         <div className="py-5">

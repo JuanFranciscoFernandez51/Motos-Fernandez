@@ -49,6 +49,10 @@ model Modelo {
   kilometros        Int? // km recorridos (null o 0 para 0km)
   observaciones     String?           @db.Text // observaciones breves para usadas
   cilindrada        String? // "150cc", "250cc", "450cc", etc.
+  // Segmento / tipo de moto para el filtro público (Naked, Trail, Scooter,
+  // Deportiva, Touring, Custom, Enduro/Cross, Urbana, Eléctrica). Solo aplica
+  // a MOTOCICLETA; se autoetiqueta por nombre y se corrige desde el admin.
+  segmento          String?
   // Atributos requeridos por Mercado Libre (mapeados al publicar)
   transmision       String? // "Manual" | "Automática" | "Semiautomática"
   combustible       String? // "Nafta" | "Eléctrica" | "Híbrido"

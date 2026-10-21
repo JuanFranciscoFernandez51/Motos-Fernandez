@@ -444,6 +444,43 @@
   .moto-card [class*="aspect-"]::after { transition: none !important; }
 }
 
+/* Dual-range slider (filtro de precio). Dos <input type=range> superpuestos:
+   el input no captura el click salvo en el thumb. */
+.mf-range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  margin: 0;
+  background: transparent;
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: none;
+}
+.mf-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: auto;
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 3px solid #7c3aed;
+  box-shadow: 0 1px 4px rgba(20, 15, 30, 0.25);
+  cursor: pointer;
+}
+.mf-range::-moz-range-thumb {
+  pointer-events: auto;
+  height: 18px;
+  width: 18px;
+  border-radius: 9999px;
+  background: #fff;
+  border: 3px solid #7c3aed;
+  box-shadow: 0 1px 4px rgba(20, 15, 30, 0.25);
+  cursor: pointer;
+}
+.mf-range::-webkit-slider-runnable-track { background: transparent; }
+.mf-range::-moz-range-track { background: transparent; }
+
 /* SpotlightCard: resplandor que sigue el cursor (ver spotlight-card.tsx) */
 .mf-spotlight {
   position: relative;
