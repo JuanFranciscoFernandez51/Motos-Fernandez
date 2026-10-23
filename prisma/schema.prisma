@@ -1466,6 +1466,37 @@ model ScheduledPost {
   @@index([motoId, scheduledAt])
 }
 
+/// Historia de Instagram programada (saludos diarios de Motos Fernández).
+/// A diferencia de ScheduledPost, NO va atada a una moto: es una imagen
+/// suelta 9:16 (JPG en Cloudinary) que se publica como IG Story en la fecha
+/// indicada. Tabla aparte a propósito, para no tocar la lógica de posts/moto
+/// ni el calendario del admin. La publica el cron publish-scheduled llamando
+/// a publicarHistoriaEnMeta. Misma mecánica de lock optimista que ScheduledPost.
+model ScheduledStory {
+  id            String    @id @default(cuid())
+  // URL pública de Cloudinary (secure_url). Se sube tal cual, 9:16, sin
+  // transforms ni IA (regla de costos). Es lo que recibe IG.
+  imageUrl      String
+  publicId      String? // public_id de Cloudinary, por si hay que limpiarla
+  scheduledAt   DateTime // En UTC. Se convierte a AR solo en la UI.
+  tema          String? // ej "Buen lunes" — para leer de un vistazo
+  archivo       String? // nombre del JPG original (trazabilidad con el CALENDARIO)
+  pideDM        Boolean   @default(false) // historias que piden respuesta por DM
+  status        String    @default("PENDING") // PENDING | PROCESSING | PUBLISHED | FAILED
+  publishedAt   DateTime?
+  igStoryId     String? // id del media publicado en IG
+  errorMessage  String?   @db.Text
+  retryCount    Int       @default(0)
+  lastAttemptAt DateTime?
+  // Optimistic locking del cron (igual que ScheduledPost).
+  lockedAt      DateTime?
+  lockedBy      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([status, scheduledAt])
+}
+
 /// Campaña de Meta Ads. El ciclo de vida es:
 ///   DRAFT (solo en nuestra DB) → IN_META_PAUSED (creada en Meta, pausada)
 ///   → ACTIVE (corriendo) → PAUSED_BY_USER | COMPLETED | FAILED | DELETED

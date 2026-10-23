@@ -630,3 +630,65 @@ export async function limpiarErroresMeta() {
 // IA porque las cuentas serias no espamean datos en cada post). Lo dejamos
 // disponible por si en el futuro queremos un bloque opcional.
 export const META_BUSINESS_FOOTER = `\n\n${BUSINESS.address}\nWhatsApp ${BUSINESS.whatsappDisplay}\n${BUSINESS.email}`
+
+// ===========================================================================
+// HISTORIAS (IG STORIES)
+// ===========================================================================
+//
+// Las historias NO son un carrusel ni van atadas a una moto: es una sola
+// imagen suelta (los saludos diarios 9:16 que arma Francisco). Instagram las
+// publica con media_type=STORIES. Flujo idéntico a una foto normal pero sin
+// is_carousel_item y sin caption (las historias no llevan caption de feed):
+//   1) POST /{ig-user-id}/media con image_url + media_type=STORIES → creation_id
+//   2) Esperar FINISHED (IG procesa async, igual que el carrusel)
+//   3) POST /{ig-user-id}/media_publish con creation_id → historia publicada
+//
+// Doc: https://developers.facebook.com/docs/instagram-api/guides/content-publishing#stories
+//
+// NOTA de formato: IG quiere la historia en 9:16 (1080×1920). Las JPG de
+// Francisco ya vienen en ese tamaño, así que NO tocamos la URL de Cloudinary
+// (nada de transforms: ni recorte ni IA — ver reglas de costos). Solo exigimos
+// que sea una URL pública https y JPG.
+//
+// IMPORTANTE: Instagram Graph API publica en el momento. El "cuándo" lo maneja
+// nuestro cron (ScheduledPost). Esta función solo publica YA la historia que
+// se le pase.
+export async function publicarHistoriaEnMeta(
+  imageUrl: string
+): Promise<{ ok: boolean; igStoryId?: string; error?: string }> {
+  const cfg = await prisma.metaConfig.findUnique({ where: { id: "default" } })
+  if (!cfg?.pageAccessToken || !cfg.igUserId) {
+    return { ok: false, error: "Meta no está conectado" }
+  }
+  if (!imageUrl || !/^https:\/\//i.test(imageUrl)) {
+    return {
+      ok: false,
+      error: "La historia necesita una URL pública https (subila a Cloudinary)",
+    }
+  }
+
+  try {
+    // 1) Crear el container de la historia
+    const creation = await metaPost<IGMediaResponse>(`/${cfg.igUserId}/media`, {
+      image_url: imageUrl,
+      media_type: "STORIES",
+    })
+    if (!creation.id) {
+      return { ok: false, error: "IG respondió sin id de media para la historia" }
+    }
+
+    // 2) Esperar a que IG la procese (si no, "Media ID is not available")
+    await esperarMediaListo(creation.id, 60000, imageUrl)
+
+    // 3) Publicar
+    const published = await metaPost<IGPostResponse>(
+      `/${cfg.igUserId}/media_publish`,
+      { creation_id: creation.id }
+    )
+
+    return { ok: true, igStoryId: published.id }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : String(e)
+    return { ok: false, error: msg }
+  }
+}

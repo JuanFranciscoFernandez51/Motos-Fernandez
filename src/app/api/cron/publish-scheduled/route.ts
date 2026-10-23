@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { randomUUID } from "node:crypto"
 import type { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma"
-import { publicarEnMeta } from "@/lib/meta/publication"
+import { publicarEnMeta, publicarHistoriaEnMeta } from "@/lib/meta/publication"
 
 export const runtime = "nodejs"
 export const dynamic = "force-dynamic"
@@ -239,5 +239,85 @@ export async function GET(request: Request) {
     })
   }
 
-  return NextResponse.json({ ok: true, ...result })
+  // =========================================================================
+  // HISTORIAS (ScheduledStory) — imagen suelta a IG Stories. Tabla aparte,
+  // mismo patrón de lock. No depende de ninguna moto.
+  // =========================================================================
+  const stories = {
+    processed: 0,
+    published: 0,
+    failed: 0,
+    skipped: 0,
+    details: [] as Array<Record<string, unknown>>,
+  }
+
+  const storyCandidatos = await prisma.scheduledStory.findMany({
+    where: {
+      scheduledAt: { lte: ahora },
+      OR: [
+        { status: "PENDING", lockedAt: null },
+        { status: "PENDING", lockedAt: { lt: lockCutoff } },
+        { status: "PROCESSING", lockedAt: { lt: lockCutoff } },
+      ],
+    },
+    orderBy: { scheduledAt: "asc" },
+    take: BATCH_SIZE,
+    select: { id: true, imageUrl: true, retryCount: true },
+  })
+
+  for (const st of storyCandidatos) {
+    // Lock optimista
+    const locked = await prisma.scheduledStory.updateMany({
+      where: {
+        id: st.id,
+        OR: [{ lockedAt: null }, { lockedAt: { lt: lockCutoff } }],
+      },
+      data: {
+        lockedAt: ahora,
+        lockedBy: workerId,
+        status: "PROCESSING",
+        lastAttemptAt: ahora,
+      },
+    })
+    if (locked.count === 0) {
+      stories.skipped++
+      continue
+    }
+    stories.processed++
+
+    let res: Awaited<ReturnType<typeof publicarHistoriaEnMeta>>
+    try {
+      res = await publicarHistoriaEnMeta(st.imageUrl)
+    } catch (e) {
+      res = { ok: false, error: e instanceof Error ? e.message : String(e) }
+    }
+
+    let nuevoStatus: string
+    if (res.ok) {
+      nuevoStatus = "PUBLISHED"
+      stories.published++
+    } else {
+      const reintentos = st.retryCount + 1
+      nuevoStatus = reintentos >= MAX_RETRIES ? "FAILED" : "PENDING"
+      stories.failed++
+    }
+
+    await prisma.scheduledStory.update({
+      where: { id: st.id },
+      data: {
+        status: nuevoStatus,
+        publishedAt: res.ok ? ahora : null,
+        igStoryId: res.igStoryId || null,
+        errorMessage: res.error || null,
+        retryCount: nuevoStatus === "PENDING" ? st.retryCount + 1 : st.retryCount,
+        // Si queda PENDING, liberamos el lock para el próximo cron.
+        lockedAt: nuevoStatus === "PENDING" ? null : ahora,
+        lockedBy: nuevoStatus === "PENDING" ? null : workerId,
+      },
+    })
+
+    stories.details.push({ id: st.id, status: nuevoStatus, error: res.error })
+  }
+
+  return NextResponse.json({ ok: true, ...result, stories })
 }
