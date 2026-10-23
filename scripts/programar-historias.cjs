@@ -30,6 +30,8 @@ const { v2: cloudinary } = require("cloudinary")
 // ---- args ----
 const args = process.argv.slice(2)
 const DRY = args.includes("--dry-run")
+// --ahora: fuerza scheduledAt = hace 2 min (para el test: que el cron la levante ya).
+const AHORA = args.includes("--ahora")
 const soloArg = args.find((a) => a.startsWith("--solo="))
 const SOLO = soloArg ? soloArg.split("=")[1] : null
 const carpArg = args.find((a) => a.startsWith("--carpeta="))
@@ -108,12 +110,15 @@ async function main() {
   const saltadas = []
   try {
     for (const it of items) {
-      // AR (UTC-3) -> UTC
+      // AR (UTC-3) -> UTC. Con --ahora, forzamos "hace 2 min" para el test.
       const [Y, M, D] = it.fecha.split("-").map(Number)
       const [hh, mm] = it.hora.split(":").map(Number)
-      const scheduledAt = new Date(Date.UTC(Y, M - 1, D, hh + 3, mm, 0, 0))
+      const scheduledAt = AHORA
+        ? new Date(Date.now() - 2 * 60 * 1000)
+        : new Date(Date.UTC(Y, M - 1, D, hh + 3, mm, 0, 0))
       const fechaAR = scheduledAt.toLocaleString("es-AR", {
         timeZone: "America/Argentina/Buenos_Aires",
+        hour12: false,
       })
 
       // Idempotencia por archivo
