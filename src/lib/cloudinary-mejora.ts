@@ -1,19 +1,22 @@
 /**
- * Mejora de fotos con IA vía transformaciones de Cloudinary (se aplican en la
- * URL, sin re-subir nada; Cloudinary conserva el original, así que es
- * reversible). Pensado para las fotos de motos usadas.
+ * Mejora de fotos vía Cloudinary (e_improve: luz/color + sharpen leve).
+ *
+ * La mejora se HORNEA: el server sube el resultado como asset NUEVO
+ * (/api/admin/hornear-foto) y en la base queda una URL limpia, sin el efecto.
+ * Si el efecto quedara en la URL, cada ancho/formato que pide la web
+ * generaría otra derivada con el efecto (gasto de créditos).
+ *
+ * Prohibido acá: e_upscale, e_gen_*, e_enhance y e_background_removal
+ * (IA / add-ons pagos de Cloudinary).
  */
 
 // e_improve = auto-mejora (luz/color) + sharpen leve. Sutil y seguro.
 export const TRANSFORM_MEJORA = "e_improve,e_sharpen:60"
-// Quita el fondo (add-on de Cloudinary, habilitado en la cuenta) y lo deja
-// blanco — look limpio y uniforme para catálogo/Meta.
-export const TRANSFORM_FONDO_BLANCO = "e_background_removal,b_white"
 
 // Detecta un transform NUESTRO ya aplicado (para reemplazarlo o quitarlo).
 const NUESTRO = /\/upload\/(?:e_improve[^/]*|e_background_removal[^/]*|e_auto_[^/]*)\//
 
-function esCloudinary(url: string) {
+export function esCloudinary(url: string) {
   return url.includes("res.cloudinary.com") && url.includes("/upload/")
 }
 
@@ -29,5 +32,4 @@ export function aplicarMejora(url: string, transform: string): string {
 }
 
 export const mejorarFoto = (url: string) => aplicarMejora(url, TRANSFORM_MEJORA)
-export const fondoBlancoFoto = (url: string) => aplicarMejora(url, TRANSFORM_FONDO_BLANCO)
 export const fotoOriginal = (url: string) => aplicarMejora(url, "")

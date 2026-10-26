@@ -477,7 +477,7 @@ export default async function ModeloDetailPage({ params }: Props) {
                           alt={m.nombre}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-500"
-                          sizes="(max-width: 1024px) 50vw, 25vw"
+                          sizes="(max-width: 1024px) 50vw, 300px"
                         />
                       ) : (
                         <div className="flex items-center justify-center h-full text-gray-300">

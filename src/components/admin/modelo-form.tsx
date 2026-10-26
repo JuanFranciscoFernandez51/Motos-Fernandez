@@ -21,7 +21,7 @@ import Link from "next/link"
 import { CATEGORIAS_VEHICULO, ETIQUETAS_MODELO } from "@/lib/constants"
 import { ImageUpload } from "@/components/admin/image-upload"
 import { MultiImageUpload } from "@/components/admin/multi-image-upload"
-import { mejorarFoto, fondoBlancoFoto, fotoOriginal } from "@/lib/cloudinary-mejora"
+import { fotoOriginal } from "@/lib/cloudinary-mejora"
 
 type ModeloColor = {
   id?: string
@@ -248,6 +248,31 @@ export function ModeloForm({
       : [{ nombre: "", hex: "#000000", foto: "" }]
   )
   const [fotos, setFotos] = useState<string[]>(initialData?.fotos || [])
+  // "Mejorar" hornea la foto (asset nuevo en Cloudinary, URL limpia). Guardamos
+  // nueva → original para que "Original" pueda volver atrás en esta edición.
+  const [originales, setOriginales] = useState<Record<string, string>>({})
+  const [horneando, setHorneando] = useState<number | null>(null)
+  const mejorarFotoHorneada = async (i: number) => {
+    const actual = fotos[i]
+    const base = originales[actual] || fotoOriginal(actual)
+    setHorneando(i)
+    setError("")
+    try {
+      const res = await fetch("/api/admin/hornear-foto", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: base }),
+      })
+      const data = await res.json()
+      if (!res.ok || !data.url) throw new Error(data.error || "No se pudo mejorar la foto")
+      setOriginales((m) => ({ ...m, [data.url]: base }))
+      setFotos((fs) => fs.map((x, idx) => (idx === i && x === actual ? data.url : x)))
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "No se pudo mejorar la foto")
+    } finally {
+      setHorneando(null)
+    }
+  }
   const [activo, setActivo] = useState(initialData?.activo ?? true)
   const [destacado, setDestacado] = useState(initialData?.destacado ?? false)
   const [etiqueta, setEtiqueta] = useState<string>(initialData?.etiqueta || "NONE")
@@ -1246,7 +1271,7 @@ export function ModeloForm({
               {fotos.length > 0 && (
                 <div className="mt-3 border-t border-gray-100 dark:border-neutral-800 pt-3 space-y-2">
                   <p className="text-xs font-medium text-gray-500">
-                    ✨ Mejorar con IA — opcional, foto por foto (solo las que quieras):
+                    ✨ Mejorar luz y color — opcional, foto por foto (solo las que quieras):
                   </p>
                   <div className="space-y-2">
                     {fotos.map((f, i) => (
@@ -1260,23 +1285,19 @@ export function ModeloForm({
                         <div className="flex flex-wrap gap-1.5">
                           <button
                             type="button"
-                            onClick={() => setFotos((fs) => fs.map((x, idx) => (idx === i ? mejorarFoto(x) : x)))}
-                            className="rounded-md bg-[#7C3AED]/10 text-[#7C3AED] px-2 py-1 text-xs font-medium hover:bg-[#7C3AED]/20"
+                            onClick={() => mejorarFotoHorneada(i)}
+                            disabled={horneando !== null}
+                            className="rounded-md bg-[#7C3AED]/10 text-[#7C3AED] px-2 py-1 text-xs font-medium hover:bg-[#7C3AED]/20 disabled:opacity-50 inline-flex items-center gap-1"
                             title="Auto-mejora de luz, color y nitidez en ESTA foto"
                           >
+                            {horneando === i && <Loader2 className="size-3 animate-spin" />}
                             Mejorar
                           </button>
                           <button
                             type="button"
-                            onClick={() => setFotos((fs) => fs.map((x, idx) => (idx === i ? fondoBlancoFoto(x) : x)))}
-                            className="rounded-md bg-[#7C3AED]/10 text-[#7C3AED] px-2 py-1 text-xs font-medium hover:bg-[#7C3AED]/20"
-                            title="Quita el fondo de ESTA foto y lo deja blanco"
-                          >
-                            Fondo blanco
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setFotos((fs) => fs.map((x, idx) => (idx === i ? fotoOriginal(x) : x)))}
+                            onClick={() =>
+                              setFotos((fs) => fs.map((x, idx) => (idx === i ? originales[x] || fotoOriginal(x) : x)))
+                            }
                             className="rounded-md border border-gray-300 dark:border-neutral-700 px-2 py-1 text-xs text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-neutral-900"
                             title="Volver a la foto original"
                           >
@@ -1287,7 +1308,7 @@ export function ModeloForm({
                     ))}
                   </div>
                   <p className="text-[11px] text-gray-400">
-                    No se aplica nada solo: elegís foto por foto. Es reversible. Acordate de tocar <strong>Guardar</strong>.
+                    No se aplica nada solo: elegís foto por foto. &quot;Mejorar&quot; guarda una copia mejorada y la original queda intacta (&quot;Original&quot; la vuelve a poner). Acordate de tocar <strong>Guardar</strong>.
                   </p>
                 </div>
               )}

@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState, useCallback, useRef } from "react"
-import Image from "next/image"
+import Image, { getImageProps } from "next/image"
 import { Bike, ChevronLeft, ChevronRight, X, ZoomIn, Check } from "lucide-react"
 
 type ColorOption = {
@@ -10,6 +10,9 @@ type ColorOption = {
   hex: string
   foto: string | null
 }
+
+// sizes de la foto principal (lo usa también la precarga de vecinas).
+const SIZES_PRINCIPAL = "(max-width: 1024px) 100vw, 50vw"
 
 export function ModelGallery({
   fotos,
@@ -38,34 +41,24 @@ export function ModelGallery({
   const [colorSel, setColorSel] = useState<string | null>(null)
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
-  // Precarga de fotos para que pasar de imagen sea instantáneo. La foto
-  // vecina (siguiente/anterior) se precarga apenas cambia el índice; el
-  // resto de la galería se precarga en segundo plano (idle) tras el primer
-  // render. Así el swipe/flechas no esperan a la red.
+  // Precarga de las fotos vecinas (siguiente/anterior) para que pasar de
+  // imagen sea instantáneo. Se precarga la MISMA variante que pide el <Image>
+  // principal (srcset + sizes del loader de Cloudinary), no la original: antes
+  // bajaba cada foto de la galería en tamaño completo (~2,3 MB por ficha) y
+  // encima no servía, porque el <Image> pedía otra URL.
   const galeriaKey = galeria.join("|")
   useEffect(() => {
     if (galeria.length <= 1) return
     const precargar = (src?: string) => {
       if (!src) return
+      const { props } = getImageProps({ src, alt: "", fill: true, sizes: SIZES_PRINCIPAL })
       const img = new window.Image()
-      img.src = src
+      if (props.sizes) img.sizes = props.sizes
+      if (props.srcSet) img.srcset = props.srcSet
+      img.src = props.src
     }
-    // vecinas inmediatas
     precargar(galeria[(current + 1) % galeria.length])
     precargar(galeria[(current - 1 + galeria.length) % galeria.length])
-    // resto en idle
-    const runIdle =
-      typeof window.requestIdleCallback === "function"
-        ? window.requestIdleCallback
-        : (cb: () => void) => window.setTimeout(cb, 400)
-    const handle = runIdle(() => galeria.forEach(precargar))
-    return () => {
-      if (typeof window.cancelIdleCallback === "function" && typeof handle === "number") {
-        try {
-          window.cancelIdleCallback(handle)
-        } catch {}
-      }
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [galeriaKey, current])
 
@@ -154,7 +147,7 @@ export function ModelGallery({
             alt={`${nombre} - Foto ${current + 1}`}
             fill
             className="object-cover"
-            sizes="(max-width: 1024px) 100vw, 50vw"
+            sizes={SIZES_PRINCIPAL}
             priority
           />
         </button>
@@ -353,7 +346,6 @@ export function ModelGallery({
               fill
               className="object-contain"
               sizes="95vw"
-              quality={95}
               priority
             />
           </div>

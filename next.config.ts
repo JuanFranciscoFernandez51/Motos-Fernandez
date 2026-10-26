@@ -8,6 +8,11 @@ const nextConfig: NextConfig = {
     // cada imagen en el tamaño/formato justo (clave para LCP mobile).
     loader: "custom",
     loaderFile: "./src/lib/cloudinary-loader.ts",
+    // Grilla corta de anchos (Cloudinary cobra cada ancho x formato como una
+    // derivada). Antes eran los 16 por defecto (32..3840): ~18 mil derivadas.
+    // El loader redondea para arriba a esta misma grilla.
+    deviceSizes: [640, 960, 1280, 1920],
+    imageSizes: [160, 320],
     remotePatterns: [
       {
         protocol: "https",

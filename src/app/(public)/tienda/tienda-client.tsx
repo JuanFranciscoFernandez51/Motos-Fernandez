@@ -121,7 +121,7 @@ export function TiendaClient({
                     alt={producto.nombre}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 300px"
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full text-gray-300">
